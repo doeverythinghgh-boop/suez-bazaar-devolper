@@ -1,0 +1,220 @@
+/* === Gallery Page Specific Styles === */
+
+/* Title for the gallery section */
+.gallery-title {
+  text-align: center;
+  color: #333;
+  margin: 20px 0;
+  font-family: "Tajawal", sans-serif;
+}
+
+/* Horizontal gallery container */
+.gallery-container {
+  height: 10vh; /* تحديد ارتفاع الحاوية بنسبة 25% من ارتفاع الشاشة */
+  display: flex; /* تفعيل نظام Flexbox للعرض الأفقي */
+  overflow-x: auto; /* إضافة شريط تمرير أفقي عند الحاجة */
+  overflow-y: hidden; /* إخفاء شريط التمرير العمودي */
+  white-space: nowrap; /* منع الصور من النزول لسطر جديد */
+  padding: 20px 10px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  -webkit-overflow-scrolling: touch; /* لتحسين التمرير على أجهزة اللمس */
+}
+
+/* Styles for images inside the gallery */
+.gallery-container img {
+  height: 100%; /* جعل ارتفاع الصورة يملأ الحاوية */
+  width: 10vh; /* تحديد عرض ثابت للصورة بنفس قيمة ارتفاع الحاوية لجعلها مربعة */
+  object-fit: cover; /* يضمن ملء الصورة للمساحة دون تشويه */
+  margin: 0 10px; /* مسافة بين الصور */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.07);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  flex-shrink: 0; /* يمنع الصور من التقلص إذا كانت الحاوية ضيقة */
+}
+
+.gallery-container img:hover {
+  transform: scale(1.05); /* تكبير بسيط عند مرور الفأرة */
+}
+
+/* Container for the full-size image view */
+.full-image-container {
+  display: none; /* مخفي بشكل افتراضي */
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  position: relative;
+  width: 90%;
+  max-width: 900px; /* تحديد عرض أقصى للحاوية */
+}
+
+.full-image-container img {
+  max-width: 100%; /* تضمن أن الصورة لا تتجاوز عرض الحاوية */
+  height: auto;
+  max-height: 50vh; /* تحديد أقصى ارتفاع للصورة بنسبة 50% من ارتفاع الشاشة */
+  border-radius: 4px;
+}
+
+/* Styles for image details (quantity and price) */
+.image-details {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  font-family: "Tajawal", sans-serif;
+  color: #333;
+}
+
+.image-details p {
+  margin: 8px 0;
+}
+
+/* Style for icons within image details */
+.image-details p i {
+  margin-left: 8px; /* Add space to the left of the icon (right in RTL) */
+  color: #6c757d; /* A neutral color for the icon */
+}
+
+/* === Seller Message Box === */
+.seller-message {
+  background-color: #f8f9fa; /* Light grey background */
+  border-right: 4px solid #007bff; /* Blue accent on the right (for RTL) */
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 4px;
+  text-align: right; /* Ensure text is right-aligned */
+}
+
+.seller-message h4 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #343a40;
+  font-size: 16px;
+}
+
+.seller-message h4 i {
+  margin-left: 8px;
+  color: #007bff;
+}
+
+.seller-message p {
+  margin: 0;
+  font-size: 14px;
+  color: #495057;
+  line-height: 1.6;
+}
+
+/* === Cart Actions === */
+.cart-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px; /* Space between items */
+}
+
+/* Quantity selector container */
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between buttons and input */
+}
+
+/* Total price container */
+.total-price-container {
+  font-family: "Tajawal", sans-serif;
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+}
+
+.total-price-container #total-price {
+  font-weight: bold;
+  color: #007bff;
+}
+/* Style for quantity buttons (+ and -) */
+.quantity-btn {
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  color: #333;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background-color 0.2s, transform 0.1s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none; /* Prevent text selection on click */
+}
+
+.quantity-btn:hover {
+  background-color: #e0e0e0;
+}
+
+.quantity-btn:active {
+  transform: scale(0.95);
+}
+
+/* Style for the quantity input field */
+#selected-quantity {
+  width: 50px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  height: 38px;
+  /* Hide arrows for number input in Chrome, Safari, Edge, Opera */
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Hide arrows for number input in Firefox */
+#selected-quantity {
+  -moz-appearance: textfield;
+}
+
+/* "Add to Cart" button style */
+.add-to-cart-btn {
+  flex-grow: 1; /* Allow button to grow and fill space */
+  min-width: 150px; /* Minimum width */
+  background-color: transparent; /* خلفية شفافة */
+  color: #007bff; /* لون النص والأيقونة بنفس لون السمة الرئيسي */
+  border: 2px solid #007bff; /* إضافة إطار بنفس اللون */
+  transition: background-color 0.3s ease, color 0.3s ease; /* انتقال ناعم */
+}
+
+/* تغيير التصميم عند مرور الفأرة فوق الزر */
+.add-to-cart-btn:hover {
+  background-color: #007bff; /* ملء الخلفية باللون الأزرق */
+  color: #fff; /* تغيير لون النص والأيقونة إلى الأبيض */
+  /* 
+    The box-shadow from the general button style in style.css will still apply,
+    which is a nice touch.
+  */
+}
+
+/* Close button for the full-size image view */
+.close-full-view {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 30px;
+  color: #555;
+  cursor: pointer;
+  line-height: 1;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+.close-full-view:hover {
+  color: #000;
+}

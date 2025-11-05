@@ -1,0 +1,689 @@
+<!DOCTYPE html><html lang="ar" dir="rtl">
+<!--
+  @file login.html
+  @description صفحة تسجيل الدخول وإدارة حساب المستخدم.
+
+  هذه الصفحة تخدم غرضين:
+  1.  عرض نموذج تسجيل الدخول للمستخدمين غير المسجلين.
+  2.  بعد تسجيل الدخول، تتحول إلى لوحة تحكم بسيطة تعرض رسالة ترحيب، زر لإضافة منتج (للبائعين)، وزر لعرض المستخدمين (للمسؤولين).
+-->
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تسجيل الدخول - Suez Bazaar</title>
+  <!-- Link to shared styles -->
+  <link rel="stylesheet" href="css/style.css" /> <!-- تمت إضافة هذا السطر -->
+  <!-- Link to login-specific styles -->
+  <link rel="stylesheet" href="css/login.css" />
+  <!-- Global Config -->
+  <script src="js/config.js"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <style>
+    /* Custom style for the smaller logout button */
+    .logout-btn-small {
+      width: auto; /* Override full width */
+      padding: 10px 20px; /* Smaller padding */
+      font-size: 16px; /* Adjust font size */
+      display: inline-flex; /* To align icon and text */
+      align-items: center;
+      gap: 8px; /* Space between icon and text */
+      justify-content: center;
+    }
+    .action-buttons {
+      display: flex;
+      gap: 15px; /* Space between buttons */
+      margin-top: 20px;
+      justify-content: center;
+      flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+    }
+    /* Center the table container */
+    #users-table-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    /* تحديد عرض أقصى للجدول وتوسيطه */
+    .users-table {
+      width: 100%;
+      max-width: 600px; /* يمكنك تعديل هذا العرض حسب الحاجة */
+      margin: 20px auto 0 auto; /* توسيط الجدول تلقائيًا */
+    }
+    /* Custom styles for smaller SweetAlert2 modals */
+    /* جديد: تنسيق جدول المنتجات */
+    #my-products-container {
+      width: 100%;
+      max-width: 900px; /* عرض أكبر لجدول المنتجات */
+      margin-top: 20px;
+      display: none; /* إخفاء مبدئي */
+    }
+    .products-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    .products-table th, .products-table td {
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+      text-align: right;
+      vertical-align: middle; /* تعديل: توسيط المحتوى عمودياً */
+    }
+    /* جديد: تنسيق خاص لعمود الإجراءات */
+    .products-table td.actions-cell {
+      text-align: center; /* توسيط الأزرار */
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+      text-align: right;
+      vertical-align: top;
+    }
+    .products-table th {
+      background-color: #f7f7f7;
+    }
+    .products-table img {
+      max-width: 100px;
+      border-radius: 8px;
+    }
+    .product-details p {
+      margin: 0 0 8px 0;
+    }
+    .product-details strong {
+      color: #333;
+    }
+    /* جديد: تنسيق حاوية الصور المصغرة في جدول المنتجات */
+    .product-images-container {
+      display: flex;
+      flex-wrap: wrap; /* السماح للصور بالالتفاف */
+      gap: 8px; /* مسافة بين الصور */
+      justify-content: flex-start; /* محاذاة الصور من اليمين */
+    }
+    .product-images-container img {
+      max-width: 80px; /* تصغير حجم الصور لتناسب المساحة */
+      height: auto;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    .swal2-popup {
+      width: auto !important;
+      max-width: 480px; /* عرض أقصى للرسالة */
+      font-size: 0.9rem; /* تصغير حجم الخط العام داخل الرسالة */
+    }
+    .swal2-title {
+      font-size: 1.25rem !important; /* تصغير حجم العنوان */
+    }
+    .swal2-html-container {
+      font-size: 1rem !important; /* التحكم في حجم خط المحتوى */
+    }
+    .swal2-styled {
+      padding: 8px 16px !important; /* تصغير حجم الأزرار */
+      font-size: 0.9rem !important;
+      margin: 5px;
+    }
+    /* تعديل خاص للشاشات الصغيرة جداً */
+    @media (max-width: 500px) {
+      .swal2-popup {
+        width: 90% !important; /* استخدام نسبة مئوية من عرض الشاشة */
+      }
+    }
+  </style>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+<body>
+  <!-- Header بسيط للاتساق -->
+  <div class="container" id="header-container">
+    <a href="index.html" class="header-title-group" style="text-decoration: none; color: inherit">
+      <h1 class="bazaar-title final-text">SB</h1>
+      <p class="tagline" style="opacity: 1; margin-right: 1.5rem">
+        بازار السويس
+      </p>
+    </a>
+    <a href="index.html" class="back-to-home-btn" title="العودة للصفحة الرئيسية">
+      <i class="fas fa-home"></i>
+      <span>العودة للرئيسية</span>
+    </a>
+  </div>
+
+  <!-- حاوية بديلة للمستخدم المسجل دخوله -->
+  <div id="logged-in-container" class="login-page-wrapper" style="display: none">
+    <div class="login-container">
+      <h2 id="welcome-message"></h2>
+      <!-- Container for action buttons -->
+      <div class="action-buttons">
+        <button
+          id="add-product-btn"
+          class="button logout-btn-small"
+          style="display: none"
+        >
+          <i class="fas fa-plus"></i> إضافة منتج
+        </button>
+        <button
+          id="view-my-products-btn"
+          class="button logout-btn-small"
+          style="display: none"
+        ><i class="fas fa-store"></i> عرض منتجاتي</button>
+        <button id="logout-btn-alt" class="button logout-btn-small">
+          <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+        </button>
+      </div>
+      <!-- حاوية لعرض جدول المستخدمين -->
+      <div id="users-table-container" style="width: 100%; margin-top: 20px; display: none;">
+        <div id="table-content-wrapper"></div> <!-- حاوية مخصصة للجدول أو التحميل -->
+        <div id="table-actions" style="display: none; margin-top: 15px; gap: 10px;">
+            <button id="update-users-btn" class="button" style="background-color: #28a745;">حفظ التغييرات</button>
+            <button id="cancel-update-btn" class="button" style="background-color: #6c757d;">إلغاء التغييرات</button>
+        </div>
+      </div>
+      <!-- جديد: حاوية لعرض جدول منتجاتي -->
+      <div id="my-products-container">
+        <!-- سيتم ملء المحتوى هنا بواسطة جافاسكريبت -->
+      </div>
+    </div>
+  </div>
+
+  <!-- حاوية تسجيل الدخول الافتراضية -->
+  <div id="login-form-wrapper" class="login-page-wrapper">
+    <div class="login-container">
+      <h2>تسجيل الدخول</h2>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="phone"><i class="fas fa-phone"></i> رقم الهاتف</label>
+          <input type="tel" id="phone" name="phone" required />
+          <div id="phone-error" class="error-message"></div>
+        </div>
+        <button type="submit" class="button login-btn">تسجيل الدخول</button>
+        <div class="form-footer">
+          <a href="register.html">ليس لديك حساب؟ <strong>سجل الآن</strong></a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- حاوية النافذة المنبثقة لإضافة منتج -->
+  <div id="add-product-modal" class="modal">
+    <!-- سيتم تحميل محتوى نموذج إضافة المنتج هنا -->
+  </div>
+  <script src="cloudflare-workers/cloudFileManager.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/turo.js"></script>
+  <script>
+    /**
+     * تحديث واجهة المستخدم لتعكس حالة تسجيل الدخول.
+     * @param {object} user - كائن المستخدم المسجل دخوله.
+     */
+    function updateViewForLoggedInUser(user) {
+      // إخفاء حاوية نموذج تسجيل الدخول
+      const loginFormWrapper = document.getElementById("login-form-wrapper");
+      if (loginFormWrapper) {
+        loginFormWrapper.style.display = "none";
+      }
+
+      // إظهار حاوية المستخدم المسجل
+      const loggedInContainer = document.getElementById("logged-in-container");
+      loggedInContainer.style.display = "flex";
+      document.getElementById(
+        "welcome-message"
+      ).textContent = `أهلاً بك، ${user.username}`;
+
+      // إضافة وظيفة لزر تسجيل الخروج
+      document.getElementById("logout-btn-alt").addEventListener("click", logout);
+
+      // التحقق مما إذا كان المستخدم بائعًا
+      if (user.is_seller === 1) {
+        const addProductBtn = document.getElementById("add-product-btn");
+        addProductBtn.style.display = "inline-flex"; // إظهار الزر
+        addProductBtn.addEventListener("click", showAddProductModal); // إضافة حدث النقر
+
+        // جديد: إظهار زر "عرض منتجاتي" وإضافة حدث النقر
+        const viewMyProductsBtn = document.getElementById("view-my-products-btn");
+        viewMyProductsBtn.style.display = "inline-flex";
+        viewMyProductsBtn.addEventListener("click", () => showMyProducts(user.user_key));
+
+      }
+
+      // التحقق مما إذا كان المستخدم هو أحد المسؤولين المحددين
+      const adminPhoneNumbers = ["01024182175", "01026546550"];
+      if (adminPhoneNumbers.includes(user.phone)) {
+        // إنشاء زر "عرض المستخدمين" إذا لم يكن موجودًا بالفعل
+        if (!document.getElementById("view-users-btn")) {
+          const viewUsersButton = document.createElement("a");
+          viewUsersButton.id = "view-users-btn"; // إضافة ID لمنع التكرار
+          viewUsersButton.href = "#"; // منع الانتقال لصفحة أخرى
+          viewUsersButton.className = "button logout-btn-small";
+          viewUsersButton.style.textDecoration = "none";
+          viewUsersButton.innerHTML =
+            '<i class="fas fa-users"></i> عرض المستخدمين';
+          
+          const tableActions = document.getElementById("table-actions");
+          const updateBtn = document.getElementById("update-users-btn");
+          const cancelBtn = document.getElementById("cancel-update-btn");
+
+          // دالة لتحميل وتعبئة جدول المستخدمين
+          async function loadUsersTable() {
+            const tableContentWrapper = document.getElementById("table-content-wrapper");
+            tableContentWrapper.innerHTML = '<div class="loader"></div>'; // إظهار مؤشر تحميل
+            
+            const users = await fetchUsers(); // جلب المستخدمين
+
+            if (users && users.length > 0) {
+              let tableHTML = `
+                <table class="users-table">
+                  <thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>بائع؟</th></tr></thead>
+                  <tbody>`;
+              users.forEach(u => {
+                tableHTML += `
+                  <tr>
+                    <td>${u.username || 'غير متوفر'}</td>
+                    <td>${u.phone}</td>
+                    <td><input type="checkbox" class="seller-checkbox" data-phone="${u.phone}" data-original-state="${u.is_seller}" ${u.is_seller === 1 ? 'checked' : ''}></td>
+                  </tr>`;
+              });
+              tableHTML += `</tbody></table>`;
+              tableContentWrapper.innerHTML = tableHTML;
+            } else {
+              tableContentWrapper.innerHTML = "<p>لم يتم العثور على مستخدمين.</p>";
+            }
+            tableActions.style.display = 'none'; // إخفاء الأزرار عند إعادة التحميل
+          }
+
+          // حدث النقر على زر "عرض المستخدمين"
+          viewUsersButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            const mainContainer = document.getElementById("users-table-container");
+            const productsContainer = document.getElementById("my-products-container"); // جديد: الحصول على حاوية المنتجات
+
+            if (mainContainer.style.display === "block") {
+              mainContainer.style.display = "none";
+            } else {
+              // جديد: إخفاء جدول المنتجات إذا كان ظاهراً
+              if (productsContainer.style.display === "block") {
+                productsContainer.style.display = "none";
+              }
+              mainContainer.style.display = "block";
+              loadUsersTable(); // تحميل الجدول عند إظهاره
+            }
+          });
+
+          // إضافة مستمع للتغييرات على مربعات الاختيار لإظهار الأزرار
+          document.getElementById("users-table-container").addEventListener('change', (event) => {
+            if (event.target.classList.contains('seller-checkbox')) {
+              tableActions.style.display = 'flex'; // إظهار حاوية الأزرار
+            }
+          });
+
+          // حدث النقر على زر "إلغاء التغييرات"
+          cancelBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            loadUsersTable(); // إعادة تحميل الجدول لإلغاء التغييرات
+          });
+
+          // حدث النقر على زر "حفظ التغييرات"
+          updateBtn.addEventListener('click', async () => {
+            const checkboxes = document.querySelectorAll('.seller-checkbox');
+            const updates = []; // لتخزين جميع التحديثات
+            const changedUsersNames = []; // لتخزين أسماء المستخدمين الذين تغيرت حالتهم
+
+            checkboxes.forEach(cb => {
+              const isSellerNow = cb.checked ? 1 : 0;
+              const originalState = parseInt(cb.dataset.originalState, 10);
+
+              // إضافة المستخدم إلى قائمة التحديثات
+              updates.push({
+                phone: cb.dataset.phone,
+                is_seller: isSellerNow
+              });
+
+              // التحقق مما إذا كانت الحالة قد تغيرت
+              if (isSellerNow !== originalState) {
+                const userName = cb.closest('tr').querySelector('td:first-child').textContent;
+                changedUsersNames.push(userName);
+              }
+            });
+
+            const confirmationText = changedUsersNames.length > 0 
+              ? `سيتم تحديث حالة المستخدمين: ${changedUsersNames.join('، ')}.`
+              : "لم يتم إجراء أي تغييرات.";
+
+            Swal.fire({
+              title: 'هل أنت متأكد؟',
+              text: confirmationText,
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'نعم، قم بالتحديث!',
+              cancelButtonText: 'إلغاء'
+            }).then(async (result) => {
+              if (result.isConfirmed && changedUsersNames.length > 0) {
+                const updateResult = await updateUsers(updates);
+                if (updateResult && !updateResult.error) {
+                  Swal.fire('تم التحديث!', 'تم حفظ التغييرات بنجاح.', 'success');
+                  tableActions.style.display = 'none'; // إخفاء الأزرار بعد الحفظ
+                } else {
+                  Swal.fire('خطأ!', 'فشل تحديث البيانات.', 'error');
+                }
+              }
+            });
+          });
+
+          const actionButtonsContainer =
+            loggedInContainer.querySelector(".action-buttons");
+          actionButtonsContainer.appendChild(viewUsersButton);
+        }
+      }
+    }
+
+    /**
+     * يعرض نافذة منبثقة لإضافة منتج جديد.
+     */
+    async function showAddProductModal() {
+      const addProductModal = document.getElementById("add-product-modal");
+      
+      // تحميل محتوى نموذج إضافة المنتج
+      const response = await fetch("pages/addProduct.html");
+      const modalContent = await response.text();
+      addProductModal.innerHTML = modalContent;
+
+      // إظهار النافذة المنبثقة
+      document.body.classList.add("modal-open");
+      addProductModal.style.display = "block";
+
+      // استخراج وتنفيذ السكريبت من المحتوى المحمل
+      const scriptElement = addProductModal.querySelector("script");
+      if (scriptElement) {
+        // الطريقة الأكثر أمانًا وموثوقية: إضافة السكريبت إلى الصفحة
+        const newScript = document.createElement("script");
+        newScript.innerHTML = scriptElement.innerHTML;
+        document.body.appendChild(newScript);
+        // استدعاء دالة التهيئة مباشرة بعد إضافة السكريبت
+        if (typeof initializeAddProductForm === "function") initializeAddProductForm();
+        document.body.removeChild(newScript); // تنظيف
+      }
+
+      // وظيفة لإغلاق النافذة
+      const closeAddProductModal = () => {
+        addProductModal.style.display = "none";
+        addProductModal.innerHTML = ""; // تنظيف المحتوى
+        document.body.classList.remove("modal-open");
+      };
+
+      // إضافة حدث النقر لزر الإغلاق
+      const closeBtn = document.getElementById("add-product-modal-close-btn");
+      if (closeBtn) closeBtn.onclick = closeAddProductModal;
+
+      // إغلاق النافذة عند النقر خارجها
+      window.addEventListener('click', (event) => {
+        if (event.target == addProductModal) closeAddProductModal();
+      }, { once: true });
+    }
+
+    /**
+     * جديد: يعرض نافذة منبثقة لتعديل منتج موجود.
+     * @param {object} productData - بيانات المنتج المراد تعديله.
+     */
+    async function showEditProductModal(productData) {
+      const addProductModal = document.getElementById("add-product-modal");
+      
+      // تحميل محتوى نموذج إضافة المنتج
+      const response = await fetch("pages/addProduct.html");
+      const modalContent = await response.text();
+      addProductModal.innerHTML = modalContent;
+
+      // إظهار النافذة المنبثقة
+      document.body.classList.add("modal-open");
+      addProductModal.style.display = "block";
+
+      // استخراج وتنفيذ السكريبت من المحتوى المحمل
+      const scriptElement = addProductModal.querySelector("script");
+      if (scriptElement) {
+        const newScript = document.createElement("script");
+        newScript.innerHTML = scriptElement.innerHTML;
+        document.body.appendChild(newScript);
+        
+        // استدعاء دالة التهيئة وتمرير بيانات المنتج لوضع التعديل
+        if (typeof initializeAddProductForm === "function") {
+          // ننتظر قليلاً لضمان تحميل كل شيء قبل التعبئة
+          setTimeout(() => initializeAddProductForm(productData), 100);
+        }
+        
+        document.body.removeChild(newScript); // تنظيف
+      }
+
+      // جديد: إضافة وظيفة إغلاق النافذة (كانت مفقودة في وضع التعديل)
+      const closeEditModal = () => {
+        addProductModal.style.display = "none";
+        addProductModal.innerHTML = ""; // تنظيف المحتوى
+        document.body.classList.remove("modal-open");
+      };
+
+      // إضافة حدث النقر لزر الإغلاق
+      const closeBtn = document.getElementById("add-product-modal-close-btn");
+      if (closeBtn) closeBtn.onclick = closeEditModal;
+
+      // إغلاق النافذة عند النقر خارجها
+      // استخدام { once: true } يضمن أن المستمع يعمل مرة واحدة ثم يزيل نفسه تلقائيًا
+      window.addEventListener('click', (event) => {
+        if (event.target == addProductModal) closeEditModal();
+      }, { once: true });
+    }
+
+
+    /**
+     * جديد: يعرض جدولاً بمنتجات المستخدم الحالي.
+     * @param {string} userKey - المفتاح الفريد للمستخدم.
+     */
+    async function showMyProducts(userKey) {
+      const container = document.getElementById("my-products-container");
+      const usersContainer = document.getElementById("users-table-container"); // جديد: الحصول على حاوية المستخدمين
+      
+      // تبديل العرض: إذا كان الجدول ظاهراً، قم بإخفائه. وإلا، قم بتحميله وإظهاره.
+      if (container.style.display === "block") {
+        container.style.display = "none";
+        return;
+      }
+
+      // جديد: إخفاء جدول المستخدمين إذا كان ظاهراً
+      if (usersContainer.style.display === "block") {
+        usersContainer.style.display = "none";
+      }
+
+      container.innerHTML = '<div class="loader"></div>'; // إظهار مؤشر التحميل
+      container.style.display = "block";
+
+      const products = await getProductsByUser(userKey);
+
+      if (products && products.length > 0) {
+        // بناء الجدول
+        let tableHTML = `
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th>صورة المنتج</th>
+                <th>تفاصيل المنتج</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>`;
+
+        products.forEach(p => {
+          // جديد: بناء HTML لعرض جميع صور المنتج
+          let imagesHtml = '';
+          if (p.ImageName) {
+            const imageNames = p.ImageName.split(',');
+            imagesHtml = '<div class="product-images-container">';
+            imageNames.forEach(imageName => {
+              if (imageName) { // التأكد من أن اسم الصورة ليس فارغًا
+                const imageUrl = `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${imageName}`;
+                imagesHtml += `<img src="${imageUrl}" alt="صورة منتج" onerror="this.style.display='none'">`;
+              }
+            });
+            imagesHtml += '</div>';
+          } else {
+            imagesHtml = `<img src="data:image/svg+xml;charset=UTF-8,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'%3e%3crect width='100' height='100' fill='%23e0e0e0'/%3e%3ctext x='50' y='50' font-family='Arial' font-size='12' dy='.3em' fill='%23999' text-anchor='middle'%3eNo Image%3c/text%3e%3c/svg%3e'" alt="لا توجد صورة">`;
+          }
+
+          // تحويل كائن المنتج إلى نص JSON لاستخدامه في زر التعديل
+          const productJson = JSON.stringify(p);
+
+          // جديد: بناء جزء التاريخ فقط إذا كان الحقل موجودًا وصالحًا
+          let dateHtml = '';
+          if (p.created_at) {
+            const date = new Date(p.created_at);
+            // التحقق من أن التاريخ صالح قبل عرضه
+            if (!isNaN(date.getTime())) {
+              dateHtml = `<p><strong>تاريخ الإضافة:</strong> ${date.toLocaleDateString('ar-EG')}</p>`;
+            }
+          }
+
+          tableHTML += `
+            <tr>
+              <td>${imagesHtml}</td>
+              <td class="product-details">
+                <p><strong>الوصف:</strong> ${p.product_description || 'لا يوجد'}</p>
+                <p><strong>رسالة البائع:</strong> ${p.user_message || 'لا يوجد'}</p>
+                <p><strong>السعر:</strong> ${p.product_price} جنيه</p>
+                <p><strong>الكمية:</strong> ${p.product_quantity}</p>
+                <p><strong>ملاحظات خاصة:</strong> ${p.user_note || 'لا يوجد'}</p>
+                ${dateHtml}
+              </td>
+              <td class="actions-cell">
+                <button class="button logout-btn-small edit-product-btn" data-product='${productJson}'>
+                  <i class="fas fa-edit"></i> تعديل
+                </button>
+              </td>
+            </tr>`;
+        });
+
+        tableHTML += `</tbody></table>`;
+        container.innerHTML = tableHTML;
+
+        // إضافة مستمعي الأحداث لأزرار التعديل بعد بناء الجدول
+        const editButtons = container.querySelectorAll('.edit-product-btn');
+        editButtons.forEach(button => {
+          button.addEventListener('click', (event) => {
+            const productData = JSON.parse(event.currentTarget.dataset.product);
+            showEditProductModal(productData);
+          });
+        });
+
+      } else if (products) {
+        container.innerHTML = "<p>لم تقم بإضافة أي منتجات بعد.</p>";
+      } else {
+        container.innerHTML = "<p>حدث خطأ أثناء تحميل منتجاتك. يرجى المحاولة مرة أخرى.</p>";
+      }
+    }
+
+
+    // التحقق من حالة تسجيل الدخول عند تحميل الصفحة
+    document.addEventListener("DOMContentLoaded", () => {
+      const loggedInUser = localStorage.getItem("loggedInUser");
+      if (loggedInUser) {
+        const user = JSON.parse(loggedInUser);
+        updateViewForLoggedInUser(user);
+      }
+    });
+
+
+
+    const form = document.getElementById("login-form");
+    const phone = document.getElementById("phone");
+
+    // دالة لإظهار رسالة الخطأ
+    const showError = (input, message) => {
+      const errorDiv = document.getElementById(`${input.id}-error`);
+      input.classList.add("input-error");
+      errorDiv.textContent = message;
+    };
+
+    // دالة لمسح رسالة الخطأ
+    const clearError = (input) => {
+      const errorDiv = document.getElementById(`${input.id}-error`);
+      input.classList.remove("input-error");
+      errorDiv.textContent = "";
+    };
+
+    // إضافة مستمع لحدث الإدخال لتنقية رقم الهاتف في الوقت الفعلي
+    phone.addEventListener("input", function (e) {
+      let value = e.target.value;
+      // تعريف قاموس لتحويل الأرقام الهندية إلى الإنجليزية
+      const hindiToArabic = {
+        "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4",
+        "٥": "5", "٦": "6", "٧": "7", "٨": "8", "٩": "9",
+      };
+
+      // استبدال الأرقام الهندية بالإنجليزية
+      value = value.replace(/[٠-٩]/g, (d) => hindiToArabic[d]);
+
+      // إزالة أي حرف ليس رقمًا (0-9)
+      value = value.replace(/[^0-9]/g, "");
+
+      // تحديث قيمة الحقل
+      e.target.value = value;
+    });
+
+    // إضافة مستمع لحدث الإرسال للنموذج
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault(); // منع الإرسال الافتراضي للنموذج
+      let isValid = true;
+
+      // التحقق من صحة رقم الهاتف
+      clearError(phone);
+      const phoneValue = phone.value.trim();
+      if (phoneValue === "") {
+        showError(phone, "رقم الهاتف مطلوب.");
+        isValid = false;
+      } else if (phoneValue.length < 11) {
+        showError(phone, "رقم الهاتف يجب ألا يقل عن 11 رقمًا.");
+        isValid = false;
+      }
+
+      if (isValid) {
+        // إظهار رسالة تحميل باستخدام SweetAlert2
+        Swal.fire({
+          title: "جاري تسجيل الدخول...",
+          text: "الرجاء الانتظار قليلاً.",
+          allowOutsideClick: false,
+          didOpen: () => {
+            Swal.showLoading();
+          },
+        });
+
+        const user = await getUserByPhone(phoneValue);
+
+        if (user) {
+          // حفظ بيانات المستخدم بالكامل (بما في ذلك user_key)
+          // في التخزين المحلي
+          localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+          // تحديث الواجهة لتعكس تسجيل الدخول قبل إظهار الرسالة
+          updateViewForLoggedInUser(user);
+
+          // إظهار رسالة نجاح مع خيار الانتقال
+          Swal.fire({
+            icon: "success",
+            title: `أهلاً بك، ${user.username}`,
+            text: "هل تود الانتقال إلى الصفحة الرئيسية؟",
+            showCancelButton: true,
+            confirmButtonText: "موافق",
+            cancelButtonText: "لا",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "index.html";
+            }
+          });
+        } else {
+          // إغلاق رسالة التحميل وإظهار الخطأ
+          Swal.close();
+          showError(phone, "هذا الرقم غير مسجل. هل تريد إنشاء حساب جديد؟");
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>

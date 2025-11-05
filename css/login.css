@@ -1,0 +1,188 @@
+/* === Login Page Specific Styles === */
+
+/* Wrapper to center the login form vertically */
+.login-page-wrapper {
+  /* We will let the container itself handle the layout */
+  /* min-height is removed to allow the container to define the height */
+  font-family: "Tajawal", sans-serif;
+}
+
+/* The main login form container */
+.login-container {
+  background-color: #ffffff;
+  width: 100%; /* Take full width */
+  min-height: 88vh; /* Fill the rest of the vertical space below the header */
+  box-sizing: border-box; /* Ensure padding is included in the dimensions */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* Center the form content horizontally */
+  padding: 20px 15px; /* Adjust horizontal padding for smaller screens */
+}
+
+.login-container h2 {
+  margin-top: 0;
+  margin-bottom: 30px;
+  color: #333;
+  font-size: clamp(22px, 5vw, 26px); /* Responsive font size */
+  font-weight: 700;
+}
+
+/* Set a width for the form itself to make it wider */
+.login-container form {
+  width: 100%;
+  max-width: 500px; /* يمكنك تعديل هذه القيمة للتحكم في العرض الأقصى */
+}
+
+/* Form group for label and input */
+.form-group {
+  margin-bottom: 20px;
+  text-align: right; /* Align labels to the right */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+  font-size: 14px;
+}
+
+.form-group label i {
+  margin-left: 8px; /* Space between icon and text */
+  color: #888;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box; /* Important for padding and width */
+  font-family: "Tajawal", sans-serif;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Wrapper for password input to position the icon */
+.password-wrapper {
+  position: relative;
+}
+
+/* Adjust password input padding to make space for the icon */
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  padding-left: 40px; /* Space for the icon on the left (for RTL) */
+}
+
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  left: 15px; /* Position icon on the left */
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #aaa;
+}
+
+/* Style for input fields with validation errors */
+.form-group input.input-error {
+  border-color: #dc3545; /* Red border for error */
+}
+
+.form-group input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25); /* Red shadow on focus */
+}
+
+/* Style for the error message below the input */
+.error-message {
+  color: #dc3545; /* Red color for error text */
+  font-size: 12px;
+  margin-top: 5px;
+  min-height: 15px; /* Reserve space to prevent layout shifts */
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* Login button styling */
+.login-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: clamp(16px, 4vw, 18px); /* Responsive font size */
+  margin-top: 10px;
+  /* Inherits styles from .button in style.css */
+}
+
+/* Footer section with extra links */
+.form-footer {
+  margin-top: 25px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+.form-footer a {
+  color: #007bff;
+  text-decoration: none;
+  transition: text-decoration 0.2s;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
+}
+
+/* تكبير حجم رابط "سجل الآن" */
+.form-footer a:last-of-type {
+  font-size: 16px; /* حجم أكبر قليلاً */
+  margin-top: 5px; /* إضافة مسافة علوية بسيطة */
+}
+
+.form-footer a strong {
+  font-weight: 700;
+}
+
+/* === Back to Home Button (in Header) === */
+.back-to-home-btn {
+  display: flex;
+  flex-direction: column; /* جعل الأيقونة والنص بترتيب عمودي */
+  align-items: center;
+  gap: 2px; /* تقليل المسافة بين الأيقونة والنص */
+  font-family: "Tajawal", sans-serif;
+  /* font-size will be controlled by child elements */
+  font-weight: bold;
+  color: #555;
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.back-to-home-btn:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.back-to-home-btn i {
+  font-size: 16px;
+  margin-bottom: 2px; /* إضافة مسافة صغيرة أسفل الأيقونة */
+}
+
+.back-to-home-btn span {
+  font-size: 12px; /* تصغير حجم خط النص */
+  white-space: nowrap; /* منع النص من الانقسام إلى سطرين */
+}
+
+/* Media query for very small screens */
+@media (max-width: 360px) {
+  .form-group {
+    margin-bottom: 15px;
+  }
+  .login-btn {
+    padding: 12px;
+  }
+}

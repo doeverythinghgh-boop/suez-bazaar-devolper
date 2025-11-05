@@ -1,0 +1,527 @@
+/* === General Body Styles === */
+body {
+  margin: 0;
+  background-color: #ffffff; /* White background */
+  color: #222222; /* Dark text color */
+  font-family: "Orbitron", sans-serif; /* Modern font */
+  /* Add padding to the top to prevent content from being hidden by the fixed header */
+  padding-top: 12vh; /* Should be slightly more than the header's height */
+}
+
+/* Class to prevent scrolling when a modal is open */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* === Header Container === */
+.container {
+  position: fixed; /* Fix the header to the top */
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #ffffff; /* White background for the header */
+  height: 10vh; /* Set a fixed height of 10% of the viewport height */
+  z-index: 1000; /* Ensure it stays on top of other content */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow for a light theme */
+
+  /* Use Flexbox for alignment */
+  display: flex;
+  justify-content: space-between; /* Pushes items to the edges */
+  align-items: center;
+  padding: 0.5rem 5vw; /* Responsive horizontal padding */
+  box-sizing: border-box; /* Ensures padding is included in the width */
+}
+
+/* === Animated Title ("Suez Bazaar" & "SB") === */
+.bazaar-title {
+  font-size: clamp(16px, 3vh, 28px); /* Responsive font size with min/max */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  /* This will be a flex container for the letters */
+  display: inline-flex;
+  transition: opacity 0.5s ease-out;
+  /* Ensure LTR text direction for the title itself, regardless of container direction */
+  direction: ltr;
+}
+
+/* Styling for each letter (span) */
+.bazaar-title span {
+  display: inline-block;
+  opacity: 0;
+  transform: scale(0);
+  animation: zoomInLetter 0.4s forwards;
+}
+
+/* Class to make the whole title disappear */
+.bazaar-title.hidden {
+  opacity: 0;
+}
+
+/* Class for the final "SB" text to just appear */
+.bazaar-title.final-text {
+  font-size: clamp(18px, 3.5vh, 32px); /* Responsive font size with min/max */
+  opacity: 1;
+  transform: scale(1);
+  /* Override the flex display to center the block correctly */
+  display: inline-block;
+}
+
+/* The zoom-in animation for each letter */
+@keyframes zoomInLetter {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* === Tagline Carousel === */
+.tagline {
+  font-family: "Tajawal", sans-serif; /* A nice Arabic font */
+  font-size: clamp(12px, 1.8vh, 18px); /* Responsive font size with min/max */
+  color: #555555; /* Darker gray for readability on white background */
+  margin-right: 1.5rem; /* Space between SB and the text, margin-right for RTL */
+  opacity: 0; /* Hidden by default */
+  transition: opacity 0.8s ease-in-out; /* Slower transition for a smoother effect */
+  text-align: right; /* Align text to the right for RTL */
+}
+
+.tagline.visible {
+  opacity: 1;
+}
+
+/* === Header Content Groups === */
+.header-title-group {
+  display: flex;
+  align-items: baseline;
+}
+
+/* === User Icon in Header === */
+.user-icon {
+  font-size: clamp(24px, 4vh, 32px); /* حجم أيقونة متجاوب */
+  color: #333; /* لون داكن للأيقونة */
+}
+
+/* === User Profile Section (Icon + Text) === */
+.user-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer; /* تغيير شكل المؤشر للإشارة إلى أنه قابل للنقر */
+  gap: 2px; /* مسافة صغيرة بين الأيقونة والنص */
+}
+
+.user-text {
+  font-family: "Tajawal", sans-serif;
+  font-size: clamp(10px, 1.5vh, 12px); /* حجم خط صغير ومتجاوب */
+  color: #555;
+  font-weight: bold;
+  white-space: nowrap; /* لمنع النص من الانقسام إلى سطرين */
+}
+
+/* === User Profile Link === */
+.user-profile-link {
+  text-decoration: none; /* إزالة الخط السفلي للرابط */
+  color: inherit; /* جعل الرابط يرث اللون من العنصر الأب */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* === General Button Styles === */
+button,
+.button {
+  background-color: #007bff; /* A nice blue color */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-family: "Tajawal", sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon and text */
+}
+
+button:hover,
+.button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* === Loader Spinner === */
+.loader {
+  border: 5px solid #f3f3f3; /* Light grey */
+  border-top: 5px solid #007bff; /* Blue */
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin: 50px auto; /* Center the loader */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* === Categories Section === */
+.categories-section {
+  padding: 40px 0; /* إزالة الحشو الأفقي لجعل الجدول يمتد بعرض الشاشة */
+  background-color: #f9f9f9; /* Slightly off-white background */
+  text-align: center;
+}
+
+.categories-title {
+  font-family: "Tajawal", sans-serif;
+  font-size: clamp(24px, 5vw, 32px);
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.categories-grid {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px; /* تقليل المسافة بين البطاقات */
+}
+
+.category-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  text-decoration: none;
+  color: #333;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px; /* Minimum height for cards */
+  text-align: center;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+.category-card h3 {
+  margin: 0;
+  font-family: "Tajawal", sans-serif;
+  font-size: clamp(16px, 2.5vw, 18px);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* === Categories Table Styles (Neumorphism) === */
+.categories-table {
+  width: 100%;
+  border-collapse: separate; /* للسماح بالمسافات بين الخلايا */
+  border-spacing: 15px; /* تقليل المسافة بين الخلايا لتناسب العرض الكامل */
+  margin-top: 20px;
+  table-layout: fixed; /* لضمان توزيع الأعمدة بالتساوي */
+}
+
+/* --- جديد: تأثير الدخول المتدرج لصفوف الفئات الرئيسية --- */
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-category-row {
+  /* تطبيق الحركة عند التحميل */
+  animation: fadeInRow 0.5s ease-out forwards;
+  opacity: 0; /* إخفاء الصف مبدئيًا لتبدأ الحركة */
+}
+
+.categories-table td {
+  border: 1px solid #e9ecef; /* إطار ناعم ومحايد */
+  padding: 20px;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #ffffff; /* خلفية بيضاء نظيفة */
+  border-radius: 12px; /* زوايا دائرية أنعم */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* ظل خفيف وناعم */
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease; /* انتقالات سلسة */
+}
+
+.main-category-row td.has-subcategories {
+  cursor: pointer;
+}
+
+/* --- تم التحديث: تنسيق الخلية الرئيسية النشطة (المختارة) --- */
+.categories-tbody.selection-active .main-category-row td:not(.active-category) {
+  opacity: 0.4; /* جعل الخلايا غير النشطة باهتة بشكل أكبر للتركيز */
+  transform: none; /* إزالة أي تأثيرات تحويل */
+  pointer-events: none; /* منع التفاعل مع الخلايا الباهتة */
+}
+
+.main-category-row td.active-category {
+  background-color: #007bff; /* لون أزرق جذاب ومباشر */
+  color: #ffffff; /* لون نص أبيض للتباين */
+  transform: scale(1.05); /* تكبير الخلية قليلاً لتمييزها */
+  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.25); /* ظل أعمق وأكثر نعومة */
+  border-color: #007bff;
+}
+
+/* تغيير لون الأيقونة والنص داخل الخلية النشطة */
+.main-category-row td.active-category .category-cell-content,
+.main-category-row td.active-category .category-cell-content i {
+  color: #ffffff;
+}
+
+/* تغيير لون الأيقونة في الحالة العادية */
+.category-cell-content i {
+  font-size: 2.2rem;
+  color: #007bff; /* لون أزرق يتناسب مع الهوية */
+  transition: color 0.3s ease;
+}
+
+.main-category-row td.active-category .category-cell-content span {
+  font-weight: bold;
+}
+
+.category-cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* --- Sub-category Row Styles --- */
+.sub-category-row td {
+  padding: 0;
+  /* إزالة الخلفية والحدود والظل لدمجها بصريًا مع الخلية النشطة */
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* جديد: حركة انزلاق وظهور تدريجي للفئات الفرعية */
+@keyframes slide-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Accordion Styles for Categories === */
+.category-item {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden; /* Important for the animation */
+}
+
+.category-header {
+  padding: 15px 20px;
+  cursor: pointer;
+  background-color: #fff;
+  transition: background-color 0.3s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.category-header:hover {
+  background-color: #f8f9fa;
+}
+
+.category-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+/* Styling for the new arrow icon */
+.category-arrow-icon {
+  color: #888;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate the icon when the header is active (list is open) */
+.category-header.active .category-arrow-icon {
+  transform: rotate(180deg);
+}
+
+.subcategory-container {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease-out;
+  background-color: #fdfdfd;
+}
+
+.subcategories-container {
+  display: flex;
+  flex-wrap: nowrap; /* جديد: منع العناصر من النزول لسطر جديد */
+  overflow-x: auto; /* إضافة شريط تمرير أفقي عند الحاجة */
+  justify-content: flex-start; /* جديد: محاذاة العناصر من بداية الشريط */
+  gap: 15px;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch; /* لتحسين التمرير على أجهزة اللمس */
+}
+
+/* جديد: تنسيق شريط التمرير الأفقي ليكون أنعم */
+.subcategories-container::-webkit-scrollbar {
+  height: 6px; /* ارتفاع الشريط */
+}
+
+.subcategories-container::-webkit-scrollbar-track {
+  background: transparent; /* جعل مسار الشريط شفافًا */
+}
+
+.subcategories-container::-webkit-scrollbar-thumb {
+  background-color: #d1d9e6; /* لون مقبض التمرير */
+  border-radius: 10px;
+}
+
+.subcategories-container::-webkit-scrollbar-thumb:hover {
+  background-color: #b0b8c5;
+}
+
+.subcategory-item {
+  background-color: #fff;
+  border: 2px solid #007bff; /* إطار بنفس لون الفئة الرئيسية النشطة */
+  padding: 10px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #007bff; /* لون النص بنفس لون الإطار */
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  white-space: nowrap; /* جديد: منع التفاف النص داخل العنصر الواحد */
+}
+
+/* لا يوجد تأثير hover، ولكن يمكن إضافة تأثير عند النقر مستقبلاً إذا أردت */
+.subcategory-item:active {
+  background-color: #e6f2ff; /* تغيير طفيف في الخلفية عند الضغط */
+}
+
+/* Media query for smaller screens */
+@media (max-width: 480px) {
+  .categories-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+  }
+  .category-card {
+    min-height: 100px;
+  }
+}
+
+/* === Subcategory Modal === */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 2000; /* Sit on top of everything */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.6); /* Black w/ opacity */
+  -webkit-backdrop-filter: blur(5px); /* Frosted glass effect */
+  backdrop-filter: blur(5px);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 30px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 600px; /* Max width */
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  text-align: center;
+  position: relative;
+  animation: slideIn 0.4s ease-out;
+}
+
+.modal-content h3 {
+  font-family: "Tajawal", sans-serif;
+  font-size: 24px;
+  margin-top: 0;
+  margin-bottom: 25px;
+  color: #333;
+}
+
+.close-button {
+  color: #aaa;
+  position: absolute;
+  left: 20px; /* For RTL */
+  top: 10px;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+}
+
+/* Animation for modal background */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* === Product Details Modal Specific Styles === */
+.product-modal-content {
+  margin: 5% auto; /* Adjust margin for better vertical positioning */
+  max-width: 900px; /* Wider modal for product details */
+}
+
+.product-modal-content img {
+  max-width: 100%;
+  height: auto;
+  max-height: 50vh;
+  border-radius: 4px;
+  margin-bottom: 15px;
+}
+
+.product-modal-content .close-button {
+  left: auto; /* Reset side */
+  right: 20px; /* Position on the right for consistency with old design */
+}
+
+/* Animation for modal content */
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,42 @@
+<div class="gallery-container" id="gallery">
+  <!-- 
+    سيتم إضافة الصور هنا ديناميكيًا باستخدام جافاسكريبت
+  -->
+</div>
+
+<script>
+  // We wrap the script in a check to avoid re-running it if it's already loaded.
+  if (typeof galleryScriptLoaded === "undefined") {
+    const galleryScriptLoaded = true; // Flag to prevent re-execution
+
+    const galleryContainer = document.getElementById("gallery");
+    const numberOfImages = 38; // عدد الصور الإجمالي
+
+    // Check if gallery is already populated
+    if (galleryContainer && galleryContainer.children.length === 0) {
+      // حلقة for لإنشاء وإضافة كل صورة
+      for (let i = 1; i <= numberOfImages; i++) {
+        const img = document.createElement("img");
+        img.src = `https://pub-f477060f80b14c5dba6a15f717aef8c4.r2.dev/pic (${i}).jpg`; // Load images from the cloud
+        img.alt = `صورة ${i}`;
+        img.addEventListener("click", () => {
+          // Dummy data for the product. In a real app, this would come from an API.
+          const productData = {
+            imageSrc: img.src,
+            availableQuantity: 150,
+            pricePerItem: 25,
+            sellerMessage:
+              "هذا المنتج مصنوع يدويًا بحب وعناية. الكمية محدودة، سارع بالشراء!",
+            description: "وصف تجريبي للمنتج يوضح تفاصيله ومميزاته. هذا النص هو مثال ويمكن استبداله بالوصف الفعلي للمنتج.", // ✅ إضافة: وصف تجريبي
+          };
+
+          // Call the global function from main.js to show the modal
+          if (window.showProductDetails) {
+            window.showProductDetails(productData);
+          }
+        });
+        galleryContainer.appendChild(img);
+      }
+    }
+  }
+</script>

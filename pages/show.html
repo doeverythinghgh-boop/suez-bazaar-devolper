@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>عرض الأسواق</title>
+    <!-- Link to shared styles for consistency -->
+    <link rel="stylesheet" href="../css/style.css" />
+    <!-- Link to login styles for header consistency -->
+    <link rel="stylesheet" href="../css/login.css" />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <style>
+      /* Custom styles for this page */
+      body {
+        font-family: "Tajawal", sans-serif;
+        background-color: #f9f9f9;
+        padding-top: 12vh; /* To avoid content being hidden by fixed header if used */
+        /* New styles to center content and fill screen */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Center vertically */
+        align-items: center; /* Center horizontally */
+        min-height: 88vh; /* Fill remaining vertical space (100vh - 12vh header) */
+        box-sizing: border-box;
+        padding: 20px;
+      }
+      .selection-container {
+        width: 100%;
+        max-width: 700px;
+        margin: 0 auto; /* Keep it centered horizontally */
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 30px;
+      }
+      .form-group {
+        margin-bottom: 25px;
+      }
+      label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: bold;
+        color: #555;
+        font-size: 16px;
+      }
+      select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-sizing: border-box;
+        font-family: "Tajawal", sans-serif;
+        font-size: 16px;
+        background-color: white;
+        cursor: pointer;
+        transition: border-color 0.3s, box-shadow 0.3s;
+      }
+      select:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header بسيط للاتساق -->
+    <div class="container" id="header-container">
+      <a
+        href="../index.html"
+        class="header-title-group"
+        style="text-decoration: none; color: inherit"
+      >
+        <h1 class="bazaar-title final-text">SB</h1>
+        <p class="tagline" style="opacity: 1; margin-right: 1.5rem">
+          بازار السويس
+        </p>
+      </a>
+      <a
+        href="../index.html"
+        class="back-to-home-btn"
+        title="العودة للصفحة الرئيسية"
+      >
+        <i class="fas fa-home"></i>
+        <span>العودة للرئيسية</span>
+      </a>
+    </div>
+
+    <div class="selection-container">
+      <div class="form-group">
+        <label for="main-category">السوق الرئيسي:</label>
+        <select id="main-category">
+          <option value="0" selected>-- اختر السوق الرئسي --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="sub-category">السوق الفرعي:</label>
+        <select id="sub-category" disabled>
+          <option value="">-- اختر سوق فرعي --</option>
+        </select>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        const mainCategorySelect = document.getElementById("main-category");
+        const subCategorySelect = document.getElementById("sub-category");
+        const subCategoryGroup = subCategorySelect.parentElement;
+
+        subCategoryGroup.style.display = "none"; // إخفاء قسم السوق الفرعي عند التحميل
+
+        // Fetch categories data
+        const response = await fetch("../shared/list.json");
+        const data = await response.json();
+        const categories = data.categories;
+
+        // Populate main categories
+        categories.forEach((category) => {
+          const option = new Option(category.title, category.id);
+          mainCategorySelect.add(option);
+        });
+
+        // Add event listener for when a main category is selected
+        mainCategorySelect.addEventListener("change", (event) => {
+          const selectedCategoryId = event.target.value;
+
+          // Clear previous sub-categories and disable the select
+          subCategorySelect.innerHTML =
+            '<option value="">-- اختر سوق فرعي --</option>';
+          subCategorySelect.disabled = true;
+
+          // إذا تم اختيار "عرض الكل"، قم بإخفاء قسم السوق الفرعي
+          if (selectedCategoryId === "0") {
+            subCategoryGroup.style.display = "none";
+          } else {
+            // وإلا، قم بإظهاره
+            subCategoryGroup.style.display = "block";
+
+            // Find the selected category object
+            const selectedCategory = categories.find(
+              (cat) => cat.id == selectedCategoryId
+            );
+
+            if (
+              selectedCategory &&
+              selectedCategory.subcategories &&
+              selectedCategory.subcategories.length > 0
+            ) {
+              // Enable the sub-category select
+              subCategorySelect.disabled = false;
+              // Populate sub-categories
+              selectedCategory.subcategories.forEach((sub) => {
+                const option = new Option(sub.title, sub.id);
+                subCategorySelect.add(option);
+              });
+            } else {
+              // إذا لم تكن هناك أسواق فرعية، أبقِ الحقل مخفياً
+              subCategoryGroup.style.display = "none";
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

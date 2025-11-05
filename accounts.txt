@@ -1,0 +1,9 @@
+
+do.everything.hgh@gmail.com   for turso
+
+libsql://bazaar-bazaar.aws-eu-west-1.turso.io
+
+eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NjE5ODExODcsImlkIjoiMjk3ZTJkOTgtODkxZi00MjVmLWI0YjQtOGNlNTM2MmM5ZTQ4IiwicmlkIjoiNjRkMTg0YWQtZTJhMC00YmEwLWI3NzUtN2Q3MjlkYmQ5YmY1In0.z-P7Vt-ixn5pMmgoOKAsQes4knj9FBY017xqogMD1YklBaRFBAFvhMLREu9uQrj9n3LOfX7R77MVVgePyfV4CA
+
+موقع vercel بدل من deno يتعرف علي الملفات داخل المجلد api تلقائيا
+

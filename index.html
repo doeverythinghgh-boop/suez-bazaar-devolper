@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <!--
+    @file index.html
+    @description الصفحة الرئيسية لموقع "بازار السويس".
+    
+    هذه هي الصفحة المقصودة (Landing Page) التي يراها الزائر أولاً.
+    - تعرض العنوان والشعار.
+    - تتحقق من حالة تسجيل دخول المستخدم وتعرض اسمه أو زر "تسجيل الدخول".
+    - تحتوي على حاويات ديناميكية (`content-placeholder`, `categories-grid`) يتم ملؤها بالمحتوى (مثل الإعلانات والفئات) باستخدام JavaScript.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suez Bazaar</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/adsPage.css" />
+    <!-- Link to Google Fonts for a more stylish look (Optional) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body style="position: relative">
+    <!-- 
+      الهدف من هذا الموقع هو إنشاء سوق تجاري إلكتروني ("بازار") في السويس.
+      يعمل الموقع كمنصة لعرض منتجات من موردين مختلفين، مما يسمح للمستهلكين بتصفحها وشرائها مباشرة.
+    -->
+    <div class="container" id="header-container">
+      <!-- مجموعة العنوان والشعار -->
+      <a
+        href="index.html"
+        class="header-title-group"
+        style="text-decoration: none; color: inherit"
+      >
+        <h1 id="animated-text" class="bazaar-title"></h1>
+        <p id="tagline" class="tagline"></p>
+      </a>
+      <!-- قسم المستخدم (تم التعديل ليصبح قائمة منسدلة) -->
+      <div class="user-profile-container">
+        <div class="user-profile" id="user-profile-button">
+          <a href="login.html" class="user-profile-link">
+            <span class="fas fa-user-circle user-icon" id="user-icon"></span>
+            <span class="user-text">تسجيل الدخول</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- حاوية لعرض المحتوى الديناميكي (مثل معرض الصور) -->
+    <div id="content-placeholder">
+      <!-- مؤشر التحميل سيظهر هنا -->
+      <div class="loader" id="content-loader"></div>
+    </div>
+
+    <!-- قسم جديد لعرض الفئات الرئيسية -->
+    <div class="categories-section">
+      <table id="categories-table" class="categories-table">
+        <tbody id="categories-tbody">
+          <!-- سيتم ملء صفوف الفئات هنا بواسطة جافاسكريبت -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Modal for Product Details -->
+    <div id="product-details-modal" class="modal">
+      <!-- Product details will be loaded here from showProduct.html -->
+    </div>
+    <script src="js/config.js"></script>
+    <!-- ✅ إضافة: تحميل ملف الإعدادات أولاً -->
+    <script src="js/main.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+      /**
+       * يقوم بتحميل الفئات من ملف JSON ويبني جدولاً ديناميكياً.
+       * - يعرض الفئات الرئيسية في صفوف، كل صف يحتوي على 3 فئات.
+       * - عند النقر على فئة رئيسية، يظهر صف جديد أسفلها يحتوي على فئاتها الفرعية.
+       */
+      async function loadCategoriesAsTable() {
+        const tbody = document.getElementById("categories-tbody");
+        if (!tbody) return;
+
+        try {
+          const response = await fetch("shared/list.json");
+          if (!response.ok) throw new Error("فشل تحميل الفئات");
+          const data = await response.json();
+          const categories = data.categories;
+
+          tbody.innerHTML = ""; // مسح المحتوى القديم
+
+          // تجميع الفئات في مجموعات من 3
+          for (let i = 0; i < categories.length; i += 3) {
+            const chunk = categories.slice(i, i + 3);
+            const mainRow = document.createElement("tr");
+            mainRow.className = "main-category-row";
+            // جديد: إضافة تأخير للحركة لكل صف للحصول على تأثير متدرج
+            // الصف الأول يبدأ بعد 0 ثانية، الثاني بعد 0.1 ثانية، وهكذا
+            mainRow.style.animationDelay = `${(i / 3) * 0.1}s`;
+
+            chunk.forEach((category) => {
+              const cell = document.createElement("td");
+              const iconHtml = category.icon
+                ? `<i class="${category.icon}"></i>`
+                : "";
+              cell.dataset.categoryId = category.id; // ✅ إصلاح: تخزين معرف الفئة الرئيسية هنا
+              cell.innerHTML = `
+                <div class="category-cell-content">
+                  ${iconHtml}
+                  <span>${category.title}</span>
+                </div>`;
+
+              // إضافة حدث النقر فقط إذا كانت هناك فئات فرعية
+              if (category.subcategories && category.subcategories.length > 0) {
+                cell.classList.add("has-subcategories"); // لإضافة مؤشر النقر
+                cell.addEventListener("click", () => {
+                  toggleSubcategories(mainRow, category.subcategories, cell);
+                });
+              }
+              mainRow.appendChild(cell);
+            });
+
+            // إضافة خلايا فارغة إذا كان الصف الأخير غير مكتمل
+            while (mainRow.cells.length < 3) {
+              mainRow.appendChild(document.createElement("td"));
+            }
+
+            tbody.appendChild(mainRow);
+          }
+        } catch (error) {
+          console.error("خطأ في عرض الفئات:", error);
+          tbody.innerHTML = `<tr><td colspan="3">حدث خطأ أثناء تحميل الفئات.</td></tr>`;
+        }
+      }
+
+      /**
+       * يعرض أو يخفي صف الفئات الفرعية.
+       * @param {HTMLTableRowElement} mainRow - صف الفئة الرئيسية الذي تم النقر عليه.
+       * @param {Array} subcategories - مصفوفة الفئات الفرعية.
+       * @param {HTMLTableCellElement} clickedCell - الخلية التي تم النقر عليها.
+       */
+      function toggleSubcategories(mainRow, subcategories, clickedCell) {
+        const tbody = document.getElementById("categories-tbody"); // الحصول على جسم الجدول
+        const currentlyActiveCell = document.querySelector(
+          ".main-category-row td.active-category"
+        );
+        const existingProductsRow = document.querySelector(
+          ".products-gallery-row"
+        );
+        const existingSubRow = document.querySelector(".sub-category-row"); // البحث عن أي صف فرعي مفتوح
+        const isClickingSameCell = currentlyActiveCell === clickedCell;
+
+        // الخطوة 1: إزالة أي صف فرعي مفتوح وحالة التفعيل القديمة دائمًا
+        if (existingSubRow) {
+          existingSubRow.remove();
+        }
+        if (existingProductsRow) {
+          existingProductsRow.remove();
+        }
+        if (currentlyActiveCell) {
+          currentlyActiveCell.classList.remove("active-category");
+        }
+        tbody.classList.remove("selection-active");
+
+        // الخطوة 2: إذا لم يكن النقرة على نفس الخلية النشطة (أي فتح خلية جديدة)
+        // يتم إنشاء صف فرعي جديد وتفعيل الخلية الجديدة.
+        // إذا كانت النقرة على نفس الخلية، فإن الخطوة 1 تكون كافية لإغلاقها.
+        if (!isClickingSameCell) {
+          tbody.classList.add("selection-active"); // إضافة حالة "الاختيار النشط" للجدول
+          clickedCell.classList.add("active-category"); // إضافة التمييز للخلية المختارة
+
+          const subRow = document.createElement("tr");
+          subRow.className = "sub-category-row";
+          // إضافة تأثير انزلاق للأسفل
+          subRow.style.animation = "slide-fade-in 0.4s ease-out forwards";
+
+          const subCell = document.createElement("td");
+          subCell.colSpan = 3;
+
+          const subcategoriesContainer = document.createElement("div");
+          subcategoriesContainer.className = "subcategories-container";
+
+          subcategories.forEach((sub) => {
+            const subItem = document.createElement("a");
+            subItem.href = `#`;
+            subItem.className = "subcategory-item";
+            const iconHtml = sub.icon ? `<i class="${sub.icon}"></i>` : "";
+            subItem.innerHTML = `${iconHtml} ${sub.title}`.trim();
+            // إضافة حدث النقر لعرض المنتجات
+            subItem.addEventListener("click", (e) => {
+              e.preventDefault();
+              // إزالة التفعيل من أي عنصر فرعي آخر
+              document
+                .querySelectorAll(".subcategory-item.active")
+                .forEach((item) => item.classList.remove("active"));
+              subItem.classList.add("active"); // تفعيل العنصر الحالي
+              showProductGallery(
+                subRow,
+                clickedCell.dataset.categoryId,
+                sub.id
+              );
+            });
+            subcategoriesContainer.appendChild(subItem);
+          });
+
+          subCell.appendChild(subcategoriesContainer);
+          subRow.appendChild(subCell);
+
+          // إدراج الصف الفرعي بعد الصف الرئيسي مباشرة
+          mainRow.parentNode.insertBefore(subRow, mainRow.nextSibling);
+        }
+      }
+
+      /**
+       * يعرض معرض صور للمنتجات أسفل صف الفئات الفرعية.
+       * @param {HTMLTableRowElement} subRow - صف الفئات الفرعية.
+       * @param {string} mainCatId - معرف الفئة الرئيسية.
+       * @param {string} subCatId - معرف الفئة الفرعية.
+       */
+      async function showProductGallery(subRow, mainCatId, subCatId) {
+        // إزالة أي معرض منتجات قديم
+        const existingGallery = document.querySelector(".products-gallery-row");
+        if (existingGallery) {
+          existingGallery.remove();
+        }
+
+        const galleryRow = document.createElement("tr");
+        galleryRow.className = "products-gallery-row";
+        const galleryCell = document.createElement("td");
+        galleryCell.colSpan = 3;
+        galleryRow.appendChild(galleryCell);
+        // إدراج صف المنتجات بعد صف الفئات الفرعية
+        subRow.parentNode.insertBefore(galleryRow, subRow.nextSibling);
+
+        // إظهار مؤشر تحميل مبدئي
+        galleryCell.innerHTML = `<div class="loader" style="margin: 20px auto;"></div>`;
+
+        const products = await getProductsByCategory(mainCatId, subCatId);
+
+        // التحقق مرة أخرى من وجود الصف في حال أغلقه المستخدم بسرعة
+        const currentRow = subRow.nextElementSibling;
+        if (
+          !currentRow ||
+          !currentRow.classList.contains("products-gallery-row")
+        ) {
+          return; // توقف إذا تم إغلاق القسم
+        }
+
+        const currentGalleryCell = currentRow.querySelector("td");
+
+        // إذا كانت هناك منتجات، ابدأ في عرضها
+        if (products && products.length > 0) {
+          const galleryContainer = document.createElement("div");
+          galleryContainer.className = "gallery-container";
+          currentGalleryCell.innerHTML = ""; // إزالة مؤشر التحميل
+          currentGalleryCell.appendChild(galleryContainer);
+
+          // دالة لتحميل صورة واحدة وإضافتها للمعرض
+          const loadImage = (product) => {
+            return new Promise((resolve) => {
+              if (!product.ImageName) return resolve();
+
+              const firstImage = product.ImageName.split(",")[0];
+              if (!firstImage) return resolve();
+
+              const img = document.createElement("img");
+              const imageUrl = `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${firstImage}`;
+              img.alt = product.product_description;
+              img.title = product.product_description;
+              img.style.opacity = "0"; // إخفاء الصورة مبدئياً
+              img.style.transform = "translateY(20px)";
+              img.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+
+              // ✅ إضافة: عند النقر على الصورة، يتم عرض تفاصيل المنتج
+              img.addEventListener("click", () => {
+                // التأكد من أن الدالة العالمية متاحة
+                if (window.showProductDetails) {
+                  const productDataForModal = {
+                    // جديد: تمرير جميع الصور وليس فقط الأولى
+                    imageSrc: product.ImageName.split(',').map(name => `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`),
+                    availableQuantity: product.product_quantity,
+                    pricePerItem: product.product_price,
+                    sellerMessage: product.user_message,
+                    description: product.product_description,
+                    // جديد: تمرير بيانات البائع إذا كانت متاحة
+                    sellerName: product.seller_username,
+                    sellerPhone: product.seller_phone
+                  };
+                  window.showProductDetails(productDataForModal);
+                }
+              });
+
+              img.onload = () => {
+                galleryContainer.appendChild(img);
+                setTimeout(() => {
+                  // تأخير بسيط قبل إظهار الصورة
+                  img.style.opacity = "1";
+                  img.style.transform = "translateY(0)";
+                  resolve();
+                }, 50); // 50ms delay
+              };
+              img.onerror = () => resolve(); // انتقل للتالي حتى لو فشلت الصورة
+              img.src = imageUrl;
+            });
+          };
+
+          // تحميل الصور واحدة تلو الأخرى
+          for (const product of products) {
+            await loadImage(product);
+          }
+        } else {
+          currentGalleryCell.innerHTML = `<p class="no-products-message">لا توجد منتجات في هذه الفئة حالياً.</p>`;
+        }
+      }
+
+      // انتظر حتى يتم تحميل محتوى الصفحة بالكامل
+      document.addEventListener("DOMContentLoaded", function () {
+        // استدعاء الدالة للتحقق من حالة تسجيل الدخول
+        checkLoginStatus();
+        // استدعاء الدالة الجديدة لتحميل الفئات كجدول
+        loadCategoriesAsTable();
+
+        // إضافة ملف turo.js ديناميكيًا لضمان توفر الدوال
+        const turoScript = document.createElement("script");
+        turoScript.src = "js/turo.js";
+        document.body.appendChild(turoScript);
+      });
+    </script>
+  </body>
+</html>

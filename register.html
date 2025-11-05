@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <!--
+    @file register.html
+    @description صفحة إنشاء حساب جديد.
+
+    تحتوي هذه الصفحة على نموذج يسمح للمستخدمين الجدد بإدخال اسمهم ورقم هاتفهم لإنشاء حساب.
+    - تقوم بالتحقق من صحة المدخلات.
+    - تنشئ رقمًا تسلسليًا فريدًا (`user_key`) لكل مستخدم.
+    - تستدعي واجهة برمجة التطبيقات (API) لحفظ المستخدم الجديد في قاعدة البيانات.
+  -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>إنشاء حساب جديد - Suez Bazaar</title>
+    <!-- Link to shared styles -->
+    <link rel="stylesheet" href="css/style.css" />
+    <!-- Link to login-specific styles (reused for consistency) -->
+    <link rel="stylesheet" href="css/login.css" />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
+    <!-- SweetAlert2 for modern alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+    <!-- Header بسيط للاتساق -->
+    <div class="container" id="header-container">
+      <a
+        href="index.html"
+        class="header-title-group"
+        style="text-decoration: none; color: inherit"
+      >
+        <h1 class="bazaar-title final-text">SB</h1>
+        <p class="tagline" style="opacity: 1; margin-right: 1.5rem">
+          بازار السويس
+        </p>
+      </a>
+      <a
+        href="index.html"
+        class="back-to-home-btn"
+        title="العودة للصفحة الرئيسية"
+      >
+        <i class="fas fa-home"></i>
+        <span>العودة للرئيسية</span>
+      </a>
+    </div>
+
+    <div class="login-page-wrapper">
+      <div class="login-container">
+        <h2>إنشاء حساب جديد</h2>
+        <form id="register-form" novalidate>
+          <div class="form-group">
+            <label for="username"><i class="fas fa-user"></i> الاسم</label>
+            <input type="text" id="username" name="username" required />
+            <div id="username-error" class="error-message"></div>
+          </div>
+          <div class="form-group">
+            <label for="phone"><i class="fas fa-phone"></i> رقم الهاتف</label>
+            <input type="tel" id="phone" name="phone" required />
+            <div id="phone-error" class="error-message"></div>
+          </div>
+
+          <button type="submit" class="button login-btn">إنشاء الحساب</button>
+          <div class="form-footer">
+            <a href="login.html"
+              >لديك حساب بالفعل؟ <strong>سجل الدخول</strong></a
+            >
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Global Config & API functions -->
+    <script src="js/config.js"></script>
+    <script src="js/turo.js"></script>
+    <script>
+      const form = document.getElementById("register-form");
+      const username = document.getElementById("username");
+      const phone = document.getElementById("phone");
+
+      /**
+       * يقوم بإنشاء رقم تسلسلي فريد مكون من 4 أحرف صغيرة و 4 أرقام عشوائية.
+       * يتم خلط الأحرف لجعل الرقم التسلسلي أقل قابلية للتنبؤ.
+       * @returns {string} رقم تسلسلي عشوائي مكون من 8 أحرف.
+       */
+      function generateSerialNumber() {
+        const letters = "abcdefghijklmnopqrstuvwxyz";
+        const digits = "0123456789";
+        let chars = [];
+
+        // 1. إضافة 4 أحرف صغيرة عشوائية
+        for (let i = 0; i < 4; i++) {
+          chars.push(letters.charAt(Math.floor(Math.random() * letters.length)));
+        }
+
+        // 2. إضافة 4 أرقام عشوائية
+        for (let i = 0; i < 4; i++) {
+          chars.push(digits.charAt(Math.floor(Math.random() * digits.length)));
+        }
+
+        // 3. خلط المصفوفة لضمان العشوائية
+        for (let i = chars.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [chars[i], chars[j]] = [chars[j], chars[i]]; // تبديل العناصر
+        }
+
+        // 4. دمج المصفوفة لتكوين السلسلة النهائية
+        return chars.join("");
+      }
+
+      // Function to show error message
+      const showError = (input, message) => {
+        const errorDiv = document.getElementById(`${input.id}-error`);
+        input.classList.add("input-error");
+        errorDiv.textContent = message;
+      };
+
+      // Function to clear error message
+      const clearError = (input) => {
+        const errorDiv = document.getElementById(`${input.id}-error`);
+        input.classList.remove("input-error");
+        errorDiv.textContent = "";
+      };
+
+      // إضافة مستمع لحدث الإدخال لتنقية رقم الهاتف في الوقت الفعلي
+      phone.addEventListener("input", function (e) {
+        let value = e.target.value;
+        // تعريف قاموس لتحويل الأرقام الهندية إلى الإنجليزية
+        const hindiToArabic = {
+          "٠": "0", "١": "1", "٢": "2", "٣": "3", "٤": "4",
+          "٥": "5", "٦": "6", "٧": "7", "٨": "8", "٩": "9",
+        };
+
+        // استبدال الأرقام الهندية بالإنجليزية
+        value = value.replace(/[٠-٩]/g, (d) => hindiToArabic[d]);
+
+        // إزالة أي حرف ليس رقمًا (0-9)
+        value = value.replace(/[^0-9]/g, "");
+
+        // تحديث قيمة الحقل
+        e.target.value = value;
+      });
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Prevent form from submitting
+        let isValid = true;
+
+        // --- Validation ---
+
+        // 1. Username validation
+        clearError(username);
+        const usernameValue = username.value.trim();
+        if (usernameValue === "") {
+          showError(username, "الاسم مطلوب.");
+          isValid = false;
+        } else if (usernameValue.length < 8 || usernameValue.length > 30) {
+          showError(username, "الاسم يجب أن يكون بين 8 و 30 حرفًا.");
+          isValid = false;
+        }
+
+        // 2. Phone validation
+        clearError(phone);
+        const phoneValue = phone.value.trim();
+        if (phoneValue === "") {
+          showError(phone, "رقم الهاتف مطلوب.");
+          isValid = false;
+        } else if (phoneValue.length < 11) {
+          showError(phone, "رقم الهاتف يجب ألا يقل عن 11 رقمًا.");
+          isValid = false;
+        }
+
+        if (isValid) {
+          const userKey = generateSerialNumber(); // 🔑 توليد الرقم التسلسلي
+          const newUser = {
+            username: username.value.trim(),
+            phone: phone.value.trim(),
+            user_key: userKey, // إضافة الرقم التسلسلي للبيانات
+          };
+
+          // إظهار رسالة انتظار باستخدام SweetAlert2
+          Swal.fire({
+            title: "جاري إنشاء الحساب...",
+            text: "الرجاء الانتظار قليلاً.",
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+
+          try {
+            const result = await addUser(newUser);
+            Swal.close(); // إغلاق رسالة الانتظار
+
+            if (result && result.message) {
+              // حفظ بيانات المستخدم في التخزين المحلي لتسجيل دخوله
+              localStorage.setItem("loggedInUser", JSON.stringify(newUser));
+
+              // إظهار رسالة ترحيب قبل التوجيه إلى الصفحة الرئيسية
+              Swal.fire({
+                icon: "success",
+                title: "تم إنشاء الحساب بنجاح!",
+                text: "مرحبا بك في بازار السويس",
+                confirmButtonText: "متابعة إلى الرئيسية",
+              }).then((result) => {
+                // بعد الضغط على زر المتابعة، يتم توجيه المستخدم
+                if (result.isConfirmed) {
+                  window.location.href = "index.html";
+                }
+              });
+            } else if (result && result.error) {
+              // إذا كان هناك خطأ من الخادم (مثل رقم هاتف مكرر)
+              showError(phone, result.error);
+
+            } else {
+              // في حالة فشل غير معروف السبب من الخادم
+              showError(form, "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+            }
+          } catch (error) {
+            Swal.close(); // تأكد من إغلاق الرسالة في حالة حدوث خطأ
+            console.error("Error during registration:", error);
+            // هذا الخطأ يحدث إذا كانت هناك مشكلة في الاتصال بالخادم أو الكود
+            showError(form, "حدث خطأ في التطبيق. يرجى المحاولة لاحقاً.");
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
