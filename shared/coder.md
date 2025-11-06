@@ -81,15 +81,15 @@ CREATE TABLE users (
   username TEXT NOT NULL,
   phone TEXT NOT NULL UNIQUE,
   user_key TEXT NOT NULL UNIQUE,
-  is_seller INTEGER DEFAULT 0,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  is_seller INTEGER DEFAULT 0
 );
 ```
 
 ### جدول `products`
 ```sql
-CREATE TABLE products (
+CREATE TABLE marketplace_products (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  productName TEXT NOT NULL,
   product_key TEXT NOT NULL UNIQUE,
   user_key TEXT NOT NULL,
   product_description TEXT,
@@ -101,7 +101,6 @@ CREATE TABLE products (
   MainCategory INTEGER,
   SubCategory INTEGER,
   ImageIndex INTEGER,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_key) REFERENCES users (user_key)
 );
 ```
