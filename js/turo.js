@@ -223,3 +223,70 @@ async function getUserByPhone(phone) {
     return null; // إرجاع null للإشارة إلى فشل العملية
   }
 }
+
+/**
+ * @file js/turo.js
+ * @description ... (بقية الوصف كما هو)
+ * ... (بقية الدوال كما هي)
+ */
+
+// ... (الكود السابق للدوال الأخرى)
+
+/**
+ * يعرض نافذة منبثقة تحتوي على تفاصيل المنتج.
+ * @param {object} productData - بيانات المنتج الكاملة.
+ */
+window.showProductDetails = async function(productData) {
+  const modal = document.getElementById("product-details-modal");
+
+  // تحميل محتوى النافذة من الملف
+  const response = await fetch("pages/showProduct.html");
+  modal.innerHTML = await response.text();
+
+  // تعبئة البيانات
+  document.getElementById("product-modal-name").textContent = productData.productName || "تفاصيل المنتج";
+  document.getElementById("product-modal-quantity").textContent = productData.availableQuantity;
+  document.getElementById("product-modal-price").textContent = `${productData.pricePerItem} جنيه`;
+  document.getElementById("product-modal-description").textContent = productData.description || "لا يوجد وصف متاح.";
+  document.getElementById("product-modal-seller-message").textContent = productData.sellerMessage || "لا توجد رسالة من البائع.";
+
+  // تعبئة معرض الصور
+  const mainImage = document.getElementById("product-modal-image");
+  const thumbnailsContainer = document.getElementById("product-modal-thumbnails");
+  mainImage.src = productData.imageSrc[0]; // عرض الصورة الأولى
+  thumbnailsContainer.innerHTML = ''; // مسح الصور المصغرة القديمة
+  productData.imageSrc.forEach(src => {
+    const thumb = document.createElement('img');
+    thumb.src = src;
+    thumb.onclick = () => { mainImage.src = src; };
+    thumbnailsContainer.appendChild(thumb);
+  });
+
+  // إظهار النافذة
+  modal.style.display = "block";
+  document.body.classList.add("modal-open");
+
+  // وظيفة الإغلاق
+  const closeModal = () => {
+    modal.style.display = "none";
+    document.body.classList.remove("modal-open");
+  };
+  document.getElementById("product-modal-close-btn").onclick = closeModal;
+  window.onclick = (event) => {
+    if (event.target == modal) closeModal();
+  };
+
+  // --- جديد: منطق إضافة المنتج إلى السلة ---
+  const addToCartBtn = document.getElementById('product-modal-add-to-cart');
+  addToCartBtn.addEventListener('click', () => {
+    const quantity = parseInt(document.getElementById('product-modal-selected-quantity').value, 10);
+    const productInfoForCart = {
+      product_key: productData.product_key,
+      productName: productData.productName,
+      price: productData.price,
+      image: productData.image
+    };
+    addToCart(productInfoForCart, quantity);
+    closeModal(); // إغلاق النافذة بعد الإضافة
+  });
+};

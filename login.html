@@ -129,6 +129,12 @@
         width: 90% !important; /* استخدام نسبة مئوية من عرض الشاشة */
       }
     }
+    /* جديد: أنماط مودال السلة */
+    #cart-modal-container .modal-content { max-width: 800px; }
+    .cart-item { display: flex; align-items: center; gap: 15px; padding: 10px 0; border-bottom: 1px solid #eee; }
+    .cart-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
+    .cart-item-details { flex-grow: 1; }
+    .cart-total { text-align: left; font-size: 1.2rem; font-weight: bold; margin-top: 20px; }
   </style>
       <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -168,6 +174,11 @@
           style="display: none"
         ><i class="fas fa-store"></i> عرض منتجاتي</button>
         <button id="logout-btn-alt" class="button logout-btn-small">
+          <i class="fas fa-shopping-cart"></i> عرض السلة
+        </button>
+        <button
+          id="view-cart-btn"
+          class="button logout-btn-small">
           <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
         </button>
       </div>
@@ -208,7 +219,12 @@
   <div id="add-product-modal" class="modal">
     <!-- سيتم تحميل محتوى نموذج إضافة المنتج هنا -->
   </div>
+  <!-- جديد: حاوية النافذة المنبثقة للسلة -->
+  <div id="cart-modal-container" class="modal">
+    <!-- سيتم ملء محتوى السلة هنا -->
+  </div>
   <script src="cloudflare-workers/cloudFileManager.js"></script>
+  <script src="js/cart.js"></script> <!-- ✅ إضافة: تحميل ملف السلة -->
   <script src="js/auth.js"></script>
   <script src="js/turo.js"></script>
   <script>
@@ -243,6 +259,11 @@
         const viewMyProductsBtn = document.getElementById("view-my-products-btn");
         viewMyProductsBtn.style.display = "inline-flex";
         viewMyProductsBtn.addEventListener("click", () => showMyProducts(user.user_key));
+
+        // جديد: إظهار زر "عرض السلة" وإضافة حدث النقر
+        const viewCartBtn = document.getElementById("view-cart-btn");
+        viewCartBtn.style.display = "inline-flex";
+        viewCartBtn.addEventListener("click", showCartModal);
 
       }
 
@@ -470,6 +491,90 @@
       window.addEventListener('click', (event) => {
         if (event.target == addProductModal) closeEditModal();
       }, { once: true });
+    }
+
+    /**
+     * جديد: يعرض نافذة منبثقة بمحتويات سلة المشتريات.
+     */
+    function showCartModal() {
+      const cartModal = document.getElementById("cart-modal-container");
+      const cart = getCart();
+      let total = 0;
+
+      let modalContent = `
+        <div class="modal-content">
+          <span class="close-button" id="cart-modal-close-btn">&times;</span>
+          <h2><i class="fas fa-shopping-cart"></i> سلة المشتريات</h2>`;
+
+      if (cart.length > 0) {
+        modalContent += '<div id="cart-items-list">';
+        cart.forEach(item => {
+          const itemTotal = item.price * item.quantity;
+          total += itemTotal;
+          modalContent += `
+            <div class="cart-item" data-key="${item.product_key}">
+              <img src="${item.image}" alt="${item.productName}">
+              <div class="cart-item-details">
+                <strong>${item.productName}</strong>
+                <p>${item.price} جنيه × ${item.quantity}</p>
+              </div>
+              <div><strong>${itemTotal.toFixed(2)} جنيه</strong></div>
+              <button class="btn-ghost remove-from-cart-btn" title="إزالة من السلة">&times;</button>
+            </div>`;
+        });
+        modalContent += '</div>';
+        modalContent += `<div class="cart-total">الإجمالي: ${total.toFixed(2)} جنيه</div>`;
+        modalContent += `
+          <div class="action-buttons" style="margin-top: 20px;">
+            <button id="clear-cart-btn" class="button logout-btn-small" style="background-color: #e74c3c;">إفراغ السلة</button>
+            <button class="button logout-btn-small" style="background-color: #2ecc71;">إتمام الشراء</button>
+          </div>`;
+      } else {
+        modalContent += '<p style="text-align: center; padding: 2rem 0;">سلة المشتريات فارغة.</p>';
+      }
+
+      modalContent += '</div>';
+      cartModal.innerHTML = modalContent;
+
+      // إظهار النافذة
+      document.body.classList.add("modal-open");
+      cartModal.style.display = "block";
+
+      // وظيفة الإغلاق
+      const closeCartModal = () => {
+        cartModal.style.display = "none";
+        document.body.classList.remove("modal-open");
+      };
+
+      // إضافة أحداث الأزرار
+      document.getElementById("cart-modal-close-btn").onclick = closeCartModal;
+      window.addEventListener('click', (event) => {
+        if (event.target == cartModal) closeCartModal();
+      }, { once: true });
+
+      // أحداث أزرار التحكم بالسلة
+      document.querySelectorAll('.remove-from-cart-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const productKey = e.target.closest('.cart-item').dataset.key;
+          removeFromCart(productKey);
+          showCartModal(); // إعادة رسم المودال
+        });
+      });
+
+      const clearCartBtn = document.getElementById('clear-cart-btn');
+      if (clearCartBtn) {
+        clearCartBtn.addEventListener('click', () => {
+          Swal.fire({
+            title: 'هل أنت متأكد؟', text: "سيتم إفراغ السلة بالكامل!", icon: 'warning',
+            showCancelButton: true, confirmButtonText: 'نعم، أفرغها!', cancelButtonText: 'إلغاء'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              clearCart();
+              showCartModal(); // إعادة رسم المودال
+            }
+          });
+        });
+      }
     }
 
 
