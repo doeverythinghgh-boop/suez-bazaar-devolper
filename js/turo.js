@@ -234,10 +234,10 @@ async function getUserByPhone(phone) {
  */
 async function verifyUserPassword(phone, password) {
   try {
-    const response = await fetch(`${baseURL}/api/users/verify`, {
+    const response = await fetch(`${baseURL}/api/users`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, password }),
+      body: JSON.stringify({ action: 'verify', phone, password }),
     });
 
     const data = await response.json();
