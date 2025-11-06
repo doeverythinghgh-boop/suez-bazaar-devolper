@@ -33,6 +33,22 @@
     />
     <!-- SweetAlert2 for modern alerts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      /* جديد: تنسيق حاوية كلمة المرور مع أيقونة العين */
+      .password-container {
+        position: relative;
+      }
+      .password-container input {
+        padding-left: 40px; /* مساحة للأيقونة على اليسار (لـ RTL) */
+      }
+      .toggle-password {
+        position: absolute;
+        left: 15px; /* لليمين في RTL */
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+      }
+    </style>
   </head>
   <body>
     <!-- Header بسيط للاتساق -->
@@ -71,9 +87,12 @@
             <input type="tel" id="phone" name="phone" required />
             <div id="phone-error" class="error-message"></div>
           </div>
-          <div class="form-group">
+          <div class="form-group ">
             <label for="password"><i class="fas fa-lock"></i> كلمة المرور (اختياري)</label>
-            <input type="password" id="password" name="password" />
+            <div class="password-container">
+              <input type="password" id="password" name="password" />
+              <i class="fas fa-eye toggle-password" id="toggle-password-icon"></i>
+            </div>
             <div id="password-error" class="error-message"></div>
             <small class="form-hint">اختياري. إذا قمت بتعيينها، لن يتمكن أي شخص آخر من استخدام رقم هاتفك.
             </small>
@@ -200,16 +219,32 @@
           // ✅ جديد: التحقق مما إذا كان المستخدم قد أدخل كلمة مرور
           if (password.value.trim() !== "") {
             const { value: confirmedPassword } = await Swal.fire({
-              title: 'تأكيد كلمة المرور',
-              input: 'password',
-              inputLabel: 'الرجاء إعادة إدخال كلمة المرور للتأكيد',
-              inputPlaceholder: 'أعد إدخال كلمة المرور',
+              title: "تأكيد كلمة المرور",
+              html: `
+                <p>الرجاء إعادة إدخال كلمة المرور للتأكيد</p>
+                <div class="password-container">
+                  <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="أعد إدخال كلمة المرور">
+                  <i class="fas fa-eye toggle-password" id="swal-toggle-confirm-password" style="top: 60%;"></i>
+                </div>
+              `,
               showCancelButton: true,
-              confirmButtonText: 'تأكيد',
-              cancelButtonText: 'إلغاء',
+              confirmButtonText: "تأكيد",
+              cancelButtonText: "إلغاء",
+              didOpen: () => {
+                const confirmInput = document.getElementById('swal-confirm-password');
+                const toggleIcon = document.getElementById('swal-toggle-confirm-password');
+                confirmInput.focus();
+                toggleIcon.addEventListener('click', () => {
+                  const isPassword = confirmInput.type === 'password';
+                  confirmInput.type = isPassword ? 'text' : 'password';
+                  toggleIcon.classList.toggle('fa-eye');
+                  toggleIcon.classList.toggle('fa-eye-slash');
+                });
+              },
               inputValidator: (value) => {
-                if (value !== password.value) {
-                  return 'كلمتا المرور غير متطابقتين!'
+                const confirmValue = document.getElementById('swal-confirm-password').value;
+                if (confirmValue !== password.value) {
+                  return "كلمتا المرور غير متطابقتين!";
                 }
               }
             });
@@ -280,6 +315,18 @@
             showError(form, "حدث خطأ في التطبيق. يرجى المحاولة لاحقاً.");
           }
         }
+      });
+
+      // جديد: إضافة وظيفة تبديل عرض كلمة المرور للنموذج الرئيسي
+      const togglePasswordIcon = document.getElementById('toggle-password-icon');
+      togglePasswordIcon.addEventListener('click', function() {
+        // تبديل نوع حقل الإدخال
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        // تبديل أيقونة العين
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
       });
     </script>
   </body>

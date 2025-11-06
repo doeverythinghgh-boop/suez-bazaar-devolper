@@ -24,6 +24,21 @@
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
   <style>
+    /* جديد: تنسيق حاوية كلمة المرور مع أيقونة العين */
+    .swal2-password-container {
+      position: relative;
+    }
+    .swal2-password-container .swal2-input {
+      padding-left: 2.5rem; /* مساحة للأيقونة */
+    }
+    .swal2-password-toggle-icon {
+      position: absolute;
+      left: 10px; /* لليمين في RTL */
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #7066e0;
+    }
     /* Custom style for the smaller logout button */
     .logout-btn-small {
       width: auto; /* Override full width */
@@ -768,25 +783,39 @@
         if (initialCheck && initialCheck.passwordRequired) {
           // إذا كان الحساب يتطلب كلمة مرور
           Swal.close(); // إغلاق رسالة التحميل
-          const { value: password } = await Swal.fire({
+          const { value: passwordResult } = await Swal.fire({
             title: 'كلمة المرور مطلوبة',
-            input: 'password',
-            inputLabel: 'هذا الحساب محمي. الرجاء إدخال كلمة المرور',
-            inputPlaceholder: 'ادخل كلمة المرور',
-            inputAttributes: {
-              autocapitalize: 'off',
-              autocorrect: 'off'
-            },
+            html: `
+              <p>هذا الحساب محمي. الرجاء إدخال كلمة المرور</p>
+              <div class="swal2-password-container">
+                <input type="password" id="swal-password-input" class="swal2-input" placeholder="ادخل كلمة المرور">
+                <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-password"></i>
+              </div>
+            `,
             showCancelButton: true,
             confirmButtonText: 'تسجيل الدخول',
             cancelButtonText: 'إلغاء',
             showLoaderOnConfirm: true,
+            didOpen: () => {
+              const passwordInput = document.getElementById('swal-password-input');
+              const toggleIcon = document.getElementById('swal-toggle-password');
+              passwordInput.focus();
+              toggleIcon.addEventListener('click', () => {
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                toggleIcon.classList.toggle('fa-eye');
+                toggleIcon.classList.toggle('fa-eye-slash');
+              });
+            },
             preConfirm: async (password) => {
-              if (!password) {
+              const passwordInput = document.getElementById('swal-password-input');
+              const passwordValue = passwordInput.value;
+
+              if (!passwordValue) {
                 Swal.showValidationMessage(`كلمة المرور لا يمكن أن تكون فارغة`);
                 return;
               }
-              const verificationResult = await verifyUserPassword(phoneValue, password);
+              const verificationResult = await verifyUserPassword(phoneValue, passwordValue);
               if (verificationResult.error) {
                 Swal.showValidationMessage(`خطأ: ${verificationResult.error}`);
                 return;
@@ -795,9 +824,9 @@
             },
             allowOutsideClick: () => !Swal.isLoading()
           });
-
-          if (password) { // password هنا هو كائن المستخدم الكامل بعد التحقق الناجح
-            handleLoginSuccess(password);
+          
+          if (passwordResult) { // passwordResult هنا هو كائن المستخدم الكامل بعد التحقق الناجح
+            handleLoginSuccess(passwordResult);
           }
 
         } else if (initialCheck) {
