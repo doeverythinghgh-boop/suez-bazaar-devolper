@@ -15,21 +15,24 @@ const db = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN
 });
 
-export default async function handler(req, res) {
+export default async function handler(req, res) {  
   // ✅ CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  
+
   // ✅ معالجة جميع طلبات OPTIONS أولاً
   if (req.method === "OPTIONS") {
+    console.log(`[CORS] Handled OPTIONS request for: ${req.url}`);
     return res.status(200).end();
   }
 
   try {
+    console.log(`[Request Start] Method: ${req.method}, URL: ${req.url}`);
     // ✅ إضافة مستخدم جديد
     // تعديل الشرط للتعامل مع المسار الأساسي فقط
     if (req.method === "POST" && req.url === '/api/users') {
+      console.log("[Logic] Entered: Add new user.");
       const { username, phone, user_key, password, address } = req.body;
 
       if (!username || !phone || !user_key) {
@@ -59,6 +62,7 @@ export default async function handler(req, res) {
 
     // ✅ جلب المستخدمين
     if (req.method === "GET") {
+      console.log("[Logic] Entered: Fetch users.");
       // استخلاص رقم الهاتف من معاملات الاستعلام (e.g., /api/users?phone=123)
       const { phone } = req.query;
 
@@ -90,6 +94,7 @@ export default async function handler(req, res) {
 
     // ✅ نقطة نهاية جديدة للتحقق من كلمة المرور
     if (req.method === 'POST' && req.url.includes('/api/users/verify')) {
+      console.log("[Logic] Entered: Verify user password.");
       const { phone, password } = req.body;
 
       if (!phone || !password) {
@@ -111,6 +116,7 @@ export default async function handler(req, res) {
 
     // ✅ تحديث المستخدمين (مثل is_seller)
     if (req.method === "PUT") {
+      console.log("[Logic] Entered: Update users.");
       const updates = req.body;
 
       if (!Array.isArray(updates) || updates.length === 0) {
@@ -134,10 +140,11 @@ export default async function handler(req, res) {
       }
     }
 
+    console.log(`[Warning] No logic matched for ${req.method} ${req.url}.`);
     return res.status(405).json({ error: "الطريقة غير مدعومة" });
 
   } catch (err) {
-    console.error(err);
+    console.error("[FATAL ERROR]", err);
     return res.status(500).json({ error: err.message });
   }
 }
