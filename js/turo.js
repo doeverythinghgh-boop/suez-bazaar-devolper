@@ -198,8 +198,8 @@ async function updateUsers(updates) {
 }
 
 /**
- * جديد: يحدث بيانات مستخدم واحد.
- * @param {object} userData - بيانات المستخدم للتحديث. يجب أن تحتوي على user_key.
+ * يحدث بيانات مستخدم واحد.
+ * @param {object} userData - بيانات المستخدم للتحديث (يجب أن تحتوي على user_key).
  * @returns {Promise<Object>}
  */
 async function updateUser(userData) {
@@ -220,11 +220,9 @@ async function updateUser(userData) {
     return data;
   } catch (error) {
     console.error("فشل في تحديث المستخدم:", error);
-    return { error: "فشل الاتصال بالخادم عند تحديث المستخدم." };
+    return { error: "فشل الاتصال بالخادم." };
   }
 }
-
-
 /**
  * يجلب بيانات مستخدم معين عن طريق رقم الهاتف.
  * @param {string} phone - رقم هاتف المستخدم للبحث عنه.

@@ -192,11 +192,12 @@
           class="button logout-btn-small"
           style="display: none"
         ><i class="fas fa-store"></i> عرض منتجاتي</button>
-        <button id="edit-user-btn" class="button logout-btn-small">
-          <i class="fas fa-user-edit"></i> تعديل البيانات
-        </button>
         <button id="view-cart-btn" class="button logout-btn-small" style="display: none;">
           <i class="fas fa-shopping-cart"></i> عرض السلة
+        </button>
+        <!-- جديد: زر تعديل البيانات -->
+        <button id="edit-profile-btn" class="button logout-btn-small" style="display: none;">
+          <i class="fas fa-user-edit"></i> تعديل البيانات
         </button>
         <button
           id="logout-btn-alt"
@@ -276,10 +277,10 @@
       viewCartBtn.style.display = "inline-flex";
       viewCartBtn.addEventListener("click", showCartModal);
 
-      // جديد: إضافة وظيفة لزر "تعديل البيانات"
-      const editUserBtn = document.getElementById("edit-user-btn");
-      editUserBtn.style.display = "inline-flex";
-      editUserBtn.addEventListener("click", () => showEditUserModal(user));
+      // جديد: إظهار زر "تعديل البيانات" وإضافة حدث النقر
+      const editProfileBtn = document.getElementById("edit-profile-btn");
+      editProfileBtn.style.display = "inline-flex";
+      editProfileBtn.addEventListener("click", () => showEditProfileModal(user));
 
       // التحقق مما إذا كان المستخدم بائعًا
       if (user.is_seller === 1) {
@@ -427,6 +428,121 @@
     }
 
     /**
+     * جديد: يعرض نافذة منبثقة لتعديل بيانات المستخدم.
+     * @param {object} currentUser - بيانات المستخدم الحالية.
+     */
+    async function showEditProfileModal(currentUser) {
+      const { value: formValues } = await Swal.fire({
+        title: 'تعديل بياناتك الشخصية',
+        html: `
+          <div style="text-align: right; display: flex; flex-direction: column; gap: 1rem;">
+            <input id="swal-username" class="swal2-input" placeholder="الاسم" value="${currentUser.username || ''}">
+            <input id="swal-phone" class="swal2-input" placeholder="رقم الهاتف" value="${currentUser.phone || ''}">
+            <input id="swal-address" class="swal2-input" placeholder="العنوان (اختياري)" value="${currentUser.Address || ''}">
+            <hr style="border-top: 1px solid #eee; margin: 0.5rem 0;">
+            <p style="font-size: 0.9rem; color: #555;">لتغيير كلمة المرور، أدخل كلمة المرور الجديدة أدناه.</p>
+            <div class="swal2-password-container">
+              <input type="password" id="swal-password" class="swal2-input" placeholder="كلمة المرور الجديدة (اختياري)">
+              <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-password"></i>
+            </div>
+            <div class="swal2-password-container">
+              <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="تأكيد كلمة المرور الجديدة">
+              <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-confirm-password"></i>
+            </div>
+          </div>
+        `,
+        focusConfirm: false,
+        showCancelButton: true,
+        confirmButtonText: 'حفظ التغييرات',
+        cancelButtonText: 'إلغاء',
+        showLoaderOnConfirm: true,
+        didOpen: () => {
+          // وظيفة تبديل عرض كلمة المرور
+          const togglePasswordVisibility = (inputId, toggleId) => {
+            const passwordInput = document.getElementById(inputId);
+            const toggleIcon = document.getElementById(toggleId);
+            toggleIcon.addEventListener('click', () => {
+              const isPassword = passwordInput.type === 'password';
+              passwordInput.type = isPassword ? 'text' : 'password';
+              toggleIcon.classList.toggle('fa-eye');
+              toggleIcon.classList.toggle('fa-eye-slash');
+            });
+          };
+          togglePasswordVisibility('swal-password', 'swal-toggle-password');
+          togglePasswordVisibility('swal-confirm-password', 'swal-toggle-confirm-password');
+        },
+        preConfirm: () => {
+          const username = document.getElementById('swal-username').value;
+          const phone = document.getElementById('swal-phone').value;
+          const address = document.getElementById('swal-address').value;
+          const password = document.getElementById('swal-password').value;
+          const confirmPassword = document.getElementById('swal-confirm-password').value;
+
+          // التحقق من صحة المدخلات
+          if (!username.trim() || username.length < 8) {
+            Swal.showValidationMessage('الاسم مطلوب ويجب أن يكون 8 أحرف على الأقل.');
+            return false;
+          }
+          if (!phone.trim() || phone.length < 11) {
+            Swal.showValidationMessage('رقم الهاتف مطلوب ويجب أن يكون 11 رقمًا على الأقل.');
+            return false;
+          }
+          if (password && password !== confirmPassword) {
+            Swal.showValidationMessage('كلمتا المرور غير متطابقتين.');
+            return false;
+          }
+
+          // تجميع البيانات التي تغيرت فقط
+          const updatedData = { user_key: currentUser.user_key };
+          if (username !== currentUser.username) updatedData.username = username;
+          if (phone !== currentUser.phone) updatedData.phone = phone;
+          if (address !== (currentUser.Address || '')) updatedData.address = address;
+          if (password) updatedData.password = password;
+
+          // إذا لم يتغير شيء، لا ترسل الطلب
+          if (Object.keys(updatedData).length === 1) {
+             Swal.fire('لم يتغير شيء', 'لم تقم بإجراء أي تغييرات على بياناتك.', 'info');
+             return false; // يمنع إغلاق النافذة
+          }
+
+          return updatedData;
+        }
+      });
+
+      if (formValues) {
+        // إرسال البيانات إلى الخادم
+        const result = await updateUser(formValues);
+
+        if (result && !result.error) {
+          // تحديث البيانات في localStorage
+          const updatedUser = { ...currentUser };
+          if (formValues.username) updatedUser.username = formValues.username;
+          if (formValues.phone) updatedUser.phone = formValues.phone;
+          if (formValues.address !== undefined) updatedUser.Address = formValues.address;
+          // لا نحفظ كلمة المرور في localStorage
+
+          localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+
+          // تحديث الواجهة فورًا
+          document.getElementById("welcome-message").textContent = `أهلاً بك، ${updatedUser.username}`;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'تم التحديث بنجاح!',
+            text: result.message,
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'حدث خطأ',
+            text: result.error || 'فشل تحديث البيانات. يرجى المحاولة مرة أخرى.',
+          });
+        }
+      }
+    }
+
+
+    /**
      * يعرض نافذة منبثقة لإضافة منتج جديد.
      */
     async function showAddProductModal() {
@@ -518,111 +634,6 @@
       window.addEventListener('click', (event) => {
         if (event.target == addProductModal) closeEditModal();
       }, { once: true });
-    }
-
-    /**
-     * جديد: يعرض نافذة منبثقة لتعديل بيانات المستخدم.
-     * @param {object} currentUser - بيانات المستخدم الحالية.
-     */
-    async function showEditUserModal(currentUser) {
-      const { value: formValues } = await Swal.fire({
-        title: 'تعديل بياناتك الشخصية',
-        html: `
-          <div style="text-align: right;">
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label for="swal-username">الاسم</label>
-              <input id="swal-username" class="swal2-input" value="${currentUser.username}">
-            </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label for="swal-phone">رقم الهاتف</label>
-              <input id="swal-phone" class="swal2-input" value="${currentUser.phone}">
-            </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-              <label for="swal-address">العنوان (اختياري)</label>
-              <input id="swal-address" class="swal2-input" value="${currentUser.address || ''}">
-            </div>
-            <div class="form-group">
-              <label for="swal-password">كلمة مرور جديدة (اختياري)</label>
-              <input type="password" id="swal-password" class="swal2-input" placeholder="اتركها فارغة لعدم التغيير">
-            </div>
-          </div>
-        `,
-        focusConfirm: false,
-        showCancelButton: true,
-        confirmButtonText: 'حفظ التعديلات',
-        cancelButtonText: 'إلغاء',
-        showLoaderOnConfirm: true,
-        preConfirm: async () => {
-          const username = document.getElementById('swal-username').value.trim();
-          const phone = document.getElementById('swal-phone').value.trim();
-          const address = document.getElementById('swal-address').value.trim();
-          const password = document.getElementById('swal-password').value;
-
-          // التحقق من صحة المدخلات
-          if (!username || username.length < 8) {
-            Swal.showValidationMessage('الاسم مطلوب ويجب أن يكون 8 أحرف على الأقل.');
-            return false;
-          }
-          if (!phone || phone.length < 11) {
-            Swal.showValidationMessage('رقم الهاتف مطلوب ويجب أن يكون 11 رقمًا على الأقل.');
-            return false;
-          }
-
-          // إذا تم إدخال كلمة مرور جديدة، اطلب التأكيد
-          if (password) {
-            const { value: confirmPassword } = await Swal.fire({
-              title: 'تأكيد كلمة المرور الجديدة',
-              input: 'password',
-              inputPlaceholder: 'أعد إدخال كلمة المرور الجديدة',
-              inputValidator: (value) => {
-                if (value !== password) {
-                  return 'كلمتا المرور غير متطابقتين!';
-                }
-              }
-            });
-            if (!confirmPassword) {
-              return false; // أوقف العملية إذا ألغى المستخدم
-            }
-          }
-
-          // بناء كائن البيانات للتحديث
-          const updatedData = {
-            user_key: currentUser.user_key, // المفتاح الأساسي للتحديث
-            username: username,
-            phone: phone,
-            address: address
-          };
-          if (password) {
-            updatedData.password = password;
-          }
-
-          // إرسال البيانات إلى الخادم
-          const result = await updateUser(updatedData);
-
-          if (result && result.error) {
-            Swal.showValidationMessage(`فشل التحديث: ${result.error}`);
-            return false;
-          }
-
-          return updatedData; // إرجاع البيانات المحدثة للنجاح
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-      });
-
-      if (formValues) {
-        // تحديث البيانات في localStorage
-        const updatedUser = { ...currentUser, ...formValues };
-        localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
-
-        // تحديث الواجهة فورًا
-        document.getElementById("welcome-message").textContent = `أهلاً بك، ${updatedUser.username}`;
-
-        Swal.fire({
-          icon: 'success',
-          title: 'تم التحديث بنجاح!',
-          text: 'تم حفظ بياناتك الجديدة.'
-        });
-      }
     }
 
     /**
