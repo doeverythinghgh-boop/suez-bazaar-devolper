@@ -47,9 +47,6 @@ export default async function handler(request) {
         return new Response(JSON.stringify([]), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      const args = [];
-
-
       const { rows } = await db.execute({
         sql: sql,
         args: args,
