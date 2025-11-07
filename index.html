@@ -293,13 +293,12 @@
                     product_key: product.product_key,
                     productName: product.productName,
                     user_key: product.user_key, // ✅ إضافة: تمرير مفتاح البائع
-                    price: product.product_price,
+                    pricePerItem: product.product_price, // ✅ إصلاح: توحيد اسم الخاصية إلى pricePerItem
                     image: `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${firstImage}`,
                     original_price: product.original_price, // ✅ إصلاح: تمرير السعر الأصلي
                     // جديد: تمرير جميع الصور وليس فقط الأولى
                     imageSrc: product.ImageName.split(',').map(name => `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`),
                     availableQuantity: product.product_quantity,
-                    pricePerItem: product.product_price,
                     sellerMessage: product.user_message,
                     description: product.product_description,
                     sellerName: product.seller_username,

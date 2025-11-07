@@ -377,7 +377,11 @@ window.showProductDetails = async function(productData) {
 
   // ✅ إضافة: عرض السعر الأصلي إذا كان موجودًا ومختلفًا عن السعر الحالي
   const originalPriceEl = document.getElementById("product-modal-original-price");
-  if (productData.original_price && parseFloat(productData.original_price) > parseFloat(productData.pricePerItem)) {
+  // ✅ تحسين: التحقق من وجود القيم قبل المقارنة لتجنب الأخطاء
+  const originalPrice = productData.original_price ? parseFloat(productData.original_price) : 0;
+  const currentPrice = productData.pricePerItem ? parseFloat(productData.pricePerItem) : 0;
+
+  if (originalPrice > 0 && originalPrice > currentPrice) {
     originalPriceEl.textContent = `${productData.original_price} جنيه`;
     originalPriceEl.style.display = 'inline';
   } else {
