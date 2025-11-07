@@ -295,6 +295,7 @@
                     user_key: product.user_key, // ✅ إضافة: تمرير مفتاح البائع
                     price: product.product_price,
                     image: `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${firstImage}`,
+                    original_price: product.original_price, // ✅ إصلاح: تمرير السعر الأصلي
                     // جديد: تمرير جميع الصور وليس فقط الأولى
                     imageSrc: product.ImageName.split(',').map(name => `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`),
                     availableQuantity: product.product_quantity,

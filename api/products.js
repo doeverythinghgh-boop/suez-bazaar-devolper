@@ -27,23 +27,28 @@ export default async function handler(request) {
       const MainCategory = searchParams.get('MainCategory');
       const SubCategory = searchParams.get('SubCategory');
 
-      let sql = "SELECT * FROM marketplace_products WHERE 1=1";
+      let sql, args;
+
+      if (MainCategory && SubCategory) {
+        // ✅ تحسين: جلب المنتجات مع بيانات البائع عند التصفح حسب الفئة
+        sql = `
+          SELECT p.*, u.username as seller_username, u.phone as seller_phone 
+          FROM marketplace_products p
+          JOIN users u ON p.user_key = u.user_key
+          WHERE p.MainCategory = ? AND p.SubCategory = ?
+        `;
+        args = [MainCategory, SubCategory];
+      } else if (user_key) {
+        // جلب منتجات بائع معين
+        sql = "SELECT * FROM marketplace_products WHERE user_key = ?";
+        args = [user_key];
+      } else {
+        // في حالة عدم وجود معاملات، أرجع مصفوفة فارغة بدلاً من كل المنتجات
+        return new Response(JSON.stringify([]), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
       const args = [];
 
-      if (user_key) {
-        sql += " AND user_key = ?";
-        args.push(user_key);
-      }
-
-      if (MainCategory) {
-        sql += " AND MainCategory = ?";
-        args.push(MainCategory);
-      }
-
-      if (SubCategory) {
-        sql += " AND SubCategory = ?";
-        args.push(SubCategory);
-      }
 
       const { rows } = await db.execute({
         sql: sql,
