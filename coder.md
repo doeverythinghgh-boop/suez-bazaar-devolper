@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS marketplace_products (
   user_key TEXT NOT NULL,
   product_description TEXT,
   product_price REAL NOT NULL,
+  original_price REAL, --السعر قبل الخصم
   product_quantity INTEGER NOT NULL,
   user_message TEXT,
   user_note TEXT,

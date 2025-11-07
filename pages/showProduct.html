@@ -132,6 +132,15 @@
   .swal2-container {
     z-index: 3000 !important; /* استخدام قيمة z-index عالية جدًا */
   }
+
+  /* ✅ إضافة: تنسيق السعر الأصلي المشطوب */
+  #product-modal-original-price {
+    text-decoration: line-through;
+    color: #95a5a6;
+    font-size: 0.9em;
+    margin-left: 10px;
+  }
+
 </style>
 
 <div class="modal-content product-modal-content" id="product-modal-content">
@@ -155,6 +164,7 @@
     </p>
     <p id="product-modal-price-container">
       <i class="fas fa-tag" id="product-modal-price-icon"></i> سعر القطعة:
+      <span id="product-modal-original-price"></span> <!-- ✅ إضافة: عنصر للسعر الأصلي -->
       <span id="product-modal-price"></span>
     </p>
     <!-- ✅ إضافة: قسم وصف المنتج -->

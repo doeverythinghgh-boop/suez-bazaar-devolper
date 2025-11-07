@@ -64,7 +64,11 @@
   }
   .form-row .form-group {
     flex: 1; /* توزيع المساحة المتبقية */
-    max-width: calc(50% - 0.5rem); /* تحديد عرض أقصى لكل عنصر مع مراعاة المسافة بينهما */
+    /* تعديل: السماح بثلاثة عناصر في الصف */
+    min-width: calc(33.333% - 1rem);
+  }
+  @media (max-width: 768px) {
+    .form-row .form-group { min-width: calc(50% - 0.5rem); }
   }
 
   /* توحيد تنسيق حقول الإدخال */
@@ -322,6 +326,11 @@
         <label for="product-price"><i class="fas fa-dollar-sign"></i>سعر القطعة</label>
         <input type="text" inputmode="decimal" id="product-price" name="product-price" placeholder="بالجنيه" required>
       </div>
+      <!-- جديد: حقل السعر الأصلي -->
+      <div class="form-group">
+        <label for="original-price"><i class="fas fa-tag"></i>السعر الأصلي (قبل الخصم)</label>
+        <input type="text" inputmode="decimal" id="original-price" name="original-price" placeholder="اختياري">
+      </div>
     </div>
 
 
@@ -427,6 +436,7 @@ async function initializeAddProductForm(editProductData = null) {
     document.getElementById('product-notes').value = editProductData.user_note || '';
     document.getElementById('product-quantity').value = editProductData.product_quantity || '';
     document.getElementById('product-price').value = editProductData.product_price || '';
+    document.getElementById('original-price').value = editProductData.original_price || ''; // جديد
 
     // جديد: تعبئة الصور الموجودة مسبقًا
     if (editProductData.ImageName) {
@@ -496,6 +506,7 @@ window.productModule = (function() {
   const notesInput = document.getElementById('product-notes'); // جديد: تعريف حقل الملاحظات
   const quantityInput = document.getElementById('product-quantity');
   const priceInput = document.getElementById('product-price');
+  const originalPriceInput = document.getElementById('original-price'); // جديد
 
   // --- دوال مساعدة لإظهار وإخفاء رسائل الخطأ ---
   /**
@@ -823,6 +834,18 @@ window.productModule = (function() {
     priceInput.value = value;
     if (priceInput.value) clearError(priceInput);
   });
+  
+  // جديد: التحقق من حقل السعر الأصلي
+  originalPriceInput.addEventListener('input', () => {
+    let value = originalPriceInput.value.replace(/[^0-9.]/g, '');
+    const parts = value.split('.');
+    if (parts.length > 2) {
+      value = parts[0] + '.' + parts.slice(1).join('');
+    }
+    originalPriceInput.value = value;
+    // لا يوجد خطأ هنا لأنه حقل اختياري
+    // if (originalPriceInput.value) clearError(originalPriceInput);
+  });
 
 
   // التقاط صورة عبر الكاميرا: فتح ملف مع capture
@@ -974,6 +997,7 @@ window.productModule = (function() {
         product_description: document.getElementById('product-description').value,
         product_price: document.getElementById('product-price').value,
         product_quantity: document.getElementById('product-quantity').value,
+        original_price: document.getElementById('original-price').value || null, // جديد
         user_message: document.getElementById('seller-message').value,
         user_note: document.getElementById('product-notes').value,
         ImageName: finalImageNames.join(','), // استخدام القائمة النهائية للصور

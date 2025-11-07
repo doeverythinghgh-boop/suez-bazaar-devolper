@@ -589,6 +589,13 @@ async function showMyProducts(userKey) {
         }
       }
 
+      // جديد: بناء جزء السعر مع السعر الأصلي إذا كان موجودًا
+      let priceHtml = `<p><strong>السعر:</strong> ${p.product_price} جنيه</p>`;
+      if (p.original_price && parseFloat(p.original_price) > 0) {
+        priceHtml += `<p><strong>السعر الأصلي:</strong> <span style="text-decoration: line-through; color: #7f8c8d;">${p.original_price} جنيه</span></p>`;
+      }
+
+
       tableHTML += `
         <tr>
           <td>${imagesHtml}</td>
@@ -596,7 +603,7 @@ async function showMyProducts(userKey) {
             <p><strong>الاسم:</strong> ${p.productName || 'لا يوجد'}</p>
             <p><strong>الوصف:</strong> ${p.product_description || 'لا يوجد'}</p>
             <p><strong>رسالة البائع:</strong> ${p.user_message || 'لا يوجد'}</p>
-            <p><strong>السعر:</strong> ${p.product_price} جنيه</p>
+            ${priceHtml}
             <p><strong>الكمية:</strong> ${p.product_quantity}</p>
             <p><strong>ملاحظات خاصة:</strong> ${p.user_note || 'لا يوجد'}</p>
             ${dateHtml}
