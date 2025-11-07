@@ -258,8 +258,8 @@ async function showEditProfileModal(currentUser) {
         return false;
       }
 
-      // جديد: إذا تم إدخال كلمة مرور جديدة، تحقق من القديمة أولاً
-      if (password) {
+      // ✅ تعديل: إذا تم إدخال كلمة مرور جديدة، تحقق من القديمة فقط إذا كانت موجودة بالفعل
+      if (password && currentUser.Password) {
         const { value: oldPassword } = await Swal.fire({
           title: 'التحقق من الهوية',
           text: 'لتغيير كلمة المرور، الرجاء إدخال كلمة المرور القديمة.',
@@ -483,8 +483,9 @@ async function showPurchasesModal(userKey) {
         ? `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${firstImage}`
         : 'data:image/svg+xml,...'; // صورة افتراضية
       
-      const purchaseDate = new Date(item.created_at).toLocaleDateString('ar-EG', {
-        year: 'numeric', month: 'long', day: 'numeric'
+      // ✅ تعديل: إظهار التاريخ والوقت معًا
+      const purchaseDate = new Date(item.created_at).toLocaleString('ar-EG', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true
       });
 
       // تحديد تنسيق حالة الطلب
@@ -498,14 +499,20 @@ async function showPurchasesModal(userKey) {
         statusClass = 'status-delivered';
       }
 
+      // ✅ إضافة: حساب الإجمالي لكل منتج
+      const itemPrice = parseFloat(item.product_price) || 0;
+      const itemQuantity = parseInt(item.quantity, 10) || 0;
+      const itemTotal = (itemPrice * itemQuantity).toFixed(2);
+
       contentHTML += `
         <div class="purchase-item">
           <img src="${imageUrl}" alt="${item.productName}">
           <div class="purchase-item-details">
             <strong>${item.productName}</strong>
-            <p><strong>السعر:</strong> ${item.product_price} جنيه</p>
+            <p><strong>سعر القطعة:</strong> ${itemPrice.toFixed(2)} جنيه</p>
             <p><strong>الكمية:</strong> ${item.quantity}</p>
-            <p><strong>تاريخ الشراء:</strong> ${purchaseDate}</p>
+            <p><strong>الإجمالي:</strong> ${itemTotal} جنيه</p>
+            <p><strong>تاريخ الطلب:</strong> ${purchaseDate}</p>
             <p><strong>حالة الطلب:</strong> <span class="purchase-status ${statusClass}">${statusText}</span></p>
           </div>
         </div>`;
