@@ -103,27 +103,66 @@ export default async function handler(req, res) {
       return res.status(200).json(allUsers.rows);
     } else if (req.method === "PUT") {
       console.log("[Logic] Entered: Update users.");
-      const updates = req.body;
+      const body = req.body;
 
-      if (!Array.isArray(updates) || updates.length === 0) {
-        return res.status(400).json({ error: "البيانات المرسلة غير صالحة." });
-      }
-
-      // استخدام معاملة لضمان تحديث كل شيء أو لا شيء
-      const tx = await db.transaction("write");
-      try {
-        for (const user of updates) {
-          await tx.execute({
-            sql: "UPDATE users SET is_seller = ? WHERE phone = ?",
-            args: [user.is_seller, user.phone],
-          });
+      // الحالة 1: تحديث مجموعة مستخدمين (من قبل المسؤول)
+      if (Array.isArray(body)) {
+        const updates = body;
+        if (updates.length === 0) {
+          return res.status(400).json({ error: "البيانات المرسلة غير صالحة." });
         }
-        await tx.commit();
-        return res.status(200).json({ message: "تم تحديث المستخدمين بنجاح." });
-      } catch (e) {
-        await tx.rollback();
-        throw e; // سيتم التقاطه بواسطة كتلة catch الخارجية
+        // استخدام معاملة لضمان تحديث كل شيء أو لا شيء
+        const tx = await db.transaction("write");
+        try {
+          for (const user of updates) {
+            await tx.execute({
+              sql: "UPDATE users SET is_seller = ? WHERE phone = ?",
+              args: [user.is_seller, user.phone],
+            });
+          }
+          await tx.commit();
+          return res.status(200).json({ message: "تم تحديث المستخدمين بنجاح." });
+        } catch (e) {
+          await tx.rollback();
+          throw e; // سيتم التقاطه بواسطة كتلة catch الخارجية
+        }
       }
+      // الحالة 2: تحديث مستخدم واحد (تعديل البيانات الشخصية)
+      else if (typeof body === 'object' && body.user_key) {
+        const { user_key, username, phone, password, address } = body;
+
+        // التحقق من أن رقم الهاتف الجديد (إذا تغير) غير مستخدم
+        if (phone) {
+          const existingPhone = await db.execute({
+            sql: "SELECT user_key FROM users WHERE phone = ? AND user_key != ?",
+            args: [phone, user_key]
+          });
+          if (existingPhone.rows.length > 0) {
+            return res.status(409).json({ error: "رقم الهاتف هذا مستخدم بالفعل." });
+          }
+        }
+
+        // بناء جملة التحديث ديناميكيًا
+        const fields = [];
+        const args = [];
+        if (username) { fields.push("username = ?"); args.push(username); }
+        if (phone) { fields.push("phone = ?"); args.push(phone); }
+        if (password) { fields.push("Password = ?"); args.push(password); }
+        // السماح بتحديث العنوان إلى قيمة فارغة
+        if (address !== undefined) { fields.push("Address = ?"); args.push(address); }
+
+        if (fields.length === 0) {
+          return res.status(400).json({ error: "لا توجد بيانات للتحديث." });
+        }
+
+        args.push(user_key); // إضافة user_key في النهاية لـ WHERE
+        const sql = `UPDATE users SET ${fields.join(", ")} WHERE user_key = ?`;
+
+        await db.execute({ sql, args });
+        return res.status(200).json({ message: "تم تحديث بياناتك بنجاح." });
+      }
+
+      return res.status(400).json({ error: "تنسيق الطلب غير صالح." });
     }
 
     console.log(`[Warning] No logic matched for ${req.method} ${req.url}.`);

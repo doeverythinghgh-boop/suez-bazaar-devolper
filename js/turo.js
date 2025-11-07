@@ -198,6 +198,34 @@ async function updateUsers(updates) {
 }
 
 /**
+ * جديد: يحدث بيانات مستخدم واحد.
+ * @param {object} userData - بيانات المستخدم للتحديث. يجب أن تحتوي على user_key.
+ * @returns {Promise<Object>}
+ */
+async function updateUser(userData) {
+  try {
+    const response = await fetch(`${baseURL}/api/users`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { error: data.error || `HTTP error! status: ${response.status}` };
+    }
+
+    console.log("تم تحديث المستخدم بنجاح:", data);
+    return data;
+  } catch (error) {
+    console.error("فشل في تحديث المستخدم:", error);
+    return { error: "فشل الاتصال بالخادم عند تحديث المستخدم." };
+  }
+}
+
+
+/**
  * يجلب بيانات مستخدم معين عن طريق رقم الهاتف.
  * @param {string} phone - رقم هاتف المستخدم للبحث عنه.
  * @returns {Promise<Object|null>} كائن يحتوي على بيانات المستخدم (الاسم، الهاتف، user_key، حالة البائع) أو null إذا لم يتم العثور عليه أو في حالة حدوث خطأ.
