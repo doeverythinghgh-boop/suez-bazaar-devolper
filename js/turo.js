@@ -437,7 +437,8 @@ window.showProductDetails = async function(productData) {
         product_key: productData.product_key,
         productName: productData.productName, // اسم المنتج
         price: productData.pricePerItem,      // ✅ إصلاح: استخدام السعر الصحيح
-        image: productData.imageSrc[0]        // ✅ إصلاح: استخدام الصورة الأولى كصورة للسلة
+        image: productData.imageSrc[0],       // ✅ إصلاح: استخدام الصورة الأولى كصورة للسلة
+        seller_key: productData.user_key      // ✅ إضافة: تضمين مفتاح البائع
       };
       addToCart(productInfoForCart, quantity);
     } else {
