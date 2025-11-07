@@ -67,7 +67,7 @@ export default async function handler(request) {
     for (const item of items) {
       statements.push({
         sql: "INSERT INTO order_items (order_key, product_key, quantity, seller_key) VALUES (?, ?, ?, ?)",
-        args: [order_key, item.product_key, item.quantity, item.seller_key], // ✅ إضافة: حفظ مفتاح البائع
+        args: [order_key, item.product_key, item.quantity, item.seller_key || null], // ✅ إصلاح: التعامل مع seller_key غير الموجود
       });
     }
 
