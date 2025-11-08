@@ -13,20 +13,24 @@
  * الحصول على توكن FCM، وإرساله إلى السيرفر.
  */
 async function setupFCM() {
+  console.log('%c[FCM Setup] بدأت عملية إعداد الإشعارات...', 'color: purple; font-weight: bold;');
   // التأكد من أن المتصفح يدعم Service Workers
   if (!('serviceWorker' in navigator)) {
     console.warn("[FCM] هذا المتصفح لا يدعم ميزة الإشعارات (Service Workers).");
     return;
   }
 
+  console.log('[FCM Setup] جاري التحقق من وجود مستخدم مسجل...');
   // جلب بيانات المستخدم المسجل دخوله
   const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   if (!loggedInUser || !loggedInUser.user_key) {
-    // لا نطبع رسالة هنا لأن هذا السلوك متوقع للمستخدمين غير المسجلين
+    console.warn('[FCM Setup] لا يوجد مستخدم مسجل أو لا يحتوي على user_key. تتوقف العملية.');
     return;
   }
+  console.log('[FCM Setup] تم العثور على مستخدم مسجل:', loggedInUser.username);
 
   try {
+    console.log('[FCM Setup] جاري تسجيل عامل الخدمة (Service Worker)...');
     // تسجيل الـ Service Worker الخاص بـ Firebase
     await navigator.serviceWorker.register('/firebase-messaging-sw.js');
     console.log('%c[FCM] تم تسجيل عامل الخدمة (Service Worker) بنجاح.', 'color: #28a745');
@@ -35,6 +39,7 @@ async function setupFCM() {
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js");
     const { getMessaging, getToken, onMessage } = await import("https://www.gstatic.com/firebasejs/12.5.0/firebase-messaging.js");
 
+    console.log('[FCM Setup] جاري تهيئة تطبيق Firebase...');
     // إعداد Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyClapclT8_4UlPvM026gmZbYCiXaiBDUYk",
@@ -48,6 +53,7 @@ async function setupFCM() {
 
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
+    console.log('[FCM Setup] تم تهيئة Firebase بنجاح.');
 
     // استقبال الإشعارات أثناء فتح الموقع (Foreground)
     onMessage(messaging, (payload) => {
@@ -58,6 +64,7 @@ async function setupFCM() {
       });
     });
 
+    console.log('[FCM Setup] جاري طلب إذن عرض الإشعارات من المستخدم...');
     // طلب إذن المستخدم لإرسال الإشعارات
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
@@ -65,16 +72,20 @@ async function setupFCM() {
 
       // 1. التحقق من وجود توكن مخزن محليًا.
       let fcmToken = localStorage.getItem('fcm_token');
+      if (fcmToken) {
+        console.log('[FCM Setup] تم العثور على توكن مخزن في localStorage:', fcmToken);
+      }
 
       // 2. إذا لم يوجد توكن، اطلب واحدًا جديدًا.
       if (!fcmToken) {
-        console.log('[FCM] لا يوجد توكن مخزن، جاري طلب توكن جديد من Firebase...');
+        console.log('[FCM Setup] لا يوجد توكن مخزن، جاري طلب توكن جديد من Firebase...');
         try {
           const newFcmToken = await getToken(messaging, { vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY" });
           if (newFcmToken) {
-            console.log('%c[FCM] تم الحصول على توكن جديد:', 'color: #007bff', newFcmToken);
+            console.log('%c[FCM Setup] تم الحصول على توكن جديد:', 'color: #007bff', newFcmToken);
             // 3. خزّن التوكن الجديد محليًا.
-            localStorage.setItem('fcm_token', newFcmToken);
+            console.log('%c[FCM Setup] جاري حفظ التوكن الجديد في localStorage...', 'color: orange;');
+            localStorage.setItem('fcm_token', newFcmToken); // <--- نقطة الحفظ المحلي
             fcmToken = newFcmToken; // استخدم التوكن الجديد في الخطوة التالية.
           } else {
             console.error('[FCM] فشل في الحصول على توكن جديد من Firebase.');
@@ -88,7 +99,7 @@ async function setupFCM() {
       // 4. ✅ إصلاح: إرسال التوكن (سواء كان جديدًا أو مخزنًا) إلى الخادم دائمًا عند كل تحميل للصفحة.
       // هذا يضمن أن الخادم لديه دائمًا أحدث توكن للمستخدم.
       if (fcmToken) {
-        console.log(`%c[FCM] جاري إرسال التوكن إلى الخادم...`, 'color: #fd7e14');
+        console.log(`%c[FCM Setup] جاري إرسال التوكن إلى الخادم...`, 'color: #fd7e14');
         console.log(`[FCM] User Key: ${loggedInUser.user_key}`);
         console.log(`[FCM] FCM Token: ${fcmToken}`);
         
@@ -101,7 +112,7 @@ async function setupFCM() {
 
           const responseData = await response.json();
           if (response.ok) {
-            console.log('%c[FCM] نجح الخادم في حفظ/تحديث التوكن.', 'color: #28a745', responseData);
+            console.log('%c[FCM Setup] نجح الخادم في حفظ/تحديث التوكن.', 'color: #28a745', responseData);
           } else {
             console.error('[FCM] فشل الخادم في حفظ التوكن. الحالة:', response.status, 'الاستجابة:', responseData);
           }
@@ -112,7 +123,7 @@ async function setupFCM() {
         console.error('[FCM] لم يتمكن من الحصول على توكن لإرساله إلى الخادم.');
       }
     } else {
-      console.warn('[FCM] تم رفض إذن إرسال الإشعارات من قبل المستخدم.');
+      console.warn('[FCM Setup] تم رفض إذن إرسال الإشعارات من قبل المستخدم.');
     }
   } catch (error) {
     console.error("%c[FCM] حدث خطأ فادح أثناء إعداد الإشعارات:", 'color: #dc3545', error);

@@ -680,6 +680,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // إضافة مستمع لحدث الإرسال للنموذج
   form.addEventListener("submit", async function (e) {
+    console.log('%c[Login Page] تم الضغط على زر تسجيل الدخول.', 'color: blue; font-weight: bold;');
     e.preventDefault(); // منع الإرسال الافتراضي للنموذج
     let isValid = true;
 
@@ -695,6 +696,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (isValid) {
+      console.log('[Login Page] النموذج صالح، جاري التحقق من المستخدم...');
       // إظهار رسالة تحميل باستخدام SweetAlert2
       Swal.fire({
         title: "جاري تسجيل الدخول...",
@@ -708,6 +710,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const initialCheck = await getUserByPhone(phoneValue);
 
       if (initialCheck && initialCheck.passwordRequired) {
+        console.log('[Login Page] الحساب يتطلب كلمة مرور.');
         // إذا كان الحساب يتطلب كلمة مرور
         Swal.close(); // إغلاق رسالة التحميل
         const { value: passwordResult } = await Swal.fire({
@@ -753,13 +756,16 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         if (passwordResult) { // passwordResult هنا هو كائن المستخدم الكامل بعد التحقق الناجح
+          console.log('[Login Page] التحقق من كلمة المرور نجح. جاري استدعاء handleLoginSuccess...');
           handleLoginSuccess(passwordResult);
         }
 
       } else if (initialCheck) {
+        console.log('[Login Page] تسجيل دخول ناجح (بدون كلمة مرور). جاري استدعاء handleLoginSuccess...');
         // تسجيل دخول ناجح بدون كلمة مرور
         handleLoginSuccess(initialCheck);
       } else {
+        console.error('[Login Page] المستخدم غير موجود.');
         // المستخدم غير موجود
         Swal.close();
         showError(phone, "هذا الرقم غير مسجل. هل تريد إنشاء حساب جديد؟");
@@ -773,11 +779,13 @@ document.addEventListener("DOMContentLoaded", () => {
  * @param {object} user - كائن المستخدم المسجل دخوله.
  */
 function handleLoginSuccess(user) {
+  console.log('%c[Login Page] دخلنا دالة handleLoginSuccess. بيانات المستخدم:', 'color: green;', user);
   localStorage.setItem("loggedInUser", JSON.stringify(user));
 
   // ✅ إصلاح جذري: استدعاء setupFCM() مباشرة بعد نجاح تسجيل الدخول.
   // هذا يضمن الحصول على التوكن وإرساله فورًا دون الحاجة لتحديث الصفحة.
-  if (typeof setupFCM === 'function') setupFCM();
+  console.log('[Login Page] جاري استدعاء setupFCM() الآن...');
+  if (typeof setupFCM === 'function') { setupFCM(); } else { console.error('[Login Page] خطأ فادح: دالة setupFCM غير معرّفة!'); }
   updateViewForLoggedInUser(user);
   if (window.updateCartBadge) window.updateCartBadge();
 
