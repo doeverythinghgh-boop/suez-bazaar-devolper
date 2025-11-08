@@ -16,12 +16,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // 1. Function to show text with zoom-in letters
   async function showTextWithZoom(text) {
     return new Promise((resolve) => {
-      animatedTextElement.innerHTML = ""; // Clear previous content
-      animatedTextElement.classList.remove("hidden", "final-text");
-      // Align content to the right, same as "SB"
+      // ✅ إصلاح: إعادة تعيين كاملة للحالة الأصلية
+      animatedTextElement.innerHTML = ""; // مسح المحتوى السابق
+      animatedTextElement.classList.remove("final-text"); // إزالة الـ class الخاص بالحالة النهائية
+
       const container = animatedTextElement.parentElement;
-      container.style.justifyContent = "flex-start";
-      container.style.direction = "rtl";
+      container.style.justifyContent = "center"; // إعادة المحاذاة إلى الوسط
+      container.style.direction = "ltr"; // إعادة اتجاه النص إلى LTR لاسم "Suez Bazaar"
 
       // Split text into letters and wrap each in a span
       text.split("").forEach((char, index) => {
@@ -42,8 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // 2. Function to hide the text
   async function hideText() {
     return new Promise((resolve) => {
-      animatedTextElement.classList.add("hidden");
-      wait(500).then(resolve); // Corresponds to fade-out duration
+      wait(500).then(resolve); // يتوافق مع مدة تأثير الاختفاء
     });
   }
 
@@ -51,7 +51,6 @@ document.addEventListener("DOMContentLoaded", () => {
   async function showFinalText(text) {
     return new Promise((resolve) => {
       animatedTextElement.innerHTML = text;
-      animatedTextElement.classList.remove("hidden");
       animatedTextElement.classList.add("final-text");
 
       const container = animatedTextElement.parentElement;
@@ -74,6 +73,9 @@ document.addEventListener("DOMContentLoaded", () => {
         "من المورد إلى المستهلك مباشرة — جودة أعلى وسعر أفضل",
         "منتجات مضمونة، موردون موثوقون، تجربة تسوق متكاملة",
       ];
+
+      // ✅ إصلاح: إعادة إظهار العنصر قبل بدء عرض الجمل
+      taglineElement.style.display = 'block'; // أو 'inline' حسب التصميم
 
       // التأكد من أن الجملة الأولى تبدأ دائمًا من حالة مخفية
       taglineElement.classList.remove("visible");
@@ -139,11 +141,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isAnimationRunning) return; // منع تشغيل دورات متعددة في نفس الوقت
     isAnimationRunning = true;
 
-    // Hide the tagline at the very beginning of the cycle
+    // ✅ إصلاح: إخفاء الشعار بالكامل (وليس فقط جعله شفافًا)
+    // هذا يمنع العنصر من التأثير على محاذاة العنوان الرئيسي في الدورة الجديدة
     if (taglineElement.classList.contains("visible")) {
-      taglineElement.classList.remove("visible");
-      await wait(800); // انتظر حتى يختفي تمامًا
+      taglineElement.classList.remove("visible"); // إزالة الشفافية
     }
+    taglineElement.style.display = 'none'; // إخفاء العنصر تمامًا
+    await wait(800); // انتظار حتى يكتمل تأثير الاختفاء إذا كان موجودًا
 
     await showTextWithZoom(fullText);
     await hideText();

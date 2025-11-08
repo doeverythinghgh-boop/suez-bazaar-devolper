@@ -51,6 +51,12 @@ body.modal-open {
 .bazaar-title span {
   display: inline-block;
   opacity: 0;
+  /* ✅ إصلاح: تطبيق التدرج اللوني على كل حرف على حدة */
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
   transform: scale(0);
   animation: zoomInLetter 0.4s forwards;
 }
@@ -67,6 +73,10 @@ body.modal-open {
   transform: scale(1);
   /* Override the flex display to center the block correctly */
   display: inline-block;
+  /* ✅ إصلاح: إعادة اللون الأزرق بشكل صحيح وإلغاء التدرج */
+  color: #007bff;
+  /* إعادة تعيين الخصائص التي تسببت في إخفاء النص */
+  -webkit-text-fill-color: initial;
 }
 
 /* The zoom-in animation for each letter */
@@ -81,7 +91,7 @@ body.modal-open {
 .tagline {
   font-family: "Tajawal", sans-serif; /* A nice Arabic font */
   font-size: clamp(12px, 1.8vh, 18px); /* Responsive font size with min/max */
-  color: #555555; /* Darker gray for readability on white background */
+  color: #003d7a; /* ✅ تعديل: استخدام درجة داكنة من الأزرق لتعزيز الهوية البصرية */
   margin-right: 1.5rem; /* Space between SB and the text, margin-right for RTL */
   opacity: 0; /* Hidden by default */
   transition: opacity 0.8s ease-in-out; /* Slower transition for a smoother effect */
@@ -104,6 +114,16 @@ body.modal-open {
   color: #333; /* لون داكن للأيقونة */
 }
 
+/* ✅ جديد: تنسيق كلمة "مرحباً" التي تظهر بعد تسجيل الدخول */
+.welcome-text {
+  font-family: "Tajawal", sans-serif; /* استخدام خط متناسق */
+  font-size: clamp(14px, 2vh, 16px); /* حجم خط مناسب */
+  font-weight: bold;
+  color: #007bff; /* اللون الأزرق المطلوب */
+  margin-bottom: 4px; /* مسافة صغيرة بينها وبين اسم المستخدم */
+  margin-right: 5px; /* هامش صغير للمحاذاة */
+}
+
 /* === User Profile Section (Icon + Text) === */
 .user-profile {
   display: flex;
@@ -116,7 +136,7 @@ body.modal-open {
 .user-text {
   font-family: "Tajawal", sans-serif;
   font-size: clamp(10px, 1.5vh, 12px); /* حجم خط صغير ومتجاوب */
-  color: #555;
+  color: #007bff; /* ✅ تعديل: تغيير لون اسم المستخدم إلى الأزرق */
   font-weight: bold;
   white-space: nowrap; /* لمنع النص من الانقسام إلى سطرين */
 }
@@ -286,12 +306,13 @@ button,
 
 /* جديد: تنسيق النص أسفل الأيقونة */
 .category-cell-content span {
-  font-size: 0.75rem; /* تصغير حجم الخط أكثر */
-  color: #6c757d; /* لون رمادي للنص */
+  font-size: 0.65rem; /* ✅ تعديل: تكبير حجم الخط قليلاً لتحسين الوضوح */
+  color: #4a5568; /* ✅ تعديل: استخدام لون رمادي داكن ومحايد لتباين أفضل */
   font-weight: 600; /* وزن خط متوسط */
 }
 
 .main-category-row td.active-category .category-cell-content span {
+  color: #ffffff; /* ✅ جديد: تغيير لون النص إلى الأبيض عند الاختيار */
   font-weight: 700; /* جعل الخط أعرض قليلاً عند الاختيار */
 }
 
@@ -513,4 +534,5 @@ button,
     transform: translateY(0);
     opacity: 1;
   }
+}
 }

@@ -148,9 +148,9 @@ function checkLoginStatus() {
 
     // تغيير الأيقونة إلى كلمة "مرحباً"
     if (userIcon) {
-      userIcon.className = ""; // إزالة أيقونة Font Awesome
+      // ✅ تعديل: استخدام class مخصص بدلاً من إزالة كل شيء
+      userIcon.className = "welcome-text"; // إضافة class جديد للتنسيق
       userIcon.textContent = "مرحباً";
-      userIcon.style.marginRight = "5px"; // إضافة هامش صغير
     }
 
     // تحديث النص لعرض اسم المستخدم

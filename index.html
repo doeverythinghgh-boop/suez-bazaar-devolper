@@ -100,30 +100,6 @@
           const data = await response.json();
           const categories = data.categories;
 
-          // ✅ تحسين: ربط الأيقونات بمعرف الفئة (ID) بدلاً من النص لزيادة الموثوقية
-           const iconMap = {
-            1: "fas fa-tshirt", // الملابس والأزياء
-            2: "fas fa-utensils", // الصناعات الغذائية والمأكولات
-            3: "fas fa-laptop-house", // التقنية والالكترونيات
-            4: "fas fa-spa", // الصحة والجمال
-            5: "fas fa-couch", // المنزل والأثاث
-            6: "fas fa-briefcase", // الخدمات المهنية
-            7: "fas fa-car", // المركبات
-            8: "fas fa-basketball-ball", // الرياضة والترفيه
-            9: "fas fa-baby-carriage", // الأطفال والمواليد
-            10: "fas fa-gem", // المجوهرات والساعات
-            11: "fas fa-tools", // الأدوات والمعدات
-            12: "fas fa-paw", // الحيوانات الأليفة
-            13: "fas fa-paint-brush", // الفنون والحرف اليدوية
-            14: "fas fa-seedling", // الزراعة
-            15: "fas fa-graduation-cap", // التعليم والتدريب
-            16: "fas fa-city", // العقارات
-            17: "fas fa-gift", // المناسبات والهدايا
-            18: "fas fa-trophy", // المقتنيات والنوادر
-            19: "fas fa-money-bill-wave", // الخدمات المالية
-            20: "fas fa-plane-departure", // السياحة والسفر
-          };
-
           tbody.innerHTML = ""; // مسح المحتوى القديم
 
           // تجميع الفئات في مجموعات من 3
@@ -139,8 +115,8 @@
               const cell = document.createElement("td");
               cell.dataset.categoryId = category.id; // ✅ إصلاح: تخزين معرف الفئة الرئيسية هنا
 
-              // ✅ تحسين: البحث عن الأيقونة باستخدام معرف الفئة (ID)
-              const iconClass = iconMap[category.id] || "fas fa-store";
+              // ✅ تحسين: قراءة الأيقونة مباشرة من بيانات الفئة
+              const iconClass = category.icon || "fas fa-store"; // استخدام أيقونة افتراضية
               const iconHtml = `<i class="${iconClass}"></i>`;
 
               cell.innerHTML = `
@@ -223,7 +199,8 @@
             const subItem = document.createElement("a");
             subItem.href = `#`;
             subItem.className = "subcategory-item";
-            const iconHtml = sub.icon ? `<i class="${sub.icon}"></i>` : "";
+            // ✅ تحسين: قراءة الأيقونة مباشرة من بيانات الفئة الفرعية
+            const iconHtml = sub.icon ? `<i class="${sub.icon}"></i>` : '<i class="fas fa-tag"></i>';
             subItem.innerHTML = `${iconHtml} ${sub.title}`.trim();
             // إضافة حدث النقر لعرض المنتجات
             subItem.addEventListener("click", (e) => {
