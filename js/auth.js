@@ -104,7 +104,7 @@ async function setupFCM() {
         console.log(`[FCM] FCM Token: ${fcmToken}`);
         
         try {
-          const response = await fetch("/api/tokens", {
+          const response = await fetch(`${baseURL}/api/tokens`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user_key: loggedInUser.user_key, token: fcmToken })
