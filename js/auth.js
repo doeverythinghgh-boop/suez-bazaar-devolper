@@ -15,21 +15,21 @@
 async function setupFCM() {
   // التأكد من أن المتصفح يدعم Service Workers
   if (!('serviceWorker' in navigator)) {
-    console.log("This browser does not support service workers.");
+    console.warn("[FCM] هذا المتصفح لا يدعم عمال الخدمة (Service Workers).");
     return;
   }
 
   // جلب بيانات المستخدم المسجل دخوله
   const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   if (!loggedInUser || !loggedInUser.user_key) {
-    console.log("User not logged in. Skipping FCM setup.");
+    // لا نطبع رسالة هنا لأن هذا السلوك متوقع للمستخدمين غير المسجلين
     return;
   }
 
   try {
     // تسجيل الـ Service Worker الخاص بـ Firebase
     await navigator.serviceWorker.register('/firebase-messaging-sw.js');
-    console.log('Service Worker registered successfully.');
+    console.log('%c[FCM] 1. تم تسجيل عامل الخدمة (Service Worker) بنجاح.', 'color: #28a745');
 
     // استيراد دوال Firebase بشكل ديناميكي
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js");
@@ -51,7 +51,7 @@ async function setupFCM() {
 
     // استقبال الإشعارات أثناء فتح الموقع (Foreground)
     onMessage(messaging, (payload) => {
-      console.log('Foreground message received.', payload);
+      console.log('%c[FCM] 5. تم استقبال إشعار أثناء فتح الموقع (Foreground):', 'color: #17a2b8', payload);
       new Notification(payload.notification.title, {
         body: payload.notification.body,
         icon: '/images/icons/icon-192x192.png'
@@ -61,22 +61,29 @@ async function setupFCM() {
     // طلب إذن المستخدم لإرسال الإشعارات
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
-      console.log('Notification permission granted.');
+      console.log('%c[FCM] 2. تم الحصول على إذن إرسال الإشعارات.', 'color: #28a745');
       // الحصول على توكن FCM
       const fcmToken = await getToken(messaging, { vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY" });
       if (fcmToken) {
-        console.log("FCM Token:", fcmToken);
+        console.log('%c[FCM] 3. تم الحصول على توكن الجهاز (FCM Token):', 'color: #007bff', fcmToken);
         // إرسال التوكن إلى السيرفر لربطه بالمستخدم
-        await fetch("/api/save-token", {
+        console.log('[FCM] 4. جاري إرسال التوكن إلى الخادم...');
+        const response = await fetch("/api/save-token", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ user_key: loggedInUser.user_key, token: fcmToken })
         });
-        console.log("FCM token sent to server.");
+        if (response.ok) {
+          console.log('%c[FCM] 4.1. نجح الخادم في حفظ التوكن.', 'color: #28a745');
+        } else {
+          console.error('[FCM] 4.1. فشل الخادم في حفظ التوكن. الاستجابة:', await response.json());
+        }
       }
+    } else {
+      console.warn('[FCM] 2. تم رفض إذن إرسال الإشعارات من قبل المستخدم.');
     }
   } catch (error) {
-    console.error("Error during FCM setup:", error);
+    console.error("%c[FCM] حدث خطأ فادح أثناء إعداد الإشعارات:", 'color: #dc3545', error);
   }
 }
 

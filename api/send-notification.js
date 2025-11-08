@@ -43,11 +43,14 @@ export default async function handler(req, res) {
   }
 
   const { token, title, body } = req.body;
+  console.log(`[API: /api/send-notification] استلام طلب لإرسال إشعار إلى توكن: ...${token ? token.slice(-10) : 'N/A'}`);
 
   try {
     await admin.messaging().send({ token, notification: { title, body } });
+    console.log(`[API: /api/send-notification] نجاح: تم إرسال الإشعار بنجاح.`);
     res.status(200).json({ success: true });
   } catch (error) {
+    console.error(`[API: /api/send-notification] فشل: حدث خطأ أثناء إرسال الإشعار:`, error);
     res.status(500).json({ error: error.message });
   }
 }

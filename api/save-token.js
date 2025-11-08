@@ -20,14 +20,19 @@ export default async function handler(req, res) {
   }
 
   const { user_key, token } = req.body;
+  console.log(`[API: /api/save-token] استلام طلب لحفظ توكن للمستخدم: ${user_key}`);
+
   if (!user_key || !token) {
+    console.error('[API: /api/save-token] خطأ: الطلب لا يحتوي على user_key أو token.');
     return res.status(400).json({ error: "user_key and token are required." });
   }
 
   try {
     await db.execute("INSERT OR REPLACE INTO user_tokens (user_key, fcm_token) VALUES (?, ?)", [user_key, token]);
+    console.log(`[API: /api/save-token] نجاح: تم حفظ التوكن للمستخدم ${user_key} بنجاح.`);
     res.status(200).json({ success: true });
   } catch (err) {
+    console.error(`[API: /api/save-token] فشل: خطأ في قاعدة البيانات للمستخدم ${user_key}:`, err);
     res.status(500).json({ error: err.message });
   }
 }
