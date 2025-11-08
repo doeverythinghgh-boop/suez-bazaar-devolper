@@ -47,35 +47,50 @@
   <div id="logged-in-container" class="login-page-wrapper" style="display: none">
     <div class="login-container">
       <h2 id="welcome-message"></h2>
-      <!-- Container for action buttons -->
+      <!-- جديد: حاوية رئيسية للأزرار مقسمة إلى مجموعات -->
       <div class="action-buttons">
-        <button
-          id="add-product-btn"
-          class="button logout-btn-small"
-          style="display: none"
-        >
-          <i class="fas fa-plus"></i> إضافة منتج
-        </button>
-        <button
-          id="view-my-products-btn"
-          class="button logout-btn-small"
-          style="display: none"
-        ><i class="fas fa-store"></i> عرض منتجاتي</button>
-        <button id="view-cart-btn" class="button logout-btn-small" style="display: none;">
-          <i class="fas fa-shopping-cart"></i> عرض السلة
-        </button>
-        <button id="view-purchases-btn" class="button logout-btn-small" style="display: none;">
-          <i class="fas fa-history"></i> المشتريات
-        </button>
-        <!-- جديد: زر تعديل البيانات -->
-        <button id="edit-profile-btn" class="button logout-btn-small" style="display: none;">
-          <i class="fas fa-user-edit"></i> تعديل البيانات
-        </button>
-        <button
-          id="logout-btn-alt"
-          class="button logout-btn-small">
-          <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
-        </button>
+        <!-- مجموعة المسؤول (تظهر للمسؤول فقط) -->
+        <div id="admin-actions" class="button-group" style="display: none; animation-delay: 0s;">
+          <h3><i class="fas fa-crown"></i> أدوات المسؤول</h3>
+          <div class="button-row">
+            <!-- زر لوحة تحكم المسؤول سيتم إضافته هنا بواسطة JS -->
+          </div>
+        </div>
+
+        <!-- مجموعة البائع (تظهر للبائع فقط) -->
+        <div id="seller-actions" class="button-group" style="display: none; animation-delay: 0.1s;">
+          <h3><i class="fas fa-store"></i> أدوات البائع</h3>
+          <div class="button-row">
+            <button id="add-product-btn" class="button logout-btn-small">
+              <i class="fas fa-plus"></i> إضافة منتج
+            </button>
+            <button id="view-my-products-btn" class="button logout-btn-small">
+              <i class="fas fa-boxes-stacked"></i> عرض منتجاتي
+            </button>
+          </div>
+        </div>
+
+        <!-- مجموعة العميل (تظهر لجميع المستخدمين) -->
+        <div id="customer-actions" class="button-group" style="display: none; animation-delay: 0.2s;">
+          <h3><i class="fas fa-user"></i> حسابي</h3>
+          <div class="button-row">
+            <button id="view-cart-btn" class="button logout-btn-small">
+              <i class="fas fa-shopping-cart"></i> عرض السلة
+            </button>
+            <button id="view-purchases-btn" class="button logout-btn-small">
+              <i class="fas fa-history"></i> المشتريات
+            </button>
+          </div>
+        </div>
+
+        <!-- مجموعة الإعدادات (تظهر لجميع المستخدمين) -->
+        <div id="user-actions" class="button-group" style="display: none; animation-delay: 0.3s;">
+          <h3><i class="fas fa-cogs"></i> الإعدادات</h3>
+          <div class="button-row">
+            <button id="edit-profile-btn" class="button logout-btn-small"><i class="fas fa-user-cog"></i> تعديل البيانات</button>
+            <button id="logout-btn-alt" class="button logout-btn-small"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+          </div>
+        </div>
       </div>
       <!-- حاوية لعرض جدول المستخدمين -->
       <div id="users-table-container" style="width: 100%; margin-top: 20px; display: none;">
@@ -84,10 +99,6 @@
             <button id="update-users-btn" class="button" style="background-color: #28a745;">حفظ التغييرات</button>
             <button id="cancel-update-btn" class="button" style="background-color: #6c757d;">إلغاء التغييرات</button>
         </div>
-      </div>
-      <!-- جديد: حاوية لعرض جدول منتجاتي -->
-      <div id="my-products-container">
-        <!-- سيتم ملء المحتوى هنا بواسطة جافاسكريبت -->
       </div>
     </div>
   </div>
@@ -121,6 +132,10 @@
   <!-- جديد: حاوية النافذة المنبثقة للمشتريات -->
   <div id="purchases-modal-container" class="modal">
     <!-- سيتم ملء محتوى المشتريات هنا -->
+  </div>
+  <!-- جديد: حاوية النافذة المنبثقة لمنتجاتي -->
+  <div id="my-products-modal-container" class="modal">
+    <!-- سيتم ملء محتوى منتجاتي هنا -->
   </div>
   <script src="cloudflare-workers/cloudFileManager.js"></script>
   <script src="js/cart.js"></script> <!-- ✅ إضافة: تحميل ملف السلة -->

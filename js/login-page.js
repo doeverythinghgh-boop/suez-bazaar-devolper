@@ -32,235 +32,45 @@ function updateViewForLoggedInUser(user) {
   // إضافة وظيفة لزر تسجيل الخروج
   document.getElementById("logout-btn-alt").addEventListener("click", logout); // هذا الزر الآن هو زر تسجيل الخروج الصحيح
 
-  // ✅ تصحيح: إظهار زر "عرض السلة" لجميع المستخدمين المسجلين
-  const viewCartBtn = document.getElementById("view-cart-btn");
-  viewCartBtn.style.display = "inline-flex";
-  viewCartBtn.addEventListener("click", showCartModal);
+  // إظهار حاوية إجراءات العميل (السلة والمشتريات)
+  const customerActions = document.getElementById("customer-actions");
+  customerActions.style.display = "block";
+  document.getElementById("view-cart-btn").addEventListener("click", showCartModal);
+  document.getElementById("view-purchases-btn").addEventListener("click", () => showPurchasesModal(user.user_key));
 
-  // جديد: إظهار زر "المشتريات" لجميع المستخدمين المسجلين
-  const viewPurchasesBtn = document.getElementById("view-purchases-btn");
-  viewPurchasesBtn.style.display = "inline-flex";
-  viewPurchasesBtn.addEventListener("click", () => showPurchasesModal(user.user_key));
-
-
-  // جديد: إظهار زر "تعديل البيانات" وإضافة حدث النقر
-  const editProfileBtn = document.getElementById("edit-profile-btn");
-  editProfileBtn.style.display = "inline-flex";
-  editProfileBtn.addEventListener("click", () => showEditProfileModal(user));
+  // إظهار حاوية الإجراءات العامة (تعديل البيانات وتسجيل الخروج)
+  const userActions = document.getElementById("user-actions");
+  userActions.style.display = "block";
+  document.getElementById("edit-profile-btn").addEventListener("click", () => showEditProfileModal(user));
 
   // التحقق مما إذا كان المستخدم بائعًا
   if (user.is_seller === 1) {
-    const addProductBtn = document.getElementById("add-product-btn");
-    addProductBtn.style.display = "inline-flex"; // إظهار الزر
-    addProductBtn.addEventListener("click", showAddProductModal); // إضافة حدث النقر
+    // إظهار حاوية إجراءات البائع
+    const sellerActions = document.getElementById("seller-actions");
+    sellerActions.style.display = "block";
 
-    // جديد: إظهار زر "عرض منتجاتي" وإضافة حدث النقر
-    const viewMyProductsBtn = document.getElementById("view-my-products-btn");
-    viewMyProductsBtn.style.display = "inline-flex";
-    viewMyProductsBtn.addEventListener("click", () => showMyProducts(user.user_key));
-
+    // ربط الأحداث بأزرار البائع
+    document.getElementById("add-product-btn").addEventListener("click", showAddProductModal);
+    document.getElementById("view-my-products-btn").addEventListener("click", () => showMyProducts(user.user_key));
   }
 
   // التحقق مما إذا كان المستخدم هو أحد المسؤولين المحددين
   const adminPhoneNumbers = ["01024182175", "01026546550"];
   if (adminPhoneNumbers.includes(user.phone)) {
-    // إنشاء زر "عرض المستخدمين" إذا لم يكن موجودًا بالفعل
-    if (!document.getElementById("view-users-btn")) {
-      const viewUsersButton = document.createElement("a");
-      viewUsersButton.id = "view-users-btn"; // إضافة ID لمنع التكرار
-      viewUsersButton.href = "#"; // منع الانتقال لصفحة أخرى
-      viewUsersButton.className = "button logout-btn-small";
-      viewUsersButton.style.textDecoration = "none";
-      viewUsersButton.innerHTML =
-        '<i class="fas fa-users"></i> عرض المستخدمين';
-      
-      const tableActions = document.getElementById("table-actions");
-      const updateBtn = document.getElementById("update-users-btn");
-      const cancelBtn = document.getElementById("cancel-update-btn");
+    // إظهار حاوية إجراءات المسؤول
+    const adminActions = document.getElementById("admin-actions");
+    adminActions.style.display = "block";
 
-      // دالة لتحميل وتعبئة جدول المستخدمين
-      async function loadUsersTable() {
-        const tableContentWrapper = document.getElementById("table-content-wrapper");
-        tableContentWrapper.innerHTML = '<div class="loader"></div>'; // إظهار مؤشر تحميل
-        
-        const users = await fetchUsers(); // جلب المستخدمين
+    // إنشاء زر "لوحة تحكم المسؤول" الذي يوجه إلى الصفحة الجديدة
+    const adminPanelButton = document.createElement("a");
+    adminPanelButton.id = "admin-panel-btn"; // جديد: إضافة ID للتنسيق عبر CSS
+    adminPanelButton.href = "admin.html"; // رابط الصفحة الجديدة
+    adminPanelButton.className = "button logout-btn-small";
+    adminPanelButton.innerHTML = '<i class="fas fa-user-shield"></i> لوحة تحكم المسؤول';
 
-        if (users && users.length > 0) {
-          let tableHTML = `
-            <table class="users-table">
-              <thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>بائع؟</th></tr></thead>
-              <tbody>`;
-          users.forEach(u => {
-            tableHTML += `
-              <tr>
-                <td>${u.username || 'غير متوفر'}</td>
-                <td>${u.phone}</td>
-                <td><input type="checkbox" class="seller-checkbox" data-phone="${u.phone}" data-original-state="${u.is_seller}" ${u.is_seller === 1 ? 'checked' : ''}></td>
-              </tr>`;
-          });
-          tableHTML += `</tbody></table>`;
-          tableContentWrapper.innerHTML = tableHTML;
-        } else {
-          tableContentWrapper.innerHTML = "<p>لم يتم العثور على مستخدمين.</p>";
-        }
-        tableActions.style.display = 'none'; // إخفاء الأزرار عند إعادة التحميل
-      }
-
-      // حدث النقر على زر "عرض المستخدمين"
-      viewUsersButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        const mainContainer = document.getElementById("users-table-container");
-        const productsContainer = document.getElementById("my-products-container"); // جديد: الحصول على حاوية المنتجات
-
-        if (mainContainer.style.display === "block") {
-          mainContainer.style.display = "none";
-        } else {
-          // جديد: إخفاء جدول المنتجات إذا كان ظاهراً
-          if (productsContainer.style.display === "block") {
-            productsContainer.style.display = "none";
-          }
-          mainContainer.style.display = "block";
-          loadUsersTable(); // تحميل الجدول عند إظهاره
-        }
-      });
-
-      // إضافة مستمع للتغييرات على مربعات الاختيار لإظهار الأزرار
-      document.getElementById("users-table-container").addEventListener('change', (event) => {
-        if (event.target.classList.contains('seller-checkbox')) {
-          tableActions.style.display = 'flex'; // إظهار حاوية الأزرار
-        }
-      });
-
-      // حدث النقر على زر "إلغاء التغييرات"
-      cancelBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        loadUsersTable(); // إعادة تحميل الجدول لإلغاء التغييرات
-      });
-
-      // حدث النقر على زر "حفظ التغييرات"
-      updateBtn.addEventListener('click', async () => {
-        const checkboxes = document.querySelectorAll('.seller-checkbox');
-        const updates = []; // لتخزين جميع التحديثات
-        const changedUsersNames = []; // لتخزين أسماء المستخدمين الذين تغيرت حالتهم
-
-        checkboxes.forEach(cb => {
-          const isSellerNow = cb.checked ? 1 : 0;
-          const originalState = parseInt(cb.dataset.originalState, 10);
-
-          // إضافة المستخدم إلى قائمة التحديثات
-          updates.push({
-            phone: cb.dataset.phone,
-            is_seller: isSellerNow
-          });
-
-          // التحقق مما إذا كانت الحالة قد تغيرت
-          if (isSellerNow !== originalState) {
-            const userName = cb.closest('tr').querySelector('td:first-child').textContent;
-            changedUsersNames.push(userName);
-          }
-        });
-
-        const confirmationText = changedUsersNames.length > 0 
-          ? `سيتم تحديث حالة المستخدمين: ${changedUsersNames.join('، ')}.`
-          : "لم يتم إجراء أي تغييرات.";
-
-        Swal.fire({
-          title: 'هل أنت متأكد؟',
-          text: confirmationText,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'نعم، قم بالتحديث!',
-          cancelButtonText: 'إلغاء'
-        }).then(async (result) => {
-          if (result.isConfirmed && changedUsersNames.length > 0) {
-            const updateResult = await updateUsers(updates);
-            if (updateResult && !updateResult.error) {
-              Swal.fire('تم التحديث!', 'تم حفظ التغييرات بنجاح.', 'success');
-              tableActions.style.display = 'none'; // إخفاء الأزرار بعد الحفظ
-            } else {
-              Swal.fire('خطأ!', 'فشل تحديث البيانات.', 'error');
-            }
-          }
-        });
-      });
-
-      const actionButtonsContainer =
-        loggedInContainer.querySelector(".action-buttons");
-      actionButtonsContainer.appendChild(viewUsersButton);
-
-      // جديد: إضافة زر لمسح بيانات المتصفح للمسؤول فقط
-      const clearBrowserDataButton = document.createElement("a");
-      clearBrowserDataButton.id = "clear-data-btn";
-      clearBrowserDataButton.href = "#";
-      clearBrowserDataButton.className = "button logout-btn-small";
-      clearBrowserDataButton.style.textDecoration = "none";
-      clearBrowserDataButton.style.backgroundColor = "#c0392b"; // لون أحمر داكن للتحذير
-      clearBrowserDataButton.innerHTML = '<i class="fas fa-broom"></i> مسح بيانات المتصفح';
-
-      actionButtonsContainer.appendChild(clearBrowserDataButton);
-
-      // إضافة حدث النقر لزر مسح البيانات
-      clearBrowserDataButton.addEventListener("click", (e) => {
-        e.preventDefault();
-        Swal.fire({
-          title: 'هل أنت متأكد تمامًا؟',
-          text: "سيتم مسح جميع بيانات الموقع من هذا المتصفح (localStorage, sessionStorage) وتسجيل خروجك. هذا الإجراء لا يمكن التراجع عنه!",
-          icon: 'error',
-          showCancelButton: true,
-          confirmButtonColor: '#e74c3c',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'نعم، امسح كل شيء!',
-          cancelButtonText: 'إلغاء',
-          showLoaderOnConfirm: true,
-          preConfirm: async () => {
-            try {
-              // 1. مسح التخزين المحلي والجلسة
-              localStorage.clear();
-              sessionStorage.clear();
-              console.log('[Admin Reset] تم مسح localStorage و sessionStorage.');
-
-              // 2. إلغاء تسجيل جميع عمال الخدمة (Service Workers)
-              if ('serviceWorker' in navigator) {
-                const registrations = await navigator.serviceWorker.getRegistrations();
-                for (const registration of registrations) {
-                  await registration.unregister();
-                  console.log('[Admin Reset] تم إلغاء تسجيل Service Worker:', registration.scope);
-                }
-              }
-
-              // 3. مسح جميع ذاكرات التخزين المؤقت (Cache Storage)
-              if ('caches' in window) {
-                const keys = await caches.keys();
-                await Promise.all(keys.map(key => caches.delete(key)));
-                console.log('[Admin Reset] تم مسح جميع ذاكرات التخزين المؤقت:', keys);
-              }
-
-              // 4. مسح جميع ملفات تعريف الارتباط (Cookies)
-              const cookies = document.cookie.split(";");
-              for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i];
-                const eqPos = cookie.indexOf("=");
-                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
-                document.cookie = name.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
-              }
-              console.log('[Admin Reset] تم مسح ملفات تعريف الارتباط.');
-
-            } catch (error) {
-              Swal.showValidationMessage(`فشل إعادة التعيين: ${error}`);
-            }
-          },
-          allowOutsideClick: () => !Swal.isLoading()
-        }).then((result) => {
-          if (result.isConfirmed) {
-            Swal.fire('تم!', 'تم مسح جميع بيانات الموقع من المتصفح. سيتم إعادة تحميل الصفحة.', 'success').then(() => {
-              window.location.reload(true); // إعادة تحميل قسرية (hard reload)
-            });
-          }
-        });
-      });
-    }
+    // إضافة الزر إلى حاوية المسؤول
+    const adminButtonRow = adminActions.querySelector(".button-row");
+    adminButtonRow.appendChild(adminPanelButton);
   }
 }
 
@@ -461,14 +271,15 @@ async function showAddProductModal() {
 /**
  * جديد: يعرض نافذة منبثقة لتعديل منتج موجود.
  * @param {object} productData - بيانات المنتج المراد تعديله.
+ * @param {function} [onCloseCallback] - دالة اختيارية يتم استدعاؤها عند إغلاق النافذة.
  */
-async function showEditProductModal(productData) {
+async function showEditProductModal(productData, onCloseCallback) {
   const addProductModal = document.getElementById("add-product-modal");
   
   // تحميل محتوى نموذج إضافة المنتج
   const response = await fetch("pages/addProduct.html");
   const modalContent = await response.text();
-  addProductModal.innerHTML = modalContent;
+  addProductModal.innerHTML = modalContent; // This also loads the script inside addProduct.html
 
   // إظهار النافذة المنبثقة
   document.body.classList.add("modal-open");
@@ -483,7 +294,7 @@ async function showEditProductModal(productData) {
     
     // استدعاء دالة التهيئة وتمرير بيانات المنتج لوضع التعديل
     if (typeof initializeAddProductForm === "function") {
-      // ننتظر قليلاً لضمان تحميل كل شيء قبل التعبئة
+      // ننتظر قليلاً لضمان تحميل كل شيء قبل التعبئة. نمرر دالة رد الاتصال إلى التهيئة.
       setTimeout(() => initializeAddProductForm(productData), 100);
     }
     
@@ -495,16 +306,20 @@ async function showEditProductModal(productData) {
     addProductModal.style.display = "none";
     addProductModal.innerHTML = ""; // تنظيف المحتوى
     document.body.classList.remove("modal-open");
+    // استدعاء دالة رد الاتصال إذا كانت موجودة
+    if (typeof onCloseCallback === 'function') {
+      onCloseCallback();
+    }
   };
 
   // إضافة حدث النقر لزر الإغلاق
   const closeBtn = document.getElementById("add-product-modal-close-btn");
   if (closeBtn) closeBtn.onclick = closeEditModal;
 
-  // إغلاق النافذة عند النقر خارجها
-  // استخدام { once: true } يضمن أن المستمع يعمل مرة واحدة ثم يزيل نفسه تلقائيًا
+  // إغلاق النافذة عند النقر خارجها.
   window.addEventListener('click', (event) => {
     if (event.target == addProductModal) closeEditModal();
+    // استخدام { once: true } يضمن أن المستمع يعمل مرة واحدة ثم يزيل نفسه تلقائيًا
   }, { once: true });
 }
 
@@ -605,100 +420,102 @@ async function showPurchasesModal(userKey) {
  * @param {string} userKey - المفتاح الفريد للمستخدم.
  */
 async function showMyProducts(userKey) {
-  const container = document.getElementById("my-products-container");
-  const usersContainer = document.getElementById("users-table-container"); // جديد: الحصول على حاوية المستخدمين
-  
-  // تبديل العرض: إذا كان الجدول ظاهراً، قم بإخفائه. وإلا، قم بتحميله وإظهاره.
-  if (container.style.display === "block") {
-    container.style.display = "none";
-    return;
-  }
+  const modalContainer = document.getElementById("my-products-modal-container");
 
-  // جديد: إخفاء جدول المستخدمين إذا كان ظاهراً
-  if (usersContainer.style.display === "block") {
-    usersContainer.style.display = "none";
-  }
+  // 1. تحميل هيكل النافذة المنبثقة وعرضها مع مؤشر تحميل
+  const response = await fetch("pages/myProductsModal.html");
+  modalContainer.innerHTML = await response.text();
+  const contentWrapper = modalContainer.querySelector("#my-products-content-wrapper");
+  contentWrapper.innerHTML = '<div class="loader" style="margin: 2rem auto;"></div>';
 
-  container.innerHTML = '<div class="loader"></div>'; // إظهار مؤشر التحميل
-  container.style.display = "block";
+  document.body.classList.add("modal-open");
+  modalContainer.style.display = "block";
 
+  // 2. إعداد وظيفة الإغلاق
+  const closeModal = () => {
+    modalContainer.style.display = "none";
+    modalContainer.innerHTML = ""; // تنظيف المحتوى عند الإغلاق
+    document.body.classList.remove("modal-open");
+  };
+
+  modalContainer.querySelector("#my-products-modal-close-btn").onclick = closeModal;
+  window.addEventListener('click', (event) => {
+    if (event.target == modalContainer) closeModal();
+  }, { once: true });
+
+  // 3. جلب بيانات المنتجات
   const products = await getProductsByUser(userKey);
 
+  // 4. بناء وعرض الجدول داخل النافذة المنبثقة
   if (products && products.length > 0) {
-    // بناء الجدول
-    let tableHTML = `
-      <table class="products-table">
-        <thead>
-          <tr>
-            <th>صورة المنتج</th>
-            <th>تفاصيل المنتج</th>
-            <th>الإجراءات</th>
-          </tr>
-        </thead>
-        <tbody>`;
+    let cardsHTML = `<div class="product-cards-container">`;
 
-    products.forEach(p => {
-      // جديد: بناء HTML لعرض جميع صور المنتج
+    products.forEach(product => {
+      // بناء قسم الصور
       let imagesHtml = '';
-      if (p.ImageName) {
-        const imageNames = p.ImageName.split(',');
-        imagesHtml = '<div class="product-images-container">';
+      if (product.ImageName) {
+        const imageNames = product.ImageName.split(',');
         imageNames.forEach(imageName => {
-          if (imageName) { // التأكد من أن اسم الصورة ليس فارغًا
+          if (imageName) {
             const imageUrl = `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${imageName}`;
             imagesHtml += `<img src="${imageUrl}" alt="صورة منتج" onerror="this.style.display='none'">`;
           }
         });
-        imagesHtml += '</div>';
       } else {
-        imagesHtml = `<img src="data:image/svg+xml;charset=UTF-8,%3csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='xMidYMid meet'%3e%3crect width='100' height='100' fill='%23e0e0e0'/%3e%3ctext x='50' y='50' font-family='Arial' font-size='12' dy='.3em' fill='%23999' text-anchor='middle'%3eNo Image%3c/text%3e%3c/svg%3e'" alt="لا توجد صورة">`;
+        imagesHtml = '<span>لا توجد صور</span>';
       }
 
-      // تحويل كائن المنتج إلى نص JSON لاستخدامه في زر التعديل
-      const productJson = JSON.stringify(p);
+      const productJson = JSON.stringify(product);
 
-      // جديد: بناء جزء السعر مع السعر قبل الخصم إذا كان موجودًا
-      let priceHtml = `<p><strong>السعر:</strong> ${p.product_price} جنيه</p>`;
-      if (p.original_price && parseFloat(p.original_price) > 0) {
-        priceHtml += `<p><strong>السعر قبل الخصم:</strong> <span style="text-decoration: line-through; color: #7f8c8d;">${p.original_price} جنيه</span></p>`;
+      // بناء قسم السعر
+      let priceHtml = `<p><strong>السعر:</strong> ${product.product_price} جنيه</p>`;
+      if (product.original_price && parseFloat(product.original_price) > 0) {
+        priceHtml += `<p><strong>السعر قبل الخصم:</strong> <span style="text-decoration: line-through; color: #7f8c8d;">${product.original_price} جنيه</span></p>`;
       }
 
-
-      tableHTML += `
-        <tr>
-          <td>${imagesHtml}</td>
-          <td class="product-details">
-            <p><strong>الاسم:</strong> ${p.productName || 'لا يوجد'}</p>
-            <p><strong>الوصف:</strong> ${p.product_description || 'لا يوجد'}</p>
-            <p><strong>رسالة البائع:</strong> ${p.user_message || 'لا يوجد'}</p>
+      // بناء بطاقة المنتج
+      cardsHTML += `
+        <div class="product-card">
+          <div class="product-card-images">${imagesHtml}</div>
+          <div class="product-card-details">
+            <h4>${product.productName || 'منتج بلا اسم'}</h4>
+            <p><strong>الوصف:</strong> ${product.product_description || 'لا يوجد'}</p>
+            <p><strong>رسالة البائع:</strong> ${product.user_message || 'لا يوجد'}</p>
             ${priceHtml}
-            <p><strong>الكمية:</strong> ${p.product_quantity}</p>
-            <p><strong>ملاحظات خاصة:</strong> ${p.user_note || 'لا يوجد'}</p>
-          </td>
-          <td class="actions-cell">
+            <p><strong>الكمية:</strong> ${product.product_quantity}</p>
+            <p><strong>ملاحظات خاصة:</strong> ${product.user_note || 'لا يوجد'}</p>
+          </div>
+          <div class="product-card-actions">
             <button class="button logout-btn-small edit-product-btn" data-product='${productJson}'>
               <i class="fas fa-edit"></i> تعديل
             </button>
-          </td>
-        </tr>`;
+          </div>
+        </div>`;
     });
 
-    tableHTML += `</tbody></table>`;
-    container.innerHTML = tableHTML;
+    cardsHTML += `</div>`;
+    contentWrapper.innerHTML = cardsHTML;
 
-    // إضافة مستمعي الأحداث لأزرار التعديل بعد بناء الجدول
-    const editButtons = container.querySelectorAll('.edit-product-btn');
+    // 5. ربط الأحداث بأزرار التعديل داخل النافذة المنبثقة
+    const editButtons = contentWrapper.querySelectorAll('.edit-product-btn');
     editButtons.forEach(button => {
       button.addEventListener('click', (event) => {
         const productData = JSON.parse(event.currentTarget.dataset.product);
-        showEditProductModal(productData);
+        
+        // إخفاء نافذة "منتجاتي" مؤقتًا بدلاً من إغلاقها بالكامل
+        modalContainer.style.display = "none";
+
+        // فتح نافذة التعديل، وتمرير دالة لإعادة إظهار نافذة "منتجاتي" عند الإغلاق
+        showEditProductModal(productData, () => {
+          modalContainer.style.display = "block"; // إعادة إظهار نافذة "منتجاتي"
+        });
       });
     });
 
   } else if (products) {
-    container.innerHTML = "<p>لم تقم بإضافة أي منتجات بعد.</p>";
+    contentWrapper.innerHTML = "<p style='text-align: center; padding: 2rem 0;'>لم تقم بإضافة أي منتجات بعد.</p>";
   } else {
-    container.innerHTML = "<p>حدث خطأ أثناء تحميل منتجاتك. يرجى المحاولة مرة أخرى.</p>";
+    contentWrapper.innerHTML = "<p style='text-align: center; padding: 2rem 0; color: red;'>حدث خطأ أثناء تحميل منتجاتك. يرجى المحاولة مرة أخرى.</p>";
   }
 }
 

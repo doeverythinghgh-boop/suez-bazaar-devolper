@@ -1027,16 +1027,17 @@ window.productModule = (function() {
         throw new Error(`فشل حفظ بيانات المنتج: ${dbResult.error}`);
       }
 
-      // 7. عرض رسالة النجاح وإعادة تحميل جدول المنتجات
+      // 7. عرض رسالة النجاح، إغلاق نافذة التعديل، وتحديث قائمة المنتجات
       Swal.fire('تم بنجاح!', successMessage, 'success').then(() => {
         // إغلاق النافذة المنبثقة
         const closeBtn = document.getElementById("add-product-modal-close-btn");
         if (closeBtn) closeBtn.click();
         
-        // إعادة تحميل جدول المنتجات لإظهار التغييرات
-        const viewMyProductsBtn = document.getElementById("view-my-products-btn");
-        if(viewMyProductsBtn) viewMyProductsBtn.click(); // إخفاء الجدول
-        if(viewMyProductsBtn) viewMyProductsBtn.click(); // إظهاره مجددًا ليتم تحديثه
+        // إذا كان المستخدم موجودًا، قم بتحديث عرض "منتجاتي"
+        const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+        if (loggedInUser && typeof showMyProducts === 'function') {
+          showMyProducts(loggedInUser.user_key);
+        }
       });
 
     } catch (error) {

@@ -11,6 +11,7 @@
 }
 .swal2-password-container .swal2-input {
   padding-left: 2.5rem; /* مساحة للأيقونة */
+  width: 100%; /* جديد: ضمان أن الحقل يأخذ العرض الكامل */
 }
 .swal2-password-toggle-icon {
   position: absolute;
@@ -21,21 +22,80 @@
   color: #7066e0;
 }
 /* Custom style for the smaller logout button */
+/* --- جديد: إعادة تصميم أزرار الإجراءات --- */
 .logout-btn-small {
-  width: auto; /* Override full width */
-  padding: 10px 20px; /* Smaller padding */
-  font-size: 16px; /* Adjust font size */
-  display: inline-flex; /* To align icon and text */
+  background-color: #ffffff; /* خلفية بيضاء */
+  color: #4a5568; /* لون نص أغمق قليلاً */
+  border: 1px solid #e2e8f0; /* حدود رمادية فاتحة */
+  padding: 12px 24px; /* زيادة الحشو الداخلي */
+  font-size: 1rem; /* حجم خط مناسب */
+  font-weight: 600; /* وزن خط أثقل */
+  border-radius: 12px; /* حواف دائرية أكثر */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* ظل ناعم */
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s; /* تأثير انتقال ناعم */
+  cursor: pointer;
+  display: inline-flex;
   align-items: center;
-  gap: 8px; /* Space between icon and text */
+  gap: 10px; /* زيادة المسافة بين الأيقونة والنص */
   justify-content: center;
+  text-decoration: none; /* إزالة أي خطوط سفلية */
+  flex-grow: 1; /* جديد: جعل الأزرار تتمدد لتملأ المساحة */
+  min-width: 160px; /* جديد: تحديد عرض أدنى للزر */
 }
+
+/* تأثير عند الضغط على الزر */
+.logout-btn-small:active {
+  transform: translateY(2px); /* تحريك الزر للأسفل قليلاً */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* تقليل الظل */
+}
+
+/* تخصيص لون الأيقونات داخل الأزرار */
+.logout-btn-small i {
+  color: #3498db; /* لون أزرق مميز */
+}
+
+/* تخصيص ألوان لأزرار معينة */
+#add-product-btn { background-color: #e8f5e9; border-color: #a5d6a7; } /* أخضر فاتح */
+#logout-btn-alt { background-color: #fbe9e7; border-color: #ffab91; } /* أحمر فاتح */
+#admin-panel-btn { background-color: #ede7f6; border-color: #b39ddb; } /* بنفسجي فاتح */
+
 .action-buttons {
   display: flex;
-  gap: 15px; /* Space between buttons */
+  flex-direction: column; /* جديد: ترتيب الحاويات عمودياً */
+  gap: 25px; /* زيادة المسافة بين مجموعات الأزرار */
   margin-top: 20px;
-  justify-content: center;
-  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  width: 100%; /* جديد: جعل الحاوية الرئيسية تأخذ العرض الكامل */
+}
+
+/* --- جديد: تنسيق مجموعات الأزرار --- */
+@keyframes slide-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.button-group {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  animation: slide-fade-in 0.5s ease-out forwards;
+  opacity: 0; /* يبدأ شفافاً قبل الحركة */
+}
+
+.button-group h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 10px;
 }
 /* Center the table container */
 #users-table-container {
@@ -43,65 +103,96 @@
   flex-direction: column;
   align-items: center;
 }
+
+.button-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
 /* تحديد عرض أقصى للجدول وتوسيطه */
 .users-table {
   width: 100%;
   max-width: 600px; /* يمكنك تعديل هذا العرض حسب الحاجة */
   margin: 20px auto 0 auto; /* توسيط الجدول تلقائيًا */
 }
-/* Custom styles for smaller SweetAlert2 modals */
-/* جديد: تنسيق جدول المنتجات */
-#my-products-container {
-  width: 100%;
-  max-width: 900px; /* عرض أكبر لجدول المنتجات */
-  margin-top: 20px;
-  display: none; /* إخفاء مبدئي */
-}
-.products-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-.products-table th, .products-table td {
-  border: 1px solid #e0e0e0;
-  padding: 12px;
-  text-align: right;
-  vertical-align: middle; /* تعديل: توسيط المحتوى عمودياً */
-}
-/* جديد: تنسيق خاص لعمود الإجراءات */
-.products-table td.actions-cell {
-  text-align: center; /* توسيط الأزرار */
-  border: 1px solid #e0e0e0;
-  padding: 12px;
-  text-align: right;
-  vertical-align: top;
-}
-.products-table th {
-  background-color: #f7f7f7;
-}
-.products-table img {
-  max-width: 100px;
-  border-radius: 8px;
-}
-.product-details p {
-  margin: 0 0 8px 0;
-}
-.product-details strong {
-  color: #333;
-}
-/* جديد: تنسيق حاوية الصور المصغرة في جدول المنتجات */
-.product-images-container {
+
+/* --- جديد: تصميم بطاقات المنتجات في نافذة "منتجاتي" --- */
+.product-cards-container {
   display: flex;
-  flex-wrap: wrap; /* السماح للصور بالالتفاف */
-  gap: 8px; /* مسافة بين الصور */
-  justify-content: flex-start; /* محاذاة الصور من اليمين */
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px; /* جديد: إضافة حشو داخلي للحاوية */
 }
-.product-images-container img {
-  max-width: 80px; /* تصغير حجم الصور لتناسب المساحة */
-  height: auto;
-  border-radius: 6px;
-  border: 1px solid #ddd;
+
+.product-card {
+  background-color: #fff;
+  border: 1px solid #eef2f7; /* جديد: لون إطار أفتح */
+  border-radius: 16px; /* جديد: زيادة دائرية الحواف */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* جديد: ظل أكثر نعومة وعمقًا */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* جديد: إضافة تأثير انتقال */
 }
+
+.product-card-images {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-content: flex-start;
+  background-color: #fcfdff; /* جديد: لون خلفية أفتح */
+  border-bottom: 1px solid #eef2f7;
+}
+
+.product-card-images img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 10px; /* جديد: زيادة دائرية الحواف */
+  border: 1px solid #e9ecef; /* جديد: إطار داخلي خفيف */
+  box-shadow: 0 2px 5px rgba(0,0,0,0.07); /* جديد: تحسين الظل */
+}
+
+.product-card-details {
+  padding: 20px;
+  flex-grow: 1;
+}
+.product-card-details h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  color: #2c3e50; /* جديد: لون أغمق للعنوان */
+  padding-bottom: 10px; /* جديد: إضافة حشو سفلي */
+  border-bottom: 1px solid #f0f2f5; /* جديد: خط فاصل ناعم */
+}
+.product-card-details p {
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  color: #5a6a7b; /* جديد: لون نص أفتح قليلاً */
+}
+.product-card-details p strong {
+  color: #34495e; /* جديد: لون أغمق للنص العريض */
+  min-width: 110px;
+  display: inline-block;
+}
+
+.product-card-actions {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f8f9fa; /* تعديل: توحيد لون الخلفية */
+  border-top: 1px solid #eef2f7; /* تعديل: توحيد لون الحدود */
+}
+
+/* جديد: تنسيق حاوية محتوى نافذة منتجاتي */
+#my-products-modal-container .modal-content {
+  max-width: 900px; /* عرض أكبر لتناسب الجدول */
+}
+
+/* Custom styles for smaller SweetAlert2 modals */
 
 .swal2-popup {
   width: auto !important;
@@ -113,6 +204,7 @@
 }
 .swal2-html-container {
   font-size: 1rem !important; /* التحكم في حجم خط المحتوى */
+  word-break: break-word; /* جديد: منع النصوص الطويلة من الخروج عن الإطار */
 }
 .swal2-styled {
   padding: 8px 16px !important; /* تصغير حجم الأزرار */

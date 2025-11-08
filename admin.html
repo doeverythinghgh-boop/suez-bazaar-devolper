@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>لوحة تحكم المسؤول - Suez Bazaar</title>
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="stylesheet" href="css/login-page.css" />
+  <!-- Config -->
+  <script src="js/config.js"></script>
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <!-- Header -->
+  <div class="container" id="header-container">
+    <a href="index.html" class="header-title-group" style="text-decoration: none; color: inherit">
+      <h1 class="bazaar-title final-text">SB</h1>
+      <p class="tagline" style="opacity: 1; margin-right: 1.5rem">
+        بازار السويس
+      </p>
+    </a>
+    <a href="index.html" class="back-to-home-btn" title="العودة للصفحة الرئيسية">
+      <i class="fas fa-home"></i>
+      <span>العودة للرئيسية</span>
+    </a>
+  </div>
+
+  <!-- Admin Panel Container -->
+  <div id="admin-panel-container" class="login-page-wrapper" style="display: none;">
+    <div class="login-container">
+      <h2 id="welcome-message"></h2>
+      <!-- Action Buttons -->
+      <div class="action-buttons" id="admin-action-buttons">
+        <!-- سيتم إضافة الأزرار هنا بواسطة JavaScript -->
+      </div>
+      <!-- Users Table Container -->
+      <div id="users-table-container" style="width: 100%; margin-top: 20px; display: none;">
+        <div id="table-content-wrapper"></div>
+        <div id="table-actions" style="display: none; margin-top: 15px; gap: 10px;">
+          <button id="update-users-btn" class="button" style="background-color: #28a745;">حفظ التغييرات</button>
+          <button id="cancel-update-btn" class="button" style="background-color: #6c757d;">إلغاء التغييرات</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Access Denied / Loading Container -->
+  <div id="loading-container" class="login-page-wrapper">
+    <div class="login-container" style="text-align: center;">
+      <div class="loader"></div>
+      <p>جاري التحقق من الصلاحيات...</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/auth.js"></script>
+  <script src="js/turo.js"></script>
+  <script src="js/admin-page.js"></script>
+</body>
+</html>
