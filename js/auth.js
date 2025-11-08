@@ -58,8 +58,11 @@ async function setupFCM() {
     // استقبال الإشعارات أثناء فتح الموقع (Foreground)
     onMessage(messaging, (payload) => {
       console.log('%c[FCM] تم استقبال إشعار أثناء فتح الموقع (Foreground):', 'color: #17a2b8', payload);
-      new Notification(payload.notification.title, {
-        body: payload.notification.body,
+      // ✅ إصلاح: قراءة العنوان والنص من `payload.data`
+      // هذا يطابق التغيير الذي تم في الخادم (api/send-notification.js)
+      const { title, body } = payload.data;
+      new Notification(title, {
+        body: body,
         icon: '/images/icons/icon-192x192.png'
       });
     });
