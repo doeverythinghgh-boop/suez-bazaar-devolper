@@ -36,6 +36,33 @@
     .notification-status i {
       font-size: 1.2rem;
     }
+    /* ✅ جديد: تنسيقات خاصة بعمود الإشعارات */
+    .notification-sender {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .notification-input {
+      flex-grow: 1;
+      padding: 6px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    .send-notif-btn {
+      padding: 6px 10px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    .send-notif-btn:hover { background-color: #0056b3; }
+    .no-token {
+      color: #999;
+      font-size: 0.8rem;
+    }
   </style>
 </head>
 

@@ -80,12 +80,21 @@ function initializeAdminPanel(user) {
     tableContentWrapper.innerHTML = '<div class="loader"></div>';
     const users = await fetchUsers();
     if (users && users.length > 0) {
-      let tableHTML = `<table class="users-table"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>بائع؟</th></tr></thead><tbody>`;
+      // ✅ تعديل: إضافة عمود جديد لإرسال الإشعارات
+      let tableHTML = `<table class="users-table"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>بائع؟</th><th>إرسال إشعار</th></tr></thead><tbody>`;
       users.forEach(u => {
+        // ✅ تعديل: إضافة حقل إدخال وزر إرسال لكل مستخدم
+        const notificationUI = u.fcm_token
+          ? `<div class="notification-sender">
+               <input type="text" placeholder="اكتب رسالتك هنا..." class="notification-input" id="notif-input-${u.user_key}">
+               <button class="send-notif-btn" data-token="${u.fcm_token}" data-user-key="${u.user_key}" title="إرسال"><i class="fas fa-paper-plane"></i></button>
+             </div>`
+          : '<span class="no-token">لا يستقبل إشعارات</span>';
         tableHTML += `<tr>
             <td>${u.username || 'غير متوفر'}</td>
             <td>${u.phone}</td>
             <td><input type="checkbox" class="seller-checkbox" data-phone="${u.phone}" data-original-state="${u.is_seller}" ${u.is_seller === 1 ? 'checked' : ''}></td>
+            <td>${notificationUI}</td>
           </tr>`;
       });
       tableHTML += `</tbody></table>`;
@@ -110,6 +119,37 @@ function initializeAdminPanel(user) {
   document.getElementById("users-table-container").addEventListener('change', (event) => {
     if (event.target.classList.contains('seller-checkbox')) {
       tableActions.style.display = 'flex';
+    }
+  });
+
+  // ✅ جديد: إضافة مستمع لزر إرسال الإشعار
+  document.getElementById("users-table-container").addEventListener('click', async (event) => {
+    const sendBtn = event.target.closest('.send-notif-btn');
+    if (!sendBtn) return;
+
+    const userKey = sendBtn.dataset.userKey;
+    const token = sendBtn.dataset.token;
+    const messageInput = document.getElementById(`notif-input-${userKey}`);
+    const message = messageInput.value.trim();
+
+    if (!message) {
+      Swal.fire('خطأ', 'الرجاء كتابة رسالة قبل الإرسال.', 'error');
+      return;
+    }
+
+    sendBtn.disabled = true; // تعطيل الزر لمنع النقرات المتكررة
+    sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+    const result = await sendNotification(token, 'رسالة من الإدارة', message);
+
+    sendBtn.disabled = false; // إعادة تفعيل الزر
+    sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+
+    if (result && result.success) {
+      Swal.fire('تم الإرسال', 'تم إرسال الإشعار بنجاح.', 'success');
+      messageInput.value = ''; // مسح حقل الإدخال بعد الإرسال
+    } else {
+      Swal.fire('فشل الإرسال', `حدث خطأ: ${result.error}`, 'error');
     }
   });
 

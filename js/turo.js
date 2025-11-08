@@ -335,6 +335,33 @@ async function getUserPurchases(userKey) {
   }
 }
 
+/**
+ * يرسل إشعارًا إلى توكن جهاز معين.
+ * @param {string} token - توكن FCM الخاص بالجهاز.
+ * @param {string} title - عنوان الإشعار.
+ * @param {string} body - نص الإشعار.
+ * @returns {Promise<Object>} كائن الاستجابة من الخادم.
+ */
+async function sendNotification(token, title, body) {
+  try {
+    const response = await fetch(`${baseURL}/api/send-notification`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ token, title, body }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { error: data.error || `HTTP error! status: ${response.status}` };
+    }
+
+    return data;
+  } catch (error) {
+    console.error("فشل في إرسال الإشعار (مشكلة في الاتصال):", error);
+    return { error: "فشل الاتصال بخادم الإشعارات." };
+  }
+}
 
 /**
  * @file js/turo.js
