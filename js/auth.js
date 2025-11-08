@@ -28,7 +28,7 @@ async function setupFCM() {
     return;
   }
   console.log('[FCM Setup] تم العثور على مستخدم مسجل:', loggedInUser.username);
-
+//
   try {
     console.log('[FCM Setup] جاري تسجيل عامل الخدمة (Service Worker)...');
     // تسجيل الـ Service Worker الخاص بـ Firebase
