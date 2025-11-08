@@ -31,8 +31,10 @@ async function setupFCM() {
 //
   try {
     console.log('[FCM Setup] جاري تسجيل عامل الخدمة (Service Worker)...');
-    // تسجيل الـ Service Worker الخاص بـ Firebase
-    await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    // ✅ إصلاح: استخدام مسار نسبي بدلاً من المسار المطلق ('/').
+    // هذا يضمن العثور على الملف سواء كان المشروع في مجلد فرعي أو في الجذر.
+    // يفترض هذا أن `firebase-messaging-sw.js` موجود في نفس مستوى `index.html`.
+    await navigator.serviceWorker.register('firebase-messaging-sw.js');
     console.log('%c[FCM] تم تسجيل عامل الخدمة (Service Worker) بنجاح.', 'color: #28a745');
 
     // استيراد دوال Firebase بشكل ديناميكي
