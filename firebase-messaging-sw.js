@@ -28,19 +28,25 @@ const messaging = firebase.messaging();
 // التعامل مع الإشعارات الواردة في الخلفية (v8)
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] تم استقبال رسالة في الخلفية: ', payload);
-  
-  // التحقق من وجود حمولة البيانات `data`
-  if (!payload.data) {
-    console.error('[SW] لم يتم العثور على حمولة البيانات (payload.data) في الرسالة.');
+
+  // ✅ إصلاح: جعل المعالج مرنًا للتعامل مع حمولة `notification` أو `data`.
+  // هذا يمنع خطأ "Cannot destructure" ويضمن عرض الإشعار دائمًا.
+  const notificationTitle = payload.notification?.title || payload.data?.title;
+  const notificationBody = payload.notification?.body || payload.data?.body;
+
+  // التحقق من وجود عنوان ونص للإشعار
+  if (!notificationTitle || !notificationBody) {
+    console.error('[SW] لم يتم العثور على عنوان أو نص للإشعار في payload.notification أو payload.data.');
     return;
   }
-  console.log('[SW] جاري استخراج العنوان والنص من payload.data...');
-  const notificationTitle = payload.data.title;
-  const notificationBody = payload.data.body;
+
   console.log(`[SW] العنوان: ${notificationTitle}, النص: ${notificationBody}`);
-  
-  // ✅ إصلاح: استخدام المتغير الصحيح `notificationBody` بدلاً من `body` غير المعرّف.
-  const notificationOptions = { body: notificationBody, icon: '/images/icons/icon-192x192.png' };
+
+  const notificationOptions = {
+    body: notificationBody,
+    icon: '/images/icons/icon-192x192.png'
+  };
+
   console.log('[SW] جاري عرض الإشعار المنبثق...');
   return self.registration.showNotification(notificationTitle, notificationOptions);
 });
