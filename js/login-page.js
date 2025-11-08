@@ -774,6 +774,10 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function handleLoginSuccess(user) {
   localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+  // ✅ إصلاح جذري: استدعاء setupFCM() مباشرة بعد نجاح تسجيل الدخول.
+  // هذا يضمن الحصول على التوكن وإرساله فورًا دون الحاجة لتحديث الصفحة.
+  if (typeof setupFCM === 'function') setupFCM();
   updateViewForLoggedInUser(user);
   if (window.updateCartBadge) window.updateCartBadge();
 
