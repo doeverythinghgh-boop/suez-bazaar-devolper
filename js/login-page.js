@@ -189,6 +189,77 @@ function updateViewForLoggedInUser(user) {
       const actionButtonsContainer =
         loggedInContainer.querySelector(".action-buttons");
       actionButtonsContainer.appendChild(viewUsersButton);
+
+      // جديد: إضافة زر لمسح بيانات المتصفح للمسؤول فقط
+      const clearBrowserDataButton = document.createElement("a");
+      clearBrowserDataButton.id = "clear-data-btn";
+      clearBrowserDataButton.href = "#";
+      clearBrowserDataButton.className = "button logout-btn-small";
+      clearBrowserDataButton.style.textDecoration = "none";
+      clearBrowserDataButton.style.backgroundColor = "#c0392b"; // لون أحمر داكن للتحذير
+      clearBrowserDataButton.innerHTML = '<i class="fas fa-broom"></i> مسح بيانات المتصفح';
+
+      actionButtonsContainer.appendChild(clearBrowserDataButton);
+
+      // إضافة حدث النقر لزر مسح البيانات
+      clearBrowserDataButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        Swal.fire({
+          title: 'هل أنت متأكد تمامًا؟',
+          text: "سيتم مسح جميع بيانات الموقع من هذا المتصفح (localStorage, sessionStorage) وتسجيل خروجك. هذا الإجراء لا يمكن التراجع عنه!",
+          icon: 'error',
+          showCancelButton: true,
+          confirmButtonColor: '#e74c3c',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'نعم، امسح كل شيء!',
+          cancelButtonText: 'إلغاء',
+          showLoaderOnConfirm: true,
+          preConfirm: async () => {
+            try {
+              // 1. مسح التخزين المحلي والجلسة
+              localStorage.clear();
+              sessionStorage.clear();
+              console.log('[Admin Reset] تم مسح localStorage و sessionStorage.');
+
+              // 2. إلغاء تسجيل جميع عمال الخدمة (Service Workers)
+              if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (const registration of registrations) {
+                  await registration.unregister();
+                  console.log('[Admin Reset] تم إلغاء تسجيل Service Worker:', registration.scope);
+                }
+              }
+
+              // 3. مسح جميع ذاكرات التخزين المؤقت (Cache Storage)
+              if ('caches' in window) {
+                const keys = await caches.keys();
+                await Promise.all(keys.map(key => caches.delete(key)));
+                console.log('[Admin Reset] تم مسح جميع ذاكرات التخزين المؤقت:', keys);
+              }
+
+              // 4. مسح جميع ملفات تعريف الارتباط (Cookies)
+              const cookies = document.cookie.split(";");
+              for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i];
+                const eqPos = cookie.indexOf("=");
+                const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                document.cookie = name.trim() + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+              }
+              console.log('[Admin Reset] تم مسح ملفات تعريف الارتباط.');
+
+            } catch (error) {
+              Swal.showValidationMessage(`فشل إعادة التعيين: ${error}`);
+            }
+          },
+          allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire('تم!', 'تم مسح جميع بيانات الموقع من المتصفح. سيتم إعادة تحميل الصفحة.', 'success').then(() => {
+              window.location.reload(true); // إعادة تحميل قسرية (hard reload)
+            });
+          }
+        });
+      });
     }
   }
 }
