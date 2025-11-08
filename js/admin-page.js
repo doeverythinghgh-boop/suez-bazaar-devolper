@@ -80,10 +80,10 @@ function initializeAdminPanel(user) {
     tableContentWrapper.innerHTML = '<div class="loader"></div>';
     const users = await fetchUsers();
     if (users && users.length > 0) {
-      // ✅ تعديل: إضافة عمود جديد لإرسال الإشعارات
+      // تعديل: إضافة عمود جديد لإرسال الإشعارات
       let tableHTML = `<table class="users-table"><thead><tr><th>الاسم</th><th>رقم الهاتف</th><th>بائع؟</th><th>إرسال إشعار</th></tr></thead><tbody>`;
       users.forEach(u => {
-        // ✅ تعديل: إضافة حقل إدخال وزر إرسال لكل مستخدم
+        // إضافة حقل إدخال وزر إرسال لكل مستخدم يمتلك توكن
         const notificationUI = u.fcm_token
           ? `<div class="notification-sender">
                <input type="text" placeholder="اكتب رسالتك هنا..." class="notification-input" id="notif-input-${u.user_key}">
@@ -122,7 +122,7 @@ function initializeAdminPanel(user) {
     }
   });
 
-  // ✅ جديد: إضافة مستمع لزر إرسال الإشعار
+  // جديد: إضافة مستمع لزر إرسال الإشعار
   document.getElementById("users-table-container").addEventListener('click', async (event) => {
     const sendBtn = event.target.closest('.send-notif-btn');
     if (!sendBtn) return;
