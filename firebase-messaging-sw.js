@@ -29,8 +29,11 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] تم استقبال رسالة في الخلفية: ', payload);
 
-  // بناء الإشعار لعرضه
-  const { title, body } = payload.notification;
+  // ✅ إصلاح: قراءة العنوان والنص من `payload.data` بدلاً من `payload.notification`.
+  // هذا ضروري لأننا الآن نرسل حمولة بيانات فقط من الخادم.
+  const notificationTitle = payload.data.title;
+  const notificationBody = payload.data.body;
+
   const notificationOptions = { body, icon: '/images/icons/icon-192x192.png' };
-  self.registration.showNotification(title, notificationOptions);
+  self.registration.showNotification(notificationTitle, { body: notificationBody, icon: '/images/icons/icon-192x192.png' });
 });

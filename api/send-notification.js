@@ -76,15 +76,11 @@ export default async function handler(req, res) {
   console.log(`[API: /api/send-notification] استلام طلب لإرسال إشعار إلى توكن: ...${token ? token.slice(-10) : 'N/A'}`);
 
   try {
-    // ✅ إصلاح: إرسال حمولة `data` بالإضافة إلى `notification`.
-    // هذا يضمن وصول الإشعار إلى دالة onMessage عندما يكون التطبيق في الواجهة (foreground).
+    // ✅ إصلاح: إرسال حمولة `data` فقط لضمان استدعاء onBackgroundMessage دائمًا.
+    // هذا يعطينا التحكم الكامل في كيفية عرض الإشعار في الخلفية.
     const message = {
       token: token,
-      notification: {
-        title: title,
-        body: body,
-      },
-      data: { title, body } // إضافة حمولة البيانات
+      data: { title, body }
     };
     await admin.messaging().send(message);
     console.log(`[API: /api/send-notification] نجاح: تم إرسال الإشعار بنجاح.`);
