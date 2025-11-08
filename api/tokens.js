@@ -43,11 +43,25 @@ export default async function handler(request) {
       }
 
       console.log(`[API: /api/tokens] Saving token for user_key: ${user_key}`);
-      // استخدام ON CONFLICT DO UPDATE للتعامل مع التوكنات الموجودة والمحدثة
-      await db.execute({
-        sql: "INSERT INTO user_tokens (user_key, fcm_token) VALUES (?, ?) ON CONFLICT(user_key) DO UPDATE SET fcm_token = excluded.fcm_token, created_at = CURRENT_TIMESTAMP",
-        args: [user_key, token],
-      });
+      
+      // ✅ إصلاح: استخدام معاملة (transaction) لضمان الموثوقية.
+      // 1. نحذف أي سجل قديم لهذا المستخدم لضمان عدم وجود توكنات قديمة.
+      // 2. نحذف أي سجل قديم لهذا التوكن إذا كان مسجلاً لمستخدم آخر (حالة نادرة).
+      // 3. نضيف السجل الجديد.
+      // هذا يضمن أن كل مستخدم لديه توكن واحد فقط، وكل توكن مرتبط بمستخدم واحد فقط.
+      const tx = await db.transaction("write");
+      try {
+        await tx.execute({ sql: "DELETE FROM user_tokens WHERE user_key = ?", args: [user_key] });
+        await tx.execute({ sql: "DELETE FROM user_tokens WHERE fcm_token = ?", args: [token] });
+        await tx.execute({
+          sql: "INSERT INTO user_tokens (user_key, fcm_token) VALUES (?, ?)",
+          args: [user_key, token],
+        });
+        await tx.commit();
+      } catch (err) {
+        await tx.rollback();
+        throw err; // سيتم التقاط هذا الخطأ في كتلة catch الرئيسية
+      }
 
       console.log(`[API: /api/tokens] Successfully saved token for user_key: ${user_key}`);
       return new Response(
