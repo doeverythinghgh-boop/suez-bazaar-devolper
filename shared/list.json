@@ -3,7 +3,7 @@
     {
       "id": 1,
       "title": "الملابس والأزياء",
-      "icon": "fas fa-tshirt",
+      "icon": "fas fa-shirt",
       "subcategories": [
         { "id": 1, "title": "ملابس نسائية", "icon": "fas fa-female" },
         { "id": 2, "title": "ملابس رجالية", "icon": "fas fa-male" },
@@ -41,7 +41,7 @@
     {
       "id": 3,
       "title": "التقنية والالكترونيات",
-      "icon": "fas fa-laptop-house",
+      "icon": "fas fa-robot",
       "subcategories": [
         { "id": 1, "title": "الهواتف الذكية والأجهزة اللوحية", "icon": "fas fa-mobile-alt" },
         { "id": 2, "title": "أجهزة الحاسوب المحمول والمكتبي", "icon": "fas fa-laptop" },
