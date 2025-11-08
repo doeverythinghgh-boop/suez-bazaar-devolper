@@ -65,30 +65,33 @@ async function setupFCM() {
 
       // 1. التحقق من وجود توكن مخزن محليًا
       let storedToken = localStorage.getItem('fcm_token');
-      if (storedToken) {
-        console.log('%c[FCM] تم العثور على توكن مخزن محليًا. سيتم استخدامه.', 'color: #17a2b8');
-      } else {
+      if (!storedToken) {
         // 2. إذا لم يوجد توكن، اطلب واحدًا جديدًا
         console.log('[FCM] لا يوجد توكن مخزن، جاري طلب توكن جديد من Firebase...');
         const fcmToken = await getToken(messaging, { vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY" });
         if (fcmToken) {
           console.log('%c[FCM] تم الحصول على توكن جديد:', 'color: #007bff', fcmToken);
-          // 3. خزّن التوكن الجديد محليًا وأرسله للخادم
+          // 3. خزّن التوكن الجديد محليًا
           localStorage.setItem('fcm_token', fcmToken);
           storedToken = fcmToken; // استخدم التوكن الجديد في الخطوة التالية
-
-          console.log('[FCM] جاري إرسال التوكن الجديد إلى الخادم...');
-          const response = await fetch("/api/save-token", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_key: loggedInUser.user_key, token: storedToken })
-          });
-          if (response.ok) {
-            console.log('%c[FCM] نجح الخادم في حفظ التوكن الجديد.', 'color: #28a745');
-          } else {
-            console.error('[FCM] فشل الخادم في حفظ التوكن الجديد. الاستجابة:', await response.json());
-          }
         }
+      }
+
+      // 4. ✅ إصلاح: إرسال التوكن (سواء كان جديدًا أو مخزنًا) إلى الخادم دائمًا
+      if (storedToken) {
+        console.log(`%c[FCM] جاري إرسال التوكن (المصدر: ${localStorage.getItem('fcm_token') === storedToken ? 'LocalStorage' : 'جديد'}) إلى الخادم...`, 'color: #fd7e14');
+        const response = await fetch("/api/save-token", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_key: loggedInUser.user_key, token: storedToken })
+        });
+        if (response.ok) {
+          console.log('%c[FCM] نجح الخادم في حفظ/تحديث التوكن.', 'color: #28a745');
+        } else {
+          console.error('[FCM] فشل الخادم في حفظ التوكن. الاستجابة:', await response.json());
+        }
+      } else {
+        console.error('[FCM] لم يتمكن من الحصول على توكن لإرساله إلى الخادم.');
       }
     } else {
       console.warn('[FCM] تم رفض إذن إرسال الإشعارات من قبل المستخدم.');
