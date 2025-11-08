@@ -166,6 +166,10 @@ function checkLoginStatus() {
  * يقوم بتسجيل خروج المستخدم عن طريق إزالة بياناته من التخزين المحلي وإعادة التوجيه.
  */
 function logout() {
+  // جلب التوكن والمستخدم قبل الحذف للتأكد من وجودهما
+  const fcmToken = localStorage.getItem("fcm_token");
+  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+
   Swal.fire({
     title: "هل أنت متأكد؟",
     text: "سيتم تسجيل خروجك.",
@@ -175,10 +179,26 @@ function logout() {
     cancelButtonColor: "#d33",
     confirmButtonText: "نعم، تسجيل الخروج",
     cancelButtonText: "إلغاء",
+    showLoaderOnConfirm: true,
+    preConfirm: async () => {
+      // إذا كان هناك توكن ومستخدم، أرسل طلب حذفه من الخادم
+      if (fcmToken && loggedInUser?.user_key) {
+        try {
+          await fetch(`${baseURL}/api/tokens`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_key: loggedInUser.user_key, token: fcmToken }),
+          });
+          console.log('[FCM] تم إرسال طلب حذف التوكن من الخادم بنجاح.');
+        } catch (error) {
+          console.error('[FCM] فشل إرسال طلب حذف التوكن من الخادم:', error);
+          // لا توقف عملية تسجيل الخروج حتى لو فشل الحذف
+        }
+      }
+    },
+    allowOutsideClick: () => !Swal.isLoading(),
   }).then((result) => {
     if (result.isConfirmed) {
-      // ✅ إصلاح: حذف توكن FCM من التخزين المحلي عند تسجيل الخروج
-      // هذا يضمن أن المستخدم التالي الذي يسجل دخوله على نفس الجهاز سيحصل على توكن جديد خاص به.
       localStorage.removeItem("fcm_token");
       console.log('[FCM] تم حذف توكن FCM من التخزين المحلي عند تسجيل الخروج.');
 

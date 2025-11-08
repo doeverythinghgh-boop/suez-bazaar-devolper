@@ -71,18 +71,18 @@ export default async function handler(request) {
     }
 
     if (request.method === "DELETE") {
-      const { user_key, token } = await request.json();
+      const { user_key } = await request.json(); // نكتفي بـ user_key فقط
 
-      if (!user_key || !token) {
+      if (!user_key) {
         return new Response(
-          JSON.stringify({ error: "user_key and token are required for deletion." }),
+          JSON.stringify({ error: "user_key is required for deletion." }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
       await db.execute({
-        sql: "DELETE FROM user_tokens WHERE user_key = ? AND fcm_token = ?",
-        args: [user_key, token],
+        sql: "DELETE FROM user_tokens WHERE user_key = ?", // حذف أي توكن مرتبط بهذا المستخدم
+        args: [user_key],
       });
 
       return new Response(
