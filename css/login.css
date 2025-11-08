@@ -1,3 +1,5 @@
+/* ملاحظة: لا يسمح باستخدام تأثيرات hover في هذا المشروع. */
+
 /* === Login Page Specific Styles === */
 
 /* Wrapper to center the login form vertically */
@@ -132,10 +134,6 @@
   transition: text-decoration 0.2s;
 }
 
-.form-footer a:hover {
-  text-decoration: underline;
-}
-
 /* تكبير حجم رابط "سجل الآن" */
 .form-footer a:last-of-type {
   font-size: 16px; /* حجم أكبر قليلاً */
@@ -160,11 +158,6 @@
   padding: 8px 12px;
   border-radius: 20px;
   transition: background-color 0.3s, color 0.3s;
-}
-
-.back-to-home-btn:hover {
-  background-color: #f0f0f0;
-  color: #000;
 }
 
 .back-to-home-btn i {

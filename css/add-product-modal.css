@@ -1,0 +1,228 @@
+/*
+  @file css/add-product-modal.css
+  @description أنماط خاصة بنافذة إضافة/تعديل المنتج.
+
+  ملاحظة: لا يسمح باستخدام تأثيرات hover في هذا المشروع.
+*/
+
+/* --- النسق العام للمودال --- */
+.modal-content {
+  max-width: 760px;
+  width: 90%; /* استخدام نسبة مئوية للعرض ليكون مرناً */
+  margin: 2rem auto; /* هامش علوي وسفلي لتجنب الالتصاق بالحواف */
+  padding: 2rem;
+  box-sizing: border-box;
+  font-family: 'Tajawal', sans-serif;
+  background-color: #fdfdfd;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid #f0f0f0;
+  display: flex; /* استخدام flex لتسهيل التوسيط الداخلي */
+  flex-direction: column;
+  overflow-x: hidden; /* جديد: منع ظهور شريط التمرير الأفقي */
+}
+.modal-content h2 {
+  text-align: center;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 1.75rem;
+  margin-bottom: 2rem;
+}
+
+/* --- تنسيق حقول النموذج --- */
+#add-product-form { display: flex; flex-direction: column; gap: 1.5rem; }
+.form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+.form-group label {
+  font-weight: 600;
+  color: #34495e;
+  font-size: 1rem;
+  display: flex; /* جديد: لترتيب الأيقونة والنص */
+  align-items: center; /* جديد: لمحاذاة الأيقونة والنص عمودياً */
+  gap: 8px; /* جديد: مسافة بين الأيقونة والنص */
+}
+
+/* جديد: جعل جميع الأيقونات باللون الأزرق */
+.form-group label i, .modal-content h2 i {
+  color: #3498db;
+}
+
+/* جديد: تنسيق لعرض العناصر في سطر واحد */
+.form-row {
+  display: flex;
+  gap: 1rem; /* مسافة بين العناصر */
+  justify-content: flex-start;
+  align-items: stretch; /* جديد: جعل العناصر بنفس الارتفاع */
+  flex-wrap: wrap; /* جديد: السماح للعناصر بالالتفاف على الشاشات الصغيرة */
+}
+.form-row .form-group {
+  flex: 1; /* توزيع المساحة المتبقية */
+  /* تعديل: السماح بثلاثة عناصر في الصف */
+  min-width: calc(33.333% - 1rem);
+}
+@media (max-width: 768px) {
+  .form-row .form-group { min-width: calc(50% - 0.5rem); }
+}
+
+/* توحيد تنسيق حقول الإدخال */
+/* جديد: جعل حقول الاختيار تتمدد لملء المساحة المتاحة في حاويتها */
+.form-group select {
+  flex-grow: 1;
+}
+
+select, textarea, input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #bdc3c7;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-family: "Tajawal", sans-serif;
+  font-size: 1rem;
+  background-color: white;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+select { text-align-last: center; } /* توسيط النص داخل حقل الاختيار */
+
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: left 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-left: 2.5rem; /* مساحة لأيقونة السهم */
+}
+select:focus, textarea:focus, input[type="text"]:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+textarea {
+  resize: vertical; /* السماح للمستخدم بتغيير الارتفاع */
+  min-height: 100px; /* ارتفاع مبدئي مناسب */
+}
+.char-counter {
+  text-align: left; /* محاذاة لليسار */
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 4px;
+}
+select:disabled { background-color: #ecf0f1; cursor: not-allowed; }
+
+/* --- موديول رفع الصور --- */
+.image-uploader {
+  border: 2px dashed #dce4e8;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  background-color: #f8f9fa;
+  transition: border-color 0.3s, background-color 0.3s;
+}
+.uploader-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem; }
+.btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+}
+.btn-primary { background-color: #4f46e5; color: white; }
+
+/* تعديل: توحيد خلفية الأزرار الأيقونية */
+.btn-ghost {
+  background-color: #f0f2f5; /* خلفية رمادية فاتحة ومحايدة */
+  border: 1px solid #e4e6eb;
+  color: #3498db; /* تغيير لون الأيقونة إلى الأزرق */
+}
+
+/* تعديل للأزرار التي تحتوي على أيقونات فقط */
+.btn.btn-icon {
+  width: 48px; /* عرض ثابت */
+  height: 48px; /* ارتفاع ثابت */
+  padding: 0; /* إزالة الحشو الداخلي */
+  font-size: 1.2rem; /* تكبير حجم الأيقونة */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+input[type=file].hidden-file { position: absolute; left: -9999px; }
+.hint { color: #6c757d; font-size: 0.875rem; margin-bottom: 1rem; }
+
+/* --- معاينة الصور --- */
+.previews { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: flex-start; margin-top: 1.5rem; }
+.preview {
+  width: 140px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  background: #ffffff;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.preview img { width: 100%; height: 110px; object-fit: cover; display: block; }
+.preview .meta { padding: 8px; font-size: 12px; text-align: center; background: #f8f9fa; color: #495057; font-weight: 500; }
+/* إخفاء زر الحذف بشكل افتراضي */
+.preview .remove {
+  position: absolute; top: 8px; left: 8px; background: rgba(40, 40, 40, 0.7); color: white; -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; transition: background-color 0.2s, transform 0.2s, opacity 0.3s;
+  opacity: 0; /* إخفاء الزر */
+  pointer-events: none; /* منع التفاعل معه وهو مخفي */
+}
+.preview .progress { position: absolute; bottom: 0; left: 0; height: 4px; width: 0%; background: linear-gradient(90deg, #a5b4fc, #4f46e5); transition: width 0.3s ease; border-radius: 0 0 0 4px; }
+
+/* إظهار زر الحذف وإضافة تحديد عند النقر على الصورة */
+.preview.selected {
+  box-shadow: 0 0 0 3px #4f46e5, 0 8px 16px rgba(0, 0, 0, 0.1); /* إضافة إطار مميز */
+}
+.preview.selected .remove {
+  opacity: 1; /* إظهار الزر */
+  pointer-events: auto; /* السماح بالتفاعل معه */
+}
+
+/* --- زر النشر --- */
+.submit-container { text-align: center; margin-top: 1.5rem; border-top: 1px solid #e9ecef; padding-top: 1.5rem; }
+.submit-container .btn { width: 100%; padding: 14px; font-size: 1.1rem; }
+
+/* --- استجابة للتخطيط --- */
+@media (max-width: 480px) {
+  .modal-content {
+    width: 95%; /* عرض أكبر على الشاشات الصغيرة جداً */
+    padding: 1.5rem 1rem; /* تقليل الحشو الجانبي */
+    margin: 1rem auto; /* تقليل الهامش العمودي */
+  }
+  .modal-content h2 { font-size: 1.5rem; }
+  .previews { justify-content: center; }
+  .preview { width: calc(50% - 0.5rem); }
+  /* تعديل: الأزرار الأيقونية تبقى في سطر واحد، بينما زر النشر يأخذ عرضاً كاملاً */
+  .uploader-actions { justify-content: center; } /* ضمان التوسيط */
+  .submit-container .btn {
+    width: 100%; /* زر النشر فقط يأخذ العرض الكامل */
+  }
+}
+/* --- رسائل الخطأ --- */
+.error-message {
+  color: #e74c3c; /* لون أحمر واضح */
+  font-size: 0.875rem; /* حجم خط أصغر قليلاً */
+  margin-top: 5px; /* هامش علوي صغير */
+  font-weight: 500; /* وزن خط متوسط */
+}
+
+/* --- إصلاح لظهور رسالة التأكيد فوق المودال --- */
+/* SweetAlert2 يضيف حاوية للفصل، نعطيها z-index أعلى من المودال */
+.swal2-container {
+  z-index: 2000 !important; /* يجب أن يكون أعلى من z-index الخاص بالمودال */
+}
+.close-button {
+  z-index: 1050; /* للتأكد من أنه فوق محتوى المودال ولكن تحت رسالة التأكيد */
+}
+/* توسيط محتوى حقول الفئات */
+#main-category-group,
+#sub-category-group {
+  align-items: center;
+}

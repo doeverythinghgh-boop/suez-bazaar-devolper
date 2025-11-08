@@ -1,3 +1,5 @@
+/* ملاحظة: لا يسمح باستخدام تأثيرات hover في هذا المشروع. */
+
 /* === Gallery Page Specific Styles === */
 
 /* Title for the gallery section */
@@ -33,10 +35,6 @@
   transition: transform 0.3s ease;
   cursor: pointer;
   flex-shrink: 0; /* يمنع الصور من التقلص إذا كانت الحاوية ضيقة */
-}
-
-.gallery-container img:hover {
-  transform: scale(1.05); /* تكبير بسيط عند مرور الفأرة */
 }
 
 /* Container for the full-size image view */
@@ -157,10 +155,6 @@
   user-select: none; /* Prevent text selection on click */
 }
 
-.quantity-btn:hover {
-  background-color: #e0e0e0;
-}
-
 .quantity-btn:active {
   transform: scale(0.95);
 }
@@ -193,16 +187,6 @@
   transition: background-color 0.3s ease, color 0.3s ease; /* انتقال ناعم */
 }
 
-/* تغيير التصميم عند مرور الفأرة فوق الزر */
-.add-to-cart-btn:hover {
-  background-color: #007bff; /* ملء الخلفية باللون الأزرق */
-  color: #fff; /* تغيير لون النص والأيقونة إلى الأبيض */
-  /* 
-    The box-shadow from the general button style in style.css will still apply,
-    which is a nice touch.
-  */
-}
-
 /* Close button for the full-size image view */
 .close-full-view {
   position: absolute;
@@ -214,7 +198,4 @@
   line-height: 1;
   font-weight: bold;
   transition: color 0.2s;
-}
-.close-full-view:hover {
-  color: #000;
 }

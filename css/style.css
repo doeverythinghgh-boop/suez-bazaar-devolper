@@ -1,3 +1,5 @@
+/* ملاحظة: لا يسمح باستخدام تأثيرات hover في هذا المشروع. */
+
 /* === General Body Styles === */
 body {
   margin: 0;
@@ -147,12 +149,6 @@ button,
   gap: 8px; /* Space between icon and text */
 }
 
-button:hover,
-.button:hover {
-  background-color: #0056b3; /* Darker blue on hover */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
-
 /* === Loader Spinner === */
 .loader {
   border: 5px solid #f3f3f3; /* Light grey */
@@ -209,11 +205,6 @@ button:hover,
   justify-content: center;
   min-height: 120px; /* Minimum height for cards */
   text-align: center;
-}
-
-.category-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
 }
 
 .category-card h3 {
@@ -399,10 +390,6 @@ button:hover,
   border-radius: 10px;
 }
 
-.subcategories-container::-webkit-scrollbar-thumb:hover {
-  background-color: #b0b8c5;
-}
-
 .subcategory-item {
   background-color: #fff;
   border: 2px solid #007bff; /* إطار بنفس لون الفئة الرئيسية النشطة */
@@ -479,7 +466,6 @@ button:hover,
   cursor: pointer;
 }
 
-.close-button:hover,
 .close-button:focus {
   color: black;
   text-decoration: none;
