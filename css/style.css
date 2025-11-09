@@ -52,7 +52,7 @@ body.modal-open {
   display: inline-block;
   opacity: 0;
   /* ✅ إصلاح: تطبيق التدرج اللوني على كل حرف على حدة */
-  background: linear-gradient(45deg, #007bff, #0056b3);
+  background: linear-gradient(45deg, #007bff, #03478f);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -74,7 +74,7 @@ body.modal-open {
   /* Override the flex display to center the block correctly */
   display: inline-block;
   /* ✅ إصلاح: إعادة اللون الأزرق بشكل صحيح وإلغاء التدرج */
-  color: #007bff;
+  color: #03478f;
   /* إعادة تعيين الخصائص التي تسببت في إخفاء النص */
   -webkit-text-fill-color: initial;
    font-weight: 600; /* يجعل النص أوضح وأقوى قليلاً */
@@ -132,8 +132,8 @@ body.modal-open {
   cursor: pointer;
   padding: 8px;
   font-size: clamp(20px, 3.5vh, 26px); /* حجم أيقونة متجاوب */
-  color: #333;
-  color: #007bff; /* ✅ تعديل: تغيير لون أيقونة البحث إلى الأزرق الزاهي */
+ 
+  color: #03478f; /* ✅ تعديل: تغيير لون أيقونة البحث إلى الأزرق الزاهي */
 }
 
 /* على الشاشات الصغيرة، يمكن تقليل عرض حقل البحث */
@@ -146,8 +146,7 @@ body.modal-open {
 /* === User Icon in Header === */
 .user-icon {
   font-size: clamp(24px, 4vh, 32px); /* حجم أيقونة متجاوب */
-  color: #333; /* لون داكن للأيقونة */
-  color: #007bff; /* ✅ تعديل: تغيير لون أيقونة المستخدم إلى الأزرق */
+  color: #03478f; /* ✅ تعديل: تغيير لون أيقونة المستخدم إلى الأزرق */
 }
 
 /* ✅ جديد: تنسيق كلمة "مرحباً" التي تظهر بعد تسجيل الدخول */
@@ -155,7 +154,7 @@ body.modal-open {
   font-family: "Tajawal", sans-serif; /* استخدام خط متناسق */
   font-size: clamp(14px, 2vh, 16px); /* حجم خط مناسب */
   font-weight: bold;
-  color: #007bff; /* اللون الأزرق المطلوب */
+  color: #03478f; /* اللون الأزرق المطلوب */
   margin-bottom: 4px; /* مسافة صغيرة بينها وبين اسم المستخدم */
   margin-right: 5px; /* هامش صغير للمحاذاة */
 }
@@ -172,7 +171,7 @@ body.modal-open {
 .user-text {
   font-family: "Tajawal", sans-serif;
   font-size: clamp(10px, 1.5vh, 12px); /* حجم خط صغير ومتجاوب */
-  color: #007bff; /* ✅ تعديل: تغيير لون اسم المستخدم إلى الأزرق */
+  color: #03478f; /* ✅ تعديل: تغيير لون اسم المستخدم إلى الأزرق */
   font-weight: bold;
   white-space: nowrap; /* لمنع النص من الانقسام إلى سطرين */
 }
