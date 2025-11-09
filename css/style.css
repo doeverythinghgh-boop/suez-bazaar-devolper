@@ -300,14 +300,14 @@ button,
 }
 
 .category-cell-content i {
-  font-size: 2.2rem;
+  font-size: 2rem; /* ✅ تعديل: تصغير حجم الأيقونة قليلاً */
   color: #007bff; /* لون أزرق يتناسب مع الهوية */
   transition: color 0.3s ease;
 }
 
 /* جديد: تنسيق النص أسفل الأيقونة */
 .category-cell-content span {
-  font-size: 0.65rem; /* ✅ تعديل: تكبير حجم الخط قليلاً لتحسين الوضوح */
+  font-size: 0.6rem; /* ✅ تعديل: تصغير حجم الخط ليتناسب مع البطاقة الأصغر */
   color: #4a5568; /* ✅ تعديل: استخدام لون رمادي داكن ومحايد لتباين أفضل */
   font-weight: 600; /* وزن خط متوسط */
 }
@@ -576,4 +576,4 @@ button,
     opacity: 1;
   }
 }
-}
+

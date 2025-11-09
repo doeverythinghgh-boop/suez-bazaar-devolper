@@ -5,9 +5,9 @@
       "title": "الملابس والأزياء",
       "icon": "fas fa-shirt",
       "subcategories": [
-        { "id": 1, "title": "ملابس نسائية", "icon": "fas fa-female" },
-        { "id": 2, "title": "ملابس رجالية", "icon": "fas fa-male" },
-        { "id": 3, "title": "ملابس أطفال وحديثي الولادة", "icon": "fas fa-child" },
+        { "id": 1, "title": "ملابس نسائية", "icon": "fas fa-person-dress" },
+        { "id": 2, "title": "ملابس رجالية", "icon": "fas fa-user-tie" },
+        { "id": 3, "title": "ملابس أطفال وحديثي الولادة", "icon": "fas fa-child-reaching" },
         { "id": 4, "title": "العبايات والجلابيات", "icon": "fas fa-vest-patches" },
         { "id": 5, "title": "الأحذية والحقائب الجلدية والقماشية", "icon": "fas fa-shopping-bag" },
         { "id": 6, "title": "الإكسسوارات النسائية والرجالية", "icon": "fas fa-glasses" },
@@ -21,7 +21,7 @@
     },
     {
       "id": 2,
-      "title": "الصناعات الغذائية والمأكولات",
+      "title": "الأطعمة والمشروبات",
       "icon": "fas fa-utensils",
       "subcategories": [
         { "id": 1, "title": "الأطباق الرئيسية والوجبات الجاهزة", "icon": "fas fa-concierge-bell" },
@@ -59,7 +59,7 @@
     },
     {
       "id": 4,
-      "title": "الصحة والجمال والعناية الشخصية",
+      "title": "الصحة والجمال",
       "icon": "fas fa-spa",
       "subcategories": [
         { "id": 1, "title": "مستحضرات العناية بالبشرة والوجه", "icon": "fas fa-magic" },
@@ -96,7 +96,7 @@
     },
     {
       "id": 6,
-      "title": "الخدمات المهنية والعامة",
+      "title": "الخدمات العامة",
       "icon": "fas fa-briefcase",
       "subcategories": [
         { "id": 1, "title": "خدمات الصيانة المنزلية", "icon": "fas fa-tools" },
@@ -115,7 +115,7 @@
     },
     {
       "id": 7,
-      "title": "المركبات ووسائل النقل",
+      "title": "سوق المركبات",
       "icon": "fas fa-car",
       "subcategories": [
         { "id": 1, "title": "سيارات مستعملة وجديدة", "icon": "fas fa-car-side" },
@@ -223,7 +223,7 @@
     },
     {
       "id": 14,
-      "title": "الزراعة والمنتجات الريفية",
+      "title": "منتجات الزراعة",
       "icon": "fas fa-seedling",
       "subcategories": [
         { "id": 1, "title": "الخضروات والفواكه الطازجة", "icon": "fas fa-carrot" },

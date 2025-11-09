@@ -155,14 +155,15 @@
           tbody.innerHTML = ""; // مسح المحتوى القديم
 
           // تجميع الفئات في مجموعات من 3
+          // ✅ تعديل: تجميع الفئات في مجموعات من 4 لعرض أربعة أعمدة
           console.log('[Categories] جاري بناء صفوف الجدول...');
-          for (let i = 0; i < categories.length; i += 3) {
-            const chunk = categories.slice(i, i + 3);
+          for (let i = 0; i < categories.length; i += 4) {
+            const chunk = categories.slice(i, i + 4);
             const mainRow = document.createElement("tr");
             mainRow.className = "main-category-row";
             // جديد: إضافة تأخير للحركة لكل صف للحصول على تأثير متدرج
             // الصف الأول يبدأ بعد 0 ثانية، الثاني بعد 0.1 ثانية، وهكذا
-            mainRow.style.animationDelay = `${(i / 3) * 0.1}s`;
+            mainRow.style.animationDelay = `${(i / 4) * 0.1}s`;
 
             chunk.forEach((category) => {
               const cell = document.createElement("td");
@@ -189,7 +190,7 @@
             });
 
             // إضافة خلايا فارغة إذا كان الصف الأخير غير مكتمل
-            while (mainRow.cells.length < 3) {
+            while (mainRow.cells.length < 4) {
               mainRow.appendChild(document.createElement("td"));
             }
 
@@ -248,7 +249,7 @@
           subRow.style.animation = "slide-fade-in 1.5s ease-out forwards"; /* ✅ تعديل: جعل الحركة تظهر من الأعلى للأسفل خلال 1.5 ثانية */
 
           const subCell = document.createElement("td");
-          subCell.colSpan = 3;
+          subCell.colSpan = 4; // ✅ تعديل: مطابقة عدد الأعمدة الجديد
 
           const subcategoriesContainer = document.createElement("div");
           subcategoriesContainer.className = "subcategories-container";
@@ -305,7 +306,7 @@
         const galleryRow = document.createElement("tr");
         galleryRow.className = "products-gallery-row";
         const galleryCell = document.createElement("td");
-        galleryCell.colSpan = 3;
+        galleryCell.colSpan = 4; // ✅ تعديل: مطابقة عدد الأعمدة الجديد
         galleryRow.appendChild(galleryCell);
         // إدراج صف المنتجات بعد صف الفئات الفرعية
         subRow.parentNode.insertBefore(galleryRow, subRow.nextSibling);
