@@ -8,3 +8,7 @@ if (location.hostname === "127.0.0.1" || location.hostname === "localhost") {
 else if (location.hostname.endsWith("pages.dev") || location.hostname.endsWith("bazaar-bk1.pages.dev")) {
   baseURL = "https://bazaar-neon-three.vercel.app";
 }
+// ✅ جديد: لو داخل تطبيق أندرويد → استخدم Vercel
+else if (location.hostname === "appassets.androidplatform.net") {
+  baseURL = "https://bazaar-neon-three.vercel.app";
+}
