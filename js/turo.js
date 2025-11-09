@@ -138,7 +138,15 @@ async function updateProduct(productData) {
 async function getProductsByCategory(mainCatId, subCatId) {
   console.log(`%c[API] Starting getProductsByCategory (Main: ${mainCatId}, Sub: ${subCatId})`, 'color: blue;');
   try {
-    const response = await fetch(`${baseURL}/api/products?MainCategory=${mainCatId}&SubCategory=${subCatId}`);
+    // --- جديد: إضافة تسجيلات تشخيصية لتحديد المشكلة بدقة ---
+    // 1. التحقق من وجود متغير baseURL
+    if (typeof baseURL === 'undefined' || !baseURL) {
+      console.error('%c[API-Debug] متغير baseURL غير معرف أو فارغ! هذا هو سبب فشل fetch.', 'color: red; font-weight: bold;');
+      throw new Error('baseURL is not defined');
+    }
+    const requestURL = `${baseURL}/api/products?MainCategory=${mainCatId}&SubCategory=${subCatId}`;
+    console.log(`%c[API-Debug] Preparing to fetch from URL: ${requestURL}`, 'color: magenta;');
+    const response = await fetch(requestURL);
 
     if (!response.ok) {
       const errorData = await response.json();
