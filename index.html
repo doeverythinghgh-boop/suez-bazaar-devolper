@@ -93,18 +93,27 @@
         class="header-title-group"
         style="text-decoration: none; color: inherit"
       >
-        <h1 id="animated-text" class="bazaar-title"></h1>
-        <p id="tagline" class="tagline"></p>
+      <table> 
+        <tr>
+          <td> <h1 id="animated-text" class="bazaar-title"></h1></td>
+          <td>  <p id="tagline" class="tagline"></p></td>
+        </tr>
+      </table>
       </a>
-      <!-- قسم المستخدم (تم التعديل ليصبح قائمة منسدلة) -->
-      <div class="user-profile-container">
-        <div class="user-profile" id="user-profile-button">
-          <a href="login.html" class="user-profile-link">
-            <span class="fas fa-user-circle user-icon" id="user-icon"></span>
-            <span class="user-text">تسجيل الدخول</span>
-          </a>
-          <!-- جديد: شارة السلة -->
-          <span id="cart-badge" class="cart-badge" style="display: none;">0</span>
+      <!-- جديد: حاوية جديدة لتجميع عناصر التحكم اليسرى (بحث، مستخدم) -->
+      <div class="header-controls">
+        <!-- جديد: قسم البحث -->
+        <div class="search-container" id="search-container">
+          <button class="search-icon-btn" id="search-icon-btn" title="بحث عن منتج"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-profile-container">
+          <div class="user-profile" id="user-profile-button">
+            <a href="login.html" class="user-profile-link">
+              <span class="fas fa-user-circle user-icon" id="user-icon"></span>
+              <span class="user-text">تسجيل الدخول</span>
+            </a>
+            <span id="cart-badge" class="cart-badge" style="display: none;">0</span>
+          </div>
         </div>
       </div>
     </div>
@@ -127,6 +136,18 @@
     <!-- Modal for Product Details -->
     <div id="product-details-modal" class="modal">
       <!-- Product details will be loaded here from showProduct.html -->
+    </div>
+    <!-- ✅ جديد: نافذة البحث المنبثقة -->
+    <div id="search-modal" class="modal">
+      <div class="search-modal-content">
+        <button id="search-modal-close-btn" class="close-button" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+        <h2><i class="fas fa-search"></i> ابحث في بازار السويس</h2>
+        <div class="search-modal-input-container">
+          <input type="search" id="search-modal-input" placeholder="اكتب اسم المنتج، الفئة، أو البائع..." />
+          <button id="search-modal-submit-btn" class="button"><i class="fas fa-search"></i></button>
+        </div>
+        <div id="search-results-container"></div>
+      </div>
     </div>
     <script src="js/config.js"></script> <!-- ✅ إضافة: تحميل ملف الإعدادات أولاً -->
     <script src="js/cart.js"></script> <!-- ✅ إضافة: تحميل ملف السلة -->
@@ -160,13 +181,10 @@
           for (let i = 0; i < categories.length; i += 4) {
             const chunk = categories.slice(i, i + 4);
             const mainRow = document.createElement("tr");
-            mainRow.className = "main-category-row";
-            // جديد: إضافة تأخير للحركة لكل صف للحصول على تأثير متدرج
-            // الصف الأول يبدأ بعد 0 ثانية، الثاني بعد 0.1 ثانية، وهكذا
-            mainRow.style.animationDelay = `${(i / 4) * 0.1}s`;
 
             chunk.forEach((category) => {
               const cell = document.createElement("td");
+              cell.className = "main-category-row"; // تطبيق الكلاس على الخلية بدلاً من الصف
               cell.dataset.categoryId = category.id; // ✅ إصلاح: تخزين معرف الفئة الرئيسية هنا
 
               // ✅ تحسين: قراءة الأيقونة مباشرة من بيانات الفئة
@@ -178,6 +196,10 @@
                   ${iconHtml}
                   <span>${category.title}</span>
                 </div>`;
+
+              // جديد: إضافة تأخير للحركة لكل خلية للحصول على تأثير متدرج
+              // يتم حساب التأخير بناءً على فهرس الفئة الكلي
+              cell.style.animationDelay = `${(i + mainRow.cells.length) * 0.07}s`;
 
               // إضافة حدث النقر فقط إذا كانت هناك فئات فرعية
               if (category.subcategories && category.subcategories.length > 0) {
@@ -442,6 +464,33 @@
         const turoScript = document.createElement("script");
         turoScript.src = "js/turo.js";
         document.body.appendChild(turoScript);
+
+        // جديد: تفعيل وظيفة البحث في الهيدر
+        const searchContainer = document.getElementById('search-container');
+        const openSearchBtn = document.getElementById('search-icon-btn');
+        const searchModal = document.getElementById('search-modal');
+        const closeSearchBtn = document.getElementById('search-modal-close-btn');
+        const searchModalInput = document.getElementById('search-modal-input');
+
+        const openModal = () => {
+          searchModal.style.display = 'block';
+          document.body.classList.add('modal-open');
+          setTimeout(() => searchModalInput.focus(), 50); // التركيز على حقل البحث
+        };
+
+        const closeModal = () => {
+          searchModal.style.display = 'none';
+          document.body.classList.remove('modal-open');
+        };
+
+        openSearchBtn.addEventListener('click', openModal);
+        closeSearchBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (event) => {
+          if (event.target == searchModal) {
+            closeModal();
+          }
+        });
+
       });
     </script>
   </body>
