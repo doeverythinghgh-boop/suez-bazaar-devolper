@@ -3,7 +3,7 @@
 /* === General Body Styles === */
 body {
   margin: 0;
-  background-color: #ffffff; /* White background */
+  background-color: #f9f9f9; /* White background */
   color: #222222; /* Dark text color */
   font-family: "Orbitron", sans-serif; /* Modern font */
   /* Add padding to the top to prevent content from being hidden by the fixed header */
@@ -21,7 +21,7 @@ body.modal-open {
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #ffffff; /* White background for the header */
+  background-color: #f9f9f9; /* White background for the header */
   height: 10vh; /* Set a fixed height of 10% of the viewport height */
   z-index: 1000; /* Ensure it stays on top of other content */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow for a light theme */
@@ -267,7 +267,7 @@ button,
   padding: 20px;
   text-align: center;
   vertical-align: middle;
-  background-color: #ffffff; /* خلفية بيضاء نظيفة */
+  background-color: #f9f9f9; /* خلفية بيضاء نظيفة */
   border-radius: 12px; /* زوايا دائرية أنعم */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* ظل خفيف وناعم */
   transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease; /* انتقالات سلسة */
@@ -285,11 +285,12 @@ button,
 }
 
 .main-category-row td.active-category {
-  background-color: #007bff; /* لون أزرق جذاب ومباشر */
+  background: linear-gradient(360deg, #497bcc, #497bcc); /* ✅ تعديل: استخدام تدرج لوني جذاب */
   color: #ffffff; /* لون نص أبيض للتباين */
   transform: scale(1.05); /* تكبير الخلية قليلاً لتمييزها */
-  box-shadow: 0 10px 25px rgba(0, 123, 255, 0.25); /* ظل أعمق وأكثر نعومة */
-  border-color: #007bff;
+  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); /* ✅ تعديل: ظل متناسق مع اللون الجديد */
+  border-color: #2563eb; /* ✅ تعديل: تحديث لون الإطار */
+  border-color: transparent;
 }
 
 /* تغيير لون الأيقونة والنص داخل الخلية النشطة */
@@ -426,7 +427,8 @@ button,
 }
 
 .subcategory-item {
-  background-color: #fff;
+  background-color: #f9f9f9;
+  border: 1px solid #e9ecef;
   padding: 10px 20px;
   border-radius: 20px;
   text-decoration: none;
@@ -443,13 +445,20 @@ button,
 
 /* ✅ جديد: تنسيق الفئة الفرعية النشطة (المختارة) */
 .subcategory-item.active {
-  background-color: #007bff; /* لون الخلفية أزرق */
+  background: linear-gradient(360deg, #497bcc, #497bcc); /* ✅ تعديل: استخدام نفس التدرج اللوني الجذاب */
   color: #ffffff; /* لون النص والأيقونة أبيض */
-  border-color: #007bff; /* جعل لون الإطار متطابقًا */
+  border-color: transparent; /* ✅ تعديل: إزالة الإطار ليتناسب مع التدرج */
   transform: scale(1.05); /* تكبير طفيف لتمييز العنصر */
-  box-shadow: 0 5px 15px rgba(0, 123, 255, 0.2); /* إضافة ظل ناعم */
+  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.25); /* ✅ تعديل: ظل متناسق مع اللون الجديد */
 }
 
+/* ✅ تعديل: تصغير حجم النص في جميع الفئات الفرعية مع الحفاظ على حجم الأيقونة */
+.subcategory-item {
+  font-size: 0.8em; /* تصغير حجم الخط العام للعنصر */
+}
+.subcategory-item i {
+  font-size: 1.2em; /* إعادة حجم الأيقونة إلى حجم أكبر قليلاً ليتناسب مع النص الأصغر */
+}
 
 /* Media query for smaller screens */
 @media (max-width: 480px) {
