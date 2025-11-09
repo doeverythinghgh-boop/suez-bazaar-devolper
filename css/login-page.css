@@ -35,8 +35,10 @@
   font-size: 1rem; /* حجم خط مناسب */
   font-weight: 600; /* وزن خط أثقل */
   border-radius: 12px; /* حواف دائرية أكثر */
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); /* ظل ناعم */
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background-color 0.2s; /* تأثير انتقال ناعم */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03); /* ظل ناعم */
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
+    background-color 0.2s; /* تأثير انتقال ناعم */
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -59,9 +61,18 @@
 }
 
 /* تخصيص ألوان لأزرار معينة */
-#add-product-btn { background-color: #e8f5e9; border-color: #a5d6a7; } /* أخضر فاتح */
-#logout-btn-alt { background-color: #fbe9e7; border-color: #ffab91; } /* أحمر فاتح */
-#admin-panel-btn { background-color: #ede7f6; border-color: #b39ddb; } /* بنفسجي فاتح */
+#add-product-btn {
+  background-color: #e8f5e9;
+  border-color: #a5d6a7;
+} /* أخضر فاتح */
+#logout-btn-alt {
+  background-color: #fbe9e7;
+  border-color: #ffab91;
+} /* أحمر فاتح */
+#admin-panel-btn {
+  background-color: #ede7f6;
+  border-color: #b39ddb;
+} /* بنفسجي فاتح */
 
 .action-buttons {
   display: flex;
@@ -121,67 +132,6 @@
   margin: 20px auto 0 auto; /* توسيط الجدول تلقائيًا */
 }
 
-/* --- جديد: تصميم بطاقات المستخدمين --- */
-.user-cards-container {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 100%;
-  max-width: 700px;
-  margin: 20px auto 0;
-}
-
-.user-card {
-  background-color: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  overflow: hidden;
-  transition: box-shadow 0.2s ease-out;
-}
-
-.user-card:hover {
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-.user-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background-color: #f9fafb;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.user-name {
-  font-weight: 600;
-  color: #1f2937;
-}
-
-.user-phone {
-  font-size: 0.9rem;
-  color: #6b7280;
-}
-
-.user-card-body {
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.user-card-field {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.user-card-field label {
-  font-size: 0.95rem;
-  color: #4b5563;
-  font-weight: 500;
-}
-
 /* --- جديد: تصميم بطاقات المنتجات في نافذة "منتجاتي" --- */
 .product-cards-container {
   display: flex;
@@ -218,7 +168,7 @@
   object-fit: cover;
   border-radius: 10px; /* جديد: زيادة دائرية الحواف */
   border: 1px solid #e9ecef; /* جديد: إطار داخلي خفيف */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.07); /* جديد: تحسين الظل */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07); /* جديد: تحسين الظل */
 }
 
 .product-card-details {
@@ -284,17 +234,39 @@
   }
 }
 /* جديد: أنماط مودال السلة */
-#cart-modal-container .modal-content { max-width: 800px; }
-.cart-item { display: flex; align-items: center; gap: 15px; padding: 10px 0; border-bottom: 1px solid #eee; }
-.cart-item img { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; }
-.cart-item-details { flex-grow: 1; }
-.cart-total { text-align: left; font-size: 1.2rem; font-weight: bold; margin-top: 20px; }
+#cart-modal-container .modal-content {
+  max-width: 800px;
+}
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+.cart-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.cart-item-details {
+  flex-grow: 1;
+}
+.cart-total {
+  text-align: left;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 20px;
+}
 /* ✅ إصلاح: ضمان ظهور رسالة التأكيد فوق نافذة السلة */
 .swal2-container {
   z-index: 2000 !important;
 }
 /* جديد: تنسيق موديول المشتريات */
-#purchases-modal-container .modal-content { max-width: 800px; }
+#purchases-modal-container .modal-content {
+  max-width: 800px;
+}
 .purchase-item {
   display: flex;
   gap: 15px;
@@ -305,13 +277,33 @@
   background-color: #f9f9f9;
   animation: slide-fade-in 0.5s ease-out forwards;
 }
-.purchase-item img { width: 100px; height: 100px; object-fit: cover; border-radius: 8px; }
-.purchase-item-details { flex-grow: 1; }
-.purchase-item-details p { margin: 0 0 8px 0; }
-.purchase-status { font-weight: bold; padding: 4px 8px; border-radius: 6px; color: white; }
-.status-pending { background-color: #f39c12; } /* قيد المعالجة */
-.status-shipped { background-color: #3498db; } /* جارٍ الشحن */
-.status-delivered { background-color: #2ecc71; } /* تم التسليم */
+.purchase-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.purchase-item-details {
+  flex-grow: 1;
+}
+.purchase-item-details p {
+  margin: 0 0 8px 0;
+}
+.purchase-status {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: white;
+}
+.status-pending {
+  background-color: #f39c12;
+} /* قيد المعالجة */
+.status-shipped {
+  background-color: #3498db;
+} /* جارٍ الشحن */
+.status-delivered {
+  background-color: #2ecc71;
+} /* تم التسليم */
 
 /* --- جديد: تصميم محسّن لنافذة طلب كلمة المرور --- */
 .swal-password-prompt {
