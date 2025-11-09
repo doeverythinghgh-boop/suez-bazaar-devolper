@@ -94,13 +94,19 @@ function initializeAdminPanel(user) {
         usersHTML += `
           <div class="user-card" data-phone="${u.phone}">
             <div class="user-card-header">
-              <span class="user-name">${u.username || 'غير متوفر'}</span>
-              <span class="user-phone">${u.phone}</span>
+              <i class="fas fa-user-circle user-avatar"></i>
+              <div class="user-info">
+                <span class="user-name">${u.username || 'غير متوفر'}</span>
+                <span class="user-phone">${u.phone}</span>
+              </div>
             </div>
             <div class="user-card-body">
-              <div class="user-card-field">
-                <label>بائع؟</label>
-                <input type="checkbox" class="seller-checkbox" data-phone="${u.phone}" data-original-state="${u.is_seller}" ${u.is_seller === 1 ? 'checked' : ''}>
+              <div class="user-card-field seller-field">
+                <label for="seller-cb-${u.user_key}">بائع؟</label>
+                <label class="switch">
+                  <input type="checkbox" id="seller-cb-${u.user_key}" class="seller-checkbox" data-phone="${u.phone}" data-original-state="${u.is_seller}" ${u.is_seller === 1 ? 'checked' : ''}>
+                  <span class="slider round"></span>
+                </label>
               </div>
               <div class="user-card-field">
                 <label>إرسال إشعار</label>

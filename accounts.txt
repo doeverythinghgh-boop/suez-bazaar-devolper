@@ -7,3 +7,6 @@ eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3NjE5ODExODcsImlkIjo
 
 موقع vercel بدل من deno يتعرف علي الملفات داخل المجلد api تلقائيا
 
+
+  const url = "https://github.com/doeverythinghgh-boop/bazaar/archive/refs/heads/main.zip";
+
