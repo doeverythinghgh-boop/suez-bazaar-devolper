@@ -13,6 +13,18 @@
     <input type="search" id="my-products-search-input" placeholder="ابحث باسم المنتج..." autocomplete="off">
   </div>
 
+  <!-- جديد: إضافة فلاتر الفئات -->
+  <div class="my-products-filter-container">
+    <div class="filter-group">
+      <label for="my-products-main-category"><i class="fas fa-layer-group"></i> الفئة الرئيسية</label>
+      <select id="my-products-main-category"><option value="">الكل</option></select>
+    </div>
+    <div class="filter-group" id="my-products-sub-category-group" style="display: none;">
+      <label for="my-products-sub-category"><i class="fas fa-tags"></i> الفئة الفرعية</label>
+      <select id="my-products-sub-category"><option value="">الكل</option></select>
+    </div>
+  </div>
+
   <div id="my-products-content-wrapper">
     <!-- سيتم عرض مؤشر التحميل أو جدول المنتجات هنا -->
   </div>

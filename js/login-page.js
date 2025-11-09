@@ -446,6 +446,22 @@ async function showMyProducts(userKey) {
   // 3. جلب بيانات المنتجات
   const products = await getProductsByUser(userKey);
 
+  // جديد: جلب بيانات الفئات لترجمة الأرقام إلى أسماء
+  let categoryNames = {};
+  let allCategories = []; // جديد: لتخزين القائمة الكاملة للفئات
+  try {
+    const catResponse = await fetch('../shared/list.json');
+    const catData = await catResponse.json();
+    allCategories = catData.categories; // حفظ القائمة الكاملة
+    allCategories.forEach(mainCat => {
+      categoryNames[mainCat.id] = mainCat.title;
+      if (mainCat.subcategories) {
+        mainCat.subcategories.forEach(subCat => categoryNames[subCat.id] = subCat.title);
+      }
+    });
+  } catch (error) {
+    console.error("Failed to load category names:", error);
+  }
   // 4. بناء وعرض الجدول داخل النافذة المنبثقة
   if (products && products.length > 0) {
     let cardsHTML = `<div class="product-cards-container">`;
@@ -473,9 +489,13 @@ async function showMyProducts(userKey) {
         priceHtml += `<p><strong>السعر قبل الخصم:</strong> <span style="text-decoration: line-through; color: #7f8c8d;">${product.original_price} جنيه</span></p>`;
       }
 
+      // جديد: إضافة data-attributes للفئات لتسهيل التصفية
+      const mainCatData = `data-main-category="${product.MainCategory || ''}"`;
+      const subCatData = `data-sub-category="${product.SubCategory || ''}"`;
+
       // بناء بطاقة المنتج
       cardsHTML += `
-        <div class="product-card">
+        <div class="product-card" ${mainCatData} ${subCatData}>
           <div class="product-card-images">${imagesHtml}</div>
           <div class="product-card-details">
             <h4>${product.productName || 'منتج بلا اسم'}</h4>
@@ -525,39 +545,84 @@ async function showMyProducts(userKey) {
       });
     });
 
-    // 7. جديد: ربط حدث البحث بحقل الإدخال
+    // 7. جديد: إعداد الفلاتر وربط الأحداث
+    const mainCategoryFilter = document.getElementById('my-products-main-category');
+    const subCategoryFilter = document.getElementById('my-products-sub-category');
+    const subCategoryGroup = document.getElementById('my-products-sub-category-group');
     const searchInput = document.getElementById('my-products-search-input');
     const productCards = contentWrapper.querySelectorAll('.product-card');
+    const noResultsContainer = document.createElement('div');
+    noResultsContainer.innerHTML = `<p class="no-results-message" style="text-align: center; padding: 2rem 0; display: none;"></p>`;
+    contentWrapper.appendChild(noResultsContainer);
+    const noResultsMsg = noResultsContainer.querySelector('.no-results-message');
 
-    searchInput.addEventListener('input', (event) => {
-      const searchTerm = event.target.value.toLowerCase().trim();
+    // تعبئة فلتر الفئة الرئيسية
+    // تعديل: استخدام القائمة الكاملة للفئات بدلاً من الفئات المستخدمة فقط
+    allCategories.forEach(category => {
+      const option = new Option(category.title, category.id);
+      mainCategoryFilter.add(option);
+    });
+
+    // دالة التصفية الموحدة
+    const filterMyProducts = () => {
+      const searchTerm = searchInput.value.toLowerCase().trim();
+      const selectedMainCat = mainCategoryFilter.value;
+      const selectedSubCat = subCategoryFilter.value;
       let visibleCount = 0;
 
       productCards.forEach(card => {
         const productName = card.querySelector('h4').textContent.toLowerCase();
-        if (productName.includes(searchTerm)) {
+        const mainCat = card.dataset.mainCategory;
+        const subCat = card.dataset.subCategory;
+
+        const matchesSearch = productName.includes(searchTerm);
+        const matchesMainCat = !selectedMainCat || mainCat === selectedMainCat;
+        const matchesSubCat = !selectedSubCat || subCat === selectedSubCat;
+
+        if (matchesSearch && matchesMainCat && matchesSubCat) {
           card.style.display = 'flex';
           visibleCount++;
         } else {
           card.style.display = 'none';
         }
       });
-
-      // إظهار أو إخفاء رسالة "لا توجد نتائج"
-      let noResultsMsg = contentWrapper.querySelector('.no-results-message');
+      
       if (visibleCount === 0) {
-        if (!noResultsMsg) {
-          noResultsMsg = document.createElement('p');
-          noResultsMsg.className = 'no-results-message';
-          noResultsMsg.style.textAlign = 'center';
-          noResultsMsg.style.padding = '2rem 0';
-          contentWrapper.appendChild(noResultsMsg);
-        }
-        noResultsMsg.textContent = `لا توجد منتجات تطابق البحث: "${event.target.value}"`;
-      } else if (noResultsMsg) {
-        noResultsMsg.remove();
+        noResultsMsg.textContent = `لا توجد منتجات تطابق معايير البحث.`;
+        noResultsMsg.style.display = 'block';
+      } else {
+        noResultsMsg.style.display = 'none';
       }
+    };
+
+    // ربط الأحداث
+    searchInput.addEventListener('input', filterMyProducts);
+    mainCategoryFilter.addEventListener('change', () => {
+      const selectedMainCat = mainCategoryFilter.value;
+      // إفراغ وتعبئة فلتر الفئة الفرعية
+      subCategoryFilter.innerHTML = '<option value="">الكل</option>';
+
+      if (selectedMainCat) {
+        // تعديل: جلب الفئات الفرعية من القائمة الكاملة
+        const selectedCategoryData = allCategories.find(cat => cat.id == selectedMainCat);
+        const subCategories = selectedCategoryData ? selectedCategoryData.subcategories : [];
+
+        if (subCategories && subCategories.length > 0) {
+          subCategories.forEach(subCat => {
+            // استخدام البيانات مباشرة من الكائن
+            const option = new Option(subCat.title, subCat.id);
+            subCategoryFilter.add(option);
+          });
+          subCategoryGroup.style.display = 'flex';
+        } else {
+          subCategoryGroup.style.display = 'none';
+        }
+      } else {
+        subCategoryGroup.style.display = 'none';
+      }
+      filterMyProducts();
     });
+    subCategoryFilter.addEventListener('change', filterMyProducts);
 
   } else if (products) {
     contentWrapper.innerHTML = "<p style='text-align: center; padding: 2rem 0;'>لم تقم بإضافة أي منتجات بعد.</p>";
@@ -797,3 +862,15 @@ function handleLoginSuccess(user) {
     }
   });
 }
+  Swal.fire({
+    icon: "success",
+    title: `أهلاً بك، ${user.username}`,
+    text: "هل تود الانتقال إلى الصفحة الرئيسية؟",
+    showCancelButton: true,
+    confirmButtonText: "موافق",
+    cancelButtonText: "لا",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      window.location.href = "index.html";
+    }
+  });
