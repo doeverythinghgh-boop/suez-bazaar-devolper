@@ -13,8 +13,7 @@ function showCartModal() {
 
   let modalContent = `
     <div class="modal-content">
-      <!-- ✅ تعديل: تحويل زر الإغلاق إلى أيقونة داخل زر -->
-      <button class="close-button" id="cart-modal-close-btn" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+      <span class="close-button" id="cart-modal-close-btn">&times;</span>
       <h2><i class="fas fa-shopping-cart"></i> سلة المشتريات</h2>`;
 
   if (cart.length > 0) {
@@ -121,8 +120,17 @@ async function handleCheckout() {
   const cart = getCart();
 
   // التحقق من الشروط
-  if (!loggedInUser || !loggedInUser.user_key) {
-    Swal.fire('خطأ', 'يرجى تسجيل الدخول أولاً لإتمام عملية الشراء.', 'warning');
+  if (!loggedInUser || loggedInUser.is_guest) {
+    Swal.fire({
+      title: 'مطلوب التسجيل',
+      text: 'لإتمام عملية الشراء، يجب عليك تسجيل الدخول أو إنشاء حساب جديد.',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'تسجيل الدخول',
+      cancelButtonText: 'إلغاء'
+    }).then((result) => {
+      if (result.isConfirmed) window.location.href = 'login.html';
+    });
     return;
   }
   if (cart.length === 0) {

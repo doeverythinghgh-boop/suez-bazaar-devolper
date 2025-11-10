@@ -1,69 +1,97 @@
 /* ملاحظة: لا يسمح باستخدام تأثيرات hover في هذا المشروع. */
 
-/* === Login Page Specific Styles === */
+/* === تصميم جديد ومحسّن لصفحة تسجيل الدخول === */
 
-/* Wrapper to center the login form vertically */
-.login-page-wrapper {
-  /* We will let the container itself handle the layout */
-  /* min-height is removed to allow the container to define the height */
-  font-family: "Tajawal", sans-serif;
+/* 1. خلفية الصفحة وتخطيطها العام */
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-/* The main login form container */
+.login-page-wrapper {
+  font-family: "Tajawal", sans-serif;
+  /* جديد: خلفية متحركة جذابة */
+  background-size: 400% 400%;
+  animation: gradient-animation 15s ease infinite;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* 2. حاوية النموذج الرئيسية (البطاقة) */
 .login-container {
   background-color: #ffffff;
-  width: 100%; /* Take full width */
-  min-height: 88vh; /* Fill the rest of the vertical space below the header */
-  box-sizing: border-box; /* Ensure padding is included in the dimensions */
+  width: 100%;
+  /* تعديل: إزالة الارتفاع الأدنى الثابت ليتناسب مع المحتوى */
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center; /* Center the form content horizontally */
-  padding: 20px 15px; /* Adjust horizontal padding for smaller screens */
+  align-items: center;
+  padding: 0; /* إزالة الحشو من هذه الحاوية */
+  background: none; /* جعل هذه الحاوية شفافة */
 }
 
+/* 3. عنوان النموذج (تسجيل الدخول) */
 .login-container h2 {
   margin-top: 0;
-  margin-bottom: 30px;
-  color: #333;
-  font-size: clamp(22px, 5vw, 26px); /* Responsive font size */
+  margin-bottom: 40px; /* زيادة المسافة السفلية */
+  color: #03478f; /* لون أغمق وأكثر وضوحًا */
+  font-size: clamp(28px, 6vw, 36px); /* تكبير حجم الخط */
   font-weight: 700;
+  text-align: center;
 }
 
-/* Set a width for the form itself to make it wider */
+/* 4. النموذج نفسه */
 .login-container form {
   width: 100%;
-  max-width: 500px; /* يمكنك تعديل هذه القيمة للتحكم في العرض الأقصى */
+  max-width: 420px; /* تعديل العرض الأقصى */
+  /* جديد: تأثير زجاجي شفاف */
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 20px; /* حواف أكثر دائرية */
+  /* جديد: ظل أكثر نعومة وعمقًا */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
-/* Form group for label and input */
+/* 5. مجموعة حقل الإدخال (العنوان والحقل) */
 .form-group {
   margin-bottom: 20px;
   text-align: right; /* Align labels to the right */
+ 
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #555;
-  font-size: 14px;
+  color: #03478f; /* لون رمادي داكن */
+  font-size: 0.9rem;
 }
 
-.form-group label i {
-  margin-left: 8px; /* Space between icon and text */
-  color: #888;
-}
-
+/* 6. حقول الإدخال */
 .form-group input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-sizing: border-box; /* Important for padding and width */
+  width: 100%; /* تعديل: العرض الكامل للحاوية */
+  padding: 14px 45px 14px 15px; /* مساحة للأيقونة على اليمين */
+  border: 1px solid #d1d5db; /* لون إطار أفتح */
+  border-radius: 10px; /* زيادة دائرية الحواف */
+  box-sizing: border-box;
   font-family: "Tajawal", sans-serif;
   font-size: 16px;
   transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #ffffff; /* تعديل: خلفية بيضاء نقية */
+}
+
+/* حاوية الأيقونة داخل حقل الإدخال */
+.form-group {
+  position: relative;
 }
 
 /* Wrapper for password input to position the icon */
@@ -77,13 +105,16 @@
   padding-left: 40px; /* Space for the icon on the left (for RTL) */
 }
 
-.toggle-password {
+/* أيقونات حقول الإدخال */
+.form-group .fa-phone,
+.toggle-password,
+.form-group .fa-user {
+  /* تعديل: تحسين محاذاة الأيقونة */
   position: absolute;
   top: 50%;
-  left: 15px; /* Position icon on the left */
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #aaa;
+  right: 15px; /* لليمين في RTL */
+  transform: translateY(calc(-50% + 14px)); /* ضبط المحاذاة العمودية بدقة */
+  color: #9ca3af;
 }
 
 /* Style for input fields with validation errors */
@@ -105,20 +136,32 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  border-color: #3b82f6; /* تعديل: لون أزرق متناسق */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
 }
 
-/* Login button styling */
+/* 7. زر تسجيل الدخول */
 .login-btn {
   width: 100%;
   padding: 15px;
   font-size: clamp(16px, 4vw, 18px); /* Responsive font size */
   margin-top: 10px;
-  /* Inherits styles from .button in style.css */
+  border: none;
+  color: white;
+  /* تعديل: تدرج لوني أكثر حيوية */
+  background-image: linear-gradient(to right, #3b82f6, #60a5fa);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
 }
 
-/* Footer section with extra links */
+.login-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* 8. تذييل النموذج (روابط إضافية) */
 .form-footer {
   margin-top: 25px;
   font-size: 14px;
@@ -128,16 +171,22 @@
   align-items: center;
 }
 
-.form-footer a {
-  color: #007bff;
+/* رابط "سجل الآن": يظهر كإجراء ثانوي أساسي */
+.form-footer-link {
+  color: #007bff; /* لون أزرق واضح */
+  font-size: 14px; /* تعديل: توحيد حجم الخط */
   text-decoration: none;
-  transition: text-decoration 0.2s;
 }
 
-/* تكبير حجم رابط "سجل الآن" */
-.form-footer a:last-of-type {
-  font-size: 16px; /* حجم أكبر قليلاً */
-  margin-top: 5px; /* إضافة مسافة علوية بسيطة */
+/* رابط "الدخول كضيف": يظهر كخيار بديل وأقل أهمية */
+.guest-login-link {
+  color: #007bff; /* لون رمادي لجعله أقل بروزًا */
+  font-size: 14px;
+  border-top: 1px solid #e5e7eb; /* خط فاصل أغمق قليلاً */
+  padding-top: 15px; /* مسافة فوق الرابط */
+  width: 100%; /* جعله يمتد على عرض الحاوية */
+  text-align: center; /* توسيط النص */
+  text-decoration: none;
 }
 
 .form-footer a strong {
@@ -171,11 +220,17 @@
 }
 
 /* Media query for very small screens */
-@media (max-width: 360px) {
+@media (max-width: 480px) {
+  .login-container form {
+    padding: 30px 25px; /* تقليل الحشو للشاشات الصغيرة جدًا */
+    /* جديد: إزالة الظل والحدود على الشاشات الصغيرة جدًا */
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none; /* For Safari compatibility */
+  }
   .form-group {
     margin-bottom: 15px;
-  }
-  .login-btn {
-    padding: 12px;
   }
 }

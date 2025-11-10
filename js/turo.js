@@ -536,10 +536,10 @@ window.showProductDetails = async function(productData) {
   const addToCartBtn = document.getElementById('product-modal-add-to-cart');
   addToCartBtn.addEventListener('click', () => {
     // ✅ إضافة: التحقق مما إذا كان المستخدم قد سجل دخوله
-    const loggedInUser = localStorage.getItem("loggedInUser");
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-    if (loggedInUser) {
-      console.log('[Modal] Add to cart button clicked by logged in user.');
+    if (loggedInUser && !loggedInUser.is_guest) {
+      console.log('[Modal] Add to cart button clicked by a registered user.');
       // إذا كان المستخدم مسجلاً، استمر في عملية الإضافة للسلة
       const quantity = parseInt(document.getElementById('product-modal-selected-quantity').value, 10);
       const productInfoForCart = {
@@ -551,11 +551,11 @@ window.showProductDetails = async function(productData) {
         seller_key: productData.user_key      // ✅ إضافة: تضمين مفتاح البائع
       };
       addToCart(productInfoForCart, quantity);
-    } else {
-      console.warn('[Modal] Add to cart button clicked by guest. Prompting for login.');
+    } else { // هذا الشرط سيتحقق إذا كان المستخدم ضيفًا أو لم يسجل دخوله على الإطلاق
+      console.warn('[Modal] Add to cart button clicked by guest or non-logged-in user. Prompting for login/registration.');
       // إذا لم يكن المستخدم مسجلاً، أظهر رسالة تنبيه
       Swal.fire({
-        icon: 'warning',
+        icon: 'info',
         title: 'يجب تسجيل الدخول',
         text: 'لإضافة منتجات إلى السلة، يرجى تسجيل الدخول أولاً.',
         showCancelButton: true,

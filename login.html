@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="ar" dir="rtl">
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <!--
   @file login.html
   @description صفحة تسجيل الدخول وإدارة حساب المستخدم.
@@ -25,22 +26,22 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
 
 <body>
   <!-- Header بسيط للاتساق -->
   <div class="container" id="header-container">
-    <a href="index.html" class="header-title-group" style="text-decoration: none; color: inherit">
-      <h1 class="bazaar-title final-text">SB</h1>
-      <p class="tagline" style="opacity: 1; margin-right: 1.5rem">
+    <a href="index.html" id="header-title-link" class="header-title-group" style="text-decoration: none; color: inherit">
+      <h1 id="header-title" class="bazaar-title final-text">SB</h1>
+      <p id="header-tagline" class="tagline" style="opacity: 1; margin-right: 1.5rem">
         بازار السويس
       </p>
     </a>
-    <a href="index.html" class="back-to-home-btn" title="العودة للصفحة الرئيسية">
+    <a href="index.html" id="back-to-home-link" class="back-to-home-btn" title="العودة للصفحة الرئيسية">
       <i class="fas fa-home"></i>
-      <span>العودة للرئيسية</span>
+      <span id="back-to-home-text">العودة للرئيسية</span>
     </a>
   </div>
 
@@ -49,19 +50,19 @@
     <div class="login-container">
       <h2 id="welcome-message"></h2>
       <!-- جديد: حاوية رئيسية للأزرار مقسمة إلى مجموعات -->
-      <div class="action-buttons">
+      <div id="user-action-buttons-container" class="action-buttons">
         <!-- مجموعة المسؤول (تظهر للمسؤول فقط) -->
         <div id="admin-actions" class="button-group" style="display: none; animation-delay: 0s;">
-          <h3><i class="fas fa-crown"></i> أدوات المسؤول</h3>
-          <div class="button-row">
+          <h3 id="admin-actions-title"><i class="fas fa-crown"></i> أدوات المسؤول</h3>
+          <div id="admin-actions-row" class="button-row">
             <!-- زر لوحة تحكم المسؤول سيتم إضافته هنا بواسطة JS -->
           </div>
         </div>
 
         <!-- مجموعة البائع (تظهر للبائع فقط) -->
         <div id="seller-actions" class="button-group" style="display: none; animation-delay: 0.1s;">
-          <h3><i class="fas fa-store"></i> أدوات البائع</h3>
-          <div class="button-row">
+          <h3 id="seller-actions-title"><i class="fas fa-store"></i> أدوات البائع</h3>
+          <div id="seller-actions-row" class="button-row">
             <button id="add-product-btn" class="button logout-btn-small">
               <i class="fas fa-plus"></i> إضافة منتج
             </button>
@@ -73,8 +74,8 @@
 
         <!-- مجموعة العميل (تظهر لجميع المستخدمين) -->
         <div id="customer-actions" class="button-group" style="display: none; animation-delay: 0.2s;">
-          <h3><i class="fas fa-user"></i> حسابي</h3>
-          <div class="button-row">
+          <h3 id="customer-actions-title"><i class="fas fa-user"></i> حسابي</h3>
+          <div id="customer-actions-row" class="button-row">
             <button id="view-cart-btn" class="button logout-btn-small">
               <i class="fas fa-shopping-cart"></i> عرض السلة
             </button>
@@ -86,10 +87,12 @@
 
         <!-- مجموعة الإعدادات (تظهر لجميع المستخدمين) -->
         <div id="user-actions" class="button-group" style="display: none; animation-delay: 0.3s;">
-          <h3><i class="fas fa-cogs"></i> الإعدادات</h3>
-          <div class="button-row">
-            <button id="edit-profile-btn" class="button logout-btn-small"><i class="fas fa-user-cog"></i> تعديل البيانات</button>
-            <button id="logout-btn-alt" class="button logout-btn-small"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</button>
+          <h3 id="user-actions-title"><i class="fas fa-cogs"></i> الإعدادات</h3>
+          <div id="user-actions-row" class="button-row">
+            <button id="edit-profile-btn" class="button logout-btn-small"><i class="fas fa-user-cog"></i> تعديل
+              البيانات</button>
+            <button id="logout-btn-alt" class="button logout-btn-small"><i class="fas fa-sign-out-alt"></i> تسجيل
+              الخروج</button>
           </div>
         </div>
       </div>
@@ -97,8 +100,8 @@
       <div id="users-table-container" style="width: 100%; margin-top: 20px; display: none;">
         <div id="table-content-wrapper"></div> <!-- حاوية مخصصة للجدول أو التحميل -->
         <div id="table-actions" style="display: none; margin-top: 15px; gap: 10px;">
-            <button id="update-users-btn" class="button" style="background-color: #28a745;">حفظ التغييرات</button>
-            <button id="cancel-update-btn" class="button" style="background-color: #6c757d;">إلغاء التغييرات</button>
+          <button id="update-users-btn" class="button" style="background-color: #28a745;">حفظ التغييرات</button>
+          <button id="cancel-update-btn" class="button" style="background-color: #6c757d;">إلغاء التغييرات</button>
         </div>
       </div>
     </div>
@@ -106,18 +109,21 @@
 
   <!-- حاوية تسجيل الدخول الافتراضية -->
   <div id="login-form-wrapper" class="login-page-wrapper">
-    <div class="login-container">
-      <h2>تسجيل الدخول</h2>
+    <div id="login-form-container" class="login-container">
+      <h2 id="login-title">تسجيل الدخول</h2>
       <form id="login-form">
-        <div class="form-group">
+        <div id="phone-form-group" class="form-group">
           <label for="phone"><i class="fas fa-phone"></i> رقم الهاتف</label>
           <input type="tel" id="phone" name="phone" required />
           <div id="phone-error" class="error-message"></div>
         </div>
         <button type="submit" class="button login-btn">تسجيل الدخول</button>
-        <div class="form-footer">
-          <a href="register.html">ليس لديك حساب؟ <strong>سجل الآن</strong></a>
+        <div id="login-form-footer" class="form-footer">
+          <a href="register.html" id="go-to-register-link" class="form-footer-link">ليس لديك حساب؟ <strong>سجل الآن</strong></a>
+          <a href="#" id="guest-login-btn" class="guest-login-link">أو يمكنك <strong>الدخول كضيف</strong> لتصفح
+            المنتجات</a>
         </div>
+
       </form>
     </div>
   </div>

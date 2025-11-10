@@ -29,48 +29,65 @@ function updateViewForLoggedInUser(user) {
     "welcome-message"
   ).textContent = `أهلاً بك، ${user.username}`;
 
-  // إضافة وظيفة لزر تسجيل الخروج
-  document.getElementById("logout-btn-alt").addEventListener("click", logout); // هذا الزر الآن هو زر تسجيل الخروج الصحيح
+  // ✅ إصلاح شامل: إعادة هيكلة المنطق بالكامل
+  if (user.is_guest) {
+    // --- منطق المستخدم الضيف ---
+    // إخفاء كل المجموعات أولاً
+    document.getElementById("admin-actions").style.display = "none";
+    document.getElementById("seller-actions").style.display = "none";
+    document.getElementById("customer-actions").style.display = "none";
 
-  // إظهار حاوية إجراءات العميل (السلة والمشتريات)
-  const customerActions = document.getElementById("customer-actions");
-  customerActions.style.display = "block";
-  document.getElementById("view-cart-btn").addEventListener("click", showCartModal);
-  document.getElementById("view-purchases-btn").addEventListener("click", () => showPurchasesModal(user.user_key));
+    // إظهار مجموعة الإعدادات التي تحتوي على زر تسجيل الخروج فقط
+    const userActions = document.getElementById("user-actions");
+    userActions.style.display = "block";
 
-  // إظهار حاوية الإجراءات العامة (تعديل البيانات وتسجيل الخروج)
-  const userActions = document.getElementById("user-actions");
-  userActions.style.display = "block";
-  document.getElementById("edit-profile-btn").addEventListener("click", () => showEditProfileModal(user));
+    // إخفاء الأزرار غير المرغوب فيها داخل هذه المجموعة
+    const editProfileBtn = document.getElementById("edit-profile-btn");
+    if (editProfileBtn) editProfileBtn.style.display = "none";
 
-  // التحقق مما إذا كان المستخدم بائعًا
-  if (user.is_seller === 1) {
-    // إظهار حاوية إجراءات البائع
-    const sellerActions = document.getElementById("seller-actions");
-    sellerActions.style.display = "block";
+    // ربط حدث تسجيل الخروج
+    document.getElementById("logout-btn-alt").addEventListener("click", logout);
 
-    // ربط الأحداث بأزرار البائع
-    document.getElementById("add-product-btn").addEventListener("click", showAddProductModal);
-    document.getElementById("view-my-products-btn").addEventListener("click", () => showMyProducts(user.user_key));
-  }
+  } else {
+    // --- منطق المستخدم المسجل (غير الضيف) ---
+    // إضافة وظيفة لزر تسجيل الخروج
+    document.getElementById("logout-btn-alt").addEventListener("click", logout);
 
-  // التحقق مما إذا كان المستخدم هو أحد المسؤولين المحددين
-  const adminPhoneNumbers = ["01024182175", "01026546550"];
-  if (adminPhoneNumbers.includes(user.phone)) {
-    // إظهار حاوية إجراءات المسؤول
-    const adminActions = document.getElementById("admin-actions");
-    adminActions.style.display = "block";
+    // إظهار حاوية إجراءات العميل (السلة والمشتريات)
+    const customerActions = document.getElementById("customer-actions");
+    customerActions.style.display = "block";
+    document.getElementById("view-cart-btn").addEventListener("click", showCartModal);
+    document.getElementById("view-purchases-btn").addEventListener("click", () => showPurchasesModal(user.user_key));
 
-    // إنشاء زر "لوحة تحكم المسؤول" الذي يوجه إلى الصفحة الجديدة
-    const adminPanelButton = document.createElement("a");
-    adminPanelButton.id = "admin-panel-btn"; // جديد: إضافة ID للتنسيق عبر CSS
-    adminPanelButton.href = "admin.html"; // رابط الصفحة الجديدة
-    adminPanelButton.className = "button logout-btn-small";
-    adminPanelButton.innerHTML = '<i class="fas fa-user-shield"></i> لوحة تحكم المسؤول';
+    // إظهار حاوية الإجراءات العامة (تعديل البيانات وتسجيل الخروج)
+    const userActions = document.getElementById("user-actions");
+    userActions.style.display = "block";
+    document.getElementById("edit-profile-btn").addEventListener("click", () => showEditProfileModal(user));
 
-    // إضافة الزر إلى حاوية المسؤول
-    const adminButtonRow = adminActions.querySelector(".button-row");
-    adminButtonRow.appendChild(adminPanelButton);
+    // التحقق مما إذا كان المستخدم بائعًا
+    if (user.is_seller === 1) {
+      const sellerActions = document.getElementById("seller-actions");
+      sellerActions.style.display = "block";
+      document.getElementById("add-product-btn").addEventListener("click", showAddProductModal);
+      document.getElementById("view-my-products-btn").addEventListener("click", () => showMyProducts(user.user_key));
+    }
+
+    // التحقق مما إذا كان المستخدم هو أحد المسؤولين المحددين
+    const adminPhoneNumbers = ["01024182175", "01026546550"];
+    if (adminPhoneNumbers.includes(user.phone)) {
+      const adminActions = document.getElementById("admin-actions");
+      adminActions.style.display = "block";
+      const adminPanelButton = document.createElement("a");
+      adminPanelButton.id = "admin-panel-btn";
+      adminPanelButton.href = "admin.html";
+      adminPanelButton.className = "button logout-btn-small";
+      adminPanelButton.innerHTML = '<i class="fas fa-user-shield"></i> لوحة تحكم المسؤول';
+      const adminButtonRow = adminActions.querySelector(".button-row");
+      // التأكد من عدم إضافة الزر أكثر من مرة
+      if (!document.getElementById("admin-panel-btn")) {
+        adminButtonRow.appendChild(adminPanelButton);
+      }
+    }
   }
 }
 
@@ -862,15 +879,47 @@ function handleLoginSuccess(user) {
     }
   });
 }
+
+/**
+ * جديد: يعالج عملية الدخول كضيف.
+ * @param {Event} event - كائن الحدث لمنع السلوك الافتراضي للرابط.
+ */
+function handleGuestLogin(event) {
+  event.preventDefault(); // منع الرابط من تحديث الصفحة
+  console.log('[Auth] Logging in as a guest.');
+  
+  // إنشاء كائن مستخدم ضيف
+  const guestUser = {
+    username: 'ضيف',
+    is_guest: true,
+    user_key: 'guest_user' // مفتاح خاص للضيف
+  };
+
+  // حفظ بيانات الضيف في localStorage
+  localStorage.setItem('loggedInUser', JSON.stringify(guestUser));
+
+  // عرض رسالة ترحيب وتوجيه المستخدم
   Swal.fire({
-    icon: "success",
-    title: `أهلاً بك، ${user.username}`,
-    text: "هل تود الانتقال إلى الصفحة الرئيسية؟",
-    showCancelButton: true,
-    confirmButtonText: "موافق",
-    cancelButtonText: "لا",
+    title: 'أهلاً بك كضيف!',
+    text: 'يمكنك الآن تصفح المنتجات. ستحتاج إلى تسجيل الدخول لحفظ سلتك وإتمام الشراء.',
+    icon: 'success',
+    showConfirmButton: true,
+    confirmButtonText: 'موافق'
   }).then((result) => {
+    // توجيه المستخدم فقط بعد الضغط على زر "موافق"
     if (result.isConfirmed) {
-      window.location.href = "index.html";
+      window.location.href = 'index.html';
     }
   });
+}
+
+// ربط الأحداث عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', () => {
+  // ... (الكود الموجود مسبقًا في هذا الملف) ...
+
+  // ربط الحدث برابط "الدخول كضيف"
+  const guestLoginBtn = document.getElementById('guest-login-btn');
+  if (guestLoginBtn) {
+    guestLoginBtn.addEventListener('click', handleGuestLogin);
+  }
+});
