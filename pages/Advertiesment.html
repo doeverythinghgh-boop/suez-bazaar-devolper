@@ -406,42 +406,64 @@ window.adverModule = (function() {
     });
 
     try {
-      // 1. تحديد الصور التي يجب حذفها
-      const initialImageNames = window.adverModule.originalImageNames || [];
-      const finalImageNamesInUI = images.map(state => state.fileName).filter(Boolean);
-      const imagesToDelete = initialImageNames.filter(name => !finalImageNamesInUI.includes(name));
+      // --- ✅ إصلاح شامل لمنطق الحفظ ---
 
-      // 2. تنفيذ عمليات الحذف أولاً
+      // 1. تحديد الحالة النهائية للصور في الواجهة (UI)
+      const finalImagesInUI = images.map((state, index) => ({
+        state: state,
+        newName: `pic${index + 1}.webp`
+      }));
+      const finalImageNamesInUI = finalImagesInUI.map(item => item.newName);
+
+      // 2. تحديد الصور التي يجب حذفها من السحابة
+      // هي الصور التي كانت موجودة في البداية ولكنها غير موجودة في القائمة النهائية للأسماء
+      const allPossibleNames = Array.from({ length: MAX_FILES }, (_, i) => `pic${i + 1}.webp`);
+      const imagesToDelete = allPossibleNames.filter(name => !finalImageNamesInUI.includes(name));
+
+      // 3. تنفيذ عمليات الحذف
       if (imagesToDelete.length > 0) {
-        console.log("[AdverForm] Deleting old images:", imagesToDelete);
-        await Promise.all(imagesToDelete.map(name => 
-          deleteFile2cf(name).catch(err => console.error(`فشل حذف الملف ${name}:`, err))
+        console.log("[AdverForm] Deleting images from cloud:", imagesToDelete);
+        await Promise.all(imagesToDelete.map(name =>
+          deleteFile2cf(name).catch(err => console.error(`Failed to delete ${name}:`, err))
         ));
-        console.log("[AdverForm] Deletion process finished.");
       }
 
-      // 3. إعادة ترتيب الصور النهائية لتحديد الأسماء الجديدة
-      const finalImages = images.filter(img => img.status === 'uploaded' || img.status === 'ready');
+      // 4. تنفيذ عمليات الرفع (للصور الجديدة) وإعادة الرفع (للقديمة التي تغير ترتيبها)
+      const uploadPromises = finalImagesInUI.map(async (item) => {
+        const { state, newName } = item;
 
-      // 4. تنفيذ عمليات الرفع للصور الجديدة والمرتبة
-      console.log(`[AdverForm] Uploading/Re-uploading images...`);
-      await Promise.all(finalImages.map(async (state, index) => {
-          const finalName = `pic${index + 1}.webp`;
-          // ✅ إصلاح: نرفع الصورة الجديدة، وأيضًا نعيد رفع الصورة القديمة إذا تغير ترتيبها
-          if (state.status === 'ready' && state.compressedBlob) {
-              console.log(`Uploading new image to ${finalName}`);
-              await uploadFile2cf(state.compressedBlob, finalName);
-          } else if (state.status === 'uploaded' && state.fileName !== finalName) {
-              // هذه الحالة تعالج إعادة الترتيب، لكنها تتطلب دالة "إعادة تسمية" في الواجهة الخلفية.
-              // للتبسيط الآن، سنركز على أن الحذف والرفع يعملان بشكل صحيح.
-              // في المستقبل، يمكن إضافة منطق لإعادة الرفع إذا تغير الاسم.
-              console.log(`Image ${state.fileName} should be renamed to ${finalName}. This requires a rename/copy function on the backend.`);
-              // حاليًا، سنقوم فقط برفع الصور الجديدة.
-              // إذا أردنا معالجة إعادة الترتيب، يجب تحميل الصورة القديمة وإعادة رفعها بالاسم الجديد.
-              // لكن بما أن الطلب هو إصلاح الحذف، فإن رفع الصور الجديدة فقط بعد الحذف هو الحل المباشر.
-              await uploadFile2cf(state.compressedBlob, finalName);
+        // الحالة أ: صورة جديدة جاهزة للرفع
+        if (state.status === 'ready' && state.compressedBlob) {
+          console.log(`Uploading new image to: ${newName}`);
+          return uploadFile2cf(state.compressedBlob, newName);
+        }
+
+        // الحالة ب: صورة قديمة موجودة بالفعل ولكن ترتيبها تغير (اسمها القديم لا يساوي اسمها الجديد)
+        if (state.status === 'uploaded' && state.fileName !== newName) {
+          console.log(`Re-ordering image from ${state.fileName} to ${newName}`);
+          try {
+            // تحميل محتوى الصورة القديمة كـ Blob
+            const blob = await downloadFile2cf(state.fileName);
+            // إعادة رفعها بالاسم الجديد
+            return uploadFile2cf(blob, newName);
+          } catch (error) {
+            console.error(`Failed to re-order image ${state.fileName}:`, error);
+            // في حالة الفشل، يمكن إرجاع Promise مرفوض أو معالجة الخطأ
+            return Promise.reject(error);
           }
-      }));
+        }
+
+        // الحالة ج: صورة قديمة لم يتغير ترتيبها، لا تفعل شيئًا
+        if (state.status === 'uploaded' && state.fileName === newName) {
+            console.log(`Image ${newName} is already in correct position. Skipping.`);
+            return Promise.resolve(); // لا توجد عملية مطلوبة
+        }
+      });
+
+      // انتظار اكتمال جميع عمليات الرفع وإعادة الرفع
+      await Promise.all(uploadPromises);
+
+      // --- نهاية الإصلاح ---
 
       Swal.fire('تم بنجاح!', 'تم نشر الإعلان بنجاح.', 'success').then(() => {
         // إعادة تحميل المعاينة لتحديث الحالة
