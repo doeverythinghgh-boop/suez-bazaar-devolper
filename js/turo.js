@@ -457,23 +457,35 @@ async function sendNotification(token, title, body) {
  * يعرض نافذة منبثقة تحتوي على تفاصيل المنتج.
  * @param {object} productData - بيانات المنتج الكاملة.
  */
-window.showProductDetails = async function(productData) {
+window.showProductDetails = async function(productData, onCloseCallback) {
   // ✅ جديد: التحقق من الاتصال بالإنترنت أولاً
   const isOnline = await checkInternetConnection();
   if (!isOnline) {
     // إذا لم يكن هناك اتصال، أبلغ المستخدم وتوقف
-    Swal.fire('لا يوجد اتصال بالإنترنت', 'يرجى التحقق من اتصالك بالشبكة لعرض تفاصيل المنتج.', 'error');
-    return;
+    Swal.fire('لا يوجد اتصال بالإنترنت', 'يرجى التحقق من اتصالك بالشبكة لعرض تفاصيل المنتج.', 'error').then(() => {
+      // ✅ إصلاح: إعادة إظهار نافذة البحث إذا فشل الفتح بسبب انقطاع الاتصال
+      if (typeof onCloseCallback === 'function') onCloseCallback();
+    });
+    return; // إيقاف التنفيذ
   }
 
   console.log('%c[Modal] Opening product details modal for:', 'color: darkcyan', productData.productName);
   const modal = document.getElementById("product-details-modal");
 
   // تحميل محتوى النافذة من الملف
-  console.log('[Modal] Fetching showProduct.html content...');
-  const response = await fetch("pages/showProduct.html");
-  if (!response.ok) { console.error('[Modal] Failed to fetch showProduct.html'); return; }
-  modal.innerHTML = await response.text();
+  try {
+    console.log('[Modal] Fetching showProduct.html content...');
+    const response = await fetch("pages/showProduct.html");
+    if (!response.ok) throw new Error(`فشل تحميل محتوى النافذة (status: ${response.status})`);
+    modal.innerHTML = await response.text();
+  } catch (error) {
+    console.error('[Modal] Failed to fetch or render showProduct.html:', error);
+    Swal.fire('خطأ في التحميل', 'حدث خطأ أثناء محاولة تحميل تفاصيل المنتج. يرجى المحاولة مرة أخرى.', 'error').then(() => {
+      // ✅ إصلاح: إعادة إظهار نافذة البحث إذا فشل تحميل محتوى النافذة
+      if (typeof onCloseCallback === 'function') onCloseCallback();
+    });
+    return; // إيقاف التنفيذ
+  }
 
   // تعبئة البيانات
   document.getElementById("product-modal-name").textContent = productData.productName || "تفاصيل المنتج";
@@ -525,6 +537,10 @@ window.showProductDetails = async function(productData) {
     console.log('[Modal] Closing product details modal.');
     modal.style.display = "none";
     document.body.classList.remove("modal-open");
+    // ✅ جديد: استدعاء دالة رد الاتصال عند الإغلاق إذا كانت موجودة
+    if (typeof onCloseCallback === 'function') {
+      onCloseCallback();
+    }
   };
   document.getElementById("product-modal-close-btn").onclick = closeModal;
   window.onclick = (event) => {

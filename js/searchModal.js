@@ -108,7 +108,6 @@ async function initSearchModal(containerId, openTriggerId) {
             <div class="search-result-details">
               <h4 class="search-result-title">${product.productName}</h4>
               <p class="search-result-price">${product.product_price} جنيه</p>
-              <span class="search-result-seller">بواسطة: ${product.seller_username}</span>
             </div>
           </div>
         `;
@@ -121,8 +120,30 @@ async function initSearchModal(containerId, openTriggerId) {
         item.addEventListener('click', () => {
           const productKey = item.dataset.productKey;
           const productData = results.find(p => p.product_key === productKey);
+          // ✅ جديد: إخفاء نافذة البحث وتمرير دالة لإعادة إظهارها عند إغلاق نافذة التفاصيل
           if (productData && typeof window.showProductDetails === 'function') {
-            window.showProductDetails(productData);
+            // ✅ إصلاح: إعادة هيكلة بيانات المنتج لتتطابق مع الهيكل الذي تتوقعه دالة showProductDetails
+            const productDataForModal = {
+              product_key: productData.product_key,
+              productName: productData.productName,
+              user_key: productData.user_key,
+              pricePerItem: productData.product_price, // استخدام product_price
+              original_price: productData.original_price,
+              imageSrc: productData.ImageName ? productData.ImageName.split(',').map(name => `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`) : [],
+              availableQuantity: productData.product_quantity,
+              sellerMessage: productData.user_message,
+              description: productData.product_description,
+              sellerName: productData.seller_username,
+              sellerPhone: productData.seller_phone
+            };
+
+            // 1. إخفاء نافذة البحث الحالية
+            searchModal.style.display = 'none';
+            // 2. إظهار نافذة تفاصيل المنتج مع تمرير دالة رد اتصال
+            window.showProductDetails(productDataForModal, () => {
+              // 3. هذه الدالة ستعمل عند إغلاق نافذة التفاصيل، لتعيد إظهار نافذة البحث
+              searchModal.style.display = 'block';
+            });
           }
         });
       });
@@ -131,6 +152,8 @@ async function initSearchModal(containerId, openTriggerId) {
     const openModal = () => {
       searchModal.style.display = 'block';
       document.body.classList.add('modal-open');
+      // ✅ تحسين: مسح النتائج السابقة عند فتح النافذة لتوفير واجهة نظيفة
+      searchResultsContainer.innerHTML = '';
       setTimeout(() => searchModalInput.focus(), 50); // التركيز على حقل البحث
     };
 

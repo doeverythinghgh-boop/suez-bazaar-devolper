@@ -200,6 +200,62 @@
   text-align: right; /* محاذاة نتائج البحث لليمين */
 }
 
+/* ✅ جديد: أنماط الشبكة لعرض نتائج البحث */
+.search-results-grid {
+  display: grid;
+  /* إنشاء أعمدة متجاوبة، كل عمود عرضه الأدنى 180 بكسل والأقصى 1fr (جزء من المساحة المتاحة) */
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 20px; /* مسافة بين العناصر */
+  padding-top: 10px;
+}
+
+/* ✅ جديد: أنماط كل عنصر في شبكة البحث */
+.search-result-item {
+  background-color: #ffffff;
+  border: 1px solid #e9e9e9;
+  border-radius: 12px;
+  overflow: hidden; /* لإخفاء أي أجزاء من الصورة تتجاوز الحدود الدائرية */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  text-align: right; /* محاذاة النص لليمين */
+}
+
+.search-result-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ✅ جديد: أنماط صورة المنتج في نتيجة البحث */
+.search-result-image {
+  width: 100%;
+  height: 160px; /* ارتفاع ثابت للصور للحفاظ على التناسق */
+  object-fit: cover; /* لضمان ملء الصورة للمساحة دون تشويه */
+}
+
+/* ✅ جديد: أنماط تفاصيل المنتج في نتيجة البحث */
+.search-result-details {
+  padding: 15px;
+  flex-grow: 1; /* لجعل هذا الجزء يملأ المساحة المتبقية */
+  display: flex;
+  flex-direction: column;
+}
+
+.search-result-title {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 8px 0;
+}
+
+.search-result-price {
+  font-size: 0.9rem;
+  color: var(--primary-color);
+  font-weight: bold;
+  margin: auto 0 0 0; /* دفع السعر إلى الأسفل */
+}
 /* ✅ جديد: أنماط للشاشات الصغيرة (Responsive) */
 @media (max-width: 768px) {
   .search-modal-content {
@@ -236,5 +292,11 @@
 
   .close-button {
     font-size: 1.5rem; /* تصغير حجم أيقونة الإغلاق */
+  }
+
+  /* ✅ جديد: تعديل حجم الأعمدة في الشاشات الصغيرة جدًا */
+  .search-results-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
   }
 }
