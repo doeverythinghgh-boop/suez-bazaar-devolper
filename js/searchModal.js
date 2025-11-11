@@ -54,6 +54,9 @@ async function initSearchModal(containerId, openTriggerId) {
       const mainCategory = mainCategoryFilter.value;
       const subCategory = subCategoryFilter.value;
 
+      // ✅ جديد: تسجيل معايير البحث من الواجهة الأمامية لتسهيل التصحيح
+      console.log(`[SearchModal] Starting search with: searchTerm='${searchTerm}', mainCategory='${mainCategory}', subCategory='${subCategory}'`);
+
       // لا تقم بالبحث إذا كان حقل البحث فارغًا ولم يتم تحديد أي فئة
       if (!searchTerm && !mainCategory) {
         searchResultsContainer.innerHTML = ''; // مسح النتائج
@@ -68,10 +71,15 @@ async function initSearchModal(containerId, openTriggerId) {
       if (mainCategory) params.append('MainCategory', mainCategory);
       if (subCategory) params.append('SubCategory', subCategory);
 
+      const searchURL = `${baseURL}/api/products?${params.toString()}`;
+      // ✅ جديد: تسجيل رابط الطلب الكامل قبل إرساله
+      console.log(`[SearchModal] Fetching from URL: ${searchURL}`);
+
       try {
-        const response = await fetch(`${baseURL}/api/products?${params.toString()}`);
+        const response = await fetch(searchURL);
         if (!response.ok) throw new Error('فشل جلب نتائج البحث');
         const results = await response.json();
+        console.log('[SearchModal] Received results from server:', results); // ✅ جديد: تسجيل النتائج المستلمة
         displaySearchResults(results);
       } catch (error) {
         console.error('%c[SearchModal] خطأ في البحث:', 'color: red;', error);
@@ -81,6 +89,9 @@ async function initSearchModal(containerId, openTriggerId) {
 
     // ✅ جديد: دالة لعرض نتائج البحث
     function displaySearchResults(results) {
+      // ✅ جديد: تسجيل عدد النتائج قبل عرضها
+      console.log(`[SearchModal] Displaying ${results.length} search results.`);
+
       if (results.length === 0) {
         searchResultsContainer.innerHTML = '<p class="no-search-results-message">لم يتم العثور على منتجات تطابق بحثك.</p>';
         return;
