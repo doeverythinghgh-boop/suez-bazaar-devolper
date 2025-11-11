@@ -63,6 +63,9 @@ export default async function handler(request) {
         // في حالة عدم وجود معاملات، أرجع مصفوفة فارغة بدلاً من كل المنتجات
         return new Response(JSON.stringify([]), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
+
+      // ✅ إصلاح: إضافة جملة الترتيب هنا لضمان تطبيقها على جميع استعلامات الجلب
+      sql += " ORDER BY p.id DESC";
       const { rows } = await db.execute({
         sql: sql,
         args: args,
