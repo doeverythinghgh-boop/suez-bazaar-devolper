@@ -461,23 +461,30 @@ input:checked + .slider:before { transform: translateX(22px); }
   max-width: 800px;
 }
 .purchase-item {
+  /* ✅ إصلاح: تغيير التخطيط إلى عمودي لعرض الصورة فوق التفاصيل */
   display: flex;
-  gap: 15px;
+  flex-direction: column;
   padding: 15px;
   border: 1px solid #eee;
   border-radius: 12px;
   margin-bottom: 15px;
   background-color: #f9f9f9;
   animation: slide-fade-in 0.5s ease-out forwards;
+  overflow: hidden; /* ✅ جديد: ضمان احتواء العناصر داخل الحواف الدائرية */
 }
 .purchase-item img {
-  width: 100px;
-  height: 100px;
+  /* ✅ إصلاح: جعل الصورة تأخذ العرض الكامل وتحديد ارتفاعها */
+  width: 100%;
+  height: 180px; /* ارتفاع مناسب للصورة */
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 8px; /* حواف دائرية للصورة */
+  margin-bottom: 15px; /* ✅ جديد: إضافة مسافة بين الصورة والتفاصيل */
 }
 .purchase-item-details {
   flex-grow: 1;
+  /* ✅ جديد: إضافة حشو داخلي لتحسين المظهر */
+  padding: 0 5px;
+  text-align: right; /* ضمان محاذاة النص لليمين */
 }
 .purchase-item-details p {
   margin: 0 0 8px 0;
