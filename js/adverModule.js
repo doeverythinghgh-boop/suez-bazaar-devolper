@@ -144,20 +144,39 @@ function buildSlider(container, adImages) {
     dots.push(dot);
   });
 
+  /**
+   * ✅ تعديل شامل: تحديث الدالة لتطبيق تأثير الكاروسيل الدائري.
+   * تقوم الآن بحساب وتطبيق transform لكل شريحة بناءً على موقعها.
+   */
   function goToSlide(index) {
-    // ✅ جديد: التأكد من أن الفهرس ضمن النطاق الصحيح
     const newIndex = (index + slides.length) % slides.length;
-    if (newIndex === currentIndex && slides[currentIndex].classList.contains('active')) return;
+    currentIndex = newIndex;
 
-    // ✅ إصلاح: استخدام newIndex المضمون بدلاً من index الأصلي
-    currentIndex = newIndex; 
     slides.forEach((slide, i) => {
-      slide.classList.toggle('active', i === currentIndex);
-    });
-    dots.forEach((dot, i) => {
-      dot.classList.toggle('active', i === currentIndex);
+      // ✅ تعديل: حساب الإزاحة بطريقة تأخذ "المسار الأقصر" في الاعتبار
+      // هذا يضمن أن الحركة دائرية ومتناظرة دائمًا.
+      const totalSlides = slides.length;
+      const directOffset = i - currentIndex;
+      const wrapOffset = directOffset > 0 ? directOffset - totalSlides : directOffset + totalSlides;
+      const offset = Math.abs(directOffset) < Math.abs(wrapOffset) ? directOffset : wrapOffset;
+
+      const isActive = offset === 0;
+
+      // حساب التحريك الأفقي والتكبير
+      // الشرائح الجانبية تكون أصغر ومزاحة
+      const translateX = offset * 40; // 40% من عرض الشريحة
+      const scale = isActive ? 1 : 0.7;
+      // ✅ جديد: إضافة إزاحة بسيطة على المحور Z لإعطاء عمق ومنع التداخل
+      const translateZ = -Math.abs(offset) * 50;
+
+      slide.style.transform = `translateX(${translateX}%) translateZ(${translateZ}px) scale(${scale})`;
+      slide.classList.toggle('active', isActive);
+
+      // عند النقر على شريحة جانبية، تنتقل لتصبح هي النشطة
+      slide.onclick = () => goToSlide(i);
     });
 
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === currentIndex));
     if (slides.length > 1) {
       resetAutoPlay();
     }
@@ -166,10 +185,8 @@ function buildSlider(container, adImages) {
   // ✅ جديد: دوال للتحكم في الحركة التلقائية
   function startAutoPlay() {
     if (autoPlayInterval) clearInterval(autoPlayInterval); // مسح المؤقت القديم
-    autoPlayInterval = setInterval(() => {
-      const nextIndex = (currentIndex + 1) % slides.length;
-      goToSlide(nextIndex);
-    }, 4000); // ✅ تعديل: تغيير الشريحة كل 4 ثوانٍ
+    // تغيير الشريحة كل 4 ثوانٍ
+    autoPlayInterval = setInterval(() => goToSlide(currentIndex + 1), 4000);
   }
 
   function pauseAutoPlay() {

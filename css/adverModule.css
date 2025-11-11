@@ -6,11 +6,12 @@
 /* حاوية الشريط الإعلاني الرئيسية */
 #advertisement-section {
   position: relative;
-  height: 10vh; /* ✅ تعديل: تم تقليل الارتفاع إلى 10% من ارتفاع الشاشة */
-  min-height: 90px; /* ✅ تعديل: تقليل الحد الأدنى للارتفاع ليتناسب مع الارتفاع الجديد */
+  height: 20vh; /* ✅ تعديل: زيادة الارتفاع ليتناسب مع التصميم الدائري */
+  min-height: 150px; /* ✅ تعديل: زيادة الحد الأدنى للارتفاع */
   margin-bottom: 10px; /* ✅ تعديل: الإبقاء على الهامش السفلي فقط */
   overflow: hidden;
-  background-color: #e9ecef; /* لون خلفية احتياطي */
+  /* ✅ تعديل: إضافة تدرج لوني ناعم لإبراز العمق */
+  background: linear-gradient(180deg, #fdfdff 0%, #e9ecef 100%);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
     width: auto; /* السماح للحاوية بالتجاوب مع الهوامش */
   margin-left: 15px;
@@ -22,6 +23,8 @@
 /* حاوية الشرائح الداخلية */
 .ad-slider-track {
   position: relative;
+  transform-style: preserve-3d; /* ✅ جديد: لتهيئة بيئة ثلاثية الأبعاد للحركة */
+  perspective: 1000px; /* ✅ جديد: إضافة عمق للمشهد */
   width: 100%;
   height: 100%;
 }
@@ -29,21 +32,30 @@
 /* كل شريحة إعلانية */
 .ad-slide {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  top: 5%; /* ✅ تعديل: ترك مساحة في الأعلى والأسفل */
+  left: 20%; /* ✅ تعديل: تحديد عرض الشريحة في المنتصف */
+  width: 60%;
   height: 100%;
-  background-size: 100% 100%; /* ✅ تعديل: تمديد الصورة لتملأ الحاوية بالكامل دون قص */
+  background-size: cover; /* ✅ تعديل: عرض الصورة بالكامل دون قص مع الحفاظ على النسبة */
+  /*background-bject-fit: cover;*/
   background-position: center;
-  background-repeat: no-repeat; /* ✅ إضافة: منع تكرار الصورة */
-  opacity: 0;
-  transition: opacity 0.6s ease-in-out; /* ✅ تعديل: تأثير التلاشي */
+  background-repeat: no-repeat;
+  border-radius: 12px; /* ✅ جديد: حواف دائرية للشرائح */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1); /* ✅ جديد: ظل أعمق */
+  opacity: 0.8; /* ✅ تعديل: جعل الشرائح الجانبية شبه شفافة */
+  /* ✅ تحسين: استخدام دالة توقيت مخصصة لحركة أكثر انسيابية ومنحنية */
+  /* ✅ تعديل: إضافة الشفافية للانتقال */
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), filter 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 1;
+  filter: blur(3px) brightness(0.7) saturate(0.5); /* ✅ تعديل: إضافة تأثير تشبع لوني للشرائح غير النشطة */
+  cursor: pointer;
 }
 
 /* الشريحة النشطة (الظاهرة) */
 .ad-slide.active {
-  opacity: 1;
+  transform: translateX(0) scale(1) !important; /* ✅ تعديل: الشريحة النشطة في المنتصف وبحجمها الكامل */
+  filter: blur(0) brightness(1) saturate(1); /* ✅ تعديل: إعادة الحيوية الكاملة للشريحة النشطة */
+  opacity: 1; /* ✅ تعديل: جعل الشريحة النشطة واضحة تمامًا */
   z-index: 2;
 }
 
