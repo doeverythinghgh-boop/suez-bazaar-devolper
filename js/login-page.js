@@ -113,6 +113,10 @@ async function showEditProfileModal(currentUser) {
           <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="تأكيد كلمة المرور الجديدة">
           <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-confirm-password"></i>
         </div>
+        <!-- ✅ جديد: إضافة زر حذف الحساب -->
+        <div style="border-top: 1px solid #e74c3c; margin-top: 1.5rem; padding-top: 1rem;">
+            <button type="button" id="swal-delete-account-btn" class="swal2-deny swal2-styled" style="background-color: #e74c3c; width: 100%;">حذف الحساب نهائياً</button>
+        </div>
       </div>
     `,
     focusConfirm: false,
@@ -134,6 +138,12 @@ async function showEditProfileModal(currentUser) {
       };
       togglePasswordVisibility('swal-password', 'swal-toggle-password');
       togglePasswordVisibility('swal-confirm-password', 'swal-toggle-confirm-password');
+
+      // ✅ جديد: ربط حدث النقر بزر حذف الحساب
+      const deleteBtn = document.getElementById('swal-delete-account-btn');
+      deleteBtn.addEventListener('click', () => {
+        handleAccountDeletion(currentUser);
+      });
     },
     preConfirm: async () => { // تحويل الدالة إلى async
       const username = document.getElementById('swal-username').value;
@@ -236,6 +246,80 @@ async function showEditProfileModal(currentUser) {
         title: 'حدث خطأ',
         text: result.error || 'فشل تحديث البيانات. يرجى المحاولة مرة أخرى.',
       });
+    }
+  }
+}
+
+/**
+ * ✅ جديد: يعالج عملية حذف الحساب بالكامل.
+ * @param {object} currentUser - بيانات المستخدم الحالي.
+ */
+async function handleAccountDeletion(currentUser) {
+  // إغلاق نافذة تعديل البيانات أولاً
+  Swal.close();
+
+  // الخطوة 1: نافذة التأكيد الأولى
+  const confirmationResult = await Swal.fire({
+    title: 'هل أنت متأكد تمامًا؟',
+    html: `
+      <div style="text-align: right; color: #e74c3c; font-weight: bold;">
+        سيتم حذف حسابك وجميع بياناتك نهائيًا. <br> هذا الإجراء لا يمكن التراجع عنه.
+      </div>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'نعم، أفهم وأريد المتابعة',
+    cancelButtonText: 'إلغاء',
+    confirmButtonColor: '#d33',
+  });
+
+  if (!confirmationResult.isConfirmed) {
+    return; // إيقاف العملية إذا ألغى المستخدم
+  }
+
+  // الخطوة 2: طلب كلمة المرور (إذا كان الحساب يمتلك واحدة)
+  let canDelete = !currentUser.Password; // إذا لم يكن هناك كلمة مرور، يمكن الحذف مباشرة
+
+  if (currentUser.Password) {
+    const { value: password } = await Swal.fire({
+      title: 'التحقق النهائي',
+      text: 'لحماية حسابك، يرجى إدخال كلمة المرور الخاصة بك لتأكيد الحذف.',
+      input: 'password',
+      inputPlaceholder: 'أدخل كلمة المرور',
+      showCancelButton: true,
+      confirmButtonText: 'تأكيد الحذف',
+      cancelButtonText: 'إلغاء',
+      showLoaderOnConfirm: true,
+      preConfirm: async (enteredPassword) => {
+        const verificationResult = await verifyUserPassword(currentUser.phone, enteredPassword);
+        if (verificationResult.error) {
+          Swal.showValidationMessage('كلمة المرور غير صحيحة.');
+          return false;
+        }
+        return true;
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    });
+
+    if (password) {
+      canDelete = true;
+    }
+  }
+
+  // الخطوة 3: تنفيذ الحذف
+  if (canDelete) {
+    Swal.fire({ title: 'جاري حذف الحساب...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+    const deleteResult = await deleteUser(currentUser.user_key);
+
+    if (deleteResult && !deleteResult.error) {
+      // مسح البيانات المحلية وإعادة التوجيه
+      localStorage.clear();
+      sessionStorage.clear();
+      await Swal.fire('تم الحذف', 'تم حذف حسابك بنجاح.', 'success');
+      window.location.href = 'index.html';
+    } else {
+      Swal.fire('خطأ', `فشل حذف الحساب: ${deleteResult.error}`, 'error');
     }
   }
 }

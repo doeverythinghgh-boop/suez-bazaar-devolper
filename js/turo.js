@@ -331,6 +331,34 @@ async function verifyUserPassword(phone, password) {
 }
 
 /**
+ * ✅ جديد: يحذف مستخدمًا بشكل نهائي عبر واجهة برمجة التطبيقات.
+ * @param {string} userKey - المفتاح الفريد للمستخدم المراد حذفه.
+ * @returns {Promise<Object>} كائن الاستجابة من الخادم.
+ */
+async function deleteUser(userKey) {
+  console.log(`%c[API] Starting deleteUser for user_key: ${userKey}`, 'color: #e74c3c; font-weight: bold;');
+  try {
+    const response = await fetch(`${baseURL}/api/users`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_key: userKey }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return { error: data.error || `HTTP error! status: ${response.status}` };
+    }
+
+    console.log('%c[API] deleteUser successful.', 'color: green;', data);
+    return data;
+  } catch (error) {
+    console.error('%c[API] deleteUser failed:', 'color: red;', error);
+    return { error: "فشل الاتصال بالخادم عند حذف المستخدم." };
+  }
+}
+
+/**
  * جديد: ينشئ طلبًا جديدًا في قاعدة البيانات.
  * @param {object} orderData - بيانات الطلب.
  * @param {string} orderData.order_key - المفتاح الفريد للطلب.

@@ -21,7 +21,7 @@ const db = createClient({
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
@@ -197,6 +197,33 @@ export default async function handler(request) {
         await db.execute({ sql, args });
         return new Response(JSON.stringify({ message: "تم تحديث بياناتك بنجاح." }), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+    } else if (request.method === "DELETE") {
+      console.log("[Logic] Entered: Delete user.");
+      const { user_key } = await request.json();
+
+      if (!user_key) {
+        return new Response(JSON.stringify({ error: "مفتاح المستخدم (user_key) مطلوب للحذف." }), {
+          status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // بفضل ON DELETE CASCADE في قاعدة البيانات، سيتم حذف جميع البيانات المرتبطة
+      // (المنتجات، الطلبات، التوكنات) تلقائيًا عند حذف المستخدم.
+      const { rowsAffected } = await db.execute({
+        sql: "DELETE FROM users WHERE user_key = ?",
+        args: [user_key],
+      });
+
+      if (rowsAffected === 0) {
+        return new Response(JSON.stringify({ error: "المستخدم غير موجود أو تم حذفه بالفعل." }), {
+          status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      return new Response(JSON.stringify({ message: "تم حذف الحساب وجميع البيانات المرتبطة به بنجاح." }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
     }
