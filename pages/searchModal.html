@@ -8,9 +8,12 @@
     <h2 id="search-modal-title"><i class="fas fa-search"></i> ابحث في بازار السويس</h2>
     <p id="search-modal-subtitle">ابحث بالاسم في كل المنتجات، أو حدد فئة لتضييق نطاق البحث.</p>
     <!-- ✅ تعديل: تغيير هيكل حقل البحث ليتطابق مع نافذة "منتجاتي" -->
-    <div id="search-modal-input-container" class="search-modal-input-container">
-      <i class="fas fa-search search-icon"></i>
+    <!-- ✅ تعديل: حاوية جديدة لتجميع حقل البحث وزر البحث -->
+    <div class="search-wrapper">
+      <div id="search-modal-input-container" class="search-modal-input-container">
       <input type="search" id="search-modal-input" placeholder="اكتب اسم المنتج الذي تبحث عنه..." autocomplete="off" />
+    </div>
+      <button id="perform-search-btn" class="search-button" aria-label="بحث"><i class="fas fa-search"></i></button>
     </div>
     <!-- ✅ جديد: حاوية فلاتر الفئات -->
     <div id="search-filters-container" class="search-filters-container">

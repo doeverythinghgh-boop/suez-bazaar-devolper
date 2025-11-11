@@ -36,8 +36,8 @@ async function initSearchModal(containerId, openTriggerId) {
     const subCategoryFilterGroup = document.getElementById('sub-category-filter-group');
     // ✅ جديد: الوصول إلى حاوية عرض النتائج
     const searchResultsContainer = document.getElementById('search-results-container');
-    // ✅ جديد: الوصول إلى أيقونة البحث داخل حقل الإدخال
-    const searchIcon = document.querySelector('.search-modal-input-container .search-icon');
+    // ✅ جديد: الوصول إلى زر البحث الجديد
+    const performSearchBtn = document.getElementById('perform-search-btn');
 
     // ✅ جديد: دالة لتأخير التنفيذ (Debounce) لتحسين أداء البحث أثناء الكتابة
     function debounce(func, delay) {
@@ -131,8 +131,6 @@ async function initSearchModal(containerId, openTriggerId) {
     openSearchBtn.addEventListener('click', openModal);
     closeSearchBtn.addEventListener('click', closeModal);
     window.addEventListener('click', (event) => {
-      // ✅ جديد: ربط حدث النقر على أيقونة البحث لتنفيذ البحث فورًا
-      searchIcon.addEventListener('click', performSearch);
       if (event.target === searchModal) {
         closeModal();
       }
@@ -196,6 +194,8 @@ async function initSearchModal(containerId, openTriggerId) {
     searchModalInput.addEventListener('change', performSearch);
     mainCategoryFilter.addEventListener('change', performSearch);
     subCategoryFilter.addEventListener('change', performSearch);
+    // ✅ جديد: ربط حدث النقر على زر البحث لتنفيذ البحث فورًا
+    performSearchBtn.addEventListener('click', performSearch);
 
   } catch (error) {
     console.error('%c[SearchModal] خطأ في تهيئة نافذة البحث:', 'color: red;', error);

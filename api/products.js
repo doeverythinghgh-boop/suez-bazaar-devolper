@@ -63,8 +63,6 @@ export default async function handler(request) {
         // في حالة عدم وجود معاملات، أرجع مصفوفة فارغة بدلاً من كل المنتجات
         return new Response(JSON.stringify([]), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
-      sql += " ORDER BY p.id DESC"; // عرض الأحدث أولاً
-
       const { rows } = await db.execute({
         sql: sql,
         args: args,
