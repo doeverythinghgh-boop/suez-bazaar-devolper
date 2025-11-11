@@ -1,0 +1,226 @@
+/**
+ * @file searchModal.css
+ * @description أنماط نافذة البحث المنبثقة.
+ */
+
+/* أنماط نافذة البحث المنبثقة */
+.search-modal-content {
+  background-color: #ffffff;
+  margin: 5% auto; /* تقليل الهامش العلوي */
+  padding: 25px 30px 30px; /* ✅ تعديل: تعديل الحشو ليتناسب مع الشريط العلوي */
+  border: none; /* ✅ إزالة: إزالة الإطار للحصول على مظهر أنظف */
+  width: 90%;
+  max-width: 700px; /* زيادة العرض الأقصى */
+  border-radius: 15px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  position: relative;
+  box-sizing: border-box; /* ✅ إصلاح: لضمان أن padding و border لا يزيدان من العرض الكلي */
+  animation: slide-down 0.5s ease-out forwards;
+  text-align: center; /* محاذاة المحتوى للوسط */
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.close-button {
+  /* ✅ إصلاح: إعادة إضافة الأنماط المفقودة */
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 1.8rem;
+  color: #888;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease, background-color 0.3s ease;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050; /* للتأكد من أنه فوق محتوى المودال ولكن تحت رسالة التأكيد */
+}
+
+
+.close-button:hover {
+  color: var(--primary-color); /* ✅ تعديل: استخدام اللون الأساسي عند المرور */
+  background-color: #f0f0f0; /* ✅ تعديل: إضافة خلفية رمادية فاتحة عند المرور */
+}
+
+#search-modal-title {
+  font-family: 'Tajawal', sans-serif;
+  font-size: 2rem;
+  color: var(--dark-blue); /* ✅ تحسين: استخدام متغير لون */
+  margin-bottom: 10px;
+  display: flex; /* ✅ جديد: لتوسيط الأيقونة مع النص */
+  align-items: center;
+  justify-content: center;
+  gap: 10px; /* ✅ جديد: مسافة بين الأيقونة والنص */
+}
+
+/* ✅ جديد: توحيد لون الأيقونة مع لون النص داخل العنوان */
+#search-modal-title i {
+  color: inherit; /* تجعل الأيقونة ترث اللون من العنصر الأب (العنوان) */
+}
+
+#search-modal-subtitle {
+  font-size: 1rem;
+  color: var(--primary-color); /* ✅ تحسين: استخدام اللون الأساسي لتوحيد الهوية البصرية */
+  margin-bottom: 25px;
+}
+
+.search-modal-input-container {
+  display: flex;
+  align-items: center; /* ✅ جديد: لمحاذاة الأيقونة مع حقل الإدخال */
+  position: relative; /* ✅ جديد: لجعل الأيقونة تتمركز بشكل صحيح */
+  border: 1px solid #ddd;
+  border-radius: 50px;
+  overflow: hidden;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.search-modal-input-container:focus-within {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light); /* ✅ تحسين: استخدام متغير لون للتوهج */
+}
+
+/* ✅ جديد: تغيير لون أيقونة البحث عند التركيز */
+.search-modal-input-container:focus-within .search-icon {
+  color: var(--primary-color);
+}
+
+#search-modal-input {
+  flex-grow: 1;
+  border: none;
+  padding: 15px 20px; /* ✅ تعديل: إزالة الحشو المخصص للأيقونة بعد إخفائها */
+  font-size: 1.1rem;
+  outline: none;
+  background-color: transparent;
+  width: 100%; /* ✅ جديد: لضمان ملء المساحة */
+  box-sizing: border-box; /* ✅ جديد: لضمان حساب الحشو بشكل صحيح */
+}
+
+/* ✅ جديد: أنماط أيقونة البحث داخل الحقل */
+.search-modal-input-container .search-icon {
+  position: absolute;
+  right: 15px; /* تحديد موقع الأيقونة على اليمين */
+  color: #aaa;
+  display: none; /* ✅ إخفاء: إخفاء أيقونة البحث بناءً على الطلب */
+}
+
+/* ✅ جديد: أنماط حاوية فلاتر الفئات */
+.search-filters-container {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-icon {
+  position: absolute;
+  right: 18px; /* ✅ تعديل: تحسين الموضع */
+  color: #aaa;
+  pointer-events: none; /* لمنع الأيقونة من التداخل مع النقر */
+  transition: color 0.3s ease; /* ✅ جديد: إضافة حركة لتغيير اللون */
+}
+
+/* ✅ جديد: تغيير لون أيقونة الفلتر عند التركيز */
+.filter-group:focus-within .filter-icon {
+  color: var(--primary-color);
+}
+.category-filter {
+  width: 100%;
+  padding: 12px 45px 12px 20px; /* حشو لإفساح المجال للأيقونة */
+  border: 1px solid #ddd;
+  border-radius: 50px;
+  background-color: #f9f9f9;
+  font-family: 'Tajawal', sans-serif;
+  font-size: 0.95rem;
+  color: #555;
+  cursor: pointer;
+  -webkit-appearance: none; /* إزالة المظهر الافتراضي للمتصفح */
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: left 0.75rem center;
+  background-size: 16px 12px; 
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* ✅ تحسين: إضافة تأثير للظل */
+}
+
+.category-filter:hover {
+  border-color: #bbb; /* ✅ جديد: تغيير لون الإطار عند المرور */
+}
+
+.category-filter:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-color-light); /* ✅ جديد: إضافة توهج عند التركيز */
+}
+
+.category-filter:disabled {
+  background-color: #e9ecef;
+  border-color: #ddd;
+  cursor: not-allowed;
+}
+
+#search-results-container {
+  margin-top: 20px;
+  text-align: right; /* محاذاة نتائج البحث لليمين */
+}
+
+/* ✅ جديد: أنماط للشاشات الصغيرة (Responsive) */
+@media (max-width: 768px) {
+  .search-modal-content {
+    width: 95%; /* زيادة العرض قليلاً ليملأ الشاشة بشكل أفضل */
+    margin: 10% auto; /* تعديل الهامش العلوي */
+    padding: 20px; /* تقليل الحشو الداخلي */
+    max-width: none; /* إلغاء العرض الأقصى للسماح بالامتداد */
+  }
+
+  #search-modal-title {
+    font-size: 1.5rem; /* تصغير حجم العنوان */
+  }
+
+  #search-modal-subtitle {
+    font-size: 0.9rem; /* تصغير حجم العنوان الفرعي */
+    margin-bottom: 20px;
+  }
+
+  #search-modal-input {
+    padding: 12px 15px; /* تقليل الحشو الداخلي لحقل الإدخال */
+    font-size: 1rem; /* تصغير حجم خط الإدخال */
+  }
+
+  /* ✅ جديد: جعل الفلاتر تحت بعضها في الشاشات الصغيرة */
+  .search-filters-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .category-filter {
+    padding: 10px 40px 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  .close-button {
+    font-size: 1.5rem; /* تصغير حجم أيقونة الإغلاق */
+  }
+}

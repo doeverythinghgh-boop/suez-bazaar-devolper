@@ -7,6 +7,14 @@
   - حاوية انقطاع الاتصال.
 */
 
+/* ✅ جديد: تعريف متغيرات الألوان الرئيسية للموقع */
+:root {
+  --primary-color: #007bff; /* اللون الأزرق الأساسي */
+  --primary-color-light: rgba(0, 123, 255, 0.25); /* نسخة أفتح للتوهج والتأثيرات */
+  --dark-blue: #03478f; /* درجة أغمق من الأزرق للعناوين والنصوص الهامة */
+}
+
+
 /* === 1. أنماط عامة للجسم (Body) === */
 body {
   margin: 0;
@@ -24,7 +32,7 @@ body.modal-open {
 /* === 2. أنماط الأزرار العامة === */
 button,
 .button {
-  background-color: #007bff; /* A nice blue color */
+  background-color: var(--primary-color); /* A nice blue color */
   color: white;
   border: none;
   padding: 10px 20px;
@@ -43,7 +51,7 @@ button,
 /* === 3. مؤشر التحميل الدائري (Spinner) === */
 .loader {
   border: 5px solid #f3f3f3; /* Light grey */
-  border-top: 5px solid #007bff; /* Blue */
+  border-top: 5px solid var(--primary-color); /* Blue */
   border-radius: 50%;
   width: 50px;
   height: 50px;

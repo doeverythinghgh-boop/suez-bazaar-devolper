@@ -1,0 +1,35 @@
+<!--
+  @file searchModal.html
+  @description محتوى نافذة البحث المنبثقة. يتم تحميل هذا الملف ديناميكيًا في الصفحة الرئيسية.
+-->
+<div id="search-modal" class="modal">
+  <div id="search-modal-content" class="search-modal-content">
+    <button id="search-modal-close-btn" class="close-button" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+    <h2 id="search-modal-title"><i class="fas fa-search"></i> ابحث في بازار السويس</h2>
+    <p id="search-modal-subtitle">ابحث بالاسم في كل المنتجات، أو حدد فئة لتضييق نطاق البحث.</p>
+    <!-- ✅ تعديل: تغيير هيكل حقل البحث ليتطابق مع نافذة "منتجاتي" -->
+    <div id="search-modal-input-container" class="search-modal-input-container">
+      <i class="fas fa-search search-icon"></i>
+      <input type="search" id="search-modal-input" placeholder="اكتب اسم المنتج الذي تبحث عنه..." autocomplete="off" />
+    </div>
+    <!-- ✅ جديد: حاوية فلاتر الفئات -->
+    <div id="search-filters-container" class="search-filters-container">
+      <div class="filter-group">
+        <i class="fas fa-layer-group filter-icon"></i>
+        <select id="main-category-filter" class="category-filter">
+          <option value="">كل الفئات الرئيسية</option>
+          <!-- سيتم ملؤها بواسطة جافاسكريبت -->
+        </select>
+      </div>
+      <!-- ✅ تعديل: إضافة id وإخفاء الحاوية افتراضيًا -->
+      <div class="filter-group" id="sub-category-filter-group" style="display: none;">
+        <i class="fas fa-tags filter-icon"></i>
+        <select id="sub-category-filter" class="category-filter" disabled>
+          <option value="">كل الفئات الفرعية</option>
+          <!-- سيتم ملؤها بواسطة جافاسكريبت -->
+        </select>
+      </div>
+    </div>
+    <div id="search-results-container"></div>
+  </div>
+</div>

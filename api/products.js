@@ -24,20 +24,37 @@ export default async function handler(request) {
     try {
       const { searchParams } = new URL(request.url);
       const user_key = searchParams.get('user_key');
+      // ✅ جديد: استقبال معاملات البحث الجديدة
+      const searchTerm = searchParams.get('searchTerm');
       const MainCategory = searchParams.get('MainCategory');
       const SubCategory = searchParams.get('SubCategory');
 
       let sql, args;
 
-      if (MainCategory && SubCategory) {
-        // ✅ تحسين: جلب المنتجات مع بيانات البائع عند التصفح حسب الفئة
+      // ✅ جديد: منطق بحث ديناميكي
+      if (searchTerm || MainCategory) {
         sql = `
           SELECT p.*, u.username as seller_username, u.phone as seller_phone 
           FROM marketplace_products p
           JOIN users u ON p.user_key = u.user_key
-          WHERE p.MainCategory = ? AND p.SubCategory = ?
         `;
-        args = [MainCategory, SubCategory];
+        const whereClauses = [];
+        args = [];
+
+        if (searchTerm) {
+          whereClauses.push("p.productName LIKE ?");
+          args.push(`%${searchTerm}%`);
+        }
+        if (MainCategory) {
+          whereClauses.push("p.MainCategory = ?");
+          args.push(MainCategory);
+        }
+        if (SubCategory) {
+          whereClauses.push("p.SubCategory = ?");
+          args.push(SubCategory);
+        }
+        sql += " WHERE " + whereClauses.join(" AND ");
+
       } else if (user_key) {
         // جلب منتجات بائع معين
         sql = "SELECT * FROM marketplace_products WHERE user_key = ?";
@@ -46,6 +63,7 @@ export default async function handler(request) {
         // في حالة عدم وجود معاملات، أرجع مصفوفة فارغة بدلاً من كل المنتجات
         return new Response(JSON.stringify([]), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
+      sql += " ORDER BY p.id DESC"; // عرض الأحدث أولاً
 
       const { rows } = await db.execute({
         sql: sql,
