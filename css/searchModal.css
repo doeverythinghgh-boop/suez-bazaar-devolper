@@ -56,55 +56,12 @@
   background-color: #f0f0f0; /* ✅ تعديل: إضافة خلفية رمادية فاتحة عند المرور */
 }
 
-#search-modal-title {
-  font-family: 'Tajawal', sans-serif;
-  font-size: 2rem;
-  color: var(--dark-blue); /* ✅ تحسين: استخدام متغير لون */
-  margin-bottom: 10px;
-  display: flex; /* ✅ جديد: لتوسيط الأيقونة مع النص */
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* ✅ جديد: مسافة بين الأيقونة والنص */
-}
-
-/* ✅ جديد: توحيد لون الأيقونة مع لون النص داخل العنوان */
-#search-modal-title i {
-  color: inherit; /* تجعل الأيقونة ترث اللون من العنصر الأب (العنوان) */
-}
-
-#search-modal-subtitle {
-  font-size: 1rem;
-  color: var(--primary-color); /* ✅ تحسين: استخدام اللون الأساسي لتوحيد الهوية البصرية */
-  margin: 0; /* إزالة الهامش السفلي لأنه سيتم التحكم به من الحاوية */
-}
-
-/* ✅ جديد: حاوية لتجميع النص التعريفي والفلاتر والترتيب */
-.subtitle-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 15px;
-  margin-bottom: 10px;
-  flex-wrap: wrap; /* للسماح بالالتفاف في الشاشات الصغيرة */
-  gap: 15px;
-}
-
-/* ✅ جديد: أنماط قائمة الترتيب */
-.sort-filter {
-  border: 1px solid #ddd;
-  border-radius: 20px;
-  padding: 5px 10px;
-  font-family: 'Tajawal', sans-serif;
-  font-size: 0.85rem;
-  background-color: #f9f9f9;
-  cursor: pointer;
-}
-
 /* ✅ جديد: حاوية لتجميع حقل البحث وزر البحث */
 .search-wrapper {
   display: flex;
   align-items: center;
   gap: 10px; /* مسافة بين حقل البحث والزر */
+  margin-top: 40px;
 }
 
 /* ✅ جديد: أنماط زر البحث الجديد */
@@ -122,6 +79,26 @@
   justify-content: center;
   font-size: 1.2rem;
   transition: background-color 0.3s ease;
+}
+
+/* ✅ جديد: تعريف حركة النبض لزر البحث */
+@keyframes pulse-animation {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+  }
+}
+
+.search-button.is-pulsing {
+  animation: pulse-animation 1.5s infinite;
 }
 .search-modal-input-container {
   display: flex;
@@ -155,11 +132,12 @@
 /* ✅ جديد: أنماط رابط إظهار/إخفاء الفلاتر */
 .toggle-filters-link {
   display: inline-block;
+  margin-top: 15px; /* ✅ تعديل: إضافة هامش علوي لفصله عن حقل البحث */
   color: var(--primary-color);
   text-decoration: none;
-  font-weight: bold;
+  font-weight: normal; /* ✅ تعديل: إزالة الوزن الثقيل ليتطابق مع النص الآخر */
   cursor: pointer;
-  font-size: 0.9rem; /* ✅ جديد: تصغير حجم الخط بناءً على الطلب */
+  font-size: 1rem; /* ✅ تعديل: توحيد حجم الخط مع النص التعريفي */
   transition: color 0.3s ease;
 }
 
@@ -302,15 +280,6 @@
     margin: 10% auto; /* تعديل الهامش العلوي */
     padding: 20px; /* تقليل الحشو الداخلي */
     max-width: none; /* إلغاء العرض الأقصى للسماح بالامتداد */
-  }
-
-  #search-modal-title {
-    font-size: 1.5rem; /* تصغير حجم العنوان */
-  }
-
-  #search-modal-subtitle {
-    font-size: 0.9rem; /* تصغير حجم العنوان الفرعي */
-    margin-bottom: 20px;
   }
 
   #search-modal-input {

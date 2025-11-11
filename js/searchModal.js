@@ -57,6 +57,9 @@ async function initSearchModal(containerId, openTriggerId) {
 
     // ✅ جديد: دالة لتنفيذ البحث وإظهار النتائج
     async function performSearch() {
+      // ✅ جديد: إيقاف حركة الزر بمجرد بدء البحث
+      performSearchBtn.classList.remove('is-pulsing');
+
       const searchTerm = searchModalInput.value.trim();
       const mainCategory = mainCategoryFilter.value;
       const subCategory = subCategoryFilter.value;
@@ -203,7 +206,7 @@ async function initSearchModal(containerId, openTriggerId) {
         if (mainCategoryFilter.value !== "") {
           mainCategoryFilter.value = "";
           // إعادة تعيين الفلتر الفرعي يدويًا لأن تغيير القيمة برمجيًا لا يطلق حدث 'change'
-          subCategoryFilter.innerHTML = '<option value="">كل الفئات الفرعية</option>';
+          subCategoryFilter.innerHTML = '<option value="">كل الاسواق الفرعية</option>';
           subCategoryFilter.disabled = true;
           subCategoryFilterGroup.style.display = 'none';
           // إعادة تنفيذ البحث ليعكس إزالة الفلاتر
@@ -241,7 +244,7 @@ async function initSearchModal(containerId, openTriggerId) {
         // 2. إضافة حدث عند تغيير الفئة الرئيسية
         mainCategoryFilter.addEventListener('change', () => {
           // مسح وتحديث الفئات الفرعية
-          subCategoryFilter.innerHTML = '<option value="">كل الفئات الفرعية</option>';
+          subCategoryFilter.innerHTML = '<option value="">كل الاسواق الفرعية</option>';
           const selectedOption = mainCategoryFilter.options[mainCategoryFilter.selectedIndex];
           
           if (selectedOption.value) {
@@ -260,7 +263,7 @@ async function initSearchModal(containerId, openTriggerId) {
               subCategoryFilter.disabled = true; // تعطيل إذا لم تكن هناك فئات فرعية
             }
           } else {
-            subCategoryFilter.innerHTML = '<option value="">كل الفئات الفرعية</option>'; // إعادة تعيين الفئات الفرعية
+            subCategoryFilter.innerHTML = '<option value="">كل الاسواق الفرعية</option>'; // إعادة تعيين الفئات الفرعية
             subCategoryFilterGroup.style.display = 'none'; // ✅ جديد: إخفاء الحاوية إذا تم اختيار "كل الفئات"
             subCategoryFilter.disabled = true; // تعطيل إذا تم اختيار "كل الفئات"
           }
@@ -284,4 +287,15 @@ async function initSearchModal(containerId, openTriggerId) {
   } catch (error) {
     console.error('%c[SearchModal] خطأ في تهيئة نافذة البحث:', 'color: red;', error);
   }
+
+  // ✅ جديد: إضافة حدث للتحكم في حركة زر البحث أثناء الكتابة
+  const searchInputForAnimation = document.getElementById('search-modal-input');
+  const searchBtnForAnimation = document.getElementById('perform-search-btn');
+  searchInputForAnimation.addEventListener('input', () => {
+    if (searchInputForAnimation.value.trim() !== '') {
+      searchBtnForAnimation.classList.add('is-pulsing');
+    } else {
+      searchBtnForAnimation.classList.remove('is-pulsing');
+    }
+  });
 }
