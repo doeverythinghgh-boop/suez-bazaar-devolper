@@ -14,8 +14,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>إنشاء حساب جديد - Suez Bazaar</title>
     <!-- Link to shared styles -->
-    <link rel="stylesheet" href="css/style.css" />
-    <!-- Link to login-specific styles (reused for consistency) -->
+    <!-- ✅ إصلاح: استخدام ملفات CSS المقسمة بدلاً من style.css القديم -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/header.css" />
     <link rel="stylesheet" href="css/login.css" />
     <!-- Google Fonts -->
     <link
@@ -51,17 +52,6 @@
     </style>
   </head>
   <body>
-    <!-- ✅ جديد: حاوية رسالة انقطاع الاتصال -->
-    <div id="offline-container" class="offline-container" style="display: none;">
-      <div class="offline-content">
-        <i class="fas fa-exclamation-triangle"></i>
-        <h2>لا يوجد اتصال بالإنترنت</h2>
-        <p>يرجى التحقق من اتصالك بالشبكة والمحاولة مرة أخرى.</p>
-        <button id="retry-connection-btn" class="button login-btn">إعادة المحاولة</button>
-      </div>
-    </div>
-
-    <!-- المحتوى الرئيسي للصفحة -->
     <!-- Header بسيط للاتساق -->
     <div class="container" id="header-container">
       <a
@@ -84,7 +74,7 @@
       </a>
     </div>
 
-    <div class="login-page-wrapper" id="main-content">
+    <div class="login-page-wrapper">
       <div class="login-container">
         <h2>إنشاء حساب جديد</h2>
         <form id="register-form" novalidate>
@@ -127,7 +117,6 @@
 
     <!-- Global Config & API functions -->
     <script src="js/config.js"></script>
-    <script src="js/utils.js"></script> <!-- ✅ جديد: تحميل ملف الدوال المساعدة -->
     <script src="js/turo.js"></script>
     <script>
       const form = document.getElementById("register-form");
@@ -135,27 +124,6 @@
       const phone = document.getElementById("phone");
       const password = document.getElementById("password");
       const address = document.getElementById("address");
-
-      // ✅ جديد: التحقق من الاتصال بالإنترنت عند تحميل الصفحة
-      document.addEventListener("DOMContentLoaded", async function () {
-        const isOnline = await checkInternetConnection();
-        if (!isOnline) {
-          // إظهار رسالة انقطاع الاتصال
-          document.getElementById('offline-container').style.display = 'flex';
-
-          // إخفاء المحتوى الرئيسي للصفحة
-          document.getElementById('header-container').style.display = 'none';
-          document.getElementById('main-content').style.display = 'none';
-
-          // إضافة وظيفة لزر إعادة المحاولة
-          document.getElementById('retry-connection-btn').addEventListener('click', () => {
-            window.location.reload();
-          });
-          return; // إيقاف تحميل باقي السكريبتات
-        }
-        // إذا كان هناك اتصال، استكمل تحميل الصفحة بشكل طبيعي
-        initializePage();
-      });
 
       /**
        * يقوم بإنشاء رقم تسلسلي فريد مكون من 4 أحرف صغيرة و 4 أرقام عشوائية.
@@ -220,167 +188,165 @@
         e.target.value = value;
       });
 
-      function initializePage() {
-        form.addEventListener("submit", async function (e) {
-          e.preventDefault(); // Prevent form from submitting
-          console.log('%c[Register] Form submitted.', 'color: blue;');
-          let isValid = true;
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault(); // Prevent form from submitting
+        console.log('%c[Register] Form submitted.', 'color: blue;');
+        let isValid = true;
 
-          // --- Validation ---
+        // --- Validation ---
 
-          // 1. Username validation
-          clearError(username);
-          const usernameValue = username.value.trim();
-          console.log('[Register] Validating username...');
-          if (usernameValue === "") {
-            showError(username, "الاسم مطلوب.");
-            isValid = false;
-          } else if (usernameValue.length < 8 || usernameValue.length > 30) {
-            showError(username, "الاسم يجب أن يكون بين 8 و 30 حرفًا.");
-            isValid = false;
-          }
+        // 1. Username validation
+        clearError(username);
+        const usernameValue = username.value.trim();
+        console.log('[Register] Validating username...');
+        if (usernameValue === "") {
+          showError(username, "الاسم مطلوب.");
+          isValid = false;
+        } else if (usernameValue.length < 8 || usernameValue.length > 30) {
+          showError(username, "الاسم يجب أن يكون بين 8 و 30 حرفًا.");
+          isValid = false;
+        }
 
-          // 2. Phone validation
-          clearError(phone);
-          const phoneValue = phone.value.trim();
-          console.log('[Register] Validating phone number...');
-          if (phoneValue === "") {
-            showError(phone, "رقم الهاتف مطلوب.");
-            isValid = false;
-          } else if (phoneValue.length < 11) {
-            showError(phone, "رقم الهاتف يجب ألا يقل عن 11 رقمًا.");
-            isValid = false;
-          }
+        // 2. Phone validation
+        clearError(phone);
+        const phoneValue = phone.value.trim();
+        console.log('[Register] Validating phone number...');
+        if (phoneValue === "") {
+          showError(phone, "رقم الهاتف مطلوب.");
+          isValid = false;
+        } else if (phoneValue.length < 11) {
+          showError(phone, "رقم الهاتف يجب ألا يقل عن 11 رقمًا.");
+          isValid = false;
+        }
 
-          if (!isValid) {
-            console.warn('[Register] Validation failed.');
-            return;
-          }
+        if (!isValid) {
+          console.warn('[Register] Validation failed.');
+          return;
+        }
 
-          if (isValid) {
-            // ✅ جديد: التحقق مما إذا كان المستخدم قد أدخل كلمة مرور
-            if (password.value.trim() !== "") {
-              console.log('[Register] Password entered. Prompting for confirmation...');
-              const { value: confirmedPassword } = await Swal.fire({
-                title: "تأكيد كلمة المرور",
-                html: `
-                  <p>الرجاء إعادة إدخال كلمة المرور للتأكيد</p>
-                  <div class="password-container">
-                    <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="أعد إدخال كلمة المرور">
-                    <i class="fas fa-eye toggle-password" id="swal-toggle-confirm-password" style="top: 60%;"></i>
-                  </div>
-                `,
-                showCancelButton: true,
-                confirmButtonText: "تأكيد",
-                cancelButtonText: "إلغاء",
-                didOpen: () => {
-                  const confirmInput = document.getElementById('swal-confirm-password');
-                  const toggleIcon = document.getElementById('swal-toggle-confirm-password');
-                  confirmInput.focus();
-                  toggleIcon.addEventListener('click', () => {
-                    const isPassword = confirmInput.type === 'password';
-                    confirmInput.type = isPassword ? 'text' : 'password';
-                    toggleIcon.classList.toggle('fa-eye');
-                    toggleIcon.classList.toggle('fa-eye-slash');
-                  });
-                },
-                inputValidator: (value) => {
-                  const confirmValue = document.getElementById('swal-confirm-password').value;
-                  if (confirmValue !== password.value) {
-                    return "كلمتا المرور غير متطابقتين!";
-                  }
-                }
-              });
-
-              // إذا ألغى المستخدم، أوقف عملية التسجيل
-              if (!confirmedPassword) {
-                console.log('[Register] Password confirmation cancelled by user.');
-                return;
-              }
-            }
-
-            const userKey = generateSerialNumber(); // 🔑 توليد الرقم التسلسلي
-            console.log(`[Register] Generated new user_key: ${userKey}`);
-            const newUser = {
-              username: username.value.trim(),
-              phone: phone.value.trim(),
-              user_key: userKey, // إضافة الرقم التسلسلي للبيانات
-              password: password.value, // قد تكون فارغة
-              address: address.value.trim(), // قد تكون فارغة
-            };
-
-            console.log('[Register] Sending new user data to API...', newUser);
-            // إظهار رسالة انتظار باستخدام SweetAlert2
-            Swal.fire({
-              title: "جاري إنشاء الحساب...",
-              text: "الرجاء الانتظار قليلاً.",
-              allowOutsideClick: false,
+        if (isValid) {
+          // ✅ جديد: التحقق مما إذا كان المستخدم قد أدخل كلمة مرور
+          if (password.value.trim() !== "") {
+            console.log('[Register] Password entered. Prompting for confirmation...');
+            const { value: confirmedPassword } = await Swal.fire({
+              title: "تأكيد كلمة المرور",
+              html: `
+                <p>الرجاء إعادة إدخال كلمة المرور للتأكيد</p>
+                <div class="password-container">
+                  <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="أعد إدخال كلمة المرور">
+                  <i class="fas fa-eye toggle-password" id="swal-toggle-confirm-password" style="top: 60%;"></i>
+                </div>
+              `,
+              showCancelButton: true,
+              confirmButtonText: "تأكيد",
+              cancelButtonText: "إلغاء",
               didOpen: () => {
-                Swal.showLoading();
+                const confirmInput = document.getElementById('swal-confirm-password');
+                const toggleIcon = document.getElementById('swal-toggle-confirm-password');
+                confirmInput.focus();
+                toggleIcon.addEventListener('click', () => {
+                  const isPassword = confirmInput.type === 'password';
+                  confirmInput.type = isPassword ? 'text' : 'password';
+                  toggleIcon.classList.toggle('fa-eye');
+                  toggleIcon.classList.toggle('fa-eye-slash');
+                });
               },
+              inputValidator: (value) => {
+                const confirmValue = document.getElementById('swal-confirm-password').value;
+                if (confirmValue !== password.value) {
+                  return "كلمتا المرور غير متطابقتين!";
+                }
+              }
             });
 
-            try {
-              const result = await addUser(newUser);
-              Swal.close(); // إغلاق رسالة الانتظار
-
-              if (result && result.message) {
-                console.log('%c[Register] Registration successful.', 'color: green;', result);
-                // حفظ بيانات المستخدم في التخزين المحلي لتسجيل دخوله
-                // ✅ إصلاح: التأكد من حفظ جميع البيانات التي أدخلها المستخدم، بما في ذلك العنوان
-                const loggedInUserData = {
-                  username: newUser.username,
-                  phone: newUser.phone,
-                  user_key: newUser.user_key,
-                  Address: newUser.address, // إضافة العنوان إلى الكائن المحفوظ
-                  is_seller: 0 // إضافة قيمة افتراضية لحالة البائع
-                };
-                localStorage.setItem("loggedInUser", JSON.stringify(loggedInUserData));
-                console.log('[Register] User data saved to localStorage. Redirecting to index.html...');
-
-                // إظهار رسالة ترحيب قبل التوجيه إلى الصفحة الرئيسية
-                Swal.fire({
-                  icon: "success",
-                  title: "تم إنشاء الحساب بنجاح!",
-                  text: "مرحبا بك في بازار السويس",
-                  confirmButtonText: "متابعة إلى الرئيسية",
-                }).then((result) => {
-                  // بعد الضغط على زر المتابعة، يتم توجيه المستخدم
-                  if (result.isConfirmed) {
-                    window.location.href = "index.html";
-                  }
-                });
-              } else if (result && result.error) {
-                console.warn('[Register] API returned an error:', result.error);
-                // إذا كان هناك خطأ من الخادم (مثل رقم هاتف مكرر)
-                showError(phone, result.error);
-
-              } else {
-                console.error('[Register] Unknown API failure.');
-                // في حالة فشل غير معروف السبب من الخادم
-                showError(form, "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
-              }
-            } catch (error) {
-              Swal.close(); // تأكد من إغلاق الرسالة في حالة حدوث خطأ
-              console.error("%c[Register] Critical error during registration:", 'color: red; font-weight: bold;', error);
-              // هذا الخطأ يحدث إذا كانت هناك مشكلة في الاتصال بالخادم أو الكود
-              showError(form, "حدث خطأ في التطبيق. يرجى المحاولة لاحقاً.");
+            // إذا ألغى المستخدم، أوقف عملية التسجيل
+            if (!confirmedPassword) {
+              console.log('[Register] Password confirmation cancelled by user.');
+              return;
             }
           }
-        });
 
-        // جديد: إضافة وظيفة تبديل عرض كلمة المرور للنموذج الرئيسي
-        const togglePasswordIcon = document.getElementById('toggle-password-icon');
-        togglePasswordIcon.addEventListener('click', function() {
-          // تبديل نوع حقل الإدخال
-          const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-          password.setAttribute('type', type);
+          const userKey = generateSerialNumber(); // 🔑 توليد الرقم التسلسلي
+          console.log(`[Register] Generated new user_key: ${userKey}`);
+          const newUser = {
+            username: username.value.trim(),
+            phone: phone.value.trim(),
+            user_key: userKey, // إضافة الرقم التسلسلي للبيانات
+            password: password.value, // قد تكون فارغة
+            address: address.value.trim(), // قد تكون فارغة
+          };
 
-          // تبديل أيقونة العين
-          this.classList.toggle('fa-eye');
-          this.classList.toggle('fa-eye-slash');
-        });
-      }
+          console.log('[Register] Sending new user data to API...', newUser);
+          // إظهار رسالة انتظار باستخدام SweetAlert2
+          Swal.fire({
+            title: "جاري إنشاء الحساب...",
+            text: "الرجاء الانتظار قليلاً.",
+            allowOutsideClick: false,
+            didOpen: () => {
+              Swal.showLoading();
+            },
+          });
+
+          try {
+            const result = await addUser(newUser);
+            Swal.close(); // إغلاق رسالة الانتظار
+
+            if (result && result.message) {
+              console.log('%c[Register] Registration successful.', 'color: green;', result);
+              // حفظ بيانات المستخدم في التخزين المحلي لتسجيل دخوله
+              // ✅ إصلاح: التأكد من حفظ جميع البيانات التي أدخلها المستخدم، بما في ذلك العنوان
+              const loggedInUserData = {
+                username: newUser.username,
+                phone: newUser.phone,
+                user_key: newUser.user_key,
+                Address: newUser.address, // إضافة العنوان إلى الكائن المحفوظ
+                is_seller: 0 // إضافة قيمة افتراضية لحالة البائع
+              };
+              localStorage.setItem("loggedInUser", JSON.stringify(loggedInUserData));
+              console.log('[Register] User data saved to localStorage. Redirecting to index.html...');
+
+              // إظهار رسالة ترحيب قبل التوجيه إلى الصفحة الرئيسية
+              Swal.fire({
+                icon: "success",
+                title: "تم إنشاء الحساب بنجاح!",
+                text: "مرحبا بك في بازار السويس",
+                confirmButtonText: "متابعة إلى الرئيسية",
+              }).then((result) => {
+                // بعد الضغط على زر المتابعة، يتم توجيه المستخدم
+                if (result.isConfirmed) {
+                  window.location.href = "index.html";
+                }
+              });
+            } else if (result && result.error) {
+              console.warn('[Register] API returned an error:', result.error);
+              // إذا كان هناك خطأ من الخادم (مثل رقم هاتف مكرر)
+              showError(phone, result.error);
+
+            } else {
+              console.error('[Register] Unknown API failure.');
+              // في حالة فشل غير معروف السبب من الخادم
+              showError(form, "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+            }
+          } catch (error) {
+            Swal.close(); // تأكد من إغلاق الرسالة في حالة حدوث خطأ
+            console.error("%c[Register] Critical error during registration:", 'color: red; font-weight: bold;', error);
+            // هذا الخطأ يحدث إذا كانت هناك مشكلة في الاتصال بالخادم أو الكود
+            showError(form, "حدث خطأ في التطبيق. يرجى المحاولة لاحقاً.");
+          }
+        }
+      });
+
+      // جديد: إضافة وظيفة تبديل عرض كلمة المرور للنموذج الرئيسي
+      const togglePasswordIcon = document.getElementById('toggle-password-icon');
+      togglePasswordIcon.addEventListener('click', function() {
+        // تبديل نوع حقل الإدخال
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+
+        // تبديل أيقونة العين
+        this.classList.toggle('fa-eye');
+        this.classList.toggle('fa-eye-slash');
+      });
     </script>
   </body>
 </html>

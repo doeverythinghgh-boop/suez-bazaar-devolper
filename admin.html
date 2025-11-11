@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>لوحة تحكم المسؤول - Suez Bazaar</title>
   <!-- Styles -->
-  <link rel="stylesheet" href="css/style.css" />
+  <!-- ✅ إصلاح: استخدام ملفات CSS المقسمة بدلاً من style.css القديم -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
   <link rel="stylesheet" href="css/login.css" />
   <link rel="stylesheet" href="css/login-page.css" />
+  <link rel="stylesheet" href="css/modal.css" /> <!-- ✅ إصلاح: إضافة ملف أنماط المودال -->
   <!-- Config -->
   <script src="js/config.js"></script>
   <!-- Fonts & Icons -->
@@ -132,7 +135,6 @@
 
   <!-- Scripts -->
   <script src="js/auth.js"></script>
-  <script src="js/utils.js"></script> <!-- ✅ جديد: تحميل ملف الدوال المساعدة -->
   <script src="js/turo.js"></script>
   <!-- ✅ إضافة: ضروري لعمل موديول الإعلان -->
   <script src="cloudflare-workers/cloudFileManager.js"></script>

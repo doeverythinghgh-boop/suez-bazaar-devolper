@@ -14,7 +14,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>تسجيل الدخول - Suez Bazaar</title>
   <!-- Link to shared styles -->
-  <link rel="stylesheet" href="css/style.css" /> <!-- تمت إضافة هذا السطر -->
+  <!-- ✅ إصلاح: استخدام ملفات CSS المقسمة بدلاً من style.css القديم -->
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/header.css" />
   <!-- Link to login page specific styles -->
   <link rel="stylesheet" href="css/login.css" />
   <link rel="stylesheet" href="css/login-page.css" /> <!-- ✅ جديد: ملف الأنماط المنفصل -->
@@ -144,7 +146,6 @@
   <div id="my-products-modal-container" class="modal">
     <!-- سيتم ملء محتوى منتجاتي هنا -->
   </div>
-  <script src="js/utils.js"></script> <!-- ✅ جديد: تحميل ملف الدوال المساعدة -->
   <script src="cloudflare-workers/cloudFileManager.js"></script>
   <script src="js/cart.js"></script> <!-- ✅ إضافة: تحميل ملف السلة -->
   <script src="js/auth.js"></script>
