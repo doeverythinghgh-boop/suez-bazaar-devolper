@@ -30,17 +30,22 @@ export default async function handler(request) {
 
   if (request.method === "POST") {
     try {
-      const { txt } = await request.json();
-      if (!txt) {
-        return new Response(JSON.stringify({ error: "النص (txt) مطلوب." }), { status: 400, headers });
-      }
+      // ✅ تعديل: بدلاً من إضافة سجل جديد، سنقوم بتحديث السجل الذي يحمل Id = 1.
+      // يتم تحديث حقل datetime إلى الوقت الحالي.
+      // النص (txt) الذي يتم إرساله من الواجهة الأمامية لم يعد مستخدماً هنا،
+      // لأننا نفترض أن النص في الصف الأول ثابت.
 
-      await db.execute({ sql: "INSERT INTO updates (txt) VALUES (?)", args: [txt] });
+      const result = await db.execute({
+        sql: "UPDATE updates SET datetime = CURRENT_TIMESTAMP WHERE Id = ?",
+        args: [1],
+      });
 
-      return new Response(JSON.stringify({ message: "تم تسجيل التحديث بنجاح." }), { status: 201, headers });
+      const message = result.rowsAffected > 0 ? "تم تحديث تاريخ الإعلانات بنجاح." : "لم يتم العثور على سجل التحديث (Id=1).";
+
+      return new Response(JSON.stringify({ message }), { status: 200, headers });
     } catch (error) {
       console.error("API Error in /api/updates:", error);
-      return new Response(JSON.stringify({ error: "فشل في تسجيل التحديث.", details: error.message }), { status: 500, headers });
+      return new Response(JSON.stringify({ error: "فشل في تحديث التاريخ.", details: error.message }), { status: 500, headers });
     }
   }
 
