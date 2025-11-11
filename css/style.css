@@ -1,13 +1,20 @@
 /* ملاحظة: لا يسمح باستخدام تأثيرات hover في هذا المشروع. */
 
-/* === General Body Styles === */
+/*
+  @file css/style.css
+  @description ملف الأنماط الرئيسي للمشروع.
+  يحتوي هذا الملف على الأنماط العامة التي تُطبق على جميع الصفحات،
+  بالإضافة إلى الأنماط الخاصة بالمكونات الرئيسية في الصفحة الرئيسية (index.html)
+  مثل الهيدر، قائمة الفئات، ومعارض المنتجات.
+*/
+
+/* === 1. أنماط عامة للجسم (Body) === */
 body {
   margin: 0;
   background-color: #f9f9f9; /* White background */
   color: #222222; /* Dark text color */
   font-family: "Orbitron", sans-serif; /* Modern font */
-  /* Add padding to the top to prevent content from being hidden by the fixed header */
-  padding-top: 12vh; /* Should be slightly more than the header's height */
+  padding-top: 12vh; /* إضافة حشو علوي لمنع المحتوى من الاختباء خلف الهيدر الثابت */
 }
 
 /* Class to prevent scrolling when a modal is open */
@@ -15,14 +22,14 @@ body.modal-open {
   overflow: hidden;
 }
 
-/* === Header Container === */
+/* === 2. حاوية الهيدر (الشريط العلوي) === */
 .container {
-  position: fixed; /* Fix the header to the top */
+  position: fixed; /* تثبيت الهيدر في أعلى الصفحة */
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #f9f9f9; /* White background for the header */
-  height: 10vh; /* Set a fixed height of 10% of the viewport height */
+  background-color: #f9f9f9; /* خلفية بيضاء للهيدر */
+  height: 10vh; /* تحديد ارتفاع ثابت بنسبة 10% من ارتفاع الشاشة */
   z-index: 1000; /* Ensure it stays on top of other content */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Lighter shadow for a light theme */
 
@@ -34,7 +41,7 @@ body.modal-open {
   box-sizing: border-box; /* Ensures padding is included in the width */
 }
 
-/* === Animated Title ("Suez Bazaar" & "SB") === */
+/* === 3. العنوان المتحرك في الهيدر ("Suez Bazaar" و "SB") === */
 .bazaar-title {
   font-size: clamp(10px, 2.5vh, 28px); /* Responsive font size with min/max */
   font-weight: 700;
@@ -47,7 +54,7 @@ body.modal-open {
   direction: ltr;
 }
 
-/* Styling for each letter (span) */
+/* تنسيق كل حرف (span) داخل العنوان المتحرك */
 .bazaar-title span {
   display: inline-block;
   opacity: 0;
@@ -61,12 +68,12 @@ body.modal-open {
   animation: zoomInLetter 0.4s forwards;
 }
 
-/* Class to make the whole title disappear */
+/* كلاس لإخفاء العنوان بالكامل أثناء الانتقال */
 .bazaar-title.hidden {
   opacity: 0;
 }
 
-/* Class for the final "SB" text to just appear */
+/* كلاس للحالة النهائية للعنوان "SB" بعد انتهاء الحركة */
 .bazaar-title.final-text {
   font-size: clamp(18px, 3.5vh, 32px); /* Responsive font size with min/max */
   opacity: 1;
@@ -82,7 +89,7 @@ body.modal-open {
   
 }
 
-/* The zoom-in animation for each letter */
+/* حركة التكبير لكل حرف في العنوان */
 @keyframes zoomInLetter {
   to {
     opacity: 1;
@@ -90,7 +97,7 @@ body.modal-open {
   }
 }
 
-/* === Tagline Carousel === */
+/* === 4. الشعار النصي المتحرك بجانب العنوان (Tagline) === */
 .tagline {
   font-family: "Tajawal", sans-serif; /* A nice Arabic font */
   font-size: clamp(12px, 1.8vh, 18px); /* Responsive font size with min/max */
@@ -106,20 +113,20 @@ body.modal-open {
   opacity: 1;
 }
 
-/* === Header Content Groups === */
+/* === 5. مجموعات المحتوى داخل الهيدر === */
 .header-title-group {
   display: flex;
   align-items: baseline;
 }
 
-/* ✅ جديد: حاوية لتجميع عناصر التحكم في الهيدر (بحث، مستخدم) */
+/* حاوية لتجميع عناصر التحكم في الهيدر (بحث، مستخدم) */
 .header-controls {
   display: flex;
   align-items: center;
   gap: 20px; /* مسافة بين قسم البحث وقسم المستخدم */
 }
 
-/* ✅ جديد: تنسيقات قسم البحث */
+/* تنسيقات قسم البحث في الهيدر */
 .search-container {
   position: relative;
   display: flex;
@@ -143,13 +150,13 @@ body.modal-open {
   }
 }
 
-/* === User Icon in Header === */
+/* === 6. قسم ملف المستخدم في الهيدر === */
 .user-icon {
   font-size: clamp(24px, 4vh, 32px); /* حجم أيقونة متجاوب */
   color: #03478f; /* ✅ تعديل: تغيير لون أيقونة المستخدم إلى الأزرق */
 }
 
-/* ✅ جديد: تنسيق كلمة "مرحباً" التي تظهر بعد تسجيل الدخول */
+/* تنسيق كلمة "مرحباً" التي تظهر بعد تسجيل الدخول بدلاً من الأيقونة */
 .welcome-text {
   font-family: "Tajawal", sans-serif; /* استخدام خط متناسق */
   font-size: clamp(14px, 2vh, 16px); /* حجم خط مناسب */
@@ -159,7 +166,7 @@ body.modal-open {
   margin-right: 5px; /* هامش صغير للمحاذاة */
 }
 
-/* === User Profile Section (Icon + Text) === */
+/* حاوية ملف المستخدم (الأيقونة + النص) */
 .user-profile {
   display: flex;
   flex-direction: column;
@@ -168,6 +175,7 @@ body.modal-open {
   gap: 2px; /* مسافة صغيرة بين الأيقونة والنص */
 }
 
+/* نص اسم المستخدم تحت الأيقونة */
 .user-text {
   font-family: "Tajawal", sans-serif;
   font-size: clamp(10px, 1.5vh, 12px); /* حجم خط صغير ومتجاوب */
@@ -176,7 +184,7 @@ body.modal-open {
   white-space: nowrap; /* لمنع النص من الانقسام إلى سطرين */
 }
 
-/* === User Profile Link === */
+/* الرابط الذي يحيط بقسم ملف المستخدم لجعله قابلاً للنقر */
 .user-profile-link {
   text-decoration: none; /* إزالة الخط السفلي للرابط */
   color: inherit; /* جعل الرابط يرث اللون من العنصر الأب */
@@ -185,7 +193,7 @@ body.modal-open {
   align-items: center;
 }
 
-/* === General Button Styles === */
+/* === 7. أنماط الأزرار العامة === */
 button,
 .button {
   background-color: #007bff; /* A nice blue color */
@@ -204,7 +212,7 @@ button,
   gap: 8px; /* Space between icon and text */
 }
 
-/* === Loader Spinner === */
+/* === 8. مؤشر التحميل الدائري (Spinner) === */
 .loader {
   border: 5px solid #f3f3f3; /* Light grey */
   border-top: 5px solid #007bff; /* Blue */
@@ -224,7 +232,7 @@ button,
   }
 }
 
-/* === Categories Section === */
+/* === 9. قسم الفئات في الصفحة الرئيسية === */
 .categories-section {
   padding: 0px 0 40px 0; /* ✅ تعديل: تقليل الحشو العلوي إلى 0px */
   background-color: #f9f9f9; /* Slightly off-white background */
@@ -240,6 +248,7 @@ button,
   font-weight: 700;
 }
 
+/* حاوية شبكة الفئات (تم استبدالها بالجدول) */
 .categories-grid {
   display: flex;
   flex-direction: column;
@@ -247,6 +256,7 @@ button,
   gap: 10px; /* تقليل المسافة بين البطاقات */
 }
 
+/* بطاقة الفئة (تم استبدالها بالجدول) */
 .category-card {
   background-color: #ffffff;
   border-radius: 8px;
@@ -270,7 +280,7 @@ button,
   line-height: 1.4;
 }
 
-/* === Categories Table Styles (Neumorphism) === */
+/* === 10. أنماط جدول الفئات (التصميم المعتمد حالياً) === */
 .categories-table {
   width: 100%;
   border-collapse: separate; /* للسماح بالمسافات بين الخلايا */
@@ -279,7 +289,7 @@ button,
   table-layout: fixed; /* لضمان توزيع الأعمدة بالتساوي */
 }
 
-/* --- جديد: تأثير الدخول المتدرج لصفوف الفئات الرئيسية --- */
+/* تأثير الدخول المتدرج لصفوف الفئات الرئيسية عند تحميل الصفحة */
 @keyframes fadeInRow {
   from {
     opacity: 0;
@@ -292,11 +302,11 @@ button,
 }
 
 .main-category-row {
-  /* تطبيق الحركة عند التحميل */
   animation: fadeInRow 0.5s ease-out forwards;
   opacity: 0; /* إخفاء الصف مبدئيًا لتبدأ الحركة */
 }
 
+/* خلية الفئة الرئيسية في الجدول */
 .categories-table td {
   border: 1px solid #e9ecef; /* إطار ناعم ومحايد */
   padding: 20px;
@@ -312,7 +322,7 @@ button,
   cursor: pointer;
 }
 
-/* --- تم التحديث: تنسيق الخلية الرئيسية النشطة (المختارة) --- */
+/* تنسيق الخلايا غير النشطة عند اختيار فئة معينة */
 .categories-tbody.selection-active .main-category-row .category-cell:not(.active-category) {
   opacity: 0.5; /* ✅ تعديل: جعل الخلايا غير النشطة باهتة للتركيز */
   transform: none; /* إزالة أي تأثيرات تحويل */
@@ -320,7 +330,7 @@ button,
 }
 .main-category-row .category-cell.active-category {
   /* ✅ تحسين: استخدام إطار متدرج وظل أكثر بروزًا للتمييز الفائق */
-  border: 1px solid #9bc1eb; /* جعل الإطار شفافًا للسماح بظهور الخلفية */
+  border: 1px solid #9bc1eb;
   background-origin: border-box;
   background-clip: content-box, border-box;
   box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.25);
@@ -331,23 +341,25 @@ button,
 .main-category-row .category-cell.active-category .category-cell-content i {
   color: #007bff; /* جعل لون الأيقونة أزرق ليتماشى مع الإطار */
 }
-
 .main-category-row .category-cell.active-category .category-cell-content span {
   color: #4a5568;
 }
+
+/* أيقونة الفئة الرئيسية */
 .category-cell-content i {
   font-size: 2rem; /* ✅ تعديل: تصغير حجم الأيقونة قليلاً */
   color: #007bff; /* لون أزرق يتناسب مع الهوية */
   transition: color 0.3s ease;
 }
 
-/* جديد: تنسيق النص أسفل الأيقونة */
+/* نص اسم الفئة الرئيسية أسفل الأيقونة */
 .category-cell-content span {
   font-size: 0.6rem; /* ✅ تعديل: تصغير حجم الخط ليتناسب مع البطاقة الأصغر */
   color: #4a5568; /* ✅ تعديل: استخدام لون رمادي داكن ومحايد لتباين أفضل */
   font-weight: 600; /* وزن خط متوسط */
 }
 
+/* حاوية محتوى خلية الفئة (أيقونة + نص) */
 .category-cell-content {
   display: flex;
   flex-direction: column;
@@ -355,7 +367,7 @@ button,
   gap: 10px;
 }
 
-/* --- Sub-category Row Styles --- */
+/* === 11. أنماط صف الفئات الفرعية === */
 .sub-category-row td {
   padding: 0;
   /* إزالة الخلفية والحدود والظل لدمجها بصريًا مع الخلية النشطة */
@@ -364,7 +376,7 @@ button,
   box-shadow: none;
 }
 
-/* جديد: حركة انزلاق وظهور تدريجي للفئات الفرعية */
+/* حركة انزلاق وظهور تدريجي للفئات الفرعية */
 @keyframes slide-fade-in {
   from {
     opacity: 0;
@@ -376,7 +388,7 @@ button,
   }
 }
 
-/* --- جديد: صف معرض المنتجات --- */
+/* صف معرض المنتجات الذي يظهر تحت الفئات الفرعية */
 .products-gallery-row td {
   height: 15vh; /* تحديد ارتفاع ثابت للصف */
   padding: 0px; /* إضافة حشو داخلي للخلية */
@@ -387,7 +399,7 @@ button,
   vertical-align: top; /* محاذاة المحتوى للأعلى */
 }
 
-/* === Accordion Styles for Categories === */
+/* === 12. أنماط قائمة الفئات (Accordion - تصميم قديم) === */
 .category-item {
   background-color: #fff;
   border-radius: 8px;
@@ -426,6 +438,7 @@ button,
   transform: rotate(180deg);
 }
 
+/* حاوية الفئات الفرعية في تصميم الأكورديون */
 .subcategory-container {
   max-height: 0;
   overflow: hidden;
@@ -433,6 +446,7 @@ button,
   background-color: #fdfdfd;
 }
 
+/* حاوية شريط الفئات الفرعية الأفقي (التصميم المعتمد) */
 .subcategories-container {
   display: flex;
   flex-wrap: nowrap; /* جديد: منع العناصر من النزول لسطر جديد */
@@ -443,7 +457,7 @@ button,
   -webkit-overflow-scrolling: touch; /* لتحسين التمرير على أجهزة اللمس */
 }
 
-/* جديد: تنسيق شريط التمرير الأفقي ليكون أنعم */
+/* تنسيق شريط التمرير الأفقي ليكون أنعم */
 .subcategories-container::-webkit-scrollbar {
   height: 6px; /* ارتفاع الشريط */
 }
@@ -457,6 +471,7 @@ button,
   border-radius: 10px;
 }
 
+/* عنصر الفئة الفرعية في الشريط الأفقي */
 .subcategory-item {
   background-color: #f9f9f9;
   border: 1px solid #e9ecef;
@@ -469,12 +484,11 @@ button,
   white-space: nowrap; /* جديد: منع التفاف النص داخل العنصر الواحد */
 }
 
-/* لا يوجد تأثير hover، ولكن يمكن إضافة تأثير عند النقر مستقبلاً إذا أردت */
 .subcategory-item:active {
   background-color: #e6f2ff; /* تغيير طفيف في الخلفية عند الضغط */
 }
 
-/* ✅ تعديل: تصغير حجم النص في جميع الفئات الفرعية مع الحفاظ على حجم الأيقونة */
+/* تصغير حجم النص في جميع الفئات الفرعية مع الحفاظ على حجم الأيقونة */
 .subcategory-item {
   font-size: 0.8em; /* تصغير حجم الخط العام للعنصر */
 }
@@ -493,7 +507,7 @@ button,
   }
 }
 
-/* === Subcategory Modal === */
+/* === 13. الأنماط العامة للنوافذ المنبثقة (Modal) === */
 .modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
@@ -509,6 +523,7 @@ button,
   animation: fadeIn 0.3s ease-out;
 }
 
+/* محتوى النافذة المنبثقة */
 .modal-content {
   background-color: #fefefe;
   margin: 15% auto; /* 15% from the top and centered */
@@ -531,7 +546,7 @@ button,
   color: #333;
 }
 
-/* ✅ تعديل: تحسين تصميم زر الإغلاق في النوافذ المنبثقة */
+/* تصميم زر الإغلاق في النوافذ المنبثقة */
 .close-button {
   position: absolute;
   top: 15px;
@@ -569,7 +584,7 @@ button,
   }
 }
 
-/* --- ✅ جديد: أنماط نافذة البحث المنبثقة --- */
+/* أنماط خاصة بنافذة البحث المنبثقة */
 .search-modal-content {
   background-color: #fdfdfd;
   margin: 10% auto; /* تعديل الهامش العلوي ليكون أقرب للأعلى */
@@ -620,7 +635,7 @@ button,
 
 #search-results-container { min-height: 200px; /* مساحة مبدئية لعرض النتائج */ }
 
-/* === Product Details Modal Specific Styles === */
+/* أنماط خاصة بنافذة عرض تفاصيل المنتج */
 .product-modal-content {
   margin: 5% auto; /* Adjust margin for better vertical positioning */
   max-width: 900px; /* Wider modal for product details */
@@ -650,7 +665,7 @@ button,
   }
 }
 
-/* --- ✅ جديد: تنسيقات معرض المنتجات الأفقي --- */
+/* === 14. تنسيقات معرض المنتجات الأفقي (المستخدم في الصفحة الرئيسية) === */
 .gallery-container {
   display: flex; /* تفعيل نظام Flexbox للعرض الأفقي */
   overflow-x: auto; /* إضافة شريط تمرير أفقي عند الحاجة */
@@ -666,9 +681,7 @@ button,
 .gallery-container::-webkit-scrollbar-track { background: transparent; }
 .gallery-container::-webkit-scrollbar-thumb { background-color: #d1d9e6; border-radius: 10px; }
 
-/* === أنماط تم نقلها من index.html === */
-
-/* --- تصميم بطاقة المنتج في المعرض --- */
+/* تصميم بطاقة المنتج في المعرض الأفقي */
 .product-item {
   cursor: pointer;
   text-align: center;
@@ -688,6 +701,7 @@ button,
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* ظل أعمق عند المرور */
 }
 
+/* صورة المنتج داخل البطاقة */
 .product-item img {
   width: 100%;
   height: 12vh; /* نفس ارتفاع الحاوية للحفاظ على الشكل */
@@ -695,6 +709,7 @@ button,
   display: block;
 }
 
+/* اسم المنتج أسفل الصورة */
 .product-item .product-name {
   margin: 0; /* إزالة الهوامش الافتراضية */
   padding: 2px; /* تعديل: زيادة الحشو لتحسين القراءة والمظهر */
@@ -712,12 +727,13 @@ button,
   -webkit-box-orient: vertical;
 }
 
+/* تحديد أبعاد بطاقة المنتج في المعرض الأفقي */
 .gallery-container .product-item {
   width: 12vh; /* عرض ثابت لجعل العنصر مربع الشكل */
   flex-shrink: 0; /* منع العنصر من التقلص */
 }
 
-/* --- أنماط حاوية انقطاع الاتصال --- */
+/* === 15. أنماط حاوية انقطاع الاتصال بالإنترنت === */
 .offline-container {
   position: fixed;
   top: 0;
@@ -737,7 +753,7 @@ button,
 .offline-content h2 { font-size: 1.8rem; color: #34495e; margin-bottom: 1rem; }
 .offline-content p { font-size: 1rem; color: #7f8c8d; margin-bottom: 2rem; }
 
-/* --- أنماط لتمييز الفئة الفرعية النشطة --- */
+/* === 16. أنماط لتمييز الفئة الفرعية النشطة (المختارة) === */
 .subcategory-item.active {
   border: 1px solid #9bc1eb; /* إطار أزرق سميك وواضح للتمييز */
   box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.25);

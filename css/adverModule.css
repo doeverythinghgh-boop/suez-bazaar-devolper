@@ -6,14 +6,17 @@
 /* حاوية الشريط الإعلاني الرئيسية */
 #advertisement-section {
   position: relative;
-  width: 100%;
   height: 10vh; /* ✅ تعديل: تم تقليل الارتفاع إلى 10% من ارتفاع الشاشة */
   min-height: 90px; /* ✅ تعديل: تقليل الحد الأدنى للارتفاع ليتناسب مع الارتفاع الجديد */
-  margin: 0 auto 10px auto; /* ✅ تعديل: تقليل الهامش السفلي إلى 10px */
+  margin-bottom: 10px; /* ✅ تعديل: الإبقاء على الهامش السفلي فقط */
   overflow: hidden;
   background-color: #e9ecef; /* لون خلفية احتياطي */
-  border-radius: 12px; /* ✅ تعديل: جعل جميع الحواف دائرية */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    width: auto; /* السماح للحاوية بالتجاوب مع الهوامش */
+  margin-left: 20px;
+  margin-right: 20px;
+  border-radius: 12px; /* حواف دائرية */
+  overflow: hidden; /* لضمان تطبيق الحواف الدائرية على المحتوى الداخلي */
 }
 
 /* حاوية الشرائح الداخلية */
