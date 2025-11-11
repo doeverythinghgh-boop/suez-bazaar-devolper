@@ -305,35 +305,36 @@ button,
   background-color: #f9f9f9; /* خلفية بيضاء نظيفة */
   border-radius: 12px; /* زوايا دائرية أنعم */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* ظل خفيف وناعم */
-  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease; /* انتقالات سلسة */
+  transition: transform 0.3s ease, box-shadow 0.5s ease, opacity 0.3s ease, border-color 0.5s ease; /* انتقالات سلسة */
 }
 
-.main-category-row td.has-subcategories {
+.main-category-row .category-cell.has-subcategories {
   cursor: pointer;
 }
 
 /* --- تم التحديث: تنسيق الخلية الرئيسية النشطة (المختارة) --- */
-.categories-tbody.selection-active .main-category-row td:not(.active-category) {
-  opacity: 0.4; /* جعل الخلايا غير النشطة باهتة بشكل أكبر للتركيز */
+.categories-tbody.selection-active .main-category-row .category-cell:not(.active-category) {
+  opacity: 0.5; /* ✅ تعديل: جعل الخلايا غير النشطة باهتة للتركيز */
   transform: none; /* إزالة أي تأثيرات تحويل */
   pointer-events: none; /* منع التفاعل مع الخلايا الباهتة */
 }
-
-.main-category-row td.active-category {
-  background: linear-gradient(360deg, #497bcc, #497bcc); /* ✅ تعديل: استخدام تدرج لوني جذاب */
-  color: #ffffff; /* لون نص أبيض للتباين */
-  transform: scale(1.05); /* تكبير الخلية قليلاً لتمييزها */
-  box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); /* ✅ تعديل: ظل متناسق مع اللون الجديد */
-  border-color: #2563eb; /* ✅ تعديل: تحديث لون الإطار */
-  border-color: transparent;
+.main-category-row .category-cell.active-category {
+  /* ✅ تحسين: استخدام إطار متدرج وظل أكثر بروزًا للتمييز الفائق */
+  border: 1px solid #9bc1eb; /* جعل الإطار شفافًا للسماح بظهور الخلفية */
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.25);
+    opacity: 1; /* ✅ إضافة: ضمان أن الخلية النشطة غير باهتة */
 }
 
 /* تغيير لون الأيقونة والنص داخل الخلية النشطة */
-.main-category-row td.active-category .category-cell-content,
-.main-category-row td.active-category .category-cell-content i {
-  color: #ffffff;
+.main-category-row .category-cell.active-category .category-cell-content i {
+  color: #007bff; /* جعل لون الأيقونة أزرق ليتماشى مع الإطار */
 }
 
+.main-category-row .category-cell.active-category .category-cell-content span {
+  color: #4a5568;
+}
 .category-cell-content i {
   font-size: 2rem; /* ✅ تعديل: تصغير حجم الأيقونة قليلاً */
   color: #007bff; /* لون أزرق يتناسب مع الهوية */
@@ -345,11 +346,6 @@ button,
   font-size: 0.6rem; /* ✅ تعديل: تصغير حجم الخط ليتناسب مع البطاقة الأصغر */
   color: #4a5568; /* ✅ تعديل: استخدام لون رمادي داكن ومحايد لتباين أفضل */
   font-weight: 600; /* وزن خط متوسط */
-}
-
-.main-category-row td.active-category .category-cell-content span {
-  color: #ffffff; /* ✅ جديد: تغيير لون النص إلى الأبيض عند الاختيار */
-  font-weight: 700; /* جعل الخط أعرض قليلاً عند الاختيار */
 }
 
 .category-cell-content {
@@ -469,22 +465,13 @@ button,
   text-decoration: none;
   color: #007bff; /* لون النص بنفس لون الإطار */
   font-weight: 500;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.5s ease, box-shadow 0.5s ease;
   white-space: nowrap; /* جديد: منع التفاف النص داخل العنصر الواحد */
 }
 
 /* لا يوجد تأثير hover، ولكن يمكن إضافة تأثير عند النقر مستقبلاً إذا أردت */
 .subcategory-item:active {
   background-color: #e6f2ff; /* تغيير طفيف في الخلفية عند الضغط */
-}
-
-/* ✅ جديد: تنسيق الفئة الفرعية النشطة (المختارة) */
-.subcategory-item.active {
-  background: linear-gradient(360deg, #497bcc, #497bcc); /* ✅ تعديل: استخدام نفس التدرج اللوني الجذاب */
-  color: #ffffff; /* لون النص والأيقونة أبيض */
-  border-color: transparent; /* ✅ تعديل: إزالة الإطار ليتناسب مع التدرج */
-  transform: scale(1.05); /* تكبير طفيف لتمييز العنصر */
-  box-shadow: 0 5px 15px rgba(59, 130, 246, 0.25); /* ✅ تعديل: ظل متناسق مع اللون الجديد */
 }
 
 /* ✅ تعديل: تصغير حجم النص في جميع الفئات الفرعية مع الحفاظ على حجم الأيقونة */
@@ -678,3 +665,83 @@ button,
 .gallery-container::-webkit-scrollbar { height: 6px; }
 .gallery-container::-webkit-scrollbar-track { background: transparent; }
 .gallery-container::-webkit-scrollbar-thumb { background-color: #d1d9e6; border-radius: 10px; }
+
+/* === أنماط تم نقلها من index.html === */
+
+/* --- تصميم بطاقة المنتج في المعرض --- */
+.product-item {
+  cursor: pointer;
+  text-align: center;
+  background-color: #fff;
+  border-radius: 12px; /* زيادة دائرية الحواف */
+  overflow: hidden;
+  border: 1px solid #f0f0f0; /* إضافة إطار ناعم */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* ظل أكثر نعومة */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* انتقال أكثر سلاسة */
+  display: flex; /* جديد: استخدام flex لتنظيم المحتوى */
+  flex-direction: column; /* جديد: ترتيب المحتوى عمودياً */
+  background-color: transparent;
+}
+
+.product-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* ظل أعمق عند المرور */
+}
+
+.product-item img {
+  width: 100%;
+  height: 12vh; /* نفس ارتفاع الحاوية للحفاظ على الشكل */
+  object-fit: cover; /* ضمان ملء الصورة للمساحة دون تشويه */
+  display: block;
+}
+
+.product-item .product-name {
+  margin: 0; /* إزالة الهوامش الافتراضية */
+  padding: 2px; /* تعديل: زيادة الحشو لتحسين القراءة والمظهر */
+  font-size: 0.65rem; /* تكبير حجم الخط قليلاً */
+  font-weight: 600; /* جعل الخط أعرض قليلاً */
+  color: #333; /* لون أغمق وأكثر وضوحًا */
+  line-height: 1.2; /* تحسين تباعد الأسطر */
+  flex-grow: 1; /* السماح لهذا العنصر بالتمدد لملء المساحة المتبقية */
+  background-color: transparent;
+  /* التحكم في النص الطويل وعرضه في سطرين مع (...) */
+  overflow: hidden; /* إخفاء النص الزائد */
+  text-overflow: ellipsis; /* إضافة علامة الحذف */
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* تحديد عدد الأسطر بسطرين */
+  -webkit-box-orient: vertical;
+}
+
+.gallery-container .product-item {
+  width: 12vh; /* عرض ثابت لجعل العنصر مربع الشكل */
+  flex-shrink: 0; /* منع العنصر من التقلص */
+}
+
+/* --- أنماط حاوية انقطاع الاتصال --- */
+.offline-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f4f4f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000; /* للتأكد من أنها فوق كل شيء */
+  text-align: center;
+  flex-direction: column;
+  padding: 20px;
+}
+.offline-content i { font-size: 4rem; color: #e74c3c; margin-bottom: 1.5rem; }
+.offline-content h2 { font-size: 1.8rem; color: #34495e; margin-bottom: 1rem; }
+.offline-content p { font-size: 1rem; color: #7f8c8d; margin-bottom: 2rem; }
+
+/* --- أنماط لتمييز الفئة الفرعية النشطة --- */
+.subcategory-item.active {
+  border: 1px solid #9bc1eb; /* إطار أزرق سميك وواضح للتمييز */
+  box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.25);
+}
+.subcategory-item.active i {
+  color: #007bff; /* جعل لون الأيقونة أزرق ليتماشى مع الإطار */
+}

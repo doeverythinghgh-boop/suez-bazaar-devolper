@@ -34,61 +34,23 @@
     />
     <!-- SweetAlert2 -->
     <script id="sweetalert2-script" src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- ✅ إضافة: تنسيقات خاصة بعناصر المنتجات في المعرض -->
-    <style>
-      /* --- تصميم جديد ومحسّن لبطاقة المنتج --- */
-      .product-item {
-        cursor: pointer;
-        text-align: center;
-        background-color: #fff;
-        border-radius: 12px; /* زيادة دائرية الحواف */
-        overflow: hidden;
-        border: 1px solid #f0f0f0; /* إضافة إطار ناعم */
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* ظل أكثر نعومة */
-        transition: transform 0.3s ease, box-shadow 0.3s ease; /* انتقال أكثر سلاسة */
-        display: flex; /* جديد: استخدام flex لتنظيم المحتوى */
-        flex-direction: column; /* جديد: ترتيب المحتوى عمودياً */
-        background-color: transparent;
-      }
-      .product-item:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); /* ظل أعمق عند المرور */
-      }
-      /* جديد: تنسيق الصورة داخل البطاقة */
-      .product-item img {
-        width: 100%;
-        height: 12vh; /* نفس ارتفاع الحاوية للحفاظ على الشكل */
-        object-fit: cover; /* ضمان ملء الصورة للمساحة دون تشويه */
-        display: block;
-      }
-      .product-item .product-name {
-        margin: 0; /* إزالة الهوامش الافتراضية */
-        padding: 2px; /* تعديل: زيادة الحشو لتحسين القراءة والمظهر */
-        font-size: 0.65rem; /* تكبير حجم الخط قليلاً */
-        font-weight: 600; /* جعل الخط أعرض قليلاً */
-        color: #333; /* لون أغمق وأكثر وضوحًا */
-        line-height: 1.2; /* ✅ تعديل: تحسين تباعد الأسطر */
-        flex-grow: 1; /* جديد: السماح لهذا العنصر بالتمدد لملء المساحة المتبقية */
-        background-color: transparent;
-        /* --- ✅ جديد: التحكم في النص الطويل وعرضه في سطرين مع (...) --- */
-        overflow: hidden; /* إخفاء النص الزائد */
-        text-overflow: ellipsis; /* إضافة علامة الحذف */
-        display: -webkit-box;
-        -webkit-line-clamp: 2; /* تحديد عدد الأسطر بسطرين */
-        -webkit-box-orient: vertical;
-      }
-      /* ✅ إضافة: تحديد عرض ثابت لعناصر المنتج للحفاظ على التناسق */
-      .gallery-container .product-item {
-        width: 12vh; /* عرض ثابت لجعل العنصر مربع الشكل */
-        flex-shrink: 0; /* منع العنصر من التقلص */
-      }
-    </style>
   </head>
   <body style="position: relative">
     <!-- 
       الهدف من هذا الموقع هو إنشاء سوق تجاري إلكتروني ("بازار") في السويس.
       يعمل الموقع كمنصة لعرض منتجات من موردين مختلفين، مما يسمح للمستهلكين بتصفحها وشرائها مباشرة.
     -->
+    <!-- ✅ جديد: حاوية رسالة انقطاع الاتصال (مخفية افتراضيًا) -->
+    <div id="offline-container" class="offline-container" style="display: none;">
+      <div class="offline-content">
+        <i class="fas fa-exclamation-triangle"></i>
+        <h2>لا يوجد اتصال بالإنترنت</h2>
+        <p>يرجى التحقق من اتصالك بالشبكة والمحاولة مرة أخرى.</p>
+        <button id="retry-connection-btn" class="button login-btn">إعادة المحاولة</button>
+      </div>
+    </div>
+
+    <!-- المحتوى الرئيسي للصفحة -->
     <div class="container" id="header-container">
       <!-- مجموعة العنوان والشعار -->
       <a
@@ -153,6 +115,7 @@
       </div>
     </div>
     <script id="config-script" src="js/config.js"></script> <!-- ✅ إضافة: تحميل ملف الإعدادات أولاً -->
+    <script id="utils-script" src="js/utils.js"></script> <!-- ✅ جديد: تحميل ملف الدوال المساعدة -->
     <script id="turo-script" src="js/turo.js"></script> <!-- ✅ إصلاح: تحميل turo.js مبكرًا لضمان توفر دوال الـ API -->
     <script id="cart-script" src="js/cart.js"></script> <!-- ✅ إضافة: تحميل ملف السلة -->
     <script id="adver-module-script" src="js/adverModule.js"></script> <!-- ✅ جديد: إضافة ملف موديول الإعلانات -->
@@ -186,11 +149,12 @@
           for (let i = 0; i < categories.length; i += 4) {
             const chunk = categories.slice(i, i + 4);
             const mainRow = document.createElement("tr");
+            mainRow.className = "main-category-row"; // ✅ إصلاح: تطبيق الكلاس على الصف
 
             chunk.forEach((category) => {
               const cell = document.createElement("td");
-              cell.className = "main-category-row"; // تطبيق الكلاس على الخلية بدلاً من الصف
-              cell.dataset.categoryId = category.id; // ✅ إصلاح: تخزين معرف الفئة الرئيسية هنا
+              cell.className = "category-cell"; // ✅ إصلاح: استخدام كلاس جديد للخلية
+              cell.dataset.categoryId = category.id;
 
               // ✅ تحسين: قراءة الأيقونة مباشرة من بيانات الفئة
               const iconClass = category.icon || "fas fa-store"; // استخدام أيقونة افتراضية
@@ -238,17 +202,25 @@
        */
       function toggleSubcategories(mainRow, subcategories, clickedCell) {
         console.log(`%c[Subcategories] تم النقر على الفئة الرئيسية (ID: ${clickedCell.dataset.categoryId})`, 'color: purple;');
-        const tbody = document.getElementById("categories-tbody"); // الحصول على جسم الجدول
-        const currentlyActiveCell = document.querySelector(
-          ".main-category-row td.active-category"
-        );
+        const tbody = document.getElementById("categories-tbody");
+        const currentlyActiveCell = tbody.querySelector("td.active-category");
         const existingProductsRow = document.querySelector(
           ".products-gallery-row"
         );
-        const existingSubRow = document.querySelector(".sub-category-row"); // البحث عن أي صف فرعي مفتوح
+        const existingSubRow = document.querySelector(".sub-category-row");
         const isClickingSameCell = currentlyActiveCell === clickedCell;
 
-        // الخطوة 1: إزالة أي صف فرعي مفتوح وحالة التفعيل القديمة دائمًا
+        // --- ✅ إصلاح جذري: إعادة ترتيب منطق الإغلاق لضمان إزالة الصفوف القديمة دائمًا ---
+        // هذه الخطوة حاسمة: يجب إزالة الصفوف القديمة دائمًا عند أي نقرة، سواء للفتح أو الإغلاق.
+        // المشكلة السابقة كانت تكمن في عدم إزالة الصفوف بشكل صحيح في سيناريو الإغلاق.
+
+        // --- ✅ جديد: رسائل تتبع للمطور ---
+        console.group(`%c[DevLog] دورة حياة النقر على الفئة الرئيسية`, 'color: #0d6efd; font-weight: bold;');
+        console.log(`- الخلية المنقور عليها:`, clickedCell);
+        console.log(`- هل هي نفس الخلية النشطة؟: ${isClickingSameCell}`);
+        // --- ✅ إصلاح شامل: إعادة هيكلة المنطق بالكامل لضمان الترتيب الصحيح ---
+
+        // الخطوة 1: إزالة أي صفوف مفتوحة حاليًا (فئات فرعية أو منتجات) دائمًا عند أي نقرة.
         if (existingSubRow) {
           console.log('[Subcategories] إزالة صف الفئات الفرعية المفتوح حاليًا.');
           existingSubRow.remove();
@@ -257,19 +229,25 @@
           console.log('[Subcategories] إزالة معرض المنتجات المفتوح حاليًا.');
           existingProductsRow.remove();
         }
-        if (currentlyActiveCell) {
-          currentlyActiveCell.classList.remove("active-category");
-        }
-        tbody.classList.remove("selection-active");
 
-        // الخطوة 2: إذا لم يكن النقرة على نفس الخلية النشطة (أي فتح خلية جديدة)
-        // يتم إنشاء صف فرعي جديد وتفعيل الخلية الجديدة.
-        // إذا كانت النقرة على نفس الخلية، فإن الخطوة 1 تكون كافية لإغلاقها.
+        // الخطوة 2: التحقق مما إذا كانت النقرة على خلية جديدة (وليست لإغلاق الخلية الحالية).
         if (!isClickingSameCell) {
-          console.log('[Subcategories] فتح صف جديد للفئات الفرعية.');
+          console.log('%c[DevLog] الحالة: فتح قسم جديد.', 'color: green;');
+          
+          // أولاً: إزالة التمييز القديم إن وجد.
+          if (currentlyActiveCell) {
+            console.log('[DevLog] 1. إزالة التمييز من الخلية القديمة:', currentlyActiveCell);
+            // ✅ إصلاح جذري: إزالة حالة الاختيار من الجدول هنا لضمان إعادة التعيين الكاملة
+            tbody.classList.remove("selection-active");
+            currentlyActiveCell.classList.remove("active-category");
+          }
+          // ثانيًا: تطبيق التمييز على الخلية الجديدة والجدول.
+          console.log('[DevLog] 2. إضافة حالة الاختيار للجدول (tbody).');
           tbody.classList.add("selection-active"); // إضافة حالة "الاختيار النشط" للجدول
+          console.log('[DevLog] 3. إضافة التمييز للخلية الجديدة (المنقور عليها).');
           clickedCell.classList.add("active-category"); // إضافة التمييز للخلية المختارة
 
+          console.log('[DevLog] 4. بناء وإدراج صف الفئات الفرعية.');
           const subRow = document.createElement("tr");
           subRow.className = "sub-category-row";
           // إضافة تأثير انزلاق للأسفل
@@ -291,12 +269,12 @@
             // إضافة حدث النقر لعرض المنتجات
             subItem.addEventListener("click", (e) => {
               e.preventDefault();
-              // إزالة التفعيل من أي عنصر فرعي آخر
+              // إزالة التمييز من أي فئة فرعية أخرى
               document
                 .querySelectorAll(".subcategory-item.active")
                 .forEach((item) => item.classList.remove("active"));
               console.log(`[Subcategories] تم النقر على الفئة الفرعية (ID: ${sub.id})`);
-              subItem.classList.add("active"); // تفعيل العنصر الحالي
+              subItem.classList.add("active"); // تمييز الفئة الفرعية الحالية
               showProductGallery(
                 subRow,
                 clickedCell.dataset.categoryId,
@@ -312,8 +290,16 @@
           // إدراج الصف الفرعي بعد الصف الرئيسي مباشرة
           mainRow.parentNode.insertBefore(subRow, mainRow.nextSibling);
         } else {
-          console.log('[Subcategories] تم إغلاق القسم الحالي (نقرة على نفس الخلية).');
+          console.log('%c[DevLog] الحالة: إغلاق القسم الحالي.', 'color: red;');
+          // إذا كانت النقرة على نفس الخلية (للإغلاق)، نزيل التمييز.
+          if (currentlyActiveCell) {
+            console.log('[DevLog] 1. إزالة التمييز من الخلية الحالية:', currentlyActiveCell);
+            currentlyActiveCell.classList.remove("active-category");
+          }
+          console.log('[DevLog] 2. إزالة حالة الاختيار من الجدول (tbody).');
+          tbody.classList.remove("selection-active");
         }
+        console.groupEnd();
       }
 
       /**
@@ -450,8 +436,32 @@
       }
 
       // انتظر حتى يتم تحميل محتوى الصفحة بالكامل
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", async function () {
         console.log('%c[DOM] اكتمل تحميل محتوى الصفحة (DOMContentLoaded).', 'color: green; font-weight: bold;');
+
+        // ✅ جديد: التحقق من الاتصال بالإنترنت أولاً
+        console.log('[DOM] جاري التحقق من الاتصال بالإنترنت...');
+        const isOnline = await checkInternetConnection();
+        if (!isOnline) {
+          console.error('[DOM] لا يوجد اتصال بالإنترنت. سيتم إيقاف تحميل باقي الصفحة.');
+          // إظهار حاوية انقطاع الاتصال
+          const offlineContainer = document.getElementById('offline-container');
+          offlineContainer.style.display = 'flex';
+
+          // إخفاء المحتوى الرئيسي
+          document.getElementById('header-container').style.display = 'none';
+          document.getElementById('advertisement-section').style.display = 'none';
+          document.getElementById('categories-section').style.display = 'none';
+
+          // إضافة وظيفة لزر إعادة المحاولة
+          document.getElementById('retry-connection-btn').addEventListener('click', () => {
+            console.log('[NetworkCheck] إعادة محاولة الاتصال...');
+            window.location.reload();
+          });
+          return; // إيقاف تنفيذ باقي الكود
+        }
+        console.log('%c[DOM] يوجد اتصال بالإنترنت. جاري استكمال تحميل الصفحة...', 'color: green;');
+
         // استدعاء الدالة للتحقق من حالة تسجيل الدخول
         console.log('[DOM] جاري التحقق من حالة تسجيل الدخول...');
         checkLoginStatus();
