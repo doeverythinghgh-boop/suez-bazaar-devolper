@@ -37,25 +37,6 @@ async function initSearchModal(containerId, openTriggerId) {
     // ✅ جديد: الوصول إلى حاوية عرض النتائج
     const searchResultsContainer = document.getElementById('search-results-container');
 
-    const openModal = () => {
-      searchModal.style.display = 'block';
-      document.body.classList.add('modal-open');
-      setTimeout(() => searchModalInput.focus(), 50); // التركيز على حقل البحث
-    };
-
-    const closeModal = () => {
-      searchModal.style.display = 'none';
-      document.body.classList.remove('modal-open');
-    };
-
-    openSearchBtn.addEventListener('click', openModal);
-    closeSearchBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', (event) => {
-      if (event.target === searchModal) {
-        closeModal();
-      }
-    });
-
     // ✅ جديد: دالة لتأخير التنفيذ (Debounce) لتحسين أداء البحث أثناء الكتابة
     function debounce(func, delay) {
       let timeout;
@@ -132,6 +113,25 @@ async function initSearchModal(containerId, openTriggerId) {
           }
         });
       });
+    }
+
+    const openModal = () => {
+      searchModal.style.display = 'block';
+      document.body.classList.add('modal-open');
+      setTimeout(() => searchModalInput.focus(), 50); // التركيز على حقل البحث
+    };
+
+    const closeModal = () => {
+      searchModal.style.display = 'none';
+      document.body.classList.remove('modal-open');
+    };
+
+    openSearchBtn.addEventListener('click', openModal);
+    closeSearchBtn.addEventListener('click', closeModal);
+    window.addEventListener('click', (event) => {
+      if (event.target === searchModal) {
+        closeModal();
+      }
     });
 
     // ✅ جديد: دالة لجلب الفئات وتعبئة الفلاتر
