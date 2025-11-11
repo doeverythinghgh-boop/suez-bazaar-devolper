@@ -525,3 +525,21 @@ input:checked + .slider:before { transform: translateX(22px); }
   text-align: center;
   line-height: 1.5;
 }
+
+/* --- جديد: توحيد لون رسالة الترحيب --- */
+/* يستهدف هذا الكود أي وسم span داخل رسالة الترحيب */
+#welcome-message span {
+  color: #03478f !important; /* استخدام نفس اللون الأزرق المميز لاسم المستخدم */
+  font-weight: 700; /* جعل اسم المستخدم بنفس وزن الخط للعنوان */
+}
+
+/* --- جديد: تنسيق بسيط لرابط حذف الحساب --- */
+.swal-delete-link {
+  color: #e74c3c; /* لون أحمر تحذيري */
+  text-decoration: underline;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  display: inline-block; /* لتمكين الهامش العلوي */
+  cursor: pointer;
+  font-weight: 600;
+}

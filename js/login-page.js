@@ -113,16 +113,14 @@ async function showEditProfileModal(currentUser) {
           <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="تأكيد كلمة المرور الجديدة">
           <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-confirm-password"></i>
         </div>
-        <!-- ✅ جديد: إضافة زر حذف الحساب -->
-        <div style="border-top: 1px solid #e74c3c; margin-top: 1.5rem; padding-top: 1rem;">
-            <button type="button" id="swal-delete-account-btn" class="swal2-deny swal2-styled" style="background-color: #e74c3c; width: 100%;">حذف الحساب نهائياً</button>
-        </div>
       </div>
     `,
     focusConfirm: false,
     showCancelButton: true,
     confirmButtonText: 'حفظ التغييرات',
     cancelButtonText: 'إلغاء',
+    // ✅ إصلاح: نقل زر الحذف إلى تذييل النافذة ليظهر أسفل الأزرار الأخرى
+    footer: `<a href="#" id="swal-delete-account-btn" class="swal-delete-link">حذف الحساب</a>`,
     showLoaderOnConfirm: true,
     didOpen: () => {
       // وظيفة تبديل عرض كلمة المرور
@@ -141,8 +139,9 @@ async function showEditProfileModal(currentUser) {
 
       // ✅ جديد: ربط حدث النقر بزر حذف الحساب
       const deleteBtn = document.getElementById('swal-delete-account-btn');
-      deleteBtn.addEventListener('click', () => {
-        handleAccountDeletion(currentUser);
+      deleteBtn.addEventListener('click', (e) => {
+        e.preventDefault(); // ✅ إصلاح: منع السلوك الافتراضي للرابط
+        handleAccountDeletion(currentUser); // استدعاء دالة الحذف
       });
     },
     preConfirm: async () => { // تحويل الدالة إلى async
