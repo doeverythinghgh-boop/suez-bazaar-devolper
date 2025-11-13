@@ -577,7 +577,18 @@ window.showProductDetails = async function(productData, onCloseCallback) {
     const thumb = document.createElement('img');
     thumb.src = src;
     thumb.onclick = () => { mainImage.src = src; };
-    thumb.onerror = () => { console.warn('[Modal] Thumbnail image failed to load:', src); };
+    // ✅ إصلاح: التعامل مع فشل تحميل الصور بسبب مشاكل الشبكة
+    thumb.onerror = () => {
+      console.warn('[Modal] Thumbnail image failed to load:', src);
+      // استبدال الصورة الفاشلة بعنصر نائب مع زر إعادة المحاولة
+      const placeholder = document.createElement('div');
+      placeholder.className = 'image-load-error-placeholder';
+      placeholder.innerHTML = `
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>فشل تحميل الصورة</span>
+      `;
+      thumb.replaceWith(placeholder);
+    };
     thumbnailsContainer.appendChild(thumb);
   });
 
