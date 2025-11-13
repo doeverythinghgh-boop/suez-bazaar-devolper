@@ -86,9 +86,10 @@
 .my-products-cards-container {
   /* ✅ تعديل: استخدام شبكة متجاوبة لعرض البطاقات */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   gap: 1.5rem;
-  padding: 10px;
+  padding: 0px;
+  align-content: center;
+  justify-content: center;
 }
 
 .my-products-card {

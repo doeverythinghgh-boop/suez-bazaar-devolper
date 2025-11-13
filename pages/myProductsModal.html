@@ -2,6 +2,134 @@
   @file pages/myProductsModal.html
   @description هيكل النافذة المنبثقة لعرض "منتجاتي".
 -->
+<!-- ✅ جديد: ستايل لتحسين مظهر الفلاتر وجعلها متجاوبة -->
+<style>
+  .my-products-filter-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem; /* مسافة بين عناصر الفلتر */
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-group {
+    flex: 1 1 200px; /* السماح للعناصر بالنمو والانكماش مع حد أدنى للعرض */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-group label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+  }
+
+  .filter-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+    cursor: pointer;
+    appearance: none; /* إخفاء السهم الافتراضي */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: left 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-left: 2.5rem; /* مساحة للأيقونة المخصصة */
+  }
+
+  .filter-group select:focus {
+    outline: 2px solid #3498db;
+    border-color: transparent;
+  }
+
+  /* ✅ جديد: تنسيقات حاوية المنتجات وشبكة العرض */
+  #my-products-content-wrapper {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem 0; /* إزالة الهامش المخصص لشريط التمرير */
+    /* تم إلغاء الخصائص التالية لمنع ظهور شريط التمرير */
+    /* max-height: 60vh; */
+    /* overflow-y: auto; */
+  }
+
+  /* ✅ جديد: تصميم بطاقة المنتج */
+  .my-product-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .my-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .my-product-card-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .my-product-card-details {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .my-product-card-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .my-product-card-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #27ae60;
+    margin: 0 0 auto 0; /* يدفع الأزرار للأسفل */
+  }
+
+  .my-product-card-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 1rem;
+  }
+
+  .my-product-card-actions .button {
+    flex: 1;
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  /* ✅ جديد: تصميم مؤشر التحميل ورسالة عدم وجود منتجات */
+  .my-products-loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 4rem auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
 <!-- ✅ جديد: حاوية رسالة انقطاع الاتصال -->
 <div id="offline-container-modal" class="offline-container" style="display: none; position: absolute; border-radius: 12px;">
   <div id="my-products-offline-content" class="offline-content">
