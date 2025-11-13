@@ -28,6 +28,7 @@ export default async function handler(request) {
       const searchTerm = searchParams.get('searchTerm');
       const MainCategory = searchParams.get('MainCategory');
       const SubCategory = searchParams.get('SubCategory');
+      const product_key = searchParams.get('product_key'); // ✅ إصلاح: استقبال معامل مفتاح المنتج
 
       // ✅ جديد: تسجيل معايير البحث المستلمة لتسهيل التصحيح
       console.log(`[API: /api/products GET] Received search request with params: searchTerm='${searchTerm}', MainCategory='${MainCategory}', SubCategory='${SubCategory}', user_key='${user_key}'`);
@@ -35,6 +36,17 @@ export default async function handler(request) {
       let sql, args;
 
       // ✅ جديد: منطق بحث ديناميكي
+      // ✅ إصلاح: إضافة حالة للبحث عن منتج واحد باستخدام product_key
+      if (product_key) {
+        sql = `
+          SELECT p.*, u.username as seller_username, u.phone as seller_phone 
+          FROM marketplace_products p
+          JOIN users u ON p.user_key = u.user_key
+          WHERE p.product_key = ?
+          LIMIT 1
+        `;
+        args = [product_key];
+      }
       // ✅ إصلاح: التحقق من أن المعاملات ليست السلسلة 'null'
       if ((searchTerm && searchTerm !== 'null') || (MainCategory && MainCategory !== 'null')) {
         sql = `
@@ -80,12 +92,17 @@ export default async function handler(request) {
       console.log(`[API: /api/products GET] With arguments:`, args);
 
       const { rows } = await db.execute({
-        sql: sql,
+        sql: sql, // تم بناء جملة SQL في الخطوات السابقة
         args: args,
       });
 
       // ✅ جديد: تسجيل عدد النتائج التي تم العثور عليها
       console.log(`[API: /api/products GET] Found ${rows.length} products.`);
+
+      // ✅ إصلاح: إذا كان الطلب لمنتج واحد، أرجع الكائن مباشرة وليس مصفوفة
+      if (product_key) {
+        return new Response(JSON.stringify(rows[0] || null), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
 
       return new Response(JSON.stringify(rows), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     } catch (err) {
