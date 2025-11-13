@@ -214,4 +214,27 @@ export default async function handler(request) {
         });
       }
 
+      // بفضل ON DELETE CASCADE في قاعدة البيانات، سيتم حذف جميع البيانات المرتبطة بالمستخدم تلقائيًا
+      const { rowsAffected } = await db.execute({
+        sql: "DELETE FROM users WHERE user_key = ?",
+        args: [user_key],
+      });
+
+      if (rowsAffected === 0) {
+        return new Response(JSON.stringify({ message: "المستخدم غير موجود أو تم حذفه بالفعل." }), {
+          status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        });
+      }
+
+      return new Response(JSON.stringify({ message: "تم حذف المستخدم بنجاح." }), {
+        status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+  } catch (err) {
+    console.error(`[Request Error] Method: ${request.method}, URL: ${request.url}, Error:`, err);
+    return new Response(JSON.stringify({ error: "حدث خطأ في الخادم: " + err.message }), {
+      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+}
       // بفضل ON DELETE CASCADE في قاعدة البيانات، سيتم حذف جميع ال
