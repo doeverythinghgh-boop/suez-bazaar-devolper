@@ -167,13 +167,15 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease; /* جديد: إضافة تأثير انتقال */
 }
 
-.product-card-images {
+.product-card-images { /* حاوية الصور */
   padding: 15px;
   display: flex;
   gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: flex-start;
+  overflow-x: auto; /* ✅ تعديل: جعل الصور قابلة للتمرير أفقيًا */
+  flex-wrap: nowrap; /* منع الصور من النزول لسطر جديد */
+  justify-content: flex-start;
+  height: 120px; /* ✅ جديد: تحديد ارتفاع ثابت للحاوية لضمان التناسق */
+  align-items: center; /* ✅ جديد: توسيط الصور عموديًا داخل الحاوية */
   background-color: #fcfdff; /* جديد: لون خلفية أفتح */
   border-bottom: 1px solid #eef2f7;
 }
@@ -182,6 +184,7 @@
   width: 90px;
   height: 90px;
   object-fit: cover;
+  flex-shrink: 0; /* ✅ جديد: منع الصور من التقلص */
   border-radius: 10px; /* جديد: زيادة دائرية الحواف */
   border: 1px solid #e9ecef; /* جديد: إطار داخلي خفيف */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07); /* جديد: تحسين الظل */
