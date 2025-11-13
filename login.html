@@ -62,6 +62,14 @@
           </div>
         </div>
 
+    <!-- ✅ جديد: مجموعة التقارير (تظهر للأدوار المتقدمة) -->
+        <div id="reports-actions" class="button-group" style="display: none; animation-delay: 0.18s;">
+          <h3 id="reports-actions-title"><i class="fas fa-chart-line"></i> التقارير والتحليلات</h3>
+          <div id="reports-actions-row" class="button-row">
+            <button id="view-sales-movement-btn" class="button logout-btn-small"><i class="fas fa-dolly-flatbed"></i> حركة المشتريات</button>
+          </div>
+        </div>
+
         <!-- مجموعة البائع (تظهر للبائع فقط) -->
         <div id="seller-actions" class="button-group" style="display: none; animation-delay: 0.1s;">
           <h3 id="seller-actions-title"><i class="fas fa-store"></i> أدوات البائع</h3>
@@ -156,6 +164,11 @@
   <!-- جديد: حاوية النافذة المنبثقة لمنتجاتي -->
   <div id="my-products-modal-container" class="modal">
     <!-- سيتم ملء محتوى منتجاتي هنا -->
+  </div>
+
+  <!-- ✅ جديد: حاوية النافذة المنبثقة لحركة المشتريات -->
+  <div id="sales-movement-modal-container" class="modal">
+    <!-- سيتم ملء محتوى حركة المشتريات هنا بواسطة JavaScript -->
   </div>
   <script src="cloudflare-workers/cloudFileManager.js"></script>
   <script src="js/cart.js"></script> <!-- ✅ إضافة: تحميل ملف السلة -->

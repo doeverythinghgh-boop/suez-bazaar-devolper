@@ -13,43 +13,45 @@ else if (location.hostname === "appassets.androidplatform.net") {
   baseURL = "https://bazaar-neon-three.vercel.app";
 }
 
-// ثابت جديد يحتوي على حالات الطلب
-const ORDER_STATUSES = [
-  {
-    id: "0",
+// ✅ تحسين: كائن للوصول المباشر للحالات لتجنب الأرقام السحرية
+const ORDER_STATUS_MAP = {
+  REVIEW: {
+    id: 0,
     state: "قيد المراجعة",
     description: "الطلب تم إرساله وينتظر تأكيد البائع و الادارة.",
   },
-  {
-    id: "1",
+  CONFIRMED: {
+    id: 1,
     state: "تم التأكيد",
     description: "البائع وافق على الطلب وسيبدأ في التجهيز.",
   },
-  {
-    id: "2",
+  SHIPPED: {
+    id: 2,
     state: "تم الشحن",
     description: "المنتج تم تسليمه لشركة الشحن.",
   },
-  {
-    id: "3",
+  DELIVERED: {
+    id: 3,
     state: "تم التسليم",
     description: "المشتري استلم المنتج بنجاح.",
   },
-  {
-    id: "31",
+  CANCELLED: {
+    id: 31,
     state: "تم الإلغاء",
     description: "الطلب أُلغي من قبل المشتري.",
   },
-  {
-    id: "32",
+  REJECTED: {
+    id: 32,
     state: "مرفوض",
     description:
       "البائع رفض تنفيذ الطلب (مثلاً نفاد الكمية أو مشكلة في المنتج).",
   },
-  {
-    id: "33",
+  RETURNED: {
+    id: 33,
     state: "مرتجع",
     description: "المشتري أعاد المنتج بعد استلامه وتم قبول الإرجاع.",
   },
-];
+};
 
+// ✅ مصدر الحقيقة الواحد: اشتقاق المصفوفة من الكائن مباشرة
+const ORDER_STATUSES = Object.values(ORDER_STATUS_MAP);

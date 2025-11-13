@@ -35,6 +35,7 @@ function updateViewForLoggedInUser(user) {
     // إخفاء كل المجموعات أولاً
     document.getElementById("admin-actions").style.display = "none";
     document.getElementById("seller-actions").style.display = "none";
+    document.getElementById("reports-actions").style.display = "none"; // ✅ جديد: إخفاء مجموعة التقارير
     document.getElementById("customer-actions").style.display = "none";
 
     // إظهار مجموعة الإعدادات التي تحتوي على زر تسجيل الخروج فقط
@@ -95,6 +96,15 @@ function updateViewForLoggedInUser(user) {
       if (!document.getElementById("admin-panel-btn")) {
         adminButtonRow.appendChild(adminPanelButton);
       }
+    }
+
+    // ✅ جديد: إظهار زر "حركة المشتريات" للمسؤول أو البائع أو خدمة التوصيل
+    const isAdvancedUser = (user.is_seller === 1 || user.is_seller === 2 || adminPhoneNumbers.includes(user.phone));
+    if (isAdvancedUser) {
+      const reportsActions = document.getElementById("reports-actions");
+      reportsActions.style.display = "block";
+      // ✅ تفعيل: ربط حدث النقر بالزر 
+      document.getElementById("view-sales-movement-btn").addEventListener("click", showSalesMovementModal);
     }
   }
 }
@@ -432,6 +442,69 @@ async function showEditProductModal(productData, onCloseCallback) {
 }
 
 /**
+ * ✅ جديد: ينشئ شريط تقدم زمني (Timeline) لحالة الطلب.
+ * @param {object} statusDetails - كائن تفاصيل الحالة (id, state, description).
+ * @returns {string} - كود HTML لشريط التقدم.
+ */
+function createStatusTimelineHTML(statusDetails) {
+  const currentStatusId = statusDetails.id;
+
+  // تعريف الحالات التي تمثل مسار التقدم الطبيعي للطلب
+  const progressStates = [
+    ORDER_STATUS_MAP.REVIEW,
+    ORDER_STATUS_MAP.CONFIRMED,
+    ORDER_STATUS_MAP.SHIPPED,
+    ORDER_STATUS_MAP.DELIVERED
+  ];
+
+  // إذا كانت الحالة الحالية هي حالة استثنائية (ملغي, مرفوض, مرتجع)
+  if (!progressStates.some(p => p.id === currentStatusId)) {
+    const statusClass = `status-${currentStatusId}`;
+    let icon = 'fa-info-circle';
+    if (currentStatusId === ORDER_STATUS_MAP.CANCELLED.id || currentStatusId === ORDER_STATUS_MAP.REJECTED.id) {
+      icon = 'fa-times-circle';
+    } else if (currentStatusId === ORDER_STATUS_MAP.RETURNED.id) {
+      icon = 'fa-undo-alt';
+    }
+
+    return `
+      <div class="status-timeline-exception-wrapper">
+        <div class="status-timeline-exception ${statusClass}">
+          <i class="fas ${icon}"></i>
+          <span>${statusDetails.state}</span>
+        </div>
+        <p class="timeline-description">${statusDetails.description}</p>
+      </div>
+    `;
+  }
+
+  // بناء شريط التقدم للحالات الطبيعية
+  let timelineHTML = '<div class="status-timeline">';
+  progressStates.forEach((state, index) => {
+    const isActive = currentStatusId >= state.id;
+    const isCurrent = currentStatusId === state.id;
+    const stepClass = isActive ? 'active' : '';
+    const currentClass = isCurrent ? 'current' : '';
+
+    timelineHTML += `
+      <div class="timeline-step ${stepClass} ${currentClass}" title="${state.description}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">${state.state}</div>
+      </div>
+    `;
+    if (index < progressStates.length - 1) {
+      timelineHTML += `<div class="timeline-line ${stepClass}"></div>`;
+    }
+  });
+  timelineHTML += '</div>';
+
+  // ✅ إضافة: إلحاق الوصف أسفل شريط التقدم
+  const descriptionHTML = `<p class="timeline-description">${statusDetails.description}</p>`;
+
+  return timelineHTML + descriptionHTML;
+}
+
+/**
  * جديد: يعرض نافذة منبثقة بسجل مشتريات المستخدم.
  * @param {string} userKey - المفتاح الفريد للمستخدم.
  */
@@ -485,10 +558,6 @@ async function showPurchasesModal(userKey) {
         timeZone: 'Africa/Cairo'
       });
 
-      // ✅ تعديل: استخدام بيانات الحالة الجاهزة من `status_details`
-      const statusText = item.status_details.state;
-      const statusClass = `status-${item.status_details.id}`; // بناء الكلاس ديناميكيًا (e.g., status-0, status-1)
-
       // ✅ إضافة: حساب الإجمالي لكل منتج
       const itemPrice = parseFloat(item.product_price) || 0;
       const itemQuantity = parseInt(item.quantity, 10) || 0;
@@ -503,7 +572,9 @@ async function showPurchasesModal(userKey) {
             <p><strong>الكمية:</strong> ${item.quantity}</p>
             <p><strong>الإجمالي:</strong> ${itemTotal} جنيه</p>
             <p><strong>تاريخ الطلب:</strong> ${purchaseDate}</p>
-            <p><strong>حالة الطلب:</strong> <span class="purchase-status ${statusClass}" title="${item.status_details.description}">${statusText}</span></p>
+            <div class="purchase-status-container">
+              ${createStatusTimelineHTML(item.status_details)}
+            </div>
           </div>
         </div>`;
     });
@@ -517,6 +588,102 @@ async function showPurchasesModal(userKey) {
   modalContentEl.innerHTML = contentHTML;
   // إعادة ربط حدث الإغلاق بعد تحديث المحتوى
   modalContentEl.querySelector('#purchases-modal-close-btn').onclick = closePurchasesModal;
+}
+
+/**
+ * ✅ جديد: يعرض نافذة منبثقة بحركة المشتريات لجميع الطلبات.
+ */
+async function showSalesMovementModal() {
+  const modalContainer = document.getElementById("sales-movement-modal-container");
+
+  // 1. عرض النافذة مع مؤشر تحميل
+  modalContainer.innerHTML = `
+    <div class="modal-content large">
+      <span class="close-button" id="sales-movement-modal-close-btn">&times;</span>
+      <h2><i class="fas fa-dolly-flatbed"></i> حركة المشتريات</h2>
+      <div class="loader" style="margin: 2rem auto;"></div>
+    </div>`;
+  
+  document.body.classList.add("modal-open");
+  modalContainer.style.display = "block";
+
+  // 2. وظيفة الإغلاق
+  const closeModal = () => {
+    modalContainer.style.display = "none";
+    document.body.classList.remove("modal-open");
+  };
+
+  document.getElementById("sales-movement-modal-close-btn").onclick = closeModal;
+  window.addEventListener('click', (event) => {
+    if (event.target == modalContainer) closeModal();
+  }, { once: true });
+
+  // 3. جلب البيانات من الواجهة الخلفية الجديدة
+  const orders = await getSalesMovement();
+  const modalContentEl = modalContainer.querySelector('.modal-content');
+
+  // 4. بناء المحتوى بعد جلب البيانات
+  let contentHTML = `
+    <span class="close-button" id="sales-movement-modal-close-btn">&times;</span>
+    <h2><i class="fas fa-dolly-flatbed"></i> حركة المشتريات</h2>`;
+
+  if (orders && orders.length > 0) {
+    contentHTML += '<div id="sales-movement-list">';
+    orders.forEach(order => {
+      // تنسيق التاريخ
+      const isoDateTime = order.created_at.replace(' ', 'T') + 'Z';
+      const orderDate = new Date(isoDateTime).toLocaleString('ar-EG', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Cairo'
+      });
+
+      // بناء جدول المنتجات داخل كل طلب
+      let itemsTable = `
+        <table class="order-items-table">
+          <thead>
+            <tr>
+              <th>المنتج</th>
+              <th>الكمية</th>
+              <th>سعر القطعة</th>
+              <th>الإجمالي</th>
+            </tr>
+          </thead>
+          <tbody>`;
+      order.items.forEach(item => {
+        const itemTotal = (item.product_price * item.quantity).toFixed(2);
+        itemsTable += `
+          <tr>
+            <td>${item.productName}</td>
+            <td>${item.quantity}</td>
+            <td>${item.product_price.toFixed(2)} ج.م</td>
+            <td>${itemTotal} ج.م</td>
+          </tr>`;
+      });
+      itemsTable += '</tbody></table>';
+
+      // بناء بطاقة الطلب
+      contentHTML += `
+        <div class="purchase-item">
+          <div class="purchase-item-details">
+            <p><strong>رقم الطلب:</strong> ${order.order_key}</p>
+            <p><strong>العميل:</strong> ${order.customer_name} (${order.customer_phone})</p>
+            <p><strong>العنوان:</strong> ${order.customer_address || 'غير محدد'}</p>
+            <p><strong>تاريخ الطلب:</strong> ${orderDate}</p>
+            <p><strong>إجمالي الطلب:</strong> ${order.total_amount.toFixed(2)} جنيه</p>
+            <div class="purchase-status-container">
+              ${createStatusTimelineHTML(ORDER_STATUS_MAP[order.order_status] || ORDER_STATUS_MAP[0])}
+            </div>
+            <h4>المنتجات:</h4>
+            ${itemsTable}
+          </div>
+        </div>`;
+    });
+    contentHTML += '</div>';
+  } else {
+    contentHTML += '<p style="text-align: center; padding: 2rem 0;">لا توجد طلبات لعرضها.</p>';
+  }
+
+  modalContentEl.innerHTML = contentHTML;
+  modalContentEl.querySelector('#sales-movement-modal-close-btn').onclick = closeModal;
 }
 
 /**

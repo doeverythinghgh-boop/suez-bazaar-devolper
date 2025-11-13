@@ -4,6 +4,64 @@
  */
 
 /**
+ * ✅ جديد: ينشئ شريط تقدم زمني (Timeline) لحالة الطلب.
+ * @param {object} statusDetails - كائن تفاصيل الحالة (id, state, description).
+ * @returns {string} - كود HTML لشريط التقدم.
+ */
+function createStatusTimelineHTML(statusDetails) {
+  const currentStatusId = statusDetails.id;
+
+  // تعريف الحالات التي تمثل مسار التقدم الطبيعي للطلب
+  const progressStates = [
+    ORDER_STATUS_MAP.REVIEW,
+    ORDER_STATUS_MAP.CONFIRMED,
+    ORDER_STATUS_MAP.SHIPPED,
+    ORDER_STATUS_MAP.DELIVERED
+  ];
+
+  // إذا كانت الحالة الحالية هي حالة استثنائية (ملغي, مرفوض, مرتجع)
+  if (!progressStates.some(p => p.id === currentStatusId)) {
+    const statusClass = `status-${currentStatusId}`;
+    let icon = 'fa-info-circle';
+    if (currentStatusId === ORDER_STATUS_MAP.CANCELLED.id || currentStatusId === ORDER_STATUS_MAP.REJECTED.id) {
+      icon = 'fa-times-circle';
+    } else if (currentStatusId === ORDER_STATUS_MAP.RETURNED.id) {
+      icon = 'fa-undo-alt';
+    }
+
+    return `
+      <div class="status-timeline-exception ${statusClass}">
+        <i class="fas ${icon}"></i>
+        <span>${statusDetails.state}</span>
+      </div>
+    `;
+  }
+
+  // بناء شريط التقدم للحالات الطبيعية
+  let timelineHTML = '<div class="status-timeline">';
+  progressStates.forEach((state, index) => {
+    const isActive = currentStatusId >= state.id;
+    const isCurrent = currentStatusId === state.id;
+    const stepClass = isActive ? 'active' : '';
+    const currentClass = isCurrent ? 'current' : '';
+
+    timelineHTML += `
+      <div class="timeline-step ${stepClass} ${currentClass}" title="${state.description}">
+        <div class="timeline-dot"></div>
+        <div class="timeline-label">${state.state}</div>
+      </div>
+    `;
+    // إضافة خط واصل بين الكرات (ما عدا الأخيرة)
+    if (index < progressStates.length - 1) {
+      timelineHTML += `<div class="timeline-line ${stepClass}"></div>`;
+    }
+  });
+  timelineHTML += '</div>';
+
+  return timelineHTML;
+}
+
+/**
  * يعرض نافذة منبثقة بسجل مشتريات المستخدم.
  * @param {string} userKey - المفتاح الفريد للمستخدم.
  */
@@ -57,19 +115,24 @@ async function showPurchasesModal(userKey) {
         timeZone: 'Africa/Cairo' // ✅ جديد: تحديد المنطقة الزمنية بشكل صريح
       });
 
-      // ✅ تعديل: استخدام بيانات الحالة الجاهزة من `status_details`
-      const statusText = item.status_details.state;
-      const statusClass = `status-${item.status_details.id}`; // بناء الكلاس ديناميكيًا (e.g., status-0, status-1)
+
+      // ✅ إضافة: حساب الإجمالي لكل منتج
+      const itemPrice = parseFloat(item.product_price) || 0;
+      const itemQuantity = parseInt(item.quantity, 10) || 0;
+      const itemTotal = (itemPrice * itemQuantity).toFixed(2);
 
       contentHTML += `
         <div class="purchase-item">
           <img src="${imageUrl}" alt="${item.productName}">
           <div class="purchase-item-details">
             <strong>${item.productName}</strong>
-            <p><strong>السعر:</strong> ${item.product_price} جنيه</p>
+            <p><strong>سعر القطعة:</strong> ${itemPrice.toFixed(2)} جنيه</p>
             <p><strong>الكمية:</strong> ${item.quantity}</p>
-            <p><strong>تاريخ الشراء:</strong> ${purchaseDate}</p>
-            <p><strong>حالة الطلب:</strong> <span class="purchase-status ${statusClass}" title="${item.status_details.description}">${statusText}</span></p>
+            <p><strong>الإجمالي:</strong> ${itemTotal} جنيه</p>
+            <p><strong>تاريخ الطلب:</strong> ${purchaseDate}</p>
+            <div class="purchase-status-container">
+              ${createStatusTimelineHTML(item.status_details)}
+            </div>
           </div>
         </div>`;
     });

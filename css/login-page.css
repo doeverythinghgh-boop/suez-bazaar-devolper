@@ -463,3 +463,134 @@
   cursor: pointer;
   font-weight: 600;
 }
+
+/* ============================================= */
+/* == جديد: أنماط شريط تقدم حالة الطلب        == */
+/* ============================================= */
+
+/* حاوية شريط التقدم */
+.purchase-status-container {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* الشريط الزمني الرئيسي */
+.status-timeline {
+  display: flex;
+  align-items: flex-start; /* محاذاة العناصر من الأعلى */
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* كل خطوة في الشريط (الكرة + النص) */
+.timeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 80px; /* عرض ثابت لكل خطوة */
+  opacity: 0.5;
+  transition: opacity 0.4s ease;
+}
+
+/* الكرة (النقطة) */
+.timeline-dot {
+  width: 18px;
+  height: 18px;
+  background-color: #ccc;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #ccc;
+  transition: all 0.4s ease;
+  z-index: 2;
+}
+
+/* نص المرحلة (قيد المراجعة، تم الشحن، ...) */
+.timeline-label {
+  margin-top: 8px;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  color: #888;
+  transition: color 0.4s ease;
+}
+
+/* الخط الواصل بين الكرات */
+.timeline-line {
+  flex-grow: 1;
+  height: 4px;
+  background-color: #ccc;
+  margin-top: 10px; /* ليكون على نفس مستوى منتصف الكرة */
+  transition: background-color 0.4s ease;
+  z-index: 1;
+}
+
+/* --- الأنماط عند تفعيل المرحلة --- */
+
+/* تفعيل الخطوة (الكرة والنص) */
+.timeline-step.active {
+  opacity: 1;
+}
+
+/* تفعيل الكرة */
+.timeline-step.active .timeline-dot {
+  background-color: #2ecc71; /* أخضر */
+  box-shadow: 0 0 0 2px #2ecc71;
+}
+
+/* تفعيل النص */
+.timeline-step.active .timeline-label {
+  color: #333;
+  font-weight: 600;
+}
+
+/* تفعيل الخط الواصل */
+.timeline-line.active {
+  background-color: #2ecc71; /* أخضر */
+}
+
+/* --- تمييز المرحلة الحالية --- */
+.timeline-step.current .timeline-dot {
+  transform: scale(1.3); /* تكبير الكرة الحالية */
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 2px #2ecc71; }
+  50% { box-shadow: 0 0 0 6px rgba(46, 204, 113, 0.4); }
+  100% { box-shadow: 0 0 0 2px #2ecc71; }
+}
+
+/* --- أنماط الحالات الاستثنائية (ملغي، مرفوض) --- */
+.status-timeline-exception {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #fff;
+  gap: 8px;
+}
+
+/* حالة الإلغاء والرفض */
+.status-timeline-exception.status-31,
+.status-timeline-exception.status-32 {
+  background-color: #e74c3c; /* أحمر */
+}
+
+/* ✅ جديد: تنسيق نص وصف حالة الطلب */
+.timeline-description {
+  font-size: 0.85rem; /* 13.6px */
+  color: #777;
+  text-align: center;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+/* حالة المرتجع */
+.status-timeline-exception.status-33 {
+  background-color: #f39c12; /* برتقالي */
+}

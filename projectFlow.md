@@ -169,7 +169,7 @@ CREATE TABLE IF NOT EXISTS orders (
   order_key TEXT NOT NULL UNIQUE,
   user_key TEXT NOT NULL,
   total_amount REAL NOT NULL,
-  order_status TEXT NOT NULL DEFAULT '0', -- ✅ تعديل: القيمة الافتراضية هي '0' (قيد المراجعة)
+  order_status integer NOT NULL DEFAULT 0, -- ✅ تعديل: القيمة الافتراضية هي '0' (قيد المراجعة)
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_key) REFERENCES users(user_key)
     ON DELETE CASCADE
