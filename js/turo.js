@@ -428,6 +428,30 @@ async function getUserPurchases(userKey) {
 }
 
 /**
+ * ✅ جديد: يجلب بيانات حركة المشتريات الكاملة (للمسؤولين والبائعين).
+ * @returns {Promise<Array|null>} مصفوفة من الطلبات المجمعة أو null في حالة الفشل.
+ */
+async function getSalesMovement() {
+  console.log(`%c[API] Starting getSalesMovement...`, 'color: blue;');
+  try {
+    const response = await fetch(`${baseURL}/api/sales-movement`);
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log('%c[API] getSalesMovement successful.', 'color: green;', data);
+    return data;
+
+  } catch (error) {
+    console.error('%c[API] getSalesMovement failed:', 'color: red;', error);
+    return null;
+  }
+}
+
+/**
  * يرسل إشعارًا إلى توكن جهاز معين.
  * @param {string} token - توكن FCM الخاص بالجهاز.
  * @param {string} title - عنوان الإشعار.
