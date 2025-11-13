@@ -81,6 +81,28 @@
     .button-small-action:hover { background-color: #0056b3; }
     .button-small-action:disabled { background-color: #6c757d; border-color: #6c757d; cursor: not-allowed; }
   </style>
+  <!-- ✅ جديد: استعارة أنماط لوحة التحكم من dashboard.css للاتساق -->
+  <style>
+    .button-group {
+      width: 100%;
+      margin-bottom: 1.5rem;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem;
+      background-color: #fff;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+    .button-group h3 {
+      margin: 0 0 1rem 0;
+      font-size: 1.1rem;
+      color: #374151;
+      border-bottom: 1px solid #f3f4f6;
+      padding-bottom: 0.75rem;
+    }
+    .button-row {
+      display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center;
+    }
+  </style>
 </head>
 
 <body>
@@ -92,10 +114,17 @@
         بازار السويس
       </p>
     </a>
-    <a href="index.html" class="back-to-home-btn" title="العودة للصفحة الرئيسية">
-      <i class="fas fa-home"></i>
-      <span>العودة للرئيسية</span>
-    </a>
+    <!-- ✅ جديد: حاوية لتجميع أزرار التنقل -->
+    <div class="header-nav-buttons" style="display: flex; gap: 1rem;">
+      <a href="login.html" class="back-to-home-btn" title="العودة للوحة التحكم">
+        <i class="fas fa-user-shield"></i>
+        <span>لوحة التحكم</span>
+      </a>
+      <a href="index.html" class="back-to-home-btn" title="العودة للصفحة الرئيسية">
+        <i class="fas fa-home"></i>
+        <span>الرئيسية</span>
+      </a>
+    </div>
   </div>
 
   <!-- Admin Panel Container -->
@@ -107,8 +136,28 @@
       <div id="notification-status-container" class="notification-status"></div>
 
       <!-- Action Buttons -->
-      <div class="action-buttons" id="admin-action-buttons">
-        <!-- سيتم إضافة الأزرار هنا بواسطة JavaScript -->
+      <div class="action-buttons" id="admin-action-buttons" style="flex-direction: column; align-items: stretch;">
+        <!-- ✅ جديد: مجموعة إدارة المحتوى -->
+        <div id="content-management-group" class="button-group">
+          <h3><i class="fas fa-bullhorn"></i> إدارة المحتوى</h3>
+          <div class="button-row" id="content-management-row">
+            <!-- زر إدارة الإعلانات سيضاف هنا -->
+          </div>
+        </div>
+        <!-- ✅ جديد: مجموعة إدارة المستخدمين -->
+        <div id="users-management-group" class="button-group">
+          <h3><i class="fas fa-users-cog"></i> إدارة المستخدمين</h3>
+          <div class="button-row" id="users-management-row">
+            <!-- زر عرض المستخدمين سيضاف هنا -->
+          </div>
+        </div>
+        <!-- ✅ جديد: مجموعة الإعدادات والصيانة -->
+        <div id="settings-group" class="button-group">
+          <h3><i class="fas fa-tools"></i> الإعدادات والصيانة</h3>
+          <div class="button-row" id="settings-row">
+            <!-- زر مسح البيانات سيضاف هنا -->
+          </div>
+        </div>
       </div>
     </div>
   </div>

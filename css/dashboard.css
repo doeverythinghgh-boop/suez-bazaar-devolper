@@ -1,0 +1,115 @@
+/**
+ * @file css/dashboard.css
+ * @description أنماط خاصة بلوحة تحكم المستخدم في صفحة تسجيل الدخول.
+ */
+
+/* --- تصميم أزرار الإجراءات --- */
+.logout-btn-small {
+  background-color: #ffffff; /* خلفية بيضاء */
+  color: #4a5568; /* لون نص أغمق قليلاً */
+  border: 1px solid #e2e8f0; /* حدود رمادية فاتحة */
+  padding: 12px 24px; /* زيادة الحشو الداخلي */
+  font-size: 1rem; /* حجم خط مناسب */
+  font-weight: 600; /* وزن خط أثقل */
+  border-radius: 12px; /* حواف دائرية أكثر */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+    0 2px 4px -1px rgba(0, 0, 0, 0.03); /* ظل ناعم */
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out,
+    background-color 0.2s; /* تأثير انتقال ناعم */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px; /* زيادة المسافة بين الأيقونة والنص */
+  justify-content: center;
+  text-decoration: none; /* إزالة أي خطوط سفلية */
+  flex-grow: 1; /* جعل الأزرار تتمدد لتملأ المساحة */
+  min-width: 160px; /* تحديد عرض أدنى للزر */
+}
+
+/* تأثير عند الضغط على الزر */
+.logout-btn-small:active {
+  transform: translateY(2px); /* تحريك الزر للأسفل قليلاً */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* تقليل الظل */
+}
+
+/* تخصيص لون الأيقونات داخل الأزرار */
+.logout-btn-small i {
+  color: #3498db; /* لون أزرق مميز */
+}
+
+/* تخصيص ألوان لأزرار معينة */
+#add-product-btn {
+  background-color: #e8f5e9;
+  border-color: #a5d6a7;
+} /* أخضر فاتح */
+#logout-btn-alt {
+  background-color: #fbe9e7;
+  border-color: #ffab91;
+} /* أحمر فاتح */
+#admin-panel-btn {
+  background-color: #ede7f6;
+  border-color: #b39ddb;
+} /* بنفسجي فاتح */
+
+.action-buttons {
+  display: flex;
+  flex-direction: column; /* ترتيب الحاويات عمودياً */
+  gap: 25px; /* زيادة المسافة بين مجموعات الأزرار */
+  margin-top: 20px;
+  width: 100%; /* جعل الحاوية الرئيسية تأخذ العرض الكامل */
+}
+
+/* --- تنسيق مجموعات الأزرار --- */
+@keyframes slide-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.button-group {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  animation: slide-fade-in 0.5s ease-out forwards;
+  opacity: 0; /* يبدأ شفافاً قبل الحركة */
+}
+
+.button-group h3 {
+  margin: 0 0 15px 0;
+  font-size: 1.1rem;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.button-row {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* --- تنسيق بسيط لرابط حذف الحساب --- */
+.swal-delete-link {
+  color: #e74c3c; /* لون أحمر تحذيري */
+  text-decoration: underline;
+  font-size: 0.9rem;
+  margin-top: 1rem;
+  display: inline-block; /* لتمكين الهامش العلوي */
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* --- توحيد لون رسالة الترحيب --- */
+#welcome-message span {
+  color: #03478f !important; /* استخدام نفس اللون الأزرق المميز لاسم المستخدم */
+  font-weight: 700; /* جعل اسم المستخدم بنفس وزن الخط للعنوان */
+}

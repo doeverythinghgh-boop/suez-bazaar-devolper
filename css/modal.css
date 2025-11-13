@@ -151,3 +151,56 @@
   font-size: 1.2rem;
   color: #f59e0b; /* لون برتقالي تحذيري */
 }
+
+/* --- أنماط SweetAlert2 المخصصة --- */
+.swal2-password-container {
+  position: relative;
+  width: 100%;
+}
+.swal2-password-container .swal2-input {
+  padding-left: 2.5rem;
+  width: calc(100% - 20px);
+  box-sizing: border-box;
+  display: block;
+  margin: 0 auto;
+}
+.swal2-password-toggle-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #7066e0;
+}
+.swal2-popup { width: auto !important; max-width: 480px; font-size: 0.9rem; }
+.swal2-title { font-size: 1.25rem !important; }
+.swal2-html-container { font-size: 1rem !important; overflow-x: hidden; word-break: break-word; }
+.swal2-styled { padding: 8px 16px !important; font-size: 0.9rem !important; margin: 5px; }
+@media (max-width: 500px) { .swal2-popup { width: 90% !important; } }
+
+.swal-password-prompt { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 10px 0; }
+.swal-password-prompt-icon { font-size: 3rem; color: #3498db; margin-bottom: 0.5rem; }
+.swal-password-prompt-text { font-size: 1rem; color: #5a6a7b; margin: 0; text-align: center; line-height: 1.5; }
+
+/* ✅ جديد: أنماط للعنصر النائب عند فشل تحميل الصورة */
+.image-load-error-placeholder {
+  width: 90px;
+  height: 90px;
+  flex-shrink: 0;
+  background-color: #f1f5f9;
+  border: 1px dashed #cbd5e1;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #64748b;
+  font-size: 0.75rem;
+  gap: 5px;
+}
+
+.image-load-error-placeholder i {
+  font-size: 1.2rem;
+  color: #f59e0b; /* لون برتقالي تحذيري */
+}

@@ -1,0 +1,119 @@
+/**
+ * @file css/my-products-modal.css
+ * @description أنماط خاصة بنافذة "منتجاتي".
+ */
+
+/* --- تصميم بطاقات المنتجات في نافذة "منتجاتي" --- */
+.product-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px; /* إضافة حشو داخلي للحاوية */
+}
+
+.product-card {
+  background-color: #fff;
+  border: 1px solid #eef2f7; /* لون إطار أفتح */
+  border-radius: 16px; /* زيادة دائرية الحواف */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05); /* ظل أكثر نعومة وعمقًا */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* تأثير انتقال */
+}
+
+.product-card-images { /* حاوية الصور */
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto; /* جعل الصور قابلة للتمرير أفقيًا */
+  flex-wrap: nowrap; /* منع الصور من النزول لسطر جديد */
+  justify-content: flex-start;
+  height: 120px; /* تحديد ارتفاع ثابت للحاوية لضمان التناسق */
+  align-items: center; /* توسيط الصور عموديًا داخل الحاوية */
+  background-color: #fcfdff; /* لون خلفية أفتح */
+  border-bottom: 1px solid #eef2f7;
+}
+
+.product-card-images img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  flex-shrink: 0; /* منع الصور من التقلص */
+  border-radius: 10px; /* زيادة دائرية الحواف */
+  border: 1px solid #e9ecef; /* إطار داخلي خفيف */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.07); /* تحسين الظل */
+}
+
+.product-card-details {
+  padding: 20px;
+  flex-grow: 1;
+}
+.product-card-details h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  color: #2c3e50; /* لون أغمق للعنوان */
+  padding-bottom: 10px; /* إضافة حشو سفلي */
+  border-bottom: 1px solid #f0f2f5; /* خط فاصل ناعم */
+}
+.product-card-details p {
+  margin: 0 0 10px 0;
+  font-size: 0.95rem;
+  color: #5a6a7b; /* لون نص أفتح قليلاً */
+}
+.product-card-details p strong {
+  color: #34495e; /* لون أغمق للنص العريض */
+  min-width: 110px;
+  display: inline-block;
+}
+
+.product-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* توسيط الأزرار */
+  gap: 0.75rem; /* إضافة مسافة بين الأزرار */
+  padding: 15px 20px; /* تقليل الحشو العمودي */
+  background-color: #f8f9fa;
+  border-top: 1px solid #eef2f7;
+}
+
+/* تنسيق عام للأزرار الصغيرة (تعديل وحذف) */
+.button.logout-btn-small.edit-product-btn,
+.button.delete-btn-small.delete-product-btn {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+  flex-grow: 0; /* منع الأزرار من التمدد */
+  min-width: auto; /* إلغاء العرض الأدنى */
+}
+
+/* تخصيص لون زر التعديل */
+.button.edit-product-btn {
+  background-color: #7f8c8d; /* رمادي هادئ */
+  border-color: #7f8c8d;
+  color: white;
+}
+
+.button.edit-product-btn i {
+  color: white;
+}
+
+/* تخصيص لون زر الحذف */
+.button.delete-product-btn {
+  background-color: #e74c3c; /* أحمر تحذيري */
+  border-color: #e74c3c;
+  color: white;
+}
+
+/* تنسيق حاوية محتوى نافذة منتجاتي */
+#my-products-modal-container .modal-content {
+  max-width: 900px; /* عرض أكبر لتناسب الجدول */
+}
+
+/* --- تنسيق فلاتر الفئات في نافذة "منتجاتي" --- */
+.my-products-filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}

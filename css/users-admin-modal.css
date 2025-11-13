@@ -13,6 +13,12 @@
   height: 90vh; /* ارتفاع ليملأ معظم الشاشة */
 }
 
+/* ✅ إصلاح: إضافة أنماط مفقودة لزر الإغلاق داخل هذا المودال */
+.users-admin-modal-content .close-button {
+  top: 1.5rem;
+  left: 2rem;
+}
+
 /* --- رأس المودال (العنوان والبحث) --- */
 .users-admin-modal-header {
   padding: 1.5rem 2rem;
@@ -261,4 +267,9 @@
     gap: 1.5rem;
   }
 
+  /* ✅ إصلاح: تعديل زر الإغلاق ليتناسب مع الشاشات الصغيرة */
+  .users-admin-modal-content .close-button {
+    top: 1rem;
+    left: 1rem;
+  }
 }

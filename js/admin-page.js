@@ -49,48 +49,38 @@ function initializeAdminPanel(user) {
   // جديد: التحقق من حالة الإشعارات وعرضها
   checkAndDisplayNotificationStatus();
 
-  const actionButtonsContainer = document.getElementById("admin-action-buttons");
+  // --- إنشاء الأزرار ووضعها في مجموعاتها المخصصة ---
 
-  // 1. إنشاء زر "عرض المستخدمين"
+  // 1. زر "إدارة الإعلانات"
+  const manageAdButton = document.createElement("button");
+  manageAdButton.id = "manage-ad-btn";
+  manageAdButton.className = "button logout-btn-small";
+  manageAdButton.innerHTML = '<i class="fas fa-ad"></i> إدارة الإعلانات';
+  manageAdButton.addEventListener('click', showAdvertiesmentModal);
+  document.getElementById("content-management-row").appendChild(manageAdButton);
+
+  // 2. زر "عرض المستخدمين"
   const viewUsersButton = document.createElement("a");
   viewUsersButton.id = "view-users-btn";
   viewUsersButton.href = "#";
   viewUsersButton.className = "button logout-btn-small";
   viewUsersButton.innerHTML = '<i class="fas fa-users"></i> عرض المستخدمين';
-  actionButtonsContainer.appendChild(viewUsersButton);
+  viewUsersButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    showUsersAdminModal(); // استدعاء دالة الموديول الجديد
+  });
+  document.getElementById("users-management-row").appendChild(viewUsersButton);
 
-  // 2. إنشاء زر "مسح بيانات المتصفح"
+  // 3. زر "مسح بيانات المتصفح"
   const clearBrowserDataButton = document.createElement("a");
   clearBrowserDataButton.id = "clear-data-btn";
   clearBrowserDataButton.href = "#";
   clearBrowserDataButton.className = "button logout-btn-small";
   clearBrowserDataButton.style.backgroundColor = "#c0392b";
   clearBrowserDataButton.innerHTML = '<i class="fas fa-broom"></i> مسح بيانات المتصفح';
-  actionButtonsContainer.appendChild(clearBrowserDataButton);
-
-  // 3. إنشاء زر "إدارة الإعلانات"
-  const manageAdButton = document.createElement("button");
-  manageAdButton.id = "manage-ad-btn";
-  manageAdButton.className = "button logout-btn-small";
-  manageAdButton.innerHTML = '<i class="fas fa-bullhorn"></i> إدارة الإعلانات';
-  manageAdButton.addEventListener('click', showAdvertiesmentModal);
-
-  // إنشاء مجموعة أزرار خاصة بالإعلانات
-  const adButtonGroup = document.createElement('div');
-  adButtonGroup.className = 'button-group';
-  adButtonGroup.style.animationDelay = '0.1s';
-  adButtonGroup.innerHTML = `<h3><i class="fas fa-ad"></i> الإعلانات</h3>`;
-  const adButtonRow = document.createElement('div');
-  adButtonRow.className = 'button-row';
-  adButtonRow.appendChild(manageAdButton);
-  adButtonGroup.appendChild(adButtonRow);
-  actionButtonsContainer.appendChild(adButtonGroup);
+  document.getElementById("settings-row").appendChild(clearBrowserDataButton);
 
   // --- ربط الأحداث بالأزرار ---
-  viewUsersButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    showUsersAdminModal(); // ✅ تعديل: استدعاء دالة الموديول الجديد
-  });
 
   // منطق زر "مسح بيانات المتصفح"
   clearBrowserDataButton.addEventListener("click", (e) => {

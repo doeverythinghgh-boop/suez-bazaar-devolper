@@ -1,0 +1,102 @@
+/**
+ * @file css/reports-modal.css
+ * @description أنماط خاصة بنافذة "حركة المشتريات".
+ */
+
+/* --- تصميم عصري لجدول المنتجات داخل نافذة حركة المشتريات --- */
+.order-items-table {
+  width: 100%;
+  border-collapse: collapse; /* دمج الحدود */
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px; /* حواف دائرية */
+  overflow: hidden; /* لإخفاء أي زوائد خارج الحواف الدائرية */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* ظل خفيف */
+}
+
+.order-items-table thead tr {
+  background-color: #4a5568; /* خلفية رمادية داكنة للرأس */
+  color: #ffffff; /* نص أبيض */
+  text-align: center; /* توسيط النص في الرأس */
+}
+
+.order-items-table th,
+.order-items-table td {
+  padding: 12px 15px; /* حشو داخلي مريح */
+}
+
+.order-items-table tbody tr {
+  border-bottom: 1px solid #e2e8f0; /* خط أفقي فاتح بين الصفوف */
+  background-color: #ffffff;
+}
+
+.order-items-table tbody tr:nth-of-type(even) {
+  background-color: #f8f9fa; /* لون خلفية متناوب للصفوف الزوجية */
+}
+
+.order-items-table tbody tr:last-of-type {
+  border-bottom: none; /* إزالة الخط السفلي لآخر صف */
+}
+
+.order-items-table tbody tr:hover {
+  background-color: #e9ecef; /* تغيير لون الخلفية عند مرور الماوس */
+}
+
+/* --- جعل جدول حركة المشتريات متجاوبًا مع الشاشات الصغيرة --- */
+@media screen and (max-width: 768px) {
+  .order-items-table {
+    border: none; /* إزالة الإطار الخارجي */
+    box-shadow: none; /* إزالة الظل */
+  }
+
+  .order-items-table thead {
+    display: none; /* إخفاء رأس الجدول التقليدي */
+  }
+
+  .order-items-table tr {
+    display: block; /* تحويل كل صف إلى كتلة مستقلة (بطاقة) */
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .order-items-table td {
+    display: flex; /* استخدام flex لتنظيم العنوان والمحتوى */
+    justify-content: space-between; /* وضع العنوان على اليمين والمحتوى على اليسار */
+    align-items: center;
+    padding: 10px 15px;
+    text-align: left; /* محاذاة المحتوى لليسار */
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .order-items-table td::before {
+    content: attr(data-label); /* عرض محتوى data-label كعنوان للخلية */
+    font-weight: bold;
+    color: #4a5568;
+    text-align: right; /* محاذاة العنوان لليمين */
+    margin-left: 10px; /* مسافة بين العنوان والمحتوى */
+  }
+
+  /* إزالة الحشو من خلية زر العرض في وضع البطاقة */
+  .order-items-table td[data-label="عرض"] {
+    padding: 5px 15px;
+  }
+}
+
+/* --- تصميم زر الأيقونة داخل الجداول --- */
+.button.icon-btn {
+  background-color: transparent;
+  border: 1px solid #d1d5db;
+  color: #6b7280;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  padding: 0;
+  flex-shrink: 0;
+  min-width: auto;
+}
+.button.icon-btn:active {
+  background-color: #e5e7eb;
+}
