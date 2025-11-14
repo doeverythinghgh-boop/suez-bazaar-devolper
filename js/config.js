@@ -13,6 +13,9 @@ else if (location.hostname === "appassets.androidplatform.net") {
   baseURL = "https://bazaar-neon-three.vercel.app";
 }
 
+// ✅ جديد: قائمة هواتف المسؤولين لتكون متاحة في كل المشروع
+const adminPhoneNumbers = ["01024182175", "01026546550"];
+
 // ✅ تحسين: كائن للوصول المباشر للحالات لتجنب الأرقام السحرية
 const ORDER_STATUS_MAP = {
   REVIEW: {

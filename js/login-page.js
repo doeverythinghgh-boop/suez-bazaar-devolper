@@ -81,8 +81,7 @@ function updateViewForLoggedInUser(user) {
       // document.getElementById("view-delivery-requests-btn").addEventListener("click", showDeliveryRequests);
     }
 
-    // التحقق مما إذا كان المستخدم هو أحد المسؤولين المحددين
-    const adminPhoneNumbers = ["01024182175", "01026546550"];
+    // التحقق مما إذا كان المستخدم هو أحد المسؤولين (adminPhoneNumbers معرفة في config.js)
     if (adminPhoneNumbers.includes(user.phone)) {
       const adminActions = document.getElementById("admin-actions");
       adminActions.style.display = "block";
@@ -269,10 +268,16 @@ function handleLoginSuccess(user) {
   console.log('%c[Login Page] دخلنا دالة handleLoginSuccess. بيانات المستخدم:', 'color: green;', user);
   localStorage.setItem("loggedInUser", JSON.stringify(user));
 
-  // ✅ إصلاح جذري: استدعاء setupFCM() مباشرة بعد نجاح تسجيل الدخول.
-  // هذا يضمن الحصول على التوكن وإرساله فورًا دون الحاجة لتحديث الصفحة.
-  console.log('[Login Page] جاري استدعاء setupFCM() الآن...');
-  if (typeof setupFCM === 'function') { setupFCM(); } else { console.error('[Login Page] خطأ فادح: دالة setupFCM غير معرّفة!'); }
+  // ✅ تعديل: استدعاء setupFCM() فقط إذا كان المستخدم مؤهلاً (مسؤول، بائع، خدمة توصيل).
+  // isUserEligibleForNotifications معرفة في auth.js
+  if (typeof isUserEligibleForNotifications === 'function' && isUserEligibleForNotifications(user)) {
+    console.log('[Login Page] المستخدم مؤهل، جاري استدعاء setupFCM() الآن...');
+    if (typeof setupFCM === 'function') {
+      setupFCM();
+    }
+  } else {
+    console.log('[Login Page] المستخدم غير مؤهل للإشعارات، تم تخطي استدعاء setupFCM().');
+  }
   updateViewForLoggedInUser(user);
   if (window.updateCartBadge) window.updateCartBadge();
 

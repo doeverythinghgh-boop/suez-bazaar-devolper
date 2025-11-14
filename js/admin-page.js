@@ -10,7 +10,7 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const loggedInUser = localStorage.getItem("loggedInUser");
-  const adminPhoneNumbers = ["01024182175", "01026546550"];
+  // adminPhoneNumbers معرفة بشكل عام في js/config.js
   const loadingContainer = document.getElementById("loading-container");
   const adminPanelContainer = document.getElementById("admin-panel-container");
 

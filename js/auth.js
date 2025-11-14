@@ -267,6 +267,23 @@ async function handleRevokedPermissions() {
 }
 
 /**
+ * ✅ جديد: دالة مساعدة للتحقق مما إذا كان المستخدم مؤهلاً لاستقبال الإشعارات.
+ * الإشعارات مخصصة فقط للمسؤولين، البائعين، وخدمات التوصيل.
+ * @param {object} user - كائن المستخدم.
+ * @returns {boolean} - `true` إذا كان المستخدم مؤهلاً، وإلا `false`.
+ */
+function isUserEligibleForNotifications(user) {
+  if (!user || user.is_guest) {
+    return false;
+  }
+  // adminPhoneNumbers متاح بشكل عام من ملف config.js
+  const isAdvancedUser =
+    user.is_seller === 1 || // بائع
+    user.is_seller === 2 || // خدمة توصيل
+    adminPhoneNumbers.includes(user.phone); // مسؤول
+  return isAdvancedUser;
+}
+/**
  * يتحقق من حالة تسجيل دخول المستخدم ويقوم بتحديث واجهة المستخدم بناءً عليها.
  */
 function checkLoginStatus() {
@@ -294,11 +311,12 @@ function checkLoginStatus() {
     // ✅ تحسين: التعامل مع حالة إلغاء المستخدم لأذونات الإشعارات
     handleRevokedPermissions();
 
-    // بعد التأكد من تسجيل الدخول، قم بإعداد إشعارات FCM.
-    if (user && !user.is_guest) {
-      console.log("[Auth] مستخدم مسجل، جاري إعداد FCM...");
-
+    // ✅ تعديل: إعداد الإشعارات فقط للمستخدمين المؤهلين (مسؤول، بائع، خدمة توصيل).
+    if (isUserEligibleForNotifications(user)) {
+      console.log("[Auth] مستخدم مؤهل، جاري إعداد FCM...");
       setupFCM();
+    } else {
+      console.log("[Auth] المستخدم (عميل عادي) غير مؤهل لاستقبال الإشعارات. تم تخطي إعداد FCM.");
     }
   }
 }
