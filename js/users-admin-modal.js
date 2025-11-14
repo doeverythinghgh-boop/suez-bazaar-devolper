@@ -56,12 +56,24 @@ async function initializeUsersAdminLogic(modalContainer) {
     if (users && users.length > 0) {
       let usersHTML = '<div class="user-cards-container">';
       users.forEach(u => {
-        const notificationUI = u.fcm_token
-          ? `<div class="notification-sender">
-               <input type="text" placeholder="اكتب رسالتك هنا..." class="notification-input" id="notif-input-${u.user_key}">
-               <button class="send-notif-btn" data-token="${u.fcm_token}" data-user-key="${u.user_key}" title="إرسال"><i class="fas fa-paper-plane"></i></button>
-             </div>`
-          : '<span class="no-token">لا يستقبل إشعارات</span>';
+        // ✅ تعديل: التحقق من أهلية المستخدم لاستقبال الإشعارات قبل عرض الواجهة.
+        let notificationUI = '';
+        // نستخدم الدالة المساعدة الموجودة في auth.js
+        if (isUserEligibleForNotifications(u)) {
+          // إذا كان المستخدم مؤهلاً، تحقق مما إذا كان لديه توكن مسجل.
+          if (u.fcm_token) {
+            notificationUI = `<div class="notification-sender">
+                 <input type="text" placeholder="اكتب رسالتك هنا..." class="notification-input" id="notif-input-${u.user_key}">
+                 <button class="send-notif-btn" data-token="${u.fcm_token}" data-user-key="${u.user_key}" title="إرسال"><i class="fas fa-paper-plane"></i></button>
+               </div>`;
+          } else {
+            // مؤهل لكن لم يسجل جهازه بعد.
+            notificationUI = '<span class="no-token">مؤهل (لم يسجل الجهاز)</span>';
+          }
+        } else {
+          // غير مؤهل (مثل العملاء العاديين).
+          notificationUI = '<span class="no-token">غير مؤهل للإشعارات</span>';
+        }
 
         usersHTML += `
           <div class="user-card" data-phone="${u.phone}">
