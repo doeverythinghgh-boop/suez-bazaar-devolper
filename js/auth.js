@@ -13,6 +13,30 @@
  * الحصول على توكن FCM، وإرساله إلى السيرفر.
  */
 async function setupFCM() {
+  // دالة مساعدة لإرسال التوكن إلى الخادم لتجنب التكرار
+  async function sendTokenToServer(userKey, token) {
+    console.log(`%c[FCM] Sending token to server...`, "color: #fd7e14");
+    console.log(`[FCM] User Key: ${userKey}`);
+    console.log(`[FCM] FCM Token: ${token}`);
+
+    try {
+      const response = await fetch(`${baseURL}/api/tokens`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user_key: userKey, token: token }),
+      });
+
+      const responseData = await response.json();
+      if (response.ok) {
+        console.log("%c[FCM] Server successfully saved/updated the token.", "color: #28a745", responseData);
+      } else {
+        console.error("[FCM] Server failed to save token. Status:", response.status, "Response:", responseData);
+      }
+    } catch (networkError) {
+      console.error("%c[FCM] Network error while sending token:", "color: #dc3545", networkError);
+    }
+  }
+
   // جلب بيانات المستخدم المسجل دخوله
   const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
   // ✅ خطوة حاسمة: التحقق إذا كان الكود يعمل داخل تطبيق الأندرويد
@@ -34,45 +58,8 @@ async function setupFCM() {
       );
       await waitForFcmKey(async (fcmToken) => {
         console.log("تم العثور على مفتاح للاندرويد محفوظ محليا :", fcmToken);
-        console.log(
-          `%c[FCM Setup] جاري إرسال التوكن إلى الخادم...`,
-          "color: #fd7e14"
-        );
-        console.log(`[FCM] User Key: ${loggedInUser.user_key}`);
-        console.log(`[FCM] FCM Token: ${fcmToken}`);
-
-        try {
-          const response = await fetch(`${baseURL}/api/tokens`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_key: loggedInUser.user_key,
-              token: fcmToken,
-            }),
-          });
-
-          const responseData = await response.json();
-          if (response.ok) {
-            console.log(
-              "%c[FCM Setup] نجح الخادم في حفظ/تحديث التوكن.",
-              "color: #28a745",
-              responseData
-            );
-          } else {
-            console.error(
-              "[FCM] فشل الخادم في حفظ التوكن. الحالة:",
-              response.status,
-              "الاستجابة:",
-              responseData
-            );
-          }
-        } catch (networkError) {
-          console.error(
-            "%c[FCM] حدث خطأ في الشبكة أثناء إرسال التوكن:",
-            "color: #dc3545",
-            networkError
-          );
-        }
+        // استدعاء الدالة المساعدة الجديدة
+        await sendTokenToServer(loggedInUser.user_key, fcmToken);
       });
     } else {
       console.log(
@@ -171,8 +158,7 @@ async function setupFCM() {
         );
         try {
           const newFcmToken = await getToken(messaging, {
-            vapidKey:
-              "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY",
+            vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY", // يُفضل نقل هذا إلى ملف config.js
           });
           if (newFcmToken) {
             console.log(
@@ -196,45 +182,8 @@ async function setupFCM() {
       }
 
       if (fcmToken) {
-        console.log(
-          `%c[FCM Setup] جاري إرسال التوكن إلى الخادم...`,
-          "color: #fd7e14"
-        );
-        console.log(`[FCM] User Key: ${loggedInUser.user_key}`);
-        console.log(`[FCM] FCM Token: ${fcmToken}`);
-
-        try {
-          const response = await fetch(`${baseURL}/api/tokens`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_key: loggedInUser.user_key,
-              token: fcmToken,
-            }),
-          });
-
-          const responseData = await response.json();
-          if (response.ok) {
-            console.log(
-              "%c[FCM Setup] نجح الخادم في حفظ/تحديث التوكن.",
-              "color: #28a745",
-              responseData
-            );
-          } else {
-            console.error(
-              "[FCM] فشل الخادم في حفظ التوكن. الحالة:",
-              response.status,
-              "الاستجابة:",
-              responseData
-            );
-          }
-        } catch (networkError) {
-          console.error(
-            "%c[FCM] حدث خطأ في الشبكة أثناء إرسال التوكن:",
-            "color: #dc3545",
-            networkError
-          );
-        }
+        // استدعاء الدالة المساعدة الجديدة
+        await sendTokenToServer(loggedInUser.user_key, fcmToken);
       } else {
         console.error("[FCM] لم يتمكن من الحصول على توكن لإرساله إلى الخادم.");
       }
