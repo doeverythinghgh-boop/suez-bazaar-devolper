@@ -206,11 +206,21 @@ function checkLoginStatus() {
     if (user && !user.is_guest) {
       console.log('[Auth] مستخدم مسجل، جاري إعداد FCM...');
 
-      // ✅ خطوة حاسمة: إعلام كود الأندرويد الأصلي بنجاح تسجيل الدخول
-      if (window.Android && typeof window.Android.onUserLoggedIn === 'function') {
-        console.log('[Auth] إعلام الواجهة الأصلية بتسجيل دخول المستخدم...');
-        window.Android.onUserLoggedIn(JSON.stringify(user));
-      }
+     // الخطوة الحاسمة: إعلام كود الأندرويد الأصلي (فقط إذا كان مطلوبًا)
+         if (window.Android && typeof window.Android.onUserLoggedIn === 'function') {
+             // احصل على التوكن المحلي من الأندرويد إذا كان موجودًا
+             const existingAndroidToken = localStorage.getItem('android_fcm_key');
+     
+             // تحقق مما إذا كان التوكن فارغًا أو غير موجود
+             if (!existingAndroidToken) {
+                 console.log('[Auth] بيئة أندرويد مكتشفة والتوكن المحلي فارغ. جاري طلب توكن جديد...');
+                 // استدعِ دالة الأندرويد فقط إذا لم يكن هناك توكن بالفعل
+                 window.Android.onUserLoggedIn(JSON.stringify(user));
+             } else {
+                 console.log('[Auth] بيئة أندرويد مكتشفة، والتوكن المحلي موجود بالفعل. لا حاجة لطلب جديد.');
+                 // يمكنك هنا إضافة أي منطق آخر إذا أردت، مثل التحقق من صحة التوكن
+             }
+         }
 
       setupFCM();
     }
