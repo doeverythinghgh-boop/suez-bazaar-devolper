@@ -13,6 +13,8 @@
  * الحصول على توكن FCM، وإرساله إلى السيرفر.
  */
 async function setupFCM() {
+  // جلب بيانات المستخدم المسجل دخوله
+  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
   // ✅ خطوة حاسمة: التحقق إذا كان الكود يعمل داخل تطبيق الأندرويد
 
      // الخطوة الحاسمة: إعلام كود الأندرويد الأصلي (فقط إذا كان مطلوبًا)
@@ -29,7 +31,7 @@ async function setupFCM() {
             "[Auth] بيئة أندرويد مكتشفة والتوكن المحلي فارغ. جاري طلب توكن جديد..."
           );
           // استدعِ دالة الأندرويد فقط إذا لم يكن هناك توكن بالفعل
-          window.Android.onUserLoggedIn(JSON.stringify(user));
+          window.Android.onUserLoggedIn(loggedInUser.user_key);
         } else {
           console.log(
             "[Auth] بيئة أندرويد مكتشفة، والتوكن المحلي موجود بالفعل. لا حاجة لطلب جديد."
@@ -50,8 +52,7 @@ async function setupFCM() {
   }
 
   console.log("[FCM Setup] جاري التحقق من وجود مستخدم مسجل...");
-  // جلب بيانات المستخدم المسجل دخوله
-  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+  
   if (!loggedInUser || !loggedInUser.user_key) {
     console.warn(
       "[FCM Setup] لا يوجد مستخدم مسجل أو لا يحتوي على user_key. تتوقف العملية."
