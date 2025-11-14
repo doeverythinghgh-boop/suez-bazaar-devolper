@@ -1,52 +1,85 @@
 /**
  * @file js/auth.js
- * @description إدارة حالة المصادقة وتسجيل دخول المستخدم.
- * 
- * هذا الملف يوفر الدوال اللازمة للتعامل مع حالة تسجيل دخول المستخدم عبر التخزين المحلي (localStorage).
- * - `checkLoginStatus`: تتحقق مما إذا كان المستخدم مسجلاً دخوله عند تحميل الصفحة وتقوم بتحديث واجهة المستخدم.
- * - `logout`: تقوم بتسجيل خروج المستخدم عبر حذف بياناته من التخزين المحلي وتحديث الصفحة.
+ * @description إدارة حالة المصادقة، تسجيل الدخول، والإشعارات.
  */
+
+// ==================================================================================
+// SECTION: دوال مساعدة (Helper Functions)
+// ==================================================================================
+
+/**
+ * [Helper] يرسل التوكن (POST) إلى الخادم لحفظه.
+ */
+async function sendTokenToServer(user_key, token) {
+  if (!user_key || !token) {
+    console.error('[FCM] User key or token is missing. Cannot send to server.');
+    return;
+  }
+  try {
+    const response = await fetch(`${baseURL}/api/tokens`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_key, token })
+    });
+    const responseData = await response.json();
+    if (response.ok) {
+      console.log('%c[FCM] نجح الخادم في حفظ/تحديث التوكن.', 'color: #28a745', responseData);
+    } else {
+      console.error('[FCM] فشل الخادم في حفظ التوكن. الحالة:', response.status, 'الاستجابة:', responseData);
+    }
+  } catch (networkError) {
+    console.error('%c[FCM] حدث خطأ في الشبكة أثناء إرسال التوكن:', 'color: #dc3545', networkError);
+  }
+}
+
+/**
+ * [Helper] يرسل طلب حذف التوكن (DELETE) إلى الخادم.
+ */
+async function deleteTokenFromServer(user_key, token) {
+  if (!user_key || !token) return;
+
+  try {
+    await fetch(`${baseURL}/api/tokens`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_key, token }),
+    });
+    console.log('[FCM] تم إرسال طلب حذف التوكن بنجاح.');
+  } catch (error) {
+    console.error('[FCM] فشل إرسال طلب حذف التوكن:', error);
+    // اقتراح: في بيئة الإنتاج، يُنصح بإرسال هذا الخطأ إلى خدمة مراقبة (Logging Service).
+  }
+}
+
+// ==================================================================================
+// SECTION: إعداد وإدارة إشعارات الويب (FCM)
+// ==================================================================================
 
 /**
  * إعداد Firebase Cloud Messaging (FCM) للمستخدم الحالي.
- * هذه الدالة تقوم بتسجيل الـ Service Worker، طلب إذن الإشعارات،
- * الحصول على توكن FCM، وإرساله إلى السيرفر.
  */
 async function setupFCM() {
-  // ✅ خطوة حاسمة: التحقق إذا كان الكود يعمل داخل تطبيق الأندرويد
-  // إذا كان كائن "Android" موجودًا، فهذا يعني أننا داخل WebView
-  // ويجب ألا نقوم بإعداد إشعارات الويب لتجنب التكرار.
   if (window.Android) {
     console.log('%c[FCM Setup] تم اكتشاف بيئة الأندرويد. سيتم الاعتماد على الإشعارات الأصلية (Native).', 'color: green; font-weight: bold;');
-    return; // إيقاف إعداد إشعارات الويب
+    return;
   }
 
-  console.log('%c[FCM Setup] بدأت عملية إعداد الإشعارات...', 'color: purple; font-weight: bold;');
-  // التأكد من أن المتصفح يدعم Service Workers
   if (!('serviceWorker' in navigator)) {
     console.warn("[FCM] هذا المتصفح لا يدعم ميزة الإشعارات (Service Workers).");
     return;
   }
-
-  console.log('[FCM Setup] جاري التحقق من وجود مستخدم مسجل...');
-  // جلب بيانات المستخدم المسجل دخوله
+  
   const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
   if (!loggedInUser || !loggedInUser.user_key) {
-    console.warn('[FCM Setup] لا يوجد مستخدم مسجل أو لا يحتوي على user_key. تتوقف العملية.');
+    console.warn('[FCM Setup] لا يوجد مستخدم مسجل. تتوقف العملية.');
     return;
   }
-  console.log('[FCM Setup] تم العثور على مستخدم مسجل:', loggedInUser.username);
-//
+
   try {
-    console.log('[FCM Setup] جاري تسجيل عامل الخدمة (Service Worker)...');
     await navigator.serviceWorker.register('firebase-messaging-sw.js');
-    console.log('%c[FCM] تم تسجيل عامل الخدمة (Service Worker) بنجاح.', 'color: #28a745');
-
-    // استيراد دوال Firebase بشكل ديناميكي
     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js");
-    const { getMessaging, getToken, onMessage } = await import("https://www.gstatic.com/firebasejs/12.5.0/firebase-messaging.js");
+    const { getMessaging, getToken, onMessage, onTokenRefresh } = await import("https://www.gstatic.com/firebasejs/12.5.0/firebase-messaging.js");
 
-    console.log('[FCM Setup] جاري تهيئة تطبيق Firebase...');
     const firebaseConfig = {
       apiKey: "AIzaSyClapclT8_4UlPvM026gmZbYCiXaiBDUYk",
       authDomain: "suze-bazaar-notifications.firebaseapp.com",
@@ -59,73 +92,39 @@ async function setupFCM() {
 
     const app = initializeApp(firebaseConfig);
     const messaging = getMessaging(app);
-    console.log('[FCM Setup] تم تهيئة Firebase بنجاح.');
 
-    onMessage(messaging, (payload) => {
-      console.log('%c[FCM] تم استقبال إشعار أثناء فتح الموقع (Foreground):', 'color: #17a2b8', payload);
-      const { title, body } = payload.data;
-      Swal.fire({
-        title: title, // عنوان الرسالة
-        text: body,   // نص الرسالة
-        icon: 'info', // أيقونة معلومات
-        confirmButtonText: 'موافق' // زر واحد للإغلاق
-      });
+    // ✅ تحسين: معالجة تجديد التوكن تلقائياً
+    onTokenRefresh(messaging, async () => {
+      console.log('%c[FCM] تم تجديد توكن الإشعارات. جاري إرسال التوكن الجديد...', 'color: orange;');
+      try {
+        const refreshedToken = await getToken(messaging, { vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY" });
+        if (refreshedToken) {
+          localStorage.setItem('fcm_token', refreshedToken);
+          const user = JSON.parse(localStorage.getItem('loggedInUser'));
+          if (user && user.user_key) {
+            await sendTokenToServer(user.user_key, refreshedToken);
+          }
+        }
+      } catch (err) {
+        console.error('[FCM] فشل في الحصول على التوكن المجدّد:', err);
+      }
     });
 
-    console.log('[FCM Setup] جاري طلب إذن عرض الإشعارات من المستخدم...');
+    onMessage(messaging, (payload) => {
+      Swal.fire({ title: payload.data.title, text: payload.data.body, icon: 'info', confirmButtonText: 'موافق' });
+    });
+
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
-      console.log('%c[FCM] تم الحصول على إذن إرسال الإشعارات.', 'color: #28a745');
-
       let fcmToken = localStorage.getItem('fcm_token');
-      if (fcmToken) {
-        console.log('[FCM Setup] تم العثور على توكن مخزن في localStorage:', fcmToken);
-      }
-
       if (!fcmToken) {
-        console.log('[FCM Setup] لا يوجد توكن مخزن، جاري طلب توكن جديد من Firebase...');
-        try {
-          const newFcmToken = await getToken(messaging, { vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY" });
-          if (newFcmToken) {
-            console.log('%c[FCM Setup] تم الحصول على توكن جديد:', 'color: #007bff', newFcmToken);
-            console.log('%c[FCM Setup] جاري حفظ التوكن الجديد في localStorage...', 'color: orange;');
-            localStorage.setItem('fcm_token', newFcmToken);
-            fcmToken = newFcmToken;
-          } else {
-            console.error('[FCM] فشل في الحصول على توكن جديد من Firebase.');
-          }
-        } catch (err) {
-          console.error('[FCM] خطأ عند طلب التوكن من Firebase:', err);
-          return;
-        }
+        fcmToken = await getToken(messaging, { vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY" });
+        if (fcmToken) localStorage.setItem('fcm_token', fcmToken);
       }
 
       if (fcmToken) {
-        console.log(`%c[FCM Setup] جاري إرسال التوكن إلى الخادم...`, 'color: #fd7e14');
-        console.log(`[FCM] User Key: ${loggedInUser.user_key}`);
-        console.log(`[FCM] FCM Token: ${fcmToken}`);
-        
-        try {
-          const response = await fetch(`${baseURL}/api/tokens`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_key: loggedInUser.user_key, token: fcmToken })
-        });
-
-          const responseData = await response.json();
-          if (response.ok) {
-            console.log('%c[FCM Setup] نجح الخادم في حفظ/تحديث التوكن.', 'color: #28a745', responseData);
-          } else {
-            console.error('[FCM] فشل الخادم في حفظ التوكن. الحالة:', response.status, 'الاستجابة:', responseData);
-          }
-        } catch (networkError) {
-          console.error('%c[FCM] حدث خطأ في الشبكة أثناء إرسال التوكن:', 'color: #dc3545', networkError);
-        }
-      } else {
-        console.error('[FCM] لم يتمكن من الحصول على توكن لإرساله إلى الخادم.');
+        await sendTokenToServer(loggedInUser.user_key, fcmToken);
       }
-    } else {
-      console.warn('[FCM Setup] تم رفض إذن إرسال الإشعارات من قبل المستخدم.');
     }
   } catch (error) {
     console.error("%c[FCM] حدث خطأ فادح أثناء إعداد الإشعارات:", 'color: #dc3545', error);
@@ -134,45 +133,28 @@ async function setupFCM() {
 
 /**
  * يعالج سيناريو قيام المستخدم بإلغاء أذونات الإشعارات من إعدادات المتصفح.
- * إذا تم العثور على توكن مخزن محليًا بينما الإذن مرفوض، فإنه يحاول حذفه من الخادم.
  */
 async function handleRevokedPermissions() {
-  // هذا المنطق خاص بالويب فقط، لا ينطبق داخل تطبيق الأندرويد.
-  if (window.Android || !('Notification' in window)) {
-    return;
-  }
+  if (window.Android || !('Notification' in window)) return;
 
   const currentPermission = Notification.permission;
   const fcmToken = localStorage.getItem('fcm_token');
 
-  // إذا كان الإذن 'denied' أو 'default' وما زال لدينا توكن،
-  // فهذا يعني أن المستخدم قد ألغى الإذن بعد منحه سابقًا.
   if ((currentPermission === 'denied' || currentPermission === 'default') && fcmToken) {
     console.warn('[FCM] تم اكتشاف أن إذن الإشعارات لم يعد ممنوحًا. سيتم حذف التوكن...');
     const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
 
-    if (loggedInUser?.user_key) {
-      try {
-        await fetch(`${baseURL}/api/tokens`, {
-          method: "DELETE",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_key: loggedInUser.user_key, token: fcmToken }),
-        });
-        console.log('[FCM] تم إرسال طلب حذف التوكن من الخادم بسبب تغيير حالة الإذن.');
-      } catch (error) {
-        console.error('[FCM] فشل إرسال طلب حذف التوكن بعد تغيير حالة الإذن:', error);
-        // ملاحظة: من الجيد هنا تسجيل هذا الخطأ في خدمة مراقبة خارجية.
-      } finally {
-        // سواء نجح الحذف من الخادم أم لا، يجب إزالة التوكن المحلي.
-        localStorage.removeItem('fcm_token');
-        console.log('[FCM] تم حذف التوكن من التخزين المحلي.');
-      }
-    } else {
-      // إذا لم نجد مستخدمًا مسجلاً، فقط احذف التوكن المحلي.
-      localStorage.removeItem('fcm_token');
-    }
+    // ✅ تحسين: استخدام الدالة المساعدة لحذف التوكن
+    await deleteTokenFromServer(loggedInUser?.user_key, fcmToken);
+    
+    // سواء نجح الحذف من الخادم أم لا، يجب إزالة التوكن المحلي.
+    localStorage.removeItem('fcm_token');
   }
 }
+
+// ==================================================================================
+// SECTION: إدارة حالة المستخدم (الدخول والخروج)
+// ==================================================================================
 
 /**
  * يتحقق من حالة تسجيل دخول المستخدم ويقوم بتحديث واجهة المستخدم بناءً عليها.
@@ -181,44 +163,29 @@ function checkLoginStatus() {
   const loggedInUser = localStorage.getItem("loggedInUser");
   const userProfileButton = document.getElementById("user-profile-button");
 
-  if (!userProfileButton) return; // الخروج إذا لم يتم العثور على العنصر
-
-  const userProfileLink = userProfileButton.querySelector(".user-profile-link");
-  const userIcon = document.getElementById("user-icon");
-  const userText = userProfileLink.querySelector(".user-text");
+  if (!userProfileButton) return;
 
   if (loggedInUser) {
     const user = JSON.parse(loggedInUser);
+    
+    const userIcon = document.getElementById("user-icon");
+    const userText = userProfileButton.querySelector(".user-profile-link .user-text");
+    if(userIcon) userIcon.textContent = "مرحباً";
+    if(userText) userText.textContent = user.username;
 
-    // تغيير الأيقونة إلى كلمة "مرحباً"
-    if (userIcon) {
-      userIcon.className = "welcome-text";
-      userIcon.textContent = "مرحباً";
-    }
-
-    // تحديث النص لعرض اسم المستخدم
-    userText.textContent = user.username;
-
-    // ✅ تحسين: التعامل مع حالة إلغاء المستخدم لأذونات الإشعارات
     handleRevokedPermissions();
 
-    // بعد التأكد من تسجيل الدخول، قم بإعداد إشعارات FCM.
     if (user && !user.is_guest) {
-      console.log('[Auth] مستخدم مسجل، جاري إعداد FCM...');
-
-      // ✅ خطوة حاسمة: إعلام كود الأندرويد الأصلي بنجاح تسجيل الدخول
       if (window.Android && typeof window.Android.onUserLoggedIn === 'function') {
-        console.log('[Auth] إعلام الواجهة الأصلية بتسجيل دخول المستخدم...');
         window.Android.onUserLoggedIn(JSON.stringify(user));
       }
-
       setupFCM();
     }
   }
 }
 
 /**
- * يقوم بتسجيل خروج المستخدم عن طريق إزالة بياناته من التخزين المحلي وإعادة التوجيه.
+ * يقوم بتسجيل خروج المستخدم.
  */
 function logout() {
   const fcmToken = localStorage.getItem("fcm_token");
@@ -235,36 +202,17 @@ function logout() {
     cancelButtonText: "إلغاء",
     showLoaderOnConfirm: true,
     preConfirm: async () => {
-      if (fcmToken && loggedInUser?.user_key) {
-        // إعلام كود الأندرويد الأصلي بتسجيل الخروج
-        if (window.Android && typeof window.Android.onUserLoggedOut === 'function') {
-            console.log('[Auth] إعلام الواجهة الأصلية بتسجيل خروج المستخدم...');
-            window.Android.onUserLoggedOut(loggedInUser.user_key);
-        }
-
-        try {
-          await fetch(`${baseURL}/api/tokens`, {
-            method: "DELETE",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ user_key: loggedInUser.user_key, token: fcmToken }),
-          });
-          console.log('[FCM] تم إرسال طلب حذف التوكن من الخادم بنجاح.');
-        } catch (error) {
-          // ✅ تحسين: التعامل مع فشل الحذف
-          console.error('[FCM] فشل إرسال طلب حذف التوكن من الخادم. هذا قد يؤدي إلى بقاء توكن غير مستخدم في قاعدة البيانات. الخطأ:', error);
-          // اقتراح: في بيئة الإنتاج، يُنصح بإرسال هذا الخطأ إلى خدمة مراقبة (Logging Service)
-          // لمتابعة الحالات التي تفشل فيها عملية الحذف ومعالجتها لاحقًا.
-        }
+      if (window.Android && typeof window.Android.onUserLoggedOut === 'function') {
+        window.Android.onUserLoggedOut(loggedInUser?.user_key);
       }
+      // ✅ تحسين: استخدام الدالة المساعدة لحذف التوكن
+      await deleteTokenFromServer(loggedInUser?.user_key, fcmToken);
     },
     allowOutsideClick: () => !Swal.isLoading(),
   }).then((result) => {
     if (result.isConfirmed) {
       localStorage.removeItem("fcm_token");
-      console.log('[FCM] تم حذف توكن FCM من التخزين المحلي عند تسجيل الخروج.');
-
       localStorage.removeItem("loggedInUser");
-      
       window.location.href = "index.html";
     }
   });
