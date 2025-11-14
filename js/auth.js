@@ -308,6 +308,8 @@ function checkLoginStatus() {
  */
 function logout() {
   const fcmToken = localStorage.getItem("fcm_token");
+  const android_fcm_key = localStorage.getItem("android_fcm_key");
+
   const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
   Swal.fire({
@@ -321,7 +323,7 @@ function logout() {
     cancelButtonText: "إلغاء",
     showLoaderOnConfirm: true,
     preConfirm: async () => {
-      if (fcmToken && loggedInUser?.user_key) {
+      if (fcmToken || android_fcm_key  && loggedInUser?.user_key) {
         // إعلام كود الأندرويد الأصلي بتسجيل الخروج
         if (
           window.Android &&
