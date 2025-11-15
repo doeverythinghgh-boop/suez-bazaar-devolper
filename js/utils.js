@@ -34,30 +34,26 @@ async function checkInternetConnection(showAlert = true) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 3000); // 3 ثوانٍ
 
+    // ✅ إصلاح: استخدام وضع 'no-cors' لزيادة الموثوقية وتجنب مشاكل CORS.
+    // هذا الوضع لا يعيد status code حقيقي، لكن نجاح الطلب نفسه يكفي لتأكيد الاتصال.
     const response = await fetch("https://www.gstatic.com/generate_204", {
       method: "GET",
-      cache: "no-cache",
+      mode: "no-cors", // السماح بالطلب دون الحاجة لاستجابة CORS كاملة
       signal: controller.signal,
     });
 
     clearTimeout(timeout);
 
-    // 3️⃣ إذا عادت استجابة 204 → الإنترنت يعمل فعلاً
-    if (response.status === 204) {
-      console.log("[فحص الشبكة] تم تأكيد الاتصال (تم استلام 204).");
-      isConnectedCache = true;
-      return true;
-    }
-
-    console.warn(`[فحص الشبكة] استجابة غير متوقعة: ${response.status}`);
-    if (showAlert) {
-        Swal.fire('لا يوجد اتصال بالإنترنت', 'يرجى التحقق من اتصالك بالشبكة.', 'error');
-    }
-    isConnectedCache = false;
-    return false;
+    // 3️⃣ إذا لم يحدث خطأ في الطلب (لم يدخل في catch)، فهذا يعني أن الاتصال موجود.
+    console.log("[فحص الشبكة] تم تأكيد الاتصال بنجاح.");
+    isConnectedCache = true;
+    return true;
 
   } catch (error) {
-    console.warn("[فحص الشبكة] خطأ:", error);
+    // إذا فشل الطلب (بسبب انقطاع الشبكة أو انتهاء المهلة)، فهذا يعني عدم وجود اتصال.
+    console.warn("[فحص الشبكة] فشل اختبار الاتصال:", error.name === 'AbortError' ? 'انتهت المهلة' : error.message);
+    // ✅ تحسين: عرض التنبيه فقط إذا كان مطلوبًا ولم يتم عرضه بالفعل
+    // (الدالة ستعرضه مرة واحدة عند فشل navigator.onLine)
     if (showAlert) {
         Swal.fire('لا يوجد اتصال بالإنترنت', 'يرجى التحقق من اتصالك بالشبكة.', 'error');
     }
