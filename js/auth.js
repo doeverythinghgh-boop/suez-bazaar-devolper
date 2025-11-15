@@ -165,19 +165,18 @@ async function setupFCM() {
         confirmButtonText: "موافق", // زر واحد للإغلاق
       });
 
-      // ✅ جديد: تسجيل الإشعار المستقبل في IndexedDB
+      // ✅ إعادة إضافة: تسجيل الإشعار المستقبل في IndexedDB لمستخدمي المتصفح
       if (typeof addNotificationLog === 'function') {
         addNotificationLog({
           type: 'received',
           title: title,
           body: body,
           timestamp: new Date(),
-          status: 'unread', // يبدأ كغير مقروء
-          relatedUser: { key: 'admin', name: 'الإدارة' }, // افتراضيًا من الإدارة
+          status: 'unread',
+          relatedUser: { key: 'admin', name: 'الإدارة' },
           payload: payload.data,
         });
       }
-
     });
 
     console.log("[FCM Setup] جاري طلب إذن عرض الإشعارات من المستخدم...");
@@ -447,4 +446,34 @@ async function logout() {
       window.location.href = "index.html";
     }
   });
+}
+
+/**
+ * ✅ جديد: دالة مخصصة ليتم استدعاؤها من كود الأندرويد الأصلي.
+ * تقوم هذه الدالة باستلام بيانات إشعار كـ JSON string وحفظه في IndexedDB.
+ * @param {string} notificationJson - سلسلة JSON تحتوي على بيانات الإشعار (title, body).
+ */
+function saveNotificationFromAndroid(notificationJson) {
+  console.log("[Auth] تم استدعاء saveNotificationFromAndroid من الأندرويد:", notificationJson);
+  try {
+    const notificationData = JSON.parse(notificationJson);
+    const { title, body } = notificationData;
+
+    if (typeof addNotificationLog === 'function') {
+      addNotificationLog({
+        type: 'received',
+        title: title,
+        body: body,
+        timestamp: new Date(),
+        status: 'unread',
+        relatedUser: { key: 'admin', name: 'الإدارة' }, // يمكن تحسينه لتمرير المرسل الفعلي
+        payload: notificationData,
+      });
+      console.log("[Auth] تم حفظ الإشعار من الأندرويد بنجاح في IndexedDB.");
+    } else {
+      console.error("[Auth] الدالة addNotificationLog غير موجودة. تأكد من تحميل ملف db-manager.js.");
+    }
+  } catch (error) {
+    console.error("[Auth] خطأ في معالجة الإشعار القادم من الأندرويد:", error);
+  }
 }
