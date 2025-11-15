@@ -635,10 +635,13 @@ window.showProductDetails = async function(productData, onCloseCallback) {
     const response = await fetch("pages/showProduct.html");
     if (!response.ok) throw new Error(`فشل تحميل محتوى النافذة (status: ${response.status})`);
     modal.innerHTML = await response.text();
+    // ✅ **الإصلاح الرئيسي**: يجب أن يتم استدعاء الدوال التي تعتمد على محتوى النافذة
+    // **بعد** تحميل المحتوى بنجاح.
+    populateProductDetails(productData, onCloseCallback);
   } catch (error) {
     console.error('[Modal] Failed to fetch or render showProduct.html:', error);
     Swal.fire('خطأ في التحميل', 'حدث خطأ أثناء محاولة تحميل تفاصيل المنتج. يرجى المحاولة مرة أخرى.', 'error').then(() => {
-      // ✅ إصلاح: إعادة إظهار نافذة البحث إذا فشل تحميل محتوى النافذة
+      // ✅ إصلاح: استدعاء دالة رد الاتصال إذا فشل تحميل محتوى النافذة
       if (typeof onCloseCallback === 'function') onCloseCallback();
     });
     return; // إيقاف التنفيذ
@@ -646,6 +649,16 @@ window.showProductDetails = async function(productData, onCloseCallback) {
 
   // تعبئة البيانات
   document.getElementById("product-modal-name").textContent = productData.productName || "تفاصيل المنتج";
+  
+  // إظهار النافذة
+  modal.style.display = "block";
+  document.body.classList.add("modal-open");
+};
+
+/**
+ * @description يملأ تفاصيل المنتج ويربط الأحداث بعد تحميل محتوى النافذة المنبثقة.
+ */
+function populateProductDetails(productData, onCloseCallback) {
   document.getElementById("product-modal-quantity").textContent = productData.availableQuantity;
   // ✅ تعديل: التعامل مع السعر قبل الخصم
   document.getElementById("product-modal-price").textContent = `${productData.pricePerItem} جنيه`;
@@ -696,10 +709,7 @@ window.showProductDetails = async function(productData, onCloseCallback) {
   }
 
 
-  // إظهار النافذة
-  modal.style.display = "block";
-  document.body.classList.add("modal-open");
-
+  const modal = document.getElementById("product-details-modal");
   // وظيفة الإغلاق
   const closeModal = () => {
     console.log('[Modal] Closing product details modal.');
@@ -789,7 +799,7 @@ window.showProductDetails = async function(productData, onCloseCallback) {
       });
     }
   });
-};
+}
 
 /**
  * يضيف سجلاً جديدًا إلى جدول التحديثات.
