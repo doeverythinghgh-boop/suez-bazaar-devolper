@@ -114,5 +114,27 @@ async function getNotificationLogs(type = 'all', limit = 50) {
   });
 }
 
+/**
+ * ✅ جديد: يمسح جميع السجلات من مخزن الإشعارات.
+ * @returns {Promise<void>}
+ */
+async function clearNotificationLogs() {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([NOTIFICATIONS_STORE], 'readwrite');
+    const store = transaction.objectStore(NOTIFICATIONS_STORE);
+    const request = store.clear(); // استخدام دالة clear() لمسح كل شيء
+
+    request.onsuccess = () => {
+      console.log('[DB] تم مسح جميع سجلات الإشعارات بنجاح.');
+      resolve();
+    };
+
+    request.onerror = (event) => {
+      console.error('[DB] فشل مسح سجلات الإشعارات:', event.target.error);
+      reject('فشل مسح السجلات.');
+    };
+  });
+}
 // قم بتهيئة قاعدة البيانات عند تحميل السكريبت
 initDB();
