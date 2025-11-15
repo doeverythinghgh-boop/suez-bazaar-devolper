@@ -22,8 +22,16 @@ async function showNotificationsLogModal() {
 
   // ✅ جديد: تعريف دالة معالج الحدث لتحديث الواجهة
   const handleNewNotification = (event) => {
+    // ✅ إصلاح: التحقق مما إذا كانت النافذة مفتوحة بالفعل قبل تحديثها.
+    // هذا يمنع النافذة من الظهور تلقائيًا إذا كانت مغلقة.
+    if (modalContainer.style.display !== 'block') {
+      console.log('[NotificationsModal] تم استقبال إشعار جديد، لكن النافذة مغلقة. سيتم تجاهل تحديث الواجهة.');
+      return; // إيقاف التنفيذ إذا كانت النافذة غير مرئية
+    }
+
     const newLog = event.detail;
     console.log('[NotificationsModal] تم استقبال إشعار جديد عبر الحدث، سيتم تحديث الواجهة:', newLog);
+
     // ببساطة، نقوم بإعادة رسم النافذة بالكامل لضمان عرض أحدث البيانات
     // هذا النهج أبسط وأكثر موثوقية من محاولة تعديل DOM يدويًا.
     showNotificationsLogModal();
