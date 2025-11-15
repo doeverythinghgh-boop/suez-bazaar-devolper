@@ -264,7 +264,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * يتعامل مع الإجراءات بعد تسجيل دخول ناجح.
  * @param {object} user - كائن المستخدم المسجل دخوله.
  */
-function handleLoginSuccess(user) {
+async function handleLoginSuccess(user) {
   console.log('%c[Login Page] دخلنا دالة handleLoginSuccess. بيانات المستخدم:', 'color: green;', user);
   localStorage.setItem("loggedInUser", JSON.stringify(user));
 
@@ -274,12 +274,15 @@ function handleLoginSuccess(user) {
     console.log('[Login Page] المستخدم مؤهل، جاري استدعاء setupFCM() الآن...');
     if (typeof setupFCM === 'function') {
       setupFCM();
+      await askForNotificationPermission();
     }
   } else {
     console.log('[Login Page] المستخدم غير مؤهل للإشعارات، تم تخطي استدعاء setupFCM().');
   }
   updateViewForLoggedInUser(user);
   if (window.updateCartBadge) window.updateCartBadge();
+
+
 
   Swal.fire({
     icon: "success",
@@ -294,6 +297,16 @@ function handleLoginSuccess(user) {
       window.location.href = "index.html";
     }
   });
+}
+
+async function askForNotificationPermission() {
+  // التحقق من وجود الكائن 'Android' للتأكد من أن الكود يعمل داخل تطبيق أندرويد
+  if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
+    console.log("Calling native function to request notification permission...");
+    window.Android.requestNotificationPermission();
+  } else {
+    console.log("Android interface not available.");
+  }
 }
 
 /**
