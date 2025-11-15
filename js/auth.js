@@ -13,10 +13,18 @@
  * الحصول على توكن FCM، وإرساله إلى السيرفر.
  */
 async function setupFCM() {
-    const isOnline = await checkInternetConnection();
+  // ✅ تحسين: إضافة علم لمنع إعادة التهيئة في كل مرة يتم فيها تحميل الصفحة.
+  // هذا يضمن أن عملية الإعداد تتم مرة واحدة فقط لكل جلسة.
+  if (window.fcmInitialized) {
+    console.log("[FCM Setup] تم تهيئة FCM بالفعل في هذه الجلسة. سيتم التخطي.");
+    return;
+  }
+
+  const isOnline = await checkInternetConnection();
   if (!isOnline) {
     return { error: "لا يوجد اتصال بالإنترنت." };
   }
+
   // دالة مساعدة لإرسال التوكن إلى الخادم لتجنب التكرار
   async function sendTokenToServer(userKey, token, platform) {
     console.log(`%c[FCM] Sending token to server...`, "color: #fd7e14");
@@ -156,6 +164,20 @@ async function setupFCM() {
         icon: "info", // أيقونة معلومات
         confirmButtonText: "موافق", // زر واحد للإغلاق
       });
+
+      // ✅ جديد: تسجيل الإشعار المستقبل في IndexedDB
+      if (typeof addNotificationLog === 'function') {
+        addNotificationLog({
+          type: 'received',
+          title: title,
+          body: body,
+          timestamp: new Date(),
+          status: 'unread', // يبدأ كغير مقروء
+          relatedUser: { key: 'admin', name: 'الإدارة' }, // افتراضيًا من الإدارة
+          payload: payload.data,
+        });
+      }
+
     });
 
     console.log("[FCM Setup] جاري طلب إذن عرض الإشعارات من المستخدم...");
@@ -167,12 +189,6 @@ async function setupFCM() {
       );
 
       let fcmToken = localStorage.getItem("fcm_token");
-      if (fcmToken) {
-        console.log(
-          "[FCM Setup] تم العثور على توكن مخزن في localStorage:",
-          fcmToken
-        );
-      }
 
       if (!fcmToken) {
         console.log(
@@ -195,20 +211,19 @@ async function setupFCM() {
             );
             localStorage.setItem("fcm_token", newFcmToken);
             fcmToken = newFcmToken;
+
+            // ✅ تحسين: إرسال التوكن إلى الخادم فقط عند الحصول على توكن جديد.
+            console.log("[FCM] جاري إرسال التوكن الجديد إلى الخادم...");
+            await sendTokenToServer(loggedInUser.user_key, fcmToken, "web");
+
           } else {
             console.error("[FCM] فشل في الحصول على توكن جديد من Firebase.");
           }
         } catch (err) {
           console.error("[FCM] خطأ عند طلب التوكن من Firebase:", err);
-          return;
         }
-      }
-
-      if (fcmToken) {
-        // استدعاء الدالة المساعدة الجديدة
-        await sendTokenToServer(loggedInUser.user_key, fcmToken, "web");
       } else {
-        console.error("[FCM] لم يتمكن من الحصول على توكن لإرساله إلى الخادم.");
+        console.log("[FCM] تم العثور على توكن مخزن محليًا. لا حاجة لإرساله مرة أخرى.");
       }
     } else {
       console.warn("[FCM Setup] تم رفض إذن إرسال الإشعارات من قبل المستخدم.");
@@ -219,6 +234,10 @@ async function setupFCM() {
       "color: #dc3545",
       error
     );
+  } finally {
+    // ✅ تحسين: تعيين العلم إلى true بعد اكتمال المحاولة (سواء نجحت أم فشلت)
+    // لمنع المحاولات المتكررة في نفس الجلسة.
+    window.fcmInitialized = true;
   }
 }
 
@@ -329,19 +348,26 @@ function checkLoginStatus() {
 
     // تحديث النص لعرض اسم المستخدم
     userText.textContent = user.username;
+  }
+}
 
-    // ✅ تحسين: التعامل مع حالة إلغاء المستخدم لأذونات الإشعارات
-    handleRevokedPermissions();
+/**
+ * ✅ حل بديل: دالة جديدة ومستقلة لتهيئة الإشعارات.
+ * يتم استدعاؤها من الصفحات التي تحتاج إلى استقبال الإشعارات.
+ */
+function initializeNotifications() {
+  const loggedInUser = localStorage.getItem("loggedInUser");
+  if (!loggedInUser) return;
 
-    // ✅ تعديل: إعداد الإشعارات فقط للمستخدمين المؤهلين (مسؤول، بائع، خدمة توصيل).
-    if (isUserEligibleForNotifications(user)) {
-      console.log("[Auth] مستخدم مؤهل، جاري إعداد FCM...");
-      setupFCM();
-    } else {
-      console.log(
-        "[Auth] المستخدم (عميل عادي) غير مؤهل لاستقبال الإشعارات. تم تخطي إعداد FCM."
-      );
-    }
+  const user = JSON.parse(loggedInUser);
+
+  handleRevokedPermissions();
+
+  if (isUserEligibleForNotifications(user)) {
+    console.log("[Auth] مستخدم مؤهل، جاري إعداد FCM...");
+    setupFCM();
+  } else {
+    console.log("[Auth] المستخدم (عميل عادي) غير مؤهل لاستقبال الإشعارات. تم تخطي إعداد FCM.");
   }
 }
 

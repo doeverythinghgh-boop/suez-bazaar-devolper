@@ -1,0 +1,78 @@
+/**
+ * @file css/notifications-log-modal.css
+ * @description أنماط خاصة بنافذة سجل الإشعارات.
+ */
+
+#notifications-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  background-color: #f8f9fa;
+}
+
+.notification-log-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  background-color: #fff;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border-left: 5px solid var(--primary-color);
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.notification-log-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+.notification-log-item.sent {
+  border-left-color: #3498db; /* أزرق للإشعارات المرسلة */
+}
+
+.notification-log-item.received {
+  border-left-color: #2ecc71; /* أخضر للإشعارات المستقبلة */
+}
+
+.notification-log-item.failed {
+  border-left-color: #e74c3c; /* أحمر للفاشلة */
+  opacity: 0.8;
+}
+
+.notification-log-icon {
+  font-size: 1.5rem;
+  margin-top: 0.25rem;
+  color: var(--primary-color);
+}
+
+.notification-log-item.sent .notification-log-icon { color: #3498db; }
+.notification-log-item.received .notification-log-icon { color: #2ecc71; }
+.notification-log-item.failed .notification-log-icon { color: #e74c3c; }
+
+.notification-log-content {
+  flex-grow: 1;
+}
+
+.notification-log-content h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.1rem;
+  color: #343a40;
+}
+
+.notification-log-content p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6c757d;
+  line-height: 1.5;
+}
+
+.notification-log-timestamp {
+  font-size: 0.8rem;
+  color: #adb5bd;
+  margin-top: 0.5rem;
+}

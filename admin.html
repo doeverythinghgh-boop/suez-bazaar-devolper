@@ -184,9 +184,15 @@
   <script src="js/auth.js"></script>
   <script src="js/turo.js"></script>
   <script src="js/utils.js"></script> <!-- ✅ إصلاح: إضافة ملف الدوال المساعدة للتحقق من الاتصال -->
+  <script src="js/db-manager.js"></script> <!-- ✅ إصلاح: إضافة مدير قاعدة البيانات المحلي لتسجيل الإشعارات -->
   <!-- ✅ إضافة: ضروري لعمل موديول الإعلان -->
   <script src="cloudflare-workers/cloudFileManager.js"></script>
   <script src="js/users-admin-modal.js"></script> <!-- ✅ جديد: إضافة ملف منطق موديول إدارة المستخدمين -->
   <script src="js/admin-page.js"></script>
+  <script>
+    // ✅ إصلاح: تهيئة مستمع الإشعارات عند تحميل الصفحة لضمان استقبالها
+    // ✅ حل بديل: استدعاء الدالة الجديدة المخصصة للإشعارات.
+    document.addEventListener('DOMContentLoaded', () => initializeNotifications());
+  </script>
 </body>
 </html>

@@ -110,6 +110,7 @@
     <script id="cart-script" src="js/cart.js"></script> <!-- ✅ إضافة: تحميل ملف السلة -->
     <script id="adver-module-script" src="js/adverModule.js"></script> <!-- ✅ جديد: إضافة ملف موديول الإعلانات -->
     <script id="search-modal-script" src="js/searchModal.js"></script> <!-- ✅ جديد: إضافة ملف نافذة البحث -->
+    <script src="js/db-manager.js"></script> <!-- ✅ إصلاح: إضافة مدير قاعدة البيانات المحلي لتسجيل الإشعارات -->
     <script id="main-script" src="js/main.js"></script>
     <script id="auth-script" src="js/auth.js"></script>
 
@@ -457,7 +458,8 @@
 
         // استدعاء الدالة للتحقق من حالة تسجيل الدخول
         console.log('[DOM] جاري التحقق من حالة تسجيل الدخول...');
-        checkLoginStatus();
+        checkLoginStatus(); // تبقى لتحديث الواجهة
+        initializeNotifications(); // ✅ حل بديل: إضافة استدعاء دالة الإشعارات الجديدة
         // استدعاء الدالة الجديدة لتحميل الفئات كجدول
         console.log('[DOM] جاري تحميل الفئات...');
         loadCategoriesAsTable();

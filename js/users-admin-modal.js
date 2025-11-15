@@ -165,11 +165,35 @@ async function initializeUsersAdminLogic(modalContainer) {
     sendBtn.disabled = false;
     sendBtn.innerHTML = '<i class="fas fa-paper-plane"></i>';
 
+    // ✅ جديد: تسجيل الإشعار المرسل في IndexedDB
+    const recipientUser = allUsers.find(u => u.user_key === userKey);
+
     if (result && result.success) {
       Swal.fire('تم الإرسال', 'تم إرسال الإشعار بنجاح.', 'success');
       messageInput.value = '';
+      if (typeof addNotificationLog === 'function' && recipientUser) {
+        addNotificationLog({
+          type: 'sent',
+          title: 'رسالة من الإدارة',
+          body: message,
+          timestamp: new Date(),
+          status: 'success',
+          relatedUser: { key: recipientUser.user_key, name: recipientUser.username },
+        });
+      }
     } else {
       Swal.fire('فشل الإرسال', `حدث خطأ: ${result.error}`, 'error');
+      if (typeof addNotificationLog === 'function' && recipientUser) {
+        addNotificationLog({
+          type: 'sent',
+          title: 'رسالة من الإدارة',
+          body: message,
+          timestamp: new Date(),
+          status: 'failed',
+          relatedUser: { key: recipientUser.user_key, name: recipientUser.username },
+          errorMessage: result.error,
+        });
+      }
     }
   });
 

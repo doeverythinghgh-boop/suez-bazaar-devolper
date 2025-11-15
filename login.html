@@ -26,13 +26,14 @@
   <link rel="stylesheet" href="css/purchases-modal.css" /> <!-- أنماط نافذة المشتريات -->
   <link rel="stylesheet" href="css/cart-modal.css" /> <!-- أنماط نافذة السلة -->
   <link rel="stylesheet" href="css/reports-modal.css" /> <!-- أنماط نافذة التقارير -->
+  <link rel="stylesheet" href="css/notifications-log-modal.css" /> <!-- ✅ جديد: أنماط نافذة سجل الإشعارات -->
   <!-- Global Config -->
   <script src="js/config.js"></script>
-  <!-- Google Fonts -->
+  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet" />
-  <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>
@@ -116,6 +117,10 @@
           <div id="user-actions-row" class="button-row">
             <button id="edit-profile-btn" class="button logout-btn-small"><i class="fas fa-user-cog"></i> تعديل
               البيانات</button>
+            <!-- ✅ جديد: زر لعرض سجل الإشعارات، سيتم إظهاره عبر JS -->
+            <button id="view-notifications-log-btn" class="button logout-btn-small" style="display: none;"><i class="fas fa-bell"></i> سجل الإشعارات</button>
+            <button id="logout-btn-alt" class="button logout-btn-small"><i class="fas fa-sign-out-alt"></i> تسجيل
+              البيانات</button>
             <button id="logout-btn-alt" class="button logout-btn-small"><i class="fas fa-sign-out-alt"></i> تسجيل
               الخروج</button>
           </div>
@@ -178,6 +183,11 @@
   <div id="users-modal-container" class="modal">
     <!-- سيتم ملء محتوى إدارة المستخدمين هنا -->
   </div>
+
+  <!-- ✅ جديد: حاوية نافذة سجل الإشعارات -->
+  <div id="notifications-log-modal-container" class="modal">
+    <!-- سيتم ملء محتوى سجل الإشعارات هنا -->
+  </div>
   
   <!-- ✅ إصلاح: إضافة حاوية نافذة تفاصيل المنتج المفقودة -->
   <div id="product-details-modal" class="modal">
@@ -193,7 +203,9 @@
   <script src="js/purchases-modal.js"></script>
   <script src="js/profile-modal.js"></script>
   <script src="js/reports-modal.js"></script>
+  <script src="js/db-manager.js"></script> <!-- ✅ إصلاح: إضافة مدير قاعدة البيانات المحلي (IndexedDB) -->
   <script src="js/seller.js"></script>
+  <script src="js/notifications-log-modal.js"></script> <!-- ✅ جديد: إضافة سكريبت النافذة الجديدة -->
   <script src="js/login-page.js"></script>
 </body>
 

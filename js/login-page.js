@@ -97,6 +97,18 @@ function updateViewForLoggedInUser(user) {
       }
     }
 
+    // ✅ جديد: إظهار زر "سجل الإشعارات" للمستخدمين المؤهلين
+    if (isUserEligibleForNotifications(user)) {
+      const viewNotificationsBtn = document.getElementById("view-notifications-log-btn");
+      if (viewNotificationsBtn) {
+        viewNotificationsBtn.style.display = 'inline-flex';
+        // التأكد من وجود الدالة قبل ربط الحدث
+        if (typeof showNotificationsLogModal === 'function') {
+          viewNotificationsBtn.addEventListener("click", showNotificationsLogModal);
+        }
+      }
+    }
+
     // ✅ جديد: إظهار زر "حركة المشتريات" للمسؤول أو البائع أو خدمة التوصيل
     const isAdvancedUser = (user.is_seller === 1 || user.is_seller === 2 || adminPhoneNumbers.includes(user.phone));
     if (isAdvancedUser) {
@@ -111,6 +123,9 @@ function updateViewForLoggedInUser(user) {
 // عند تحميل محتوى الصفحة بالكامل، يتم تنفيذ هذا الكود
 document.addEventListener("DOMContentLoaded", () => {
   const loggedInUser = localStorage.getItem("loggedInUser");
+  // ✅ إصلاح: تهيئة مستمع الإشعارات فورًا عند تحميل الصفحة للمستخدم المسجل دخوله.
+  // ✅ حل بديل: استدعاء الدالة الجديدة المخصصة للإشعارات.
+  if (typeof initializeNotifications === 'function') initializeNotifications();
   if (loggedInUser) {
     const user = JSON.parse(loggedInUser);
     updateViewForLoggedInUser(user);
