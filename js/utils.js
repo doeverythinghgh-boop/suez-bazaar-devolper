@@ -9,30 +9,7 @@ let isConnectedCache = false;
 const CONNECTION_CHECK_INTERVAL = 3000; // 3 ثوانٍ
 
 async function checkInternetConnection(showAlert = true) {
-
-if (window.Android && typeof window.Android.checkInternetWithToast === 'function') {
-
-    console.log("سيتم الآن فحص الاتصال بالإنترنت عبر كود Kotlin...");
-
-    // استدعاء الدالة مباشرة
-    const hasInternet = window.Android.checkInternetWithToast();
-
-    // 'hasInternet' سيحتوي على القيمة true أو false التي أرجعتها دالة Kotlin
-    if (hasInternet) {
-        console.log("الاتصال بالإنترنت موجود. القيمة المستلمة:", hasInternet);
-        // يمكنك هنا تنفيذ أي عملية تتطلب اتصال بالإنترنت
-        // مثال: fetch('https://api.example.com/data');
-
-    } else {
-        console.log("لا يوجد اتصال بالإنترنت. القيمة المستلمة:", hasInternet);
-        // الدالة في Kotlin ستقوم تلقائيًا بإظهار رسالة Toast للمستخدم
-        // يمكنك هنا أيضًا عرض رسالة بديلة داخل صفحة الويب نفسها
-    }
-
-} else {
-    console.warn("الكود لا يعمل ضمن WebView الخاص بالتطبيق أو أن الدالة غير معرفة.");
-}
-/////////////
+  
   const now = Date.now();
 
   // 🟦 استخدام النتيجة المخزنة إذا كان آخر فحص حديثًا
