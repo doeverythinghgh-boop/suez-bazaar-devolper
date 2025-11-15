@@ -29,6 +29,7 @@ if (window.Android && typeof window.Android.checkInternetWithToast === 'function
         // الدالة في Kotlin ستقوم تلقائيًا بإظهار رسالة Toast للمستخدم
         // يمكنك هنا أيضًا عرض رسالة بديلة داخل صفحة الويب نفسها
     }
+    return hasInternet;
 
 } else {
     console.warn("الكود لا يعمل ضمن WebView الخاص بالتطبيق أو أن الدالة غير معرفة.");
