@@ -4,13 +4,10 @@ import { createClient } from "@libsql/client/web";
 
 /**
  * @file api/sales-movement.js
- * @description نقطة نهاية API لجلب بيانات حركة المشتريات الكاملة.
  * @description نقطة نهاية API (API Endpoint) لجلب بيانات حركة المبيعات الكاملة.
  * 
- * هذه الدالة مخصصة للمستخدمين المتقدمين (مسؤول، بائع، خدمة توصيل).
  * هذه الدالة مخصصة للمستخدمين المصرح لهم (مثل المسؤول، البائع، أو خدمة التوصيل).
  * تقوم بجلب جميع الطلبات مع تفاصيلها، بما في ذلك بيانات العميل والمنتجات داخل كل طلب.
- * يتم تجميع النتائج حسب كل طلب (order_key) لتسهيل عرضها في الواجهة الأمامية.
  * يتم تجميع النتائج حسب مفتاح الطلب (order_key) لتسهيل عرضها في الواجهة الأمامية.
  */
 
@@ -22,7 +19,6 @@ export const config = {
 
 // الدالة الرئيسية التي تتعامل مع الطلبات الواردة إلى /api/sales-movement
 export default async function handler(request) {
-  // ترويسات CORS للسماح بالطلبات
   // ترويسات CORS للسماح بالطلبات من أي مصدر ('*').
   // هذا ضروري للسماح للواجهة الأمامية (المستضافة على نطاق مختلف) بالوصول إلى هذه الـ API.
   const corsHeaders = {
@@ -43,7 +39,6 @@ export default async function handler(request) {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
-
   // استخدام كتلة try...catch للتعامل مع أي أخطاء قد تحدث أثناء تنفيذ الكود.
   try {
     console.log('[API: /api/sales-movement] بدء جلب حركة المشتريات...');
@@ -74,7 +69,6 @@ export default async function handler(request) {
         JOIN users AS u ON o.user_key = u.user_key
         JOIN order_items AS oi ON o.order_key = oi.order_key
         JOIN marketplace_products AS p ON oi.product_key = p.product_key
-        ORDER BY o.created_at DESC;
         ORDER BY o.created_at DESC; -- ترتيب النتائج من الأحدث إلى الأقدم.
       `,
       args: [],
@@ -85,7 +79,6 @@ export default async function handler(request) {
     if (rows.length > 0) console.log(rows[0]);
 
 
-    // تجميع المنتجات تحت كل طلب
     // الخطوة التالية هي تجميع البيانات. الاستعلام يُرجع صفًا لكل "منتج" في الطلب،
     // مما يؤدي إلى تكرار بيانات الطلب نفسه. لذلك، نحتاج إلى تجميع هذه الصفوف.
     // نستخدم Map لضمان أن كل طلب (order_key) يظهر مرة واحدة فقط.
@@ -119,7 +112,6 @@ export default async function handler(request) {
     // ✅ تتبع: تسجيل البيانات المجمعة قبل إرسالها
     console.log(`[DEV-LOG] /api/sales-movement: تم تجميع البيانات في ${groupedOrders.length} طلب. عينة من الطلب الأول:`);
     if (groupedOrders.length > 0) console.log(groupedOrders[0]);
-
 
     // إرجاع البيانات المجمعة كاستجابة JSON ناجحة.
     return new Response(JSON.stringify(groupedOrders), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
