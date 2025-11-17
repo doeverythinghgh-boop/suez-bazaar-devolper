@@ -133,12 +133,12 @@ export default async function handler(request) {
       } = await request.json();
 
       // تحقق بسيط من وجود البيانات الأساسية
-      if (!user_key || !product_key || !product_price || !product_quantity || !MainCategory || !productName) {
+  /*  if (!user_key || !product_key || !product_price || !product_quantity || !MainCategory || !productName) {
         return new Response(JSON.stringify({ error: "البيانات الأساسية للمنتج مطلوبة." }), {
           status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
-      }
+      }*/
 
       await db.execute({
         sql: "INSERT INTO marketplace_products (productName, user_key, product_key, product_description, product_price, original_price, product_quantity, user_message, user_note, ImageName, MainCategory, SubCategory, ImageIndex) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",

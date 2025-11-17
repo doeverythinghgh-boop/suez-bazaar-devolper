@@ -105,7 +105,11 @@ async function addProduct(productData) {
     const data = await response.json();
 
     if (!response.ok) {
-      return { error: data.error || `HTTP error! status: ${response.status}` };
+      // ✅ جديد: إضافة رسالة تسجيل مفصلة للمطور عند حدوث خطأ 400
+      console.error('%c[API Error] addProduct failed with status:', 'color: red; font-weight: bold;', response.status);
+      console.error('%c[API Error] Server Response:', 'color: red;', data);
+      console.error('%c[API Error] Sent Payload:', 'color: red;', productData);
+      return { error: data.error || `فشل الاتصال بالخادم (Status: ${response.status})` };
     }
 
     console.log('%c[API] addProduct successful.', 'color: green;', data);
@@ -138,7 +142,11 @@ async function updateProduct(productData) {
     const data = await response.json();
 
     if (!response.ok) {
-      return { error: data.error || `HTTP error! status: ${response.status}` };
+      // ✅ جديد: إضافة رسالة تسجيل مفصلة للمطور عند حدوث خطأ 400
+      console.error('%c[API Error] updateProduct failed with status:', 'color: red; font-weight: bold;', response.status);
+      console.error('%c[API Error] Server Response:', 'color: red;', data);
+      console.error('%c[API Error] Sent Payload:', 'color: red;', productData);
+      return { error: data.error || `فشل الاتصال بالخادم (Status: ${response.status})` };
     }
 
     console.log('%c[API] updateProduct successful.', 'color: green;', data);

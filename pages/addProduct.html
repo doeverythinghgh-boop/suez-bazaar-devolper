@@ -86,7 +86,7 @@
 
 
     <!-- صف جديد للسعر والكمية -->
-    <div class="form-row">
+    <div class="form-row" id="price-quantity-row">
       <!-- حقل الكمية -->
       <div class="form-group">
         <label for="product-quantity"><i class="fas fa-boxes-stacked"></i> الكمية المتاحة</label>
@@ -176,6 +176,19 @@ async function initializeAddProductForm(editProductData = null) {
       subCategorySelect.innerHTML = '<option value="">-- اختر الفئة الفرعية --</option>';
       subCategorySelect.disabled = true;
 
+      // ✅ جديد: إظهار أو إخفاء حقول السعر والكمية بناءً على الفئة الرئيسية
+      const priceQuantityRow = document.getElementById('price-quantity-row');
+      const quantityInput = document.getElementById('product-quantity');
+      const priceInput = document.getElementById('product-price');
+      if (selectedCategoryId === '6') { // id=6 هي "الخدمات العامة"
+        priceQuantityRow.style.display = 'none';
+        quantityInput.required = false; // إلغاء شرط الإدخال الإجباري
+        priceInput.required = false;    // إلغاء شرط الإدخال الإجباري
+      } else {
+        priceQuantityRow.style.display = 'flex';
+        quantityInput.required = true;
+        priceInput.required = true;
+      }
       if (!selectedCategoryId) {
         subCategoryGroup.style.display = "none";
         return;
@@ -212,8 +225,14 @@ async function initializeAddProductForm(editProductData = null) {
     document.getElementById('product-description').value = editProductData.product_description || '';
     document.getElementById('seller-message').value = editProductData.user_message || '';
     document.getElementById('product-notes').value = editProductData.user_note || '';
-    document.getElementById('product-quantity').value = editProductData.product_quantity || '';
-    document.getElementById('product-price').value = editProductData.product_price || '';
+
+    // ✅ إصلاح شامل: التحقق من الفئة قبل تعبئة السعر والكمية
+    const isServiceCategory = editProductData.MainCategory == '6';
+    const quantityInput = document.getElementById('product-quantity');
+    const priceInput = document.getElementById('product-price');
+    quantityInput.value = isServiceCategory ? 0 : (editProductData.product_quantity || '');
+    priceInput.value = isServiceCategory ? 0 : (editProductData.product_price || '');
+
     document.getElementById('original-price').value = editProductData.original_price || ''; // جديد
 
     // جديد: تعبئة الصور الموجودة مسبقًا
@@ -255,6 +274,7 @@ async function initializeAddProductForm(editProductData = null) {
     if (mainCatId) {
       mainCategorySelect.value = mainCatId;
       // تفعيل حدث "change" يدويًا لتحميل الفئات الفرعية
+      // ✅ تعديل: تفعيل الحدث لإخفاء حقول السعر إذا كانت الفئة هي الخدمات
       mainCategorySelect.dispatchEvent(new Event('change'));
     }
     // انتظر قليلاً للسماح بتحميل الفئات الفرعية قبل تحديدها
@@ -763,28 +783,32 @@ window.productModule = (function() {
 
     // 4. التحقق من وجود وصف للمنتج
     clearError(descriptionTextarea);
-    if (!descriptionTextarea.value.trim()) {
-      showError(descriptionTextarea, 'وصف المنتج مطلوب.');
+    if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
+      showError(descriptionTextarea, 'وصف المنتج مطلوب (10 أحرف على الأقل).');
       isValid = false;
     }
 
     // 5. التحقق من وجود رسالة من البائع
     clearError(sellerMessageTextarea);
-    if (!sellerMessageTextarea.value.trim()) {
-      showError(sellerMessageTextarea, 'رسالة البائع مطلوبة.');
+    if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
+      showError(sellerMessageTextarea, 'رسالة البائع مطلوبة (10 أحرف على الأقل).');
       isValid = false;
     }
 
+    const mainCategoryIdForValidation = document.getElementById('main-category').value;
+
     // 6. التحقق من الكمية
     clearError(quantityInput);
-    if (!quantityInput.value || parseFloat(quantityInput.value) < 1) {
+    // ✅ إصلاح: التحقق من الكمية فقط إذا لم تكن من فئة الخدمات
+    if (mainCategoryIdForValidation !== '6' && (!quantityInput.value || parseFloat(quantityInput.value) < 1)) {
       showError(quantityInput, 'يجب إدخال كمية متاحة صالحة (1 على الأقل).');
       isValid = false;
     }
 
     // 7. التحقق من السعر
     clearError(priceInput);
-    if (priceInput.value === '' || parseFloat(priceInput.value) < 0) {
+    // ✅ إصلاح: التحقق من السعر فقط إذا لم تكن من فئة الخدمات
+    if (mainCategoryIdForValidation !== '6' && (priceInput.value === '' || parseFloat(priceInput.value) < 0)) {
       showError(priceInput, 'يجب إدخال سعر صالح للمنتج.');
       isValid = false;
     }
@@ -793,6 +817,14 @@ window.productModule = (function() {
     if (!isValid) {
       console.warn('[ProductForm] Validation failed. Submission aborted.');
       return; // إيقاف التنفيذ إذا كانت البيانات غير صالحة
+    }
+
+    // ✅ إصلاح شامل: قبل الإرسال، تأكد من أن قيم السعر والكمية هي 0 إذا كانت الفئة هي الخدمات
+    const mainCatForSubmit = document.getElementById('main-category').value;
+    if (mainCatForSubmit === '6') {
+      console.log('[ProductForm] Service category detected. Forcing price and quantity to 0 before submission.');
+      document.getElementById('product-price').value = 0;
+      document.getElementById('product-quantity').value = 0;
     }
 
     // إذا كانت جميع البيانات صالحة، استمر في عملية الرفع
@@ -863,12 +895,12 @@ window.productModule = (function() {
         user_key: user.user_key,
         product_key: productSerial,
         product_description: normalizeArabicText(document.getElementById('product-description').value.trim()), // ✅ تحسين: تنقيح النص قبل الحفظ
-        product_price: document.getElementById('product-price').value,
-        product_quantity: document.getElementById('product-quantity').value,
-        original_price: document.getElementById('original-price').value || null, // جديد
+        product_price: parseFloat(document.getElementById('product-price').value) || 0,
+        product_quantity: parseInt(document.getElementById('product-quantity').value, 10) || 0, // ✅ إصلاح: ضمان تحويل الكمية إلى عدد صحيح
+        original_price: parseFloat(document.getElementById('original-price').value) || null,
         user_message: normalizeArabicText(document.getElementById('seller-message').value.trim()), // ✅ تحسين: تنقيح النص قبل الحفظ
         user_note: normalizeArabicText(document.getElementById('product-notes').value.trim()), // ✅ تحسين: تنقيح النص قبل الحفظ
-        ImageName: finalImageNames.join(','), // استخدام القائمة النهائية للصور
+        ImageName: finalImageNames.join(','),
         MainCategory: document.getElementById('main-category').value, // جديد
         SubCategory: document.getElementById('sub-category').value,   // جديد
         ImageIndex: finalImageNames.length // جديد
@@ -943,6 +975,12 @@ window.productModule = (function() {
   return {
     images,
     originalImageNames: [], // جديد: إضافة الخاصية هنا
+    genId,
+    createPreviewItem
+  };
+
+})(); // نهاية الوحدة
+</script>
     genId,
     createPreviewItem
   };
