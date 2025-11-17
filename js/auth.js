@@ -168,6 +168,7 @@ async function setupFCM() {
       // ✅ إعادة إضافة: تسجيل الإشعار المستقبل في IndexedDB لمستخدمي المتصفح
       if (typeof addNotificationLog === 'function') {
         addNotificationLog({
+          messageId: payload.messageId, // ✅ جديد: تمرير المعرف الفريد للإشعار
           type: 'received',
           title: title,
           body: body,
@@ -483,6 +484,7 @@ function saveNotificationFromAndroid(notificationJson) {
 
     if (typeof addNotificationLog === 'function') {
       addNotificationLog({
+        messageId: notificationData.messageId || `android_${Date.now()}`, // ✅ جديد: استخدام المعرف الفريد أو إنشاء واحد
         type: 'received',
         title: title,
         body: body,
