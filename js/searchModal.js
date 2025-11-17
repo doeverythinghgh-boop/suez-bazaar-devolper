@@ -158,7 +158,9 @@ async function initSearchModal(containerId, openTriggerId) {
               sellerMessage: productData.user_message,
               description: productData.product_description,
               sellerName: productData.seller_username,
-              sellerPhone: productData.seller_phone
+              sellerPhone: productData.seller_phone,
+              MainCategory: productData.MainCategory, // ✅ إضافة: تمرير ID الفئة الرئيسية
+              SubCategory: productData.SubCategory    // ✅ إضافة: تمرير ID الفئة الفرعية
             };
 
             // 1. إخفاء نافذة البحث الحالية

@@ -624,6 +624,18 @@ async function sendNotification(token, title, body) {
  * @param {object} productData - بيانات المنتج الكاملة.
  */
 window.showProductDetails = async function(productData, onCloseCallback) {
+  // ✅ جديد: التحقق من وجود بيانات الفئة قبل فتح النافذة
+  if (!productData.MainCategory || !productData.SubCategory) {
+    console.error('[Modal] Missing category data. Cannot open product details.', productData);
+    Swal.fire(
+      'خطأ في البيانات',
+      'لا يمكن عرض تفاصيل المنتج لعدم توفر معلومات الفئة.',
+      'error'
+    );
+    // استدعاء دالة رد الاتصال إذا فشل الفتح
+    if (typeof onCloseCallback === 'function') onCloseCallback();
+    return; // إيقاف التنفيذ
+  }
   // ✅ جديد: التحقق من الاتصال بالإنترنت أولاً
   const isOnline = await checkInternetConnection();
   if (!isOnline) {

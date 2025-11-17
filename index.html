@@ -406,7 +406,9 @@
                     sellerMessage: product.user_message,
                     description: product.product_description,
                     sellerName: product.seller_username,
-                    sellerPhone: product.seller_phone
+                    sellerPhone: product.seller_phone,
+                    MainCategory: product.MainCategory, // ✅ إضافة: تمرير ID الفئة الرئيسية
+                    SubCategory: product.SubCategory   // ✅ إضافة: تمرير ID الفئة الفرعية
                   };
                   window.showProductDetails(productDataForModal);
                 }

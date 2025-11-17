@@ -75,6 +75,21 @@ async function initializeUsersAdminLogic(modalContainer) {
           notificationUI = '<span class="no-token">غير مؤهل للإشعارات</span>';
         }
 
+        // ✅ جديد: التحقق إذا كان المستخدم مسؤولاً لعرض دوره كنص ثابت
+        const isAdmin = adminPhoneNumbers.includes(u.phone);
+        let roleUI;
+        if (isAdmin) {
+          // إذا كان المستخدم مسؤولاً، اعرض نصًا ثابتًا
+          roleUI = `<div class="user-role-static"><i class="fas fa-user-shield"></i> <span>مسؤول</span></div>`;
+        } else {
+          // إذا لم يكن مسؤولاً، اعرض القائمة المنسدلة كالمعتاد
+          roleUI = `<select id="role-select-${u.user_key}" class="user-role-select" data-phone="${u.phone}" data-original-state="${u.is_seller}">
+                      <option value="0" ${u.is_seller === 0 ? 'selected' : ''}>عميل</option>
+                      <option value="1" ${u.is_seller === 1 ? 'selected' : ''}>بائع</option>
+                      <option value="2" ${u.is_seller === 2 ? 'selected' : ''}>خدمة توصيل</option>
+                    </select>`;
+        }
+
         usersHTML += `
           <div class="user-card" data-phone="${u.phone}">
             <div class="user-card-header">
@@ -87,11 +102,7 @@ async function initializeUsersAdminLogic(modalContainer) {
             <div class="user-card-body">
               <div class="user-card-field">
                 <label for="role-select-${u.user_key}">دور المستخدم</label>
-                <select id="role-select-${u.user_key}" class="user-role-select" data-phone="${u.phone}" data-original-state="${u.is_seller}">
-                  <option value="0" ${u.is_seller === 0 ? 'selected' : ''}>عميل</option>
-                  <option value="1" ${u.is_seller === 1 ? 'selected' : ''}>بائع</option>
-                  <option value="2" ${u.is_seller === 2 ? 'selected' : ''}>خدمة توصيل</option>
-                </select>
+                ${roleUI}
               </div>
               <div class="user-card-field">
                 <label>إرسال إشعار</label>

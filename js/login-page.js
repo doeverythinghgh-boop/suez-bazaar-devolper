@@ -65,15 +65,15 @@ function updateViewForLoggedInUser(user) {
     userActions.style.display = "block";
     document.getElementById("edit-profile-btn").addEventListener("click", () => showEditProfileModal(user));
 
-    // التحقق مما إذا كان المستخدم بائعًا
-    if (user.is_seller === 1) {
+    // ✅ تعديل: التحقق مما إذا كان المستخدم بائعًا (1) أو مسؤولاً (adminPhoneNumbers)
+    if (user.is_seller === 1 || adminPhoneNumbers.includes(user.phone)) {
       const sellerActions = document.getElementById("seller-actions");
       sellerActions.style.display = "block";
       document.getElementById("add-product-btn").addEventListener("click", showAddProductModal);
       document.getElementById("view-my-products-btn").addEventListener("click", () => showMyProducts(user.user_key));
     }
 
-    // ✅ جديد: التحقق مما إذا كان المستخدم "خدمة توصيل"
+    // التحقق مما إذا كان المستخدم "خدمة توصيل"
     if (user.is_seller === 2) {
       const deliveryActions = document.getElementById("delivery-actions");
       deliveryActions.style.display = "block";
@@ -81,7 +81,7 @@ function updateViewForLoggedInUser(user) {
       // document.getElementById("view-delivery-requests-btn").addEventListener("click", showDeliveryRequests);
     }
 
-    // التحقق مما إذا كان المستخدم هو أحد المسؤولين (adminPhoneNumbers معرفة في config.js)
+    // ✅ تعديل: التحقق مما إذا كان المستخدم مسؤولاً (adminPhoneNumbers)
     if (adminPhoneNumbers.includes(user.phone)) {
       const adminActions = document.getElementById("admin-actions");
       adminActions.style.display = "block";
@@ -110,8 +110,8 @@ function updateViewForLoggedInUser(user) {
     }
 
     // ✅ جديد: إظهار زر "حركة المشتريات" للمسؤول أو البائع أو خدمة التوصيل
-    const isAdvancedUser = (user.is_seller === 1 || user.is_seller === 2 || adminPhoneNumbers.includes(user.phone));
-    if (isAdvancedUser) {
+    // ✅ تعديل: تحديث الشرط ليشمل المسؤول (adminPhoneNumbers)
+    if (user.is_seller === 1 || user.is_seller === 2 || adminPhoneNumbers.includes(user.phone)) {
       const reportsActions = document.getElementById("reports-actions");
       reportsActions.style.display = "block";
       // ✅ تفعيل: ربط حدث النقر بالزر 

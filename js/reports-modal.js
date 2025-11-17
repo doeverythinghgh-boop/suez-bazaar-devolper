@@ -182,7 +182,9 @@ async function showSalesMovementModal(userKey) {
           availableQuantity: productData.product_quantity,
           sellerMessage: productData.user_message,
           description: productData.product_description,
-          imageSrc: productData.ImageName ? productData.ImageName.split(',').map(name => `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`) : []
+          imageSrc: productData.ImageName ? productData.ImageName.split(',').map(name => `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`) : [],
+          MainCategory: productData.MainCategory, // ✅ إضافة: تمرير ID الفئة الرئيسية
+          SubCategory: productData.SubCategory    // ✅ إضافة: تمرير ID الفئة الفرعية
         };
         window.showProductDetails(productDataForModal);
       } else {

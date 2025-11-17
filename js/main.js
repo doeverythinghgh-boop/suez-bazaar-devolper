@@ -250,6 +250,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
   loadCategories(); // Load categories
 
-  // The `window.showProductDetails` function is already defined globally in `js/turo.js`.
-  // We don't need to redefine it here.
 });

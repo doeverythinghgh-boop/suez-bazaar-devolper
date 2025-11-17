@@ -317,12 +317,12 @@ function isUserEligibleForNotifications(user) {
   if (!user || user.is_guest) {
     return false;
   }
-  // adminPhoneNumbers متاح بشكل عام من ملف config.js
-  const isAdvancedUser =
-    user.is_seller === 1 || // بائع
-    user.is_seller === 2 || // خدمة توصيل
-    adminPhoneNumbers.includes(user.phone); // مسؤول
-  return isAdvancedUser;
+  // ✅ تعديل: توحيد طريقة التحقق من المسؤول لتشمل is_seller === 3 أو رقم الهاتف
+  const isAdmin = user.is_seller === 3 || (adminPhoneNumbers && adminPhoneNumbers.includes(user.phone));
+  
+  return user.is_seller === 1 || // بائع
+         user.is_seller === 2 || // خدمة توصيل
+         isAdmin;              // مسؤول
 }
 
 /**
