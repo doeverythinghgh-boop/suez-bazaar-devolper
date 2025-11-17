@@ -20,10 +20,7 @@ async function setupFCM() {
     return;
   }
 
-  const isOnline = await checkInternetConnection();
-  if (!isOnline) {
-    return { error: "لا يوجد اتصال بالإنترنت." };
-  }
+  
 
   // دالة مساعدة لإرسال التوكن إلى الخادم لتجنب التكرار
   async function sendTokenToServer(userKey, token, platform) {
@@ -377,7 +374,7 @@ function checkLoginStatus() {
  * ✅ حل بديل: دالة جديدة ومستقلة لتهيئة الإشعارات.
  * يتم استدعاؤها من الصفحات التي تحتاج إلى استقبال الإشعارات.
  */
-function initializeNotifications() {
+async function initializeNotifications() {
   const loggedInUser = localStorage.getItem("loggedInUser");
   if (!loggedInUser) return;
 
@@ -387,7 +384,7 @@ function initializeNotifications() {
 
   if (isUserEligibleForNotifications(user)) {
     console.log("[Auth] مستخدم مؤهل، جاري إعداد FCM...");
-    setupFCM();
+   await setupFCM();
   } else {
     console.log("[Auth] المستخدم (عميل عادي) غير مؤهل لاستقبال الإشعارات. تم تخطي إعداد FCM.");
   }
@@ -397,10 +394,7 @@ function initializeNotifications() {
  * يقوم بتسجيل خروج المستخدم عن طريق إزالة بياناته من التخزين المحلي وإعادة التوجيه.
  */
 async function logout() {
-    const isOnline = await checkInternetConnection();
-  if (!isOnline) {
-    return { error: "لا يوجد اتصال بالإنترنت." };
-  }
+ 
   const existingWebToken = localStorage.getItem("fcm_token");
   const existingAndroidToken = localStorage.getItem("android_fcm_key");
 

@@ -280,7 +280,7 @@ async function handleLoginSuccess(user) {
   if (typeof isUserEligibleForNotifications === 'function' && isUserEligibleForNotifications(user)) {
     console.log('[Login Page] المستخدم مؤهل، جاري استدعاء setupFCM() الآن...');
     if (typeof setupFCM === 'function') {
-      setupFCM();
+     await setupFCM();
       await askForNotificationPermission();
     }
   } else {
