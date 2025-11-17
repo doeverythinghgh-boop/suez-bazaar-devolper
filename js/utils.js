@@ -160,20 +160,23 @@ function normalizeArabicText(text) {
 }
 
 /**
- * ✅ جديد: ينتقل إلى صفحة تسجيل الدخول ويفتح نافذة سجل الإشعارات عند التحميل.
- * يستخدم sessionStorage لتمرير طلب فتح النافذة إلى الصفحة التالية.
+ * ✅ تعديل: تفتح نافذة سجل الإشعارات مباشرة في الصفحة الحالية.
+ * لم تعد تقوم بإعادة التوجيه إلى صفحة تسجيل الدخول.
  */
-function redirectToLoginAndShowNotifications() {
+async function showNotificationsModal() {
   const loggedInUserJSON = localStorage.getItem("loggedInUser");
 
   if (loggedInUserJSON) {
     const user = JSON.parse(loggedInUserJSON);
 
-    // التأكد من أن المستخدم مسجل دخوله ومؤهل لرؤية الإشعارات قبل التوجيه
-    // isUserEligibleForNotifications() معرفة في auth.js
+    // التأكد من أن المستخدم مسجل دخوله ومؤهل لرؤية الإشعارات
     if (typeof isUserEligibleForNotifications === 'function' && isUserEligibleForNotifications(user)) {
-      sessionStorage.setItem('openNotificationsOnLoad', 'true');
-      window.location.href = 'login.html';
+      // التأكد من وجود دالة عرض النافذة قبل استدعائها
+      if (typeof showNotificationsLogModal === 'function') {
+        await showNotificationsLogModal();
+      } else {
+        console.error('[Utils] الدالة showNotificationsLogModal() غير موجودة. تأكد من تحميل السكريبت الخاص بها.');
+      }
     }
   }
 }

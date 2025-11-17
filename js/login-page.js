@@ -131,24 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
     updateViewForLoggedInUser(user);
   }
 
-  // ✅ جديد: التحقق مما إذا كان يجب فتح نافذة الإشعارات عند التحميل
-  const openNotificationsFlag = sessionStorage.getItem('openNotificationsOnLoad');
-  if (openNotificationsFlag === 'true') {
-    // إزالة العلامة حتى لا يتم تشغيلها مرة أخرى عند تحديث الصفحة
-    sessionStorage.removeItem('openNotificationsOnLoad');
-
-    // التأكد من أن المستخدم مسجل دخوله ومؤهل لرؤية الإشعارات
-    if (loggedInUser) {
-      const user = JSON.parse(loggedInUser);
-      if (typeof isUserEligibleForNotifications === 'function' && isUserEligibleForNotifications(user)) {
-        // استدعاء الدالة لإظهار نافذة سجل الإشعارات
-        if (typeof showNotificationsLogModal === 'function') {
-          showNotificationsLogModal();
-        }
-      }
-    }
-  }
-
   // ربط الأحداث الخاصة بنموذج تسجيل الدخول
   const form = document.getElementById("login-form");
   if (!form) return; // الخروج إذا لم يكن نموذج تسجيل الدخول موجودًا في الصفحة
