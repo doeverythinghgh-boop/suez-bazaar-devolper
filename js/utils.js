@@ -128,8 +128,16 @@ function normalizeArabicText(text) {
  * يستخدم sessionStorage لتمرير طلب فتح النافذة إلى الصفحة التالية.
  */
 function redirectToLoginAndShowNotifications() {
-  // استخدام sessionStorage لتمرير الحالة إلى الصفحة التالية
-  sessionStorage.setItem('openNotificationsOnLoad', 'true');
-  // الانتقال إلى صفحة تسجيل الدخول
-  window.location.href = 'login.html';
+  const loggedInUserJSON = localStorage.getItem("loggedInUser");
+
+  if (loggedInUserJSON) {
+    const user = JSON.parse(loggedInUserJSON);
+
+    // التأكد من أن المستخدم مسجل دخوله ومؤهل لرؤية الإشعارات قبل التوجيه
+    // isUserEligibleForNotifications() معرفة في auth.js
+    if (typeof isUserEligibleForNotifications === 'function' && isUserEligibleForNotifications(user)) {
+      sessionStorage.setItem('openNotificationsOnLoad', 'true');
+      window.location.href = 'login.html';
+    }
+  }
 }
