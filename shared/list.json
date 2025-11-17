@@ -148,51 +148,6 @@
       ]
     },
     {
-      "id": 9,
-      "title": "الأطفال والمواليد",
-      "icon": "fas fa-baby-carriage",
-      "subcategories": [
-        { "id": 1, "title": "مستلزمات حديثي الولادة والرضع", "icon": "fas fa-baby" },
-        { "id": 2, "title": "ملابس وأحذية الأطفال", "icon": "fas fa-child" },
-        { "id": 3, "title": "الألعاب الترفيهية والتعليمية", "icon": "fas fa-shapes" },
-        { "id": 4, "title": "مستلزمات الدراسة والقرطاسية", "icon": "fas fa-pencil-ruler" },
-        { "id": 5, "title": "أثاث وديكور غرف الأطفال", "icon": "fas fa-bed" },
-        { "id": 6, "title": "عربات الأطفال ومقاعد السيارات", "icon": "fas fa-baby-carriage" },
-        { "id": 7, "title": "مستلزمات الرضاعة والتغذية", "icon": "fas fa-prescription-bottle" },
-        { "id": 8, "title": "منتجات العناية بالبشرة للأطفال", "icon": "fas fa-hand-sparkles" },
-        { "id": 9, "title": "أدوات التعلم والتنمية", "icon": "fas fa-cubes" }
-      ]
-    },
-    {
-      "id": 10,
-      "title": "المجوهرات والساعات",
-      "icon": "fas fa-gem",
-      "subcategories": [
-        { "id": 1, "title": "مجوهرات ذهبية وفضية", "icon": "fas fa-ring" },
-        { "id": 2, "title": "ساعات يد وحائط", "icon": "fas fa-clock" },
-        { "id": 3, "title": "مجوهرات ماسية ونفيسة", "icon": "fas fa-gem" },
-        { "id": 4, "title": "إكسسوارات مجوهرات رجالية", "icon": "fas fa-user-tie" },
-        { "id": 5, "title": "مجوهرات زفاف وخطوبة", "icon": "fas fa-heart" },
-        { "id": 6, "title": "ساعات رياضية وذكية", "icon": "fas fa-stopwatch" },
-        { "id": 7, "title": "مجوهرات الأطفال", "icon": "fas fa-child" }
-      ]
-    },
-    {
-      "id": 11,
-      "title": "الأدوات والمعدات",
-      "icon": "fas fa-tools",
-      "subcategories": [
-        { "id": 1, "title": "أدوات ومعدات الصيانة اليدوية", "icon": "fas fa-hammer" },
-        { "id": 2, "title": "معدات كهربائية وورش عمل", "icon": "fas fa-bolt" },
-        { "id": 3, "title": "معدات النظافة المنزلية والصناعية", "icon": "fas fa-broom" },
-        { "id": 4, "title": "معدات السلامة والأمن الصناعي", "icon": "fas fa-hard-hat" },
-        { "id": 5, "title": "آلات ومعدات المصانع والإنتاج", "icon": "fas fa-industry" },
-        { "id": 6, "title": "أدوات المطبخ الكبيرة والصغيرة", "icon": "fas fa-blender-phone" },
-        { "id": 7, "title": "معدات البناء والتشييد", "icon": "fas fa-trowel" },
-        { "id": 8, "title": "معدات الزراعة والبستنة", "icon": "fas fa-tractor" }
-      ]
-    },
-    {
       "id": 12,
       "title": "الحيوانات الأليفة",
       "icon": "fas fa-paw",
@@ -222,35 +177,6 @@
       ]
     },
     {
-      "id": 14,
-      "title": "منتجات الزراعة",
-      "icon": "fas fa-seedling",
-      "subcategories": [
-        { "id": 1, "title": "الخضروات والفواكه الطازجة", "icon": "fas fa-carrot" },
-        { "id": 2, "title": "الشتلات والبذور والأسمدة", "icon": "fas fa-seedling" },
-        { "id": 3, "title": "أدوات ومعدات الزراعة والبستنة", "icon": "fas fa-tractor" },
-        { "id": 4, "title": "منتجات العسل والمناحل", "icon": "fas fa-bacterium" },
-        { "id": 5, "title": "الحبوب والبقوليات", "icon": "fas fa-leaf" },
-        { "id": 6, "title": "أدوات الصيد البري والبحري", "icon": "fas fa-fish" },
-        { "id": 7, "title": "معدات الري والزراعة المائية", "icon": "fas fa-water" }
-      ]
-    },
-    {
-      "id": 15,
-      "title": "التعليم والتدريب",
-      "icon": "fas fa-graduation-cap",
-      "subcategories": [
-        { "id": 1, "title": "الدورات التدريبية عبر الإنترنت", "icon": "fas fa-laptop-code" },
-        { "id": 2, "title": "الدروس الخصوصية والتعليم الفردي", "icon": "fas fa-chalkboard-teacher" },
-        { "id": 3, "title": "الاستشارات الإدارية وتطوير الأعمال", "icon": "fas fa-chart-line" },
-        { "id": 4, "title": "الاستشارات المالية والمحاسبية", "icon": "fas fa-calculator" },
-        { "id": 5, "title": "الاستشارات القانونية", "icon": "fas fa-gavel" },
-        { "id": 6, "title": "كتب ومراجع تعليمية", "icon": "fas fa-book" },
-        { "id": 7, "title": "ورش العمل والتدريب المهني", "icon": "fas fa-users-cog" },
-        { "id": 8, "title": "خدمات الترجمة واللغات", "icon": "fas fa-language" }
-      ]
-    },
-    {
       "id": 16,
       "title": "العقارات",
       "icon": "fas fa-city",
@@ -274,45 +200,6 @@
         { "id": 4, "title": "ألعاب ونشاطات ترفيهية", "icon": "fas fa-puzzle-piece" },
         { "id": 5, "title": "خدمات التصوير والفيديو", "icon": "fas fa-video" },
         { "id": 6, "title": "خدمات تنظيم الحفلات", "icon": "fas fa-calendar-check" }
-      ]
-    },
-    {
-      "id": 18,
-      "title": "المقتنيات والنوادر",
-      "icon": "fas fa-trophy",
-      "subcategories": [
-        { "id": 1, "title": "العملات والطوابع النادرة", "icon": "fas fa-coins" },
-        { "id": 2, "title": "التحف والأثار", "icon": "fas fa-landmark" },
-        { "id": 3, "title": "اللوحات والفنون الجميلة", "icon": "fas fa-image" },
-        { "id": 4, "title": "المجموعات والكرتات", "icon": "fas fa-layer-group" },
-        { "id": 5, "title": "السيارات الكلاسيكية", "icon": "fas fa-car-alt" },
-        { "id": 6, "title": "الأدوات والمعدات القديمة", "icon": "fas fa-tools" }
-      ]
-    },
-    {
-      "id": 19,
-      "title": "الخدمات المالية",
-      "icon": "fas fa-money-bill-wave",
-      "subcategories": [
-        { "id": 1, "title": "خدمات الصرافة والتحويل", "icon": "fas fa-exchange-alt" },
-        { "id": 2, "title": "القروض والتمويل", "icon": "fas fa-hand-holding-usd" },
-        { "id": 3, "title": "خدمات المحاسبة والمراجعة", "icon": "fas fa-file-invoice-dollar" },
-        { "id": 4, "title": "التأمين وخدمات الحماية", "icon": "fas fa-shield-alt" },
-        { "id": 5, "title": "الاستثمار والتداول", "icon": "fas fa-chart-pie" },
-        { "id": 6, "title": "خدمات الدفع الإلكتروني", "icon": "fas fa-credit-card" }
-      ]
-    },
-    {
-      "id": 20,
-      "title": "السياحة والسفر",
-      "icon": "fas fa-plane-departure",
-      "subcategories": [
-        { "id": 1, "title": "حجوزات الفنادق والإقامة", "icon": "fas fa-hotel" },
-        { "id": 2, "title": "تذاكر الطيران والنقل", "icon": "fas fa-plane" },
-        { "id": 3, "title": "الرحلات والجولات السياحية", "icon": "fas fa-map-signs" },
-        { "id": 4, "title": "تأشيرات السفر والوثائق", "icon": "fas fa-passport" },
-        { "id": 5, "title": "مستلزمات السفر والحقائب", "icon": "fas fa-suitcase-rolling" },
-        { "id": 6, "title": "دليل السفر والمعلومات", "icon": "fas fa-info-circle" }
       ]
     }
   ]
