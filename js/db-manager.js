@@ -36,9 +36,10 @@ async function initDB() {
       const tempDb = event.target.result;
       console.log('[DB] جاري ترقية قاعدة البيانات...');
 
+      let store;
       if (!tempDb.objectStoreNames.contains(NOTIFICATIONS_STORE)) {
         console.log(`[DB] جاري إنشاء مخزن الكائنات: ${NOTIFICATIONS_STORE}`);
-        const store = tempDb.createObjectStore(NOTIFICATIONS_STORE, {
+        store = tempDb.createObjectStore(NOTIFICATIONS_STORE, {
           keyPath: 'id',
           autoIncrement: true,
         });
@@ -46,7 +47,12 @@ async function initDB() {
         store.createIndex('timestamp', 'timestamp', { unique: false });
         store.createIndex('type', 'type', { unique: false });
         store.createIndex('status', 'status', { unique: false });
-        // ✅ جديد: إضافة فهرس على messageId لمنع التكرار
+      } else {
+        store = event.target.transaction.objectStore(NOTIFICATIONS_STORE);
+      }
+
+      // ✅ إصلاح: التحقق من وجود الفهرس قبل إنشائه لضمان التوافق مع الترقيات
+      if (!store.indexNames.contains('messageId')) {
         store.createIndex('messageId', 'messageId', { unique: true });
       }
     };
