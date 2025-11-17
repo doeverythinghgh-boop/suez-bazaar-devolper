@@ -103,8 +103,9 @@ function updateViewForLoggedInUser(user) {
       if (viewNotificationsBtn) {
         viewNotificationsBtn.style.display = 'inline-flex';
         // التأكد من وجود الدالة قبل ربط الحدث
-        if (typeof showNotificationsLogModal === 'function') {
-          viewNotificationsBtn.addEventListener("click", showNotificationsLogModal);
+        // ✅ إصلاح: يجب استدعاء الدالة الوسيطة showNotificationsModal للتحقق من الصلاحيات أولاً.
+        if (typeof showNotificationsModal === 'function') {
+          viewNotificationsBtn.addEventListener("click", showNotificationsModal);
         }
       }
     }
