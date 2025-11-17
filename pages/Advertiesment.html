@@ -362,7 +362,8 @@ window.adverModule = (function() {
       text: "سيتم حذف جميع الصور المضافة!",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'نعم، احذف الكل!',
+      target: document.getElementById('modal-main-content'), // ✅ إصلاح: جعل الرسالة تظهر فوق النافذة الحالية
+      confirmButtonText: 'نعم، احذف الكل!', 
       cancelButtonText: 'إلغاء'
     }).then((result) => {
       if (result.isConfirmed) {
