@@ -16,9 +16,12 @@ const CONNECTION_CHECK_INTERVAL = 3000; // 3 ثوانٍ
 ---------------------------------------- */
 async function checkInternetConnection(showAlert = true) {
   if (window.Android && typeof window.Android.checkInternetWithToast === "function") {
+    if(window.Android.isAppInFrantView()){
+   
     const hasInternet = window.Android.checkInternetWithToast();
     if (hasInternet) {
       console.log("✔ اتصال موجود (Android):", hasInternet);
+    }
     } else {
       console.warn("✖ لا يوجد اتصال (Android):", hasInternet);
     }
@@ -96,9 +99,9 @@ function startPeriodicConnectionCheck() {
 
   // 🔹 داخل Android WebView
   if (window.Android && typeof window.Android.checkInternetWithToast === "function") {
-    try { window.Android.checkInternetWithToast(); } catch (e) { console.error(e); }
+    try {if(window.Android.isAppInFrantView()){ window.Android.checkInternetWithToast()}; } catch (e) { console.error(e); }
     setInterval(() => {
-      try { window.Android.checkInternetWithToast(); } catch (e) { console.error(e); }
+      try {if(window.Android.isAppInFrantView()){ window.Android.checkInternetWithToast();} } catch (e) { console.error(e); }
     }, CONNECTION_CHECK_INTERVAL);
     return;
   }
