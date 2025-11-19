@@ -53,7 +53,6 @@
         { "id": 8, "title": "الأجهزة الكهربائية المنزلية", "icon": "fas fa-plug" },
         { "id": 9, "title": "الكاميرات والتقنيات البصرية", "icon": "fas fa-camera-retro" },
         { "id": 10, "title": "أجهزة الصوت والسماعات", "icon": "fas fa-volume-up" },
-        { "id": 11, "title": "الأجهزة الطبية المنزلية", "icon": "fas fa-heartbeat" },
         { "id": 12, "title": "أجهزة الشبكات والاتصالات", "icon": "fas fa-wifi" }
       ]
     },
@@ -134,7 +133,9 @@
       "id": 208,
       "title": "رعاية المسنين وذوي الهمم",
       "icon": "fas fa-hands-helping"
-    }
+    },
+            { "id": 11, "title": "الأجهزة الطبية المنزلية", "icon": "fas fa-heartbeat" }
+
   ]
 }
     ,
