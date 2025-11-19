@@ -68,14 +68,16 @@ async function performActualConnectionCheck() {
       offlineToast = Swal.fire({
         toast: true,
         position: 'bottom',
-        icon: 'error',
-        title: '📡 لا يوجد اتصال بالإنترنت',
+        // ✅ تعديل: استخدام html لتنسيق الرسالة في سطر واحد
+        html: '<i class="fas fa-wifi-slash" style="color: #fff; margin-left: 8px;"></i> لا يوجد اتصال بالإنترنت',
         showConfirmButton: false,
         timer: undefined,          // ← بدون مؤقت
         timerProgressBar: false,   // ← إخفاء عدّاد الوقت
         background: '#d32f2f',
         color: '#fff',
         customClass: {
+          // ✅ تعديل: إزالة الحشو الزائد لجعل الرسالة أصغر
+          popup: 'animate__animated animate__slideInUp no-padding-toast',
           popup: 'animate__animated animate__slideInUp'
         }
       });
