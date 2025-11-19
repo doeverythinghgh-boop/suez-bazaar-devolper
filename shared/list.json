@@ -143,14 +143,15 @@
       "title": "الخدمات العامة",
       "icon": "fas fa-briefcase",
       "subcategories": [
-    
+
    
     { "id": 9, "title": "خدمات تعليمية", "icon": "fas fa-chalkboard-teacher" },
    
     { "id": 7, "title": "خدمات تجميلية شخصية", "icon": "fas fa-cut" },
     { "id": 4, "title": "تصميم جرافيك وتصوير", "icon": "fas fa-drafting-compass" },
 
-  
+              { "id": 2, "title": "معدات اللياقة البدنية والجيم", "icon": "fas fa-dumbbell" },
+
       { "id": 3, "title": "خدمات الشحن والتوصيل", "icon": "fas fa-shipping-fast" },
     { "id": 5, "title": "خدمات صيانه المركبات", "icon": "fas fa-wrench" },
     { "id": 6, "title": "خدمات تأجير المركبات", "icon": "fas fa-key" }
@@ -177,12 +178,10 @@
       "title": "الرياضة والترفيه",
       "icon": "fas fa-basketball-ball",
       "subcategories": [
-        { "id": 2, "title": "معدات اللياقة البدنية والجيم", "icon": "fas fa-dumbbell" },
         { "id": 4, "title": "مستلزمات الصيد والرياضات الخارجية", "icon": "fas fa-fish" },
         { "id": 5, "title": "أدوات التخييم والسفر", "icon": "fas fa-campground" },
         { "id": 7, "title": "معدات السباحة والرياضات المائية", "icon": "fas fa-swimmer" },
         { "id": 8, "title": "ألعاب الفيديو والترفيه الإلكتروني", "icon": "fas fa-gamepad" },
-        { "id": 9, "title": "الآلات الموسيقية ومعدات الصوت", "icon": "fas fa-guitar" },
         { "id": 10, "title": "الكتب والمجلات والوسائط", "icon": "fas fa-book-open" }
       ]
     },
