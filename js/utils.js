@@ -3,37 +3,27 @@
  * @description يحتوي هذا الملف على دوال مساعدة عامة يمكن استخدامها في أي مكان في المشروع.
  */
 
+
+
 /* ----------------------------------------
     🟦 تخزين حالة الاتصال مؤقتاً (Cache)
 ---------------------------------------- */
 let lastConnectionCheck = 0;
 let isConnectedCache = false;
-let offlineToast = null; // لتخزين مرجع الـ Toast الحالي
+let offlineToast = null; 
 const CONNECTION_CHECK_INTERVAL = 3000; // 3 ثوانٍ
 
 /* ----------------------------------------
-    🟦 دالة فحص الاتصال الأساسية (تستدعى من أي مكان)
+    🟦 دالة مستخدمة من أي مكان
 ---------------------------------------- */
-async function checkInternetConnection(showAlert = true) {
-  if (window.Android && typeof window.Android.checkInternetWithToast === "function") {
-    
-    const hasInternet = window.Android.checkInternetWithToast();
-    if (hasInternet) {
-      console.log("✔ اتصال موجود (Android):", hasInternet);
-    } else {
-      console.warn("✖ لا يوجد اتصال (Android):", hasInternet);
-    }
-    return hasInternet;
-  }
+async function checkInternetConnection() {
   return isConnectedCache;
 }
 
 /* ----------------------------------------
-    🟦 دالة الفحص الفعلي للمتصفح مع Toast ذكي
+    🟦 Snackbar ثابت عند فقد الاتصال
 ---------------------------------------- */
 async function performActualConnectionCheck() {
-  if (window.Android && typeof window.Android.checkInternetWithToast === "function") return;
-
   lastConnectionCheck = Date.now();
 
   try {
@@ -50,37 +40,43 @@ async function performActualConnectionCheck() {
 
     clearTimeout(timeout);
 
+    // 🔹 عاد الاتصال
     if (!isConnectedCache) {
       console.log("%c[الشبكة] عاد الاتصال بالإنترنت.", "color: green;");
-      isConnectedCache = true;
-      // اغلاق أي Toast سابق عند عودة الاتصال
-      if (offlineToast) {
-        Swal.close();
-        offlineToast = null;
-      }
+    }
+
+    isConnectedCache = true;
+
+    // 🔹 اغلاق Snackbar إذا كان ظاهر
+    if (offlineToast) {
+      Swal.close();
+      offlineToast = null;
     }
 
     return true;
 
   } catch (error) {
+    // 🔻 تم فقد الاتصال
     if (isConnectedCache) {
-      console.warn("%c[الشبكة] تم فقد الاتصال بالإنترنت.", "color: red;", error.message);
+      console.warn("%c[الشبكة] تم فقد الاتصال بالإنترنت.", "color: red;");
     }
 
     isConnectedCache = false;
 
-    // عرض Toast واحد فقط أثناء الانقطاع
+    // 🔹 إظهار Snackbar ثابت *مرة واحدة فقط*
     if (!offlineToast) {
       offlineToast = Swal.fire({
         toast: true,
-        position: 'top-end',
+        position: 'bottom',
         icon: 'error',
-        title: 'لا يوجد اتصال بالإنترنت',
+        title: '📡 لا يوجد اتصال بالإنترنت',
         showConfirmButton: false,
-        timer: CONNECTION_CHECK_INTERVAL - 500,
-        timerProgressBar: true,
-        didClose: () => {
-          offlineToast = null; // إعادة تعيين المرجع عند انتهاء Toast
+        timer: undefined,          // ← بدون مؤقت
+        timerProgressBar: false,   // ← إخفاء عدّاد الوقت
+        background: '#d32f2f',
+        color: '#fff',
+        customClass: {
+          popup: 'animate__animated animate__slideInUp'
         }
       });
     }
@@ -90,41 +86,27 @@ async function performActualConnectionCheck() {
 }
 
 /* ----------------------------------------
-    🟦 الفحص الدوري للاتصال (يبدأ تلقائياً)
+    🟦 الفحص الدوري
 ---------------------------------------- */
 function startPeriodicConnectionCheck() {
-  console.log("[الشبكة] بدء الفحص الدوري للاتصال ...");
-
-  // 🔹 داخل Android WebView
-  if (window.Android && typeof window.Android.checkInternetWithToast === "function") {
-    try { window.Android.checkInternetWithToast(); } catch (e) { console.error(e); }
-    setInterval(() => {
-      try { window.Android.checkInternetWithToast(); } catch (e) { console.error(e); }
-    }, CONNECTION_CHECK_INTERVAL);
-    return;
-  }
-
-  // 🔹 داخل المتصفح
   performActualConnectionCheck();
   setInterval(performActualConnectionCheck, CONNECTION_CHECK_INTERVAL);
 
-  // أحداث online/offline
   window.addEventListener("online", () => {
-    console.log("%c[الشبكة] المتصفح أعلن عن اتصال.", "color: green;");
     isConnectedCache = true;
     if (offlineToast) Swal.close();
+    offlineToast = null;
     performActualConnectionCheck();
   });
 
   window.addEventListener("offline", () => {
-    console.warn("%c[الشبكة] المتصفح أعلن عن انقطاع الاتصال.", "color: red;");
     isConnectedCache = false;
     performActualConnectionCheck();
   });
 }
 
 /* ----------------------------------------
-    🟦 تشغيل الفحص الدوري بمجرد تحميل الملف
+    🟦 البدء
 ---------------------------------------- */
 startPeriodicConnectionCheck();
 
