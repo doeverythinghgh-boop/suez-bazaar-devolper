@@ -99,19 +99,24 @@
       "title": "الخدمات العامة",
       "icon": "fas fa-briefcase",
       "subcategories": [
-        { "id": 1, "title": "خدمات الصيانة المنزلية", "icon": "fas fa-tools" },
-        { "id": 2, "title": "خدمات التنظيف والمغاسل", "icon": "fas fa-soap" },
-        { "id": 3, "title": "خدمات الشحن والتوصيل", "icon": "fas fa-shipping-fast" },
-        { "id": 4, "title": "تصميم جرافيكي وإعلانات رقمية", "icon": "fas fa-drafting-compass" },
-        { "id": 5, "title": "كتابة محتوى وترجمة ولغويات", "icon": "fas fa-pen-nib" },
-        { "id": 6, "title": "خدمات تصوير فوتوغرافي وفيديو", "icon": "fas fa-camera" },
-        { "id": 7, "title": "خدمات تجميلية شخصية", "icon": "fas fa-cut" },
-        { "id": 8, "title": "خدمات تنظيم المناسبات والحفلات", "icon": "fas fa-birthday-cake" },
-        { "id": 9, "title": "خدمات تعليمية وتربوية", "icon": "fas fa-chalkboard-teacher" },
-        { "id": 10, "title": "خدمات الرعاية الصحية والطبية", "icon": "fas fa-user-md" },
-        { "id": 11, "title": "خدمات التسويق الإلكتروني", "icon": "fas fa-bullhorn" },
-        { "id": 12, "title": "خدمات النقل والتوصيل", "icon": "fas fa-truck" }
-      ]
+     { "id": 10, "title": "خدمات طبية", "icon": "fas fa-user-md" },
+   
+   
+    { "id": 9, "title": "خدمات تعليمية", "icon": "fas fa-chalkboard-teacher" },
+   
+    { "id": 7, "title": "خدمات تجميلية شخصية", "icon": "fas fa-cut" },
+    { "id": 4, "title": "تصميم جرافيك وتصوير", "icon": "fas fa-drafting-compass" },
+
+    { "id": 8, "title": "خدمات تنظيم المناسبات", "icon": "fas fa-birthday-cake" },
+  
+     { "id": 1, "title": "خدمات الصيانة المنزلية", "icon": "fas fa-tools" },
+      { "id": 3, "title": "خدمات الشحن والتوصيل", "icon": "fas fa-shipping-fast" },
+    { "id": 5, "title": "خدمات صيانه المركبات", "icon": "fas fa-wrench" },
+    { "id": 6, "title": "خدمات تأجير المركبات", "icon": "fas fa-key" },
+        { "id": 2, "title": "خدمات التنظيف والمغاسل", "icon": "fas fa-soap" }
+
+]
+      
     },
     {
       "id": 7,
@@ -122,9 +127,7 @@
         { "id": 2, "title": "الدراجات النارية والهوائية", "icon": "fas fa-motorcycle" },
         { "id": 3, "title": "قطع الغيار والمحركات والزيوت", "icon": "fas fa-cogs" },
         { "id": 4, "title": "إكسسوارات وكماليات المركبات", "icon": "fas fa-car-battery" },
-        { "id": 5, "title": "خدمات الصيانة والدهان والإصلاح", "icon": "fas fa-wrench" },
-        { "id": 6, "title": "خدمات تأجير السيارات والمركبات", "icon": "fas fa-key" },
-        { "id": 7, "title": "إطارات وعجلات المركبات", "icon": "fas fa-dot-circle" },
+         { "id": 7, "title": "إطارات وعجلات المركبات", "icon": "fas fa-dot-circle" },
         { "id": 8, "title": "أنظمة الصوت والمرئيات للمركبات", "icon": "fas fa-volume-up" },
         { "id": 9, "title": "مركبات تجارية وشاحنات", "icon": "fas fa-truck-moving" },
         { "id": 10, "title": "قوارب ومركبات مائية", "icon": "fas fa-ship" }
