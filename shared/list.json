@@ -94,6 +94,50 @@
         { "id": 12, "title": "مفروشات وأغطية الأسرة والوسائد", "icon": "fas fa-bed" }
       ]
     },
+        ,{
+  "id": 20,
+  "title": "الخدمات الطبية",
+  "icon": "fas fa-user-md",
+  "subcategories": [
+
+    {
+      "id": 201,
+      "title": "كشف طبيب منزلي",
+      "icon": "fas fa-stethoscope"
+    },
+    {
+      "id": 202,
+      "title": "خدمات الأشعة",
+      "icon": "fas fa-x-ray"
+    },
+    {
+      "id": 203,
+      "title": "تحاليل وفحوصات",
+      "icon": "fas fa-vials"
+    },
+    {
+      "id": 204,
+      "title": "الصيدليات وتوصيل الأدوية",
+      "icon": "fas fa-prescription-bottle-medical"
+    },
+    {
+      "id": 205,
+      "title": "تمريض منزلي",
+      "icon": "fas fa-user-nurse"
+    },
+    {
+      "id": 206,
+      "title": "العلاج الطبيعي",
+      "icon": "fas fa-dumbbell"
+    },
+    {
+      "id": 208,
+      "title": "رعاية المسنين وذوي الهمم",
+      "icon": "fas fa-hands-helping"
+    }
+  ]
+}
+    ,
     {
       "id": 6,
       "title": "الخدمات العامة",
@@ -200,49 +244,8 @@
         { "id": 5, "title": "خدمات التصوير والفيديو", "icon": "fas fa-video" },
         { "id": 6, "title": "خدمات تنظيم الحفلات", "icon": "fas fa-calendar-check" }
       ]
-    },{
-  "id": 20,
-  "title": "الخدمات الطبية والرعاية الصحية",
-  "icon": "fas fa-user-md",
-  "subcategories": [
-
-    {
-      "id": 201,
-      "title": "كشف طبيب منزلي",
-      "icon": "fas fa-stethoscope"
-    },
-    {
-      "id": 202,
-      "title": "خدمات الأشعة",
-      "icon": "fas fa-x-ray"
-    },
-    {
-      "id": 203,
-      "title": "تحاليل وفحوصات مخبرية",
-      "icon": "fas fa-vials"
-    },
-    {
-      "id": 204,
-      "title": "الصيدليات وخدمة توصيل الأدوية",
-      "icon": "fas fa-prescription-bottle-medical"
-    },
-    {
-      "id": 205,
-      "title": "تمريض منزلي ورعاية طبية",
-      "icon": "fas fa-user-nurse"
-    },
-    {
-      "id": 206,
-      "title": "العلاج الطبيعي",
-      "icon": "fas fa-dumbbell"
-    },
-    {
-      "id": 208,
-      "title": "رعاية المسنين وذوي الاحتياجات الخاصة",
-      "icon": "fas fa-hands-helping"
     }
-  ]
-}
+
 
   ]
 }
