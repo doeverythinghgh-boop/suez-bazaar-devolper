@@ -396,8 +396,11 @@ window.adverModule = (function() {
     }
     fileInput.value = '';
   }
-
+let stop =0;
   async function loadExistingAdverImages() {
+    if(stop==0){
+      stop=1;
+      try{
     console.log('%c[DevLog] 1. Loading existing advertisement images...', 'color: blue; font-weight: bold;');
     imagesLoader.style.display = 'block';
     previewsEl.innerHTML = '';
@@ -442,6 +445,13 @@ window.adverModule = (function() {
     window.adverModule.originalImageNames = originalImageNames;
     console.log(`%c[DevLog] Finished loading. Found ${originalImageNames.length} images.`, 'color: blue; font-weight: bold;');
     imagesLoader.style.display = 'none';
+    stop=0;
+  }catch(err){
+    stop=0;
+    console.error ("خطا في تحميل الصور:", err);
+
+  }
+  }
   }
 
   pickFilesBtn.addEventListener('click', () => {
