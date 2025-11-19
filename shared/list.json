@@ -5,18 +5,66 @@
       "title": "الملابس والأزياء",
       "icon": "fas fa-shirt",
       "subcategories": [
-        { "id": 1, "title": "ملابس نسائية", "icon": "fas fa-person-dress" },
-        { "id": 2, "title": "ملابس رجالية", "icon": "fas fa-user-tie" },
-        { "id": 3, "title": "ملابس أطفال وحديثي الولادة", "icon": "fas fa-child-reaching" },
-        { "id": 4, "title": "العبايات والجلابيات", "icon": "fas fa-vest-patches" },
-        { "id": 5, "title": "الأحذية والحقائب الجلدية والقماشية", "icon": "fas fa-shopping-bag" },
-        { "id": 6, "title": "الإكسسوارات النسائية والرجالية", "icon": "fas fa-glasses" },
-        { "id": 7, "title": "ملابس رياضية ", "icon": "fas fa-running" },
-        { "id": 8, "title": "ملابس المناسبات الخاصة (أعراس، حفلات)", "icon": "fas fa-ring" },
-        { "id": 9, "title": "ملابس داخلية وملابس نوم", "icon": "fas fa-bed" },
-        { "id": 10, "title": "أقمشة ومستلزمات خياطة", "icon": "fas fa-ruler-combined" },
-        { "id": 11, "title": "ملابس مستعملة بحالة جيدة", "icon": "fas fa-recycle" },
-        { "id": 12, "title": "أزياء وملابس ذات علامات تجارية", "icon": "fas fa-star" }
+        {
+          "id": 1,
+          "title": "ملابس نسائية",
+          "icon": "fas fa-person-dress"
+        },
+        {
+          "id": 2,
+          "title": "ملابس رجالية",
+          "icon": "fas fa-user-tie"
+        },
+        {
+          "id": 3,
+          "title": "ملابس أطفال وحديثي الولادة",
+          "icon": "fas fa-child-reaching"
+        },
+        {
+          "id": 4,
+          "title": "العبايات والجلابيات",
+          "icon": "fas fa-vest-patches"
+        },
+        {
+          "id": 5,
+          "title": "الأحذية والحقائب الجلدية والقماشية",
+          "icon": "fas fa-shopping-bag"
+        },
+        {
+          "id": 6,
+          "title": "الإكسسوارات النسائية والرجالية",
+          "icon": "fas fa-glasses"
+        },
+        {
+          "id": 7,
+          "title": "ملابس رياضية ",
+          "icon": "fas fa-running"
+        },
+        {
+          "id": 8,
+          "title": "ملابس المناسبات الخاصة (أعراس، حفلات)",
+          "icon": "fas fa-ring"
+        },
+        {
+          "id": 9,
+          "title": "ملابس داخلية وملابس نوم",
+          "icon": "fas fa-bed"
+        },
+        {
+          "id": 10,
+          "title": "أقمشة ومستلزمات خياطة",
+          "icon": "fas fa-ruler-combined"
+        },
+        {
+          "id": 11,
+          "title": "ملابس مستعملة بحالة جيدة",
+          "icon": "fas fa-recycle"
+        },
+        {
+          "id": 12,
+          "title": "أزياء وملابس ذات علامات تجارية",
+          "icon": "fas fa-star"
+        }
       ]
     },
     {
@@ -24,18 +72,66 @@
       "title": "الأطعمة والمشروبات",
       "icon": "fas fa-utensils",
       "subcategories": [
-        { "id": 1, "title": "الأطباق الرئيسية والوجبات الجاهزة", "icon": "fas fa-concierge-bell" },
-        { "id": 2, "title": "المخبوزات والمعجنات", "icon": "fas fa-bread-slice" },
-        { "id": 3, "title": "الحلويات", "icon": "fas fa-candy-cane" },
-        { "id": 4, "title": "مشروبات وعصائر طبيعية", "icon": "fas fa-blender" },
-        { "id": 5, "title": "مواد غذائية معلبة ومجففة", "icon": "fas fa-box-open" },
-        { "id": 6, "title": "منتجات الألبان والبيض", "icon": "fas fa-egg" },
-        { "id": 7, "title": "التوابل والأعشاب", "icon": "fas fa-leaf" },
-        { "id": 8, "title": "مكسرات وبذور وفواكه مجففة", "icon": "fas fa-seedling" },
-        { "id": 9, "title": "زيوت وسمن ودهون", "icon": "fas fa-oil-can" },
-        { "id": 10, "title": "لحوم ودواجن وأسماك", "icon": "fas fa-drumstick-bite" },
-        { "id": 11, "title": "منتجات غذائية وعضوية", "icon": "fas fa-carrot" },
-        { "id": 12, "title": "أطعمة مجمدة ومثلجة", "icon": "fas fa-snowflake" }
+        {
+          "id": 1,
+          "title": "الأطباق الرئيسية والوجبات الجاهزة",
+          "icon": "fas fa-concierge-bell"
+        },
+        {
+          "id": 2,
+          "title": "المخبوزات والمعجنات",
+          "icon": "fas fa-bread-slice"
+        },
+        {
+          "id": 3,
+          "title": "الحلويات",
+          "icon": "fas fa-candy-cane"
+        },
+        {
+          "id": 4,
+          "title": "مشروبات وعصائر طبيعية",
+          "icon": "fas fa-blender"
+        },
+        {
+          "id": 5,
+          "title": "مواد غذائية معلبة ومجففة",
+          "icon": "fas fa-box-open"
+        },
+        {
+          "id": 6,
+          "title": "منتجات الألبان والبيض",
+          "icon": "fas fa-egg"
+        },
+        {
+          "id": 7,
+          "title": "التوابل والأعشاب",
+          "icon": "fas fa-leaf"
+        },
+        {
+          "id": 8,
+          "title": "مكسرات وبذور وفواكه مجففة",
+          "icon": "fas fa-seedling"
+        },
+        {
+          "id": 9,
+          "title": "زيوت وسمن ودهون",
+          "icon": "fas fa-oil-can"
+        },
+        {
+          "id": 10,
+          "title": "لحوم ودواجن وأسماك",
+          "icon": "fas fa-drumstick-bite"
+        },
+        {
+          "id": 11,
+          "title": "منتجات غذائية وعضوية",
+          "icon": "fas fa-carrot"
+        },
+        {
+          "id": 12,
+          "title": "أطعمة مجمدة ومثلجة",
+          "icon": "fas fa-snowflake"
+        }
       ]
     },
     {
@@ -43,17 +139,61 @@
       "title": "التقنية والالكترونيات",
       "icon": "fas fa-robot",
       "subcategories": [
-        { "id": 1, "title": "الهواتف الذكية والأجهزة اللوحية", "icon": "fas fa-mobile-alt" },
-        { "id": 2, "title": "أجهزة الحاسوب المحمول والمكتبي", "icon": "fas fa-laptop" },
-        { "id": 3, "title": "الإكسسوارات الرقمية وملحقاتها", "icon": "fas fa-headphones" },
-        { "id": 4, "title": "برامج وحلول رقمية جاهزة", "icon": "fas fa-compact-disc" },
-        { "id": 5, "title": "خدمات تطوير المواقع والتطبيقات", "icon": "fas fa-code" },
-        { "id": 6, "title": "أجهزة الألعاب والفيديو جيمز", "icon": "fas fa-gamepad" },
-        { "id": 7, "title": "أنظمة الأمن والمراقبة المنزلية", "icon": "fas fa-video" },
-        { "id": 8, "title": "الأجهزة الكهربائية المنزلية", "icon": "fas fa-plug" },
-        { "id": 9, "title": "الكاميرات والتقنيات البصرية", "icon": "fas fa-camera-retro" },
-        { "id": 10, "title": "أجهزة الصوت والسماعات", "icon": "fas fa-volume-up" },
-        { "id": 12, "title": "أجهزة الشبكات والاتصالات", "icon": "fas fa-wifi" }
+        {
+          "id": 1,
+          "title": "الهواتف الذكية والأجهزة اللوحية",
+          "icon": "fas fa-mobile-alt"
+        },
+        {
+          "id": 2,
+          "title": "أجهزة الحاسوب المحمول والمكتبي",
+          "icon": "fas fa-laptop"
+        },
+        {
+          "id": 3,
+          "title": "الإكسسوارات الرقمية وملحقاتها",
+          "icon": "fas fa-headphones"
+        },
+        {
+          "id": 4,
+          "title": "برامج وحلول رقمية جاهزة",
+          "icon": "fas fa-compact-disc"
+        },
+        {
+          "id": 5,
+          "title": "خدمات تطوير المواقع والتطبيقات",
+          "icon": "fas fa-code"
+        },
+        {
+          "id": 6,
+          "title": "أجهزة الألعاب والفيديو جيمز",
+          "icon": "fas fa-gamepad"
+        },
+        {
+          "id": 7,
+          "title": "أنظمة الأمن والمراقبة المنزلية",
+          "icon": "fas fa-video"
+        },
+        {
+          "id": 8,
+          "title": "الأجهزة الكهربائية المنزلية",
+          "icon": "fas fa-plug"
+        },
+        {
+          "id": 9,
+          "title": "الكاميرات والتقنيات البصرية",
+          "icon": "fas fa-camera-retro"
+        },
+        {
+          "id": 10,
+          "title": "أجهزة الصوت والسماعات",
+          "icon": "fas fa-volume-up"
+        },
+        {
+          "id": 12,
+          "title": "أجهزة الشبكات والاتصالات",
+          "icon": "fas fa-wifi"
+        }
       ]
     },
     {
@@ -61,17 +201,61 @@
       "title": "الصحة والجمال",
       "icon": "fas fa-spa",
       "subcategories": [
-        { "id": 1, "title": "مستحضرات العناية بالبشرة والوجه", "icon": "fas fa-magic" },
-        { "id": 2, "title": "مستحضرات العناية بالشعر", "icon": "fas fa-cut" },
-        { "id": 3, "title": "المكياج وأدوات التجميل", "icon": "fas fa-paint-brush" },
-        { "id": 4, "title": "العطور والبخور والمباخر", "icon": "fas fa-spray-can" },
-        { "id": 5, "title": "مستلزمات النظافة والاستحمام", "icon": "fas fa-bath" },
-        { "id": 6, "title": "المكملات الغذائية والفيتامينات", "icon": "fas fa-pills" },
-        { "id": 7, "title": "أجهزة ومعدات اللياقة البدنية", "icon": "fas fa-dumbbell" },
-        { "id": 8, "title": "المنتجات الطبية والصحية", "icon": "fas fa-first-aid" },
-        { "id": 9, "title": "مستحضرات العناية بالأسنان", "icon": "fas fa-tooth" },
-        { "id": 10, "title": "منتجات العناية بالرجال", "icon": "fas fa-user-tie" },
-        { "id": 11, "title": "أدوات العناية الشخصية الكهربائية", "icon": "fas fa-bolt" }
+        {
+          "id": 1,
+          "title": "مستحضرات العناية بالبشرة والوجه",
+          "icon": "fas fa-magic"
+        },
+        {
+          "id": 2,
+          "title": "مستحضرات العناية بالشعر",
+          "icon": "fas fa-cut"
+        },
+        {
+          "id": 3,
+          "title": "المكياج وأدوات التجميل",
+          "icon": "fas fa-paint-brush"
+        },
+        {
+          "id": 4,
+          "title": "العطور والبخور والمباخر",
+          "icon": "fas fa-spray-can"
+        },
+        {
+          "id": 5,
+          "title": "مستلزمات النظافة والاستحمام",
+          "icon": "fas fa-bath"
+        },
+        {
+          "id": 6,
+          "title": "المكملات الغذائية والفيتامينات",
+          "icon": "fas fa-pills"
+        },
+        {
+          "id": 7,
+          "title": "أجهزة ومعدات اللياقة البدنية",
+          "icon": "fas fa-dumbbell"
+        },
+        {
+          "id": 8,
+          "title": "المنتجات الطبية والصحية",
+          "icon": "fas fa-first-aid"
+        },
+        {
+          "id": 9,
+          "title": "مستحضرات العناية بالأسنان",
+          "icon": "fas fa-tooth"
+        },
+        {
+          "id": 10,
+          "title": "منتجات العناية بالرجال",
+          "icon": "fas fa-user-tie"
+        },
+        {
+          "id": 11,
+          "title": "أدوات العناية الشخصية الكهربائية",
+          "icon": "fas fa-bolt"
+        }
       ]
     },
     {
@@ -79,99 +263,197 @@
       "title": "المنزل والأثاث",
       "icon": "fas fa-couch",
       "subcategories": [
-        { "id": 1, "title": "أثاث غرف المعيشة والاستقبال", "icon": "fas fa-couch" },
-        { "id": 2, "title": "أثاث غرف النوم والمفروشات", "icon": "fas fa-bed" },
-        { "id": 3, "title": "أثاث المكاتب ومساحات العمل", "icon": "fas fa-chair" },
-        { "id": 4, "title": "أدوات المطبخ والمائدة", "icon": "fas fa-utensils" },
-        { "id": 5, "title": "السجاد والستائر والموكيت", "icon": "fas fa-layer-group" },
-        { "id": 6, "title": "الإضاءة ومستلزمات الإنارة", "icon": "fas fa-lightbulb" },
-        { "id": 7, "title": "اللوحات الفنية وقطع الديكور", "icon": "fas fa-palette" },
-        { "id": 8, "title": "حلول التخزين والتنظيم المنزلية", "icon": "fas fa-box" },
-        { "id": 9, "title": "أدوات تنظيف المنزل", "icon": "fas fa-broom" },
-        { "id": 10, "title": "مستلزمات الحمام والمرحاض", "icon": "fas fa-toilet" },
-        { "id": 11, "title": "ديكورات الحدائق والمناطق الخارجية", "icon": "fas fa-tree" },
-        { "id": 12, "title": "مفروشات وأغطية الأسرة والوسائد", "icon": "fas fa-bed" }
+        {
+          "id": 1,
+          "title": "أثاث غرف المعيشة والاستقبال",
+          "icon": "fas fa-couch"
+        },
+        {
+          "id": 2,
+          "title": "أثاث غرف النوم والمفروشات",
+          "icon": "fas fa-bed"
+        },
+        {
+          "id": 3,
+          "title": "أثاث المكاتب ومساحات العمل",
+          "icon": "fas fa-chair"
+        },
+        {
+          "id": 4,
+          "title": "أدوات المطبخ والمائدة",
+          "icon": "fas fa-utensils"
+        },
+        {
+          "id": 5,
+          "title": "السجاد والستائر والموكيت",
+          "icon": "fas fa-layer-group"
+        },
+        {
+          "id": 6,
+          "title": "الإضاءة ومستلزمات الإنارة",
+          "icon": "fas fa-lightbulb"
+        },
+        {
+          "id": 7,
+          "title": "اللوحات الفنية وقطع الديكور",
+          "icon": "fas fa-palette"
+        },
+        {
+          "id": 8,
+          "title": "حلول التخزين والتنظيم المنزلية",
+          "icon": "fas fa-box"
+        },
+        {
+          "id": 9,
+          "title": "أدوات تنظيف المنزل",
+          "icon": "fas fa-broom"
+        },
+        {
+          "id": 10,
+          "title": "مستلزمات الحمام والمرحاض",
+          "icon": "fas fa-toilet"
+        },
+        {
+          "id": 11,
+          "title": "ديكورات الحدائق والمناطق الخارجية",
+          "icon": "fas fa-tree"
+        },
+        {
+          "id": 12,
+          "title": "مفروشات وأغطية الأسرة والوسائد",
+          "icon": "fas fa-bed"
+        }
       ]
     },
+    {
+      "id": 20,
+      "title": "الخدمات الطبية",
+      "icon": "fas fa-user-md",
+      "subcategories": [
         {
-  "id": 20,
-  "title": "الخدمات الطبية",
-  "icon": "fas fa-user-md",
-  "subcategories": [
-
-    {
-      "id": 201,
-      "title": "كشف طبيب منزلي",
-      "icon": "fas fa-stethoscope"
+          "id": 201,
+          "title": "كشف طبيب منزلي",
+          "icon": "fas fa-stethoscope"
+        },
+        {
+          "id": 202,
+          "title": "خدمات الأشعة",
+          "icon": "fas fa-x-ray"
+        },
+        {
+          "id": 203,
+          "title": "تحاليل وفحوصات",
+          "icon": "fas fa-vials"
+        },
+        {
+          "id": 204,
+          "title": "الصيدليات وتوصيل الأدوية",
+          "icon": "fas fa-prescription-bottle-medical"
+        },
+        {
+          "id": 205,
+          "title": "تمريض منزلي",
+          "icon": "fas fa-user-nurse"
+        },
+        {
+          "id": 206,
+          "title": "العلاج الطبيعي",
+          "icon": "fas fa-dumbbell"
+        },
+        {
+          "id": 208,
+          "title": "رعاية المسنين وذوي الهمم",
+          "icon": "fas fa-hands-helping"
+        },
+        {
+          "id": 11,
+          "title": "الأجهزة الطبية المنزلية",
+          "icon": "fas fa-heartbeat"
+        }
+      ]
     },
-    {
-      "id": 202,
-      "title": "خدمات الأشعة",
-      "icon": "fas fa-x-ray"
-    },
-    {
-      "id": 203,
-      "title": "تحاليل وفحوصات",
-      "icon": "fas fa-vials"
-    },
-    {
-      "id": 204,
-      "title": "الصيدليات وتوصيل الأدوية",
-      "icon": "fas fa-prescription-bottle-medical"
-    },
-    {
-      "id": 205,
-      "title": "تمريض منزلي",
-      "icon": "fas fa-user-nurse"
-    },
-    {
-      "id": 206,
-      "title": "العلاج الطبيعي",
-      "icon": "fas fa-dumbbell"
-    },
-    {
-      "id": 208,
-      "title": "رعاية المسنين وذوي الهمم",
-      "icon": "fas fa-hands-helping"
-    },
-            { "id": 11, "title": "الأجهزة الطبية المنزلية", "icon": "fas fa-heartbeat" }
-
-  ]
-}
-    ,
     {
       "id": 6,
       "title": "الخدمات العامة",
       "icon": "fas fa-briefcase",
       "subcategories": [
-
-   
-    { "id": 9, "title": "خدمات تعليمية", "icon": "fas fa-chalkboard-teacher" },
-   
-    { "id": 7, "title": "خدمات تجميلية شخصية", "icon": "fas fa-cut" },
-    { "id": 4, "title": "تصميم جرافيك وتصوير", "icon": "fas fa-drafting-compass" },
-
-              { "id": 2, "title": "معدات اللياقة البدنية والجيم", "icon": "fas fa-dumbbell" },
-
-      { "id": 3, "title": "خدمات الشحن والتوصيل", "icon": "fas fa-shipping-fast" },
-    { "id": 5, "title": "خدمات صيانه المركبات", "icon": "fas fa-wrench" },
-    { "id": 6, "title": "خدمات تأجير المركبات", "icon": "fas fa-key" }
-
-]
-      
+        {
+          "id": 9,
+          "title": "خدمات تعليمية",
+          "icon": "fas fa-chalkboard-teacher"
+        },
+        {
+          "id": 7,
+          "title": "خدمات تجميلية شخصية",
+          "icon": "fas fa-cut"
+        },
+        {
+          "id": 4,
+          "title": "تصميم جرافيك وتصوير",
+          "icon": "fas fa-drafting-compass"
+        },
+        {
+          "id": 2,
+          "title": "معدات اللياقة البدنية والجيم",
+          "icon": "fas fa-dumbbell"
+        },
+        {
+          "id": 3,
+          "title": "خدمات الشحن والتوصيل",
+          "icon": "fas fa-shipping-fast"
+        },
+        {
+          "id": 5,
+          "title": "خدمات صيانه المركبات",
+          "icon": "fas fa-wrench"
+        },
+        {
+          "id": 6,
+          "title": "خدمات تأجير المركبات",
+          "icon": "fas fa-key"
+        }
+      ]
     },
     {
       "id": 7,
       "title": "سوق المركبات",
       "icon": "fas fa-car",
       "subcategories": [
-        { "id": 1, "title": "السيارات", "icon": "fas fa-car-side" },
-        { "id": 2, "title": "الدراجات", "icon": "fas fa-motorcycle" },
-        { "id": 3, "title": "قطع الغيار والمحركات والزيوت", "icon": "fas fa-cogs" },
-        { "id": 4, "title": "إكسسوارات وكماليات المركبات", "icon": "fas fa-car-battery" },
-         { "id": 7, "title": "إطارات وعجلات المركبات", "icon": "fas fa-dot-circle" },
-        { "id": 8, "title": "أنظمة الصوت والمرئيات للمركبات", "icon": "fas fa-volume-up" },
-        { "id": 10, "title": "مركبات مائية", "icon": "fas fa-ship" }
+        {
+          "id": 1,
+          "title": "السيارات",
+          "icon": "fas fa-car-side"
+        },
+        {
+          "id": 2,
+          "title": "الدراجات",
+          "icon": "fas fa-motorcycle"
+        },
+        {
+          "id": 3,
+          "title": "قطع الغيار والمحركات والزيوت",
+          "icon": "fas fa-cogs"
+        },
+        {
+          "id": 4,
+          "title": "إكسسوارات وكماليات المركبات",
+          "icon": "fas fa-car-battery"
+        },
+        {
+          "id": 7,
+          "title": "إطارات وعجلات المركبات",
+          "icon": "fas fa-dot-circle"
+        },
+        {
+          "id": 8,
+          "title": "أنظمة الصوت والمرئيات للمركبات",
+          "icon": "fas fa-volume-up"
+        },
+        {
+          "id": 10,
+          "title": "مركبات مائية",
+          "icon": "fas fa-ship"
+        }
       ]
     },
     {
@@ -179,11 +461,31 @@
       "title": "الرياضة والترفيه",
       "icon": "fas fa-basketball-ball",
       "subcategories": [
-        { "id": 4, "title": "مستلزمات الصيد والرياضات الخارجية", "icon": "fas fa-fish" },
-        { "id": 5, "title": "أدوات التخييم والسفر", "icon": "fas fa-campground" },
-        { "id": 7, "title": "معدات السباحة والرياضات المائية", "icon": "fas fa-swimmer" },
-        { "id": 8, "title": "ألعاب الفيديو والترفيه الإلكتروني", "icon": "fas fa-gamepad" },
-        { "id": 10, "title": "الكتب والمجلات والوسائط", "icon": "fas fa-book-open" }
+        {
+          "id": 4,
+          "title": "مستلزمات الصيد والرياضات الخارجية",
+          "icon": "fas fa-fish"
+        },
+        {
+          "id": 5,
+          "title": "أدوات التخييم والسفر",
+          "icon": "fas fa-campground"
+        },
+        {
+          "id": 7,
+          "title": "معدات السباحة والرياضات المائية",
+          "icon": "fas fa-swimmer"
+        },
+        {
+          "id": 8,
+          "title": "ألعاب الفيديو والترفيه الإلكتروني",
+          "icon": "fas fa-gamepad"
+        },
+        {
+          "id": 10,
+          "title": "الكتب والمجلات والوسائط",
+          "icon": "fas fa-book-open"
+        }
       ]
     },
     {
@@ -191,13 +493,41 @@
       "title": "الحيوانات الأليفة",
       "icon": "fas fa-paw",
       "subcategories": [
-        { "id": 1, "title": "طعام ومستلزمات الحيوانات الأليفة", "icon": "fas fa-bone" },
-        { "id": 2, "title": "أسماك وأحواض زينة", "icon": "fas fa-fish" },
-        { "id": 3, "title": "طيور الزينة", "icon": "fas fa-dove" },
-        { "id": 4, "title": "الحيوانات النادرة", "icon": "fas fa-hippo" },
-        { "id": 5, "title": "خدمات رعاية وتدريب الحيوانات", "icon": "fas fa-hand-holding-heart" },
-        { "id": 6, "title": "ألعاب وملحقات الحيوانات", "icon": "fas fa-baseball-ball" },
-        { "id": 7, "title": "مستلزمات النظافة للحيوانات", "icon": "fas fa-shower" }
+        {
+          "id": 1,
+          "title": "طعام ومستلزمات الحيوانات الأليفة",
+          "icon": "fas fa-bone"
+        },
+        {
+          "id": 2,
+          "title": "أسماك وأحواض زينة",
+          "icon": "fas fa-fish"
+        },
+        {
+          "id": 3,
+          "title": "طيور الزينة",
+          "icon": "fas fa-dove"
+        },
+        {
+          "id": 4,
+          "title": "الحيوانات النادرة",
+          "icon": "fas fa-hippo"
+        },
+        {
+          "id": 5,
+          "title": "خدمات رعاية وتدريب الحيوانات",
+          "icon": "fas fa-hand-holding-heart"
+        },
+        {
+          "id": 6,
+          "title": "ألعاب وملحقات الحيوانات",
+          "icon": "fas fa-baseball-ball"
+        },
+        {
+          "id": 7,
+          "title": "مستلزمات النظافة للحيوانات",
+          "icon": "fas fa-shower"
+        }
       ]
     },
     {
@@ -205,14 +535,46 @@
       "title": "الفنون والحرف اليدوية",
       "icon": "fas fa-paint-brush",
       "subcategories": [
-        { "id": 1, "title": "الرسم واللوحات الفنية", "icon": "fas fa-palette" },
-        { "id": 2, "title": "المجوهرات والإكسسوارات اليدوية", "icon": "fas fa-gem" },
-        { "id": 3, "title": "أعمال التطريز والخياطة", "icon": "fas fa-cut" },
-        { "id": 4, "title": "منتجات الشموع والعطور المنزلية", "icon": "fas fa-burn" },
-        { "id": 5, "title": "الأدوات والمستلزمات الفنية", "icon": "fas fa-paint-roller" },
-        { "id": 6, "title": "المنتجات المصنوعة من الجلد والخشب", "icon": "fas fa-tree" },
-        { "id": 7, "title": "خدمات التغليف والتنسيق", "icon": "fas fa-gift" },
-        { "id": 8, "title": "الحرف التراثية والتقليدية", "icon": "fas fa-landmark" }
+        {
+          "id": 1,
+          "title": "الرسم واللوحات الفنية",
+          "icon": "fas fa-palette"
+        },
+        {
+          "id": 2,
+          "title": "المجوهرات والإكسسوارات اليدوية",
+          "icon": "fas fa-gem"
+        },
+        {
+          "id": 3,
+          "title": "أعمال التطريز والخياطة",
+          "icon": "fas fa-cut"
+        },
+        {
+          "id": 4,
+          "title": "منتجات الشموع والعطور المنزلية",
+          "icon": "fas fa-burn"
+        },
+        {
+          "id": 5,
+          "title": "الأدوات والمستلزمات الفنية",
+          "icon": "fas fa-paint-roller"
+        },
+        {
+          "id": 6,
+          "title": "المنتجات المصنوعة من الجلد والخشب",
+          "icon": "fas fa-tree"
+        },
+        {
+          "id": 7,
+          "title": "خدمات التغليف والتنسيق",
+          "icon": "fas fa-gift"
+        },
+        {
+          "id": 8,
+          "title": "الحرف التراثية والتقليدية",
+          "icon": "fas fa-landmark"
+        }
       ]
     },
     {
@@ -220,12 +582,36 @@
       "title": "العقارات",
       "icon": "fas fa-city",
       "subcategories": [
-        { "id": 1, "title": "شقق ومنازل للبيع", "icon": "fas fa-home" },
-        { "id": 2, "title": "شقق ومنازل للإيجار", "icon": "fas fa-key" },
-        { "id": 3, "title": "أراضي وعقارات تجارية", "icon": "fas fa-map-marked-alt" },
-        { "id": 4, "title": "مكاتب ومساحات عمل", "icon": "fas fa-building" },
-        { "id": 5, "title": "خدمات الوساطة العقارية", "icon": "fas fa-handshake" },
-        { "id": 6, "title": "خدمات التصميم والديكور الداخلي", "icon": "fas fa-drafting-compass" }
+        {
+          "id": 1,
+          "title": "شقق ومنازل للبيع",
+          "icon": "fas fa-home"
+        },
+        {
+          "id": 2,
+          "title": "شقق ومنازل للإيجار",
+          "icon": "fas fa-key"
+        },
+        {
+          "id": 3,
+          "title": "أراضي وعقارات تجارية",
+          "icon": "fas fa-map-marked-alt"
+        },
+        {
+          "id": 4,
+          "title": "مكاتب ومساحات عمل",
+          "icon": "fas fa-building"
+        },
+        {
+          "id": 5,
+          "title": "خدمات الوساطة العقارية",
+          "icon": "fas fa-handshake"
+        },
+        {
+          "id": 6,
+          "title": "خدمات التصميم والديكور الداخلي",
+          "icon": "fas fa-drafting-compass"
+        }
       ]
     },
     {
@@ -233,16 +619,42 @@
       "title": "المناسبات والهدايا",
       "icon": "fas fa-gift",
       "subcategories": [
-            { "id": 8, "title": "خدمات تنظيم المناسبات", "icon": "fas fa-birthday-cake" },
-        { "id": 1, "title": "هدايا وترتيبات باقات الورد", "icon": "fas fa-gifts" },
-        { "id": 2, "title": "ديكورات وحلي المناسبات", "icon": "fas fa-birthday-cake" },
-        { "id": 3, "title": "بطاقات المعايدة والتهنئة", "icon": "fas fa-envelope-open-text" },
-        { "id": 4, "title": "ألعاب ونشاطات ترفيهية", "icon": "fas fa-puzzle-piece" },
-        { "id": 5, "title": "خدمات التصوير والفيديو", "icon": "fas fa-video" },
-        { "id": 6, "title": "خدمات تنظيم الحفلات", "icon": "fas fa-calendar-check" }
+        {
+          "id": 8,
+          "title": "خدمات تنظيم المناسبات",
+          "icon": "fas fa-birthday-cake"
+        },
+        {
+          "id": 1,
+          "title": "هدايا وترتيبات باقات الورد",
+          "icon": "fas fa-gifts"
+        },
+        {
+          "id": 2,
+          "title": "ديكورات وحلي المناسبات",
+          "icon": "fas fa-birthday-cake"
+        },
+        {
+          "id": 3,
+          "title": "بطاقات المعايدة والتهنئة",
+          "icon": "fas fa-envelope-open-text"
+        },
+        {
+          "id": 4,
+          "title": "ألعاب ونشاطات ترفيهية",
+          "icon": "fas fa-puzzle-piece"
+        },
+        {
+          "id": 5,
+          "title": "خدمات التصوير والفيديو",
+          "icon": "fas fa-video"
+        },
+        {
+          "id": 6,
+          "title": "خدمات تنظيم الحفلات",
+          "icon": "fas fa-calendar-check"
+        }
       ]
     }
-
-
   ]
 }
