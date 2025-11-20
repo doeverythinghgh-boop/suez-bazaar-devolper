@@ -7,10 +7,11 @@
  * ينشئ شريط تقدم زمني (Timeline) لحالة الطلب.
  * @param {string} orderKey - المفتاح الفريد للطلب.
  * @param {object} statusDetails - كائن تفاصيل الحالة (id, state, description).
- * @param {boolean} isEditable - يحدد ما إذا كانت الحالة قابلة للتعديل.
+ * @param {boolean} canEdit - يحدد ما إذا كان المستخدم لديه صلاحية تعديل هذا الطلب بشكل عام.
+ * @param {number} userRole - دور المستخدم الحالي (1=بائع, 2=خدمة توصيل, 3=مسؤول).
  * @returns {string} - كود HTML لشريط التقدم.
  */
-function createStatusTimelineHTML(orderKey, statusDetails, isEditable) {
+function createStatusTimelineHTML(orderKey, statusDetails, canEdit, userRole) {
   const currentStatusId = statusDetails ? statusDetails.id : -1;
 
   const progressStates = [
@@ -49,12 +50,26 @@ function createStatusTimelineHTML(orderKey, statusDetails, isEditable) {
   progressStates.forEach((state, index) => {
     const isActive = currentStatusId >= state.id;
     const isCurrent = currentStatusId === state.id;
-    // ✅ جديد: إضافة كلاس `editable-step` إذا كان قابلاً للتعديل
-    const editableClass = isEditable ? 'editable-step' : '';
+
+    // ✅ جديد: تحديد ما إذا كانت هذه الخطوة *المحددة* قابلة للتعديل.
+    let isStepEditable = canEdit;
+    // إذا كان المستخدم بائعًا (1)، فإنه لا يمكنه تعديل حالة "تم التسليم".
+    if (userRole === 1 && state.id === ORDER_STATUS_MAP.DELIVERED.id) {
+      isStepEditable = false;
+    }
+    // ✅ جديد: إذا كان المستخدم خدمة توصيل (2)، يمكنه فقط تعديل "تم الشحن" و "تم التسليم".
+    if (userRole === 2) {
+      const allowedDeliveryStatuses = [ORDER_STATUS_MAP.SHIPPED.id, ORDER_STATUS_MAP.DELIVERED.id];
+      // اجعل الخطوة قابلة للتعديل فقط إذا كانت ضمن الحالات المسموح بها لخدمة التوصيل.
+      isStepEditable = canEdit && allowedDeliveryStatuses.includes(state.id);
+    }
+
+    const editableClass = isStepEditable ? 'editable-step' : '';
     const stepClass = isActive ? 'active' : '';
     const currentClass = isCurrent ? 'current' : '';
+
     // ✅ جديد: إضافة سمات البيانات لتخزين المعلومات اللازمة للتحديث
-    const dataAttributes = isEditable 
+    const dataAttributes = isStepEditable 
       ? `data-order-key="${orderKey}" data-status-id="${state.id}"` 
       : '';
 
@@ -127,21 +142,24 @@ async function showSalesMovementModal(userKey) {
     orders.forEach(order => {
       // ✅ تتبع: تسجيل بيانات كل طلب على حدة
       console.log(`%c[DEV-LOG] ... جاري معالجة الطلب: ${order.order_key}`, 'color: darkcyan;', order);
-      
-      // ✅ تتبع للمطور: التحقق من صلاحية التعديل خطوة بخطوة
-      const isSeller = loggedInUser && loggedInUser.is_seller === 1;
-      console.log(`[DEV-LOG] ......... 1. هل المستخدم الحالي بائع (is_seller === 1)؟ -> ${isSeller}`);
 
+      // ✅ جديد: تحديد دور المستخدم (بائع، خدمة توصيل، إلخ)
+      const userRole = loggedInUser ? loggedInUser.is_seller : 0;
+      console.log(`[DEV-LOG] ......... 1. دور المستخدم الحالي (userRole): ${userRole}`);
+      
       // ✅ تتبع للمطور: فحص مفتاح البائع لكل منتج في الطلب
       const sellerKeysInOrder = order.items.map(item => item.seller_key);
       console.log(`[DEV-LOG] ......... 2. مفاتيح البائعين في هذا الطلب:`, sellerKeysInOrder);
       console.log(`[DEV-LOG] ......... 3. مفتاح المستخدم الحالي (loggedInUser.user_key): "${loggedInUser.user_key}"`);
 
       // ✅ تتبع للمطور: التحقق من تطابق المفاتيح
-      const isSellerOfThisOrder = isSeller && order.items.some(item => item.seller_key === loggedInUser.user_key);
+      const isSellerOfThisOrder = userRole === 1 && order.items.some(item => item.seller_key === loggedInUser.user_key);
       console.log(`[DEV-LOG] ......... 4. هل المستخدم الحالي هو بائع أحد المنتجات في هذا الطلب؟ -> ${isSellerOfThisOrder}`);
 
-      const canEdit = isAdmin || isSellerOfThisOrder;
+      // ✅ تعديل: يمكن للمستخدم التعديل إذا كان مسؤولاً، أو بائع الطلب، أو خدمة توصيل.
+      // سيتم تحديد صلاحيات كل خطوة داخل `createStatusTimelineHTML`.
+      const canEdit = isAdmin || isSellerOfThisOrder || userRole === 2;
+
       // ✅ تتبع للمطور: النتيجة النهائية لصلاحية التعديل
       console.log(`%c[DEV-LOG] .........>> النتيجة النهائية: صلاحية التعديل (canEdit) لهذا الطلب هي: ${canEdit}`, 'font-weight: bold; color: green;');
 
@@ -188,7 +206,8 @@ async function showSalesMovementModal(userKey) {
               ${createStatusTimelineHTML(
                 order.order_key, 
                 ORDER_STATUSES.find(s => s.id === order.order_status),
-                canEdit // ✅ إصلاح: تمرير صلاحية التعديل المحسوبة لكل طلب
+                canEdit, // ✅ إصلاح: تمرير صلاحية التعديل المحسوبة لكل طلب
+                userRole // ✅ جديد: تمرير دور المستخدم لتحديد الصلاحيات بدقة
               )}
             </div>
             <h4>المنتجات:</h4>
@@ -209,6 +228,12 @@ async function showSalesMovementModal(userKey) {
     const stepElement = event.target.closest('.editable-step');
     if (!stepElement) return;
 
+    // ✅ جديد: التحقق مما إذا كانت الحالة المحددة نشطة بالفعل.
+    // إذا كانت كذلك، لا تفعل شيئًا لمنع إعادة التفعيل.
+    if (stepElement.classList.contains('active')) {
+      return; // إيقاف التنفيذ لأن الحالة نشطة بالفعل
+    }
+
     const orderKey = stepElement.dataset.orderKey;
     const newStatusId = parseInt(stepElement.dataset.statusId, 10);
     const statusInfo = ORDER_STATUSES.find(s => s.id === newStatusId);
@@ -219,11 +244,11 @@ async function showSalesMovementModal(userKey) {
     }
 
     const result = await Swal.fire({
-      title: 'تأكيد تغيير الحالة',
-      html: `هل أنت متأكد من تغيير حالة الطلب رقم <strong>${orderKey}</strong> إلى <strong>"${statusInfo.state}"</strong>؟`,
+      title: 'تأكيد التفعيل',
+      html: `هل أنت متأكد من تفعيل حالة الطلب رقم <strong>${orderKey}</strong> إلى <strong>"${statusInfo.state}"</strong>؟<br><small>ملاحظة: لا يمكن التراجع عن هذا الإجراء.</small>`,
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonText: 'نعم، قم بالتغيير!',
+      confirmButtonText: 'نعم، قم بالتفعيل!',
       cancelButtonText: 'إلغاء',
       showLoaderOnConfirm: true,
       preConfirm: async () => {
