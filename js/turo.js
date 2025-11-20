@@ -491,7 +491,7 @@ async function getUserPurchases(userKey) {
  * @param {string} userKey - مفتاح المستخدم الذي يطلب التقرير.
  * @returns {Promise<Array|null>} مصفوفة من الطلبات المجمعة أو null في حالة الفشل.
  */
-async function getSalesMovement(userKey) {
+window.getSalesMovement = async function(userKey) {
  
   console.log(`%c[API] Starting getSalesMovement for user_key: ${userKey}`, 'color: blue;');
   try {
@@ -889,4 +889,4 @@ async function getLatestUpdate() {
     console.error('%c[API] getLatestUpdate failed:', 'color: red;', error);
     return null;
   }
-}
+}}
