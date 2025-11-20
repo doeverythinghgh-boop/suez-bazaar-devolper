@@ -189,16 +189,19 @@ async function handleCheckout() {
 
   if (result.isConfirmed && result.value && !result.value.error) {
 
-// جلب التوكنات وإرسال الإشعار
-    const sellerKeys = getUniqueSellerKeys(orderData); // دالة جديدة لجمع مفاتيح البائعين من بيانات الطلب
+    // ✅ إصلاح: استخلاص مفتاح الطلب من نتيجة SweetAlert
+    const createdOrderKey = result.value.order_key;
+    console.log(`[Checkout] Order created with key: ${createdOrderKey}. Now sending notifications.`);
+
+    // جلب التوكنات وإرسال الإشعار
+    const sellerKeys = getUniqueSellerKeys(orderData);
     const tokens = await getNotificationTokensForOrder(sellerKeys);
 
     if (tokens.length > 0) {
-        // يتم استدعاء دالة إرسال الإشعار، يُرجح أنها موجودة في 'api/send-notification.js'
-        await sendNotification({
-            tokens: tokens,
-            title: 'طلب شراء جديد',
-            body: `تم استلام طلب شراء جديد رقم #${response.orderId}. يرجى المراجعة.`
+        const title = 'طلب شراء جديد';
+        const body = `تم استلام طلب شراء جديد رقم #${createdOrderKey}. يرجى المراجعة.`;
+        tokens.forEach(token => {
+            sendNotification(token, title, body); // إرسال إشعار لكل توكن على حدة
         });
     }
 
@@ -244,10 +247,10 @@ async function getNotificationTokensForOrder(sellerKeys) {
     const userKeysQuery = uniqueUsersKeys.join(',');
     
     // نقطة النهاية المعدلة تستقبل userKeys كـ Query Parameter
-    const apiUrl = `/api/tokens?userKeys=${encodeURIComponent(userKeysQuery)}`;
+    const apiUrl = `${baseURL}/api/tokens?userKeys=${encodeURIComponent(userKeysQuery)}`;
 
     try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch(apiUrl, { // ✅ إصلاح: استخدام baseURL
             method: 'GET', // ✅ الآن تدعم GET لجلب التوكنات
             headers: {
                 'Content-Type': 'application/json',
