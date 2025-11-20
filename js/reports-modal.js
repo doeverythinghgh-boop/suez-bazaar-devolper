@@ -5,10 +5,12 @@
 
 /**
  * ينشئ شريط تقدم زمني (Timeline) لحالة الطلب.
- * @param {object} statusDetails - كائن تفاصيل الحالة (id, state, description).
+ * @param {object} statusDetails - كائن تفاصيل الحالة الحالية.
+ * @param {string} orderKey - مفتاح الطلب.
+ * @param {boolean} isEditable - هل الخطوات قابلة للتعديل أم لا.
  * @returns {string} - كود HTML لشريط التقدم.
  */
-function createStatusTimelineHTML(statusDetails) {
+function createStatusTimelineHTML(statusDetails, orderKey, isEditable) {
   const currentStatusId = statusDetails.id;
 
   const progressStates = [
@@ -43,10 +45,14 @@ function createStatusTimelineHTML(statusDetails) {
     const isActive = currentStatusId >= state.id;
     const isCurrent = currentStatusId === state.id;
     const stepClass = isActive ? 'active' : '';
-    const currentClass = isCurrent ? 'current' : '';
+    // ✅ تعديل: إضافة كلاس `editable-step` إذا كان قابلاً للتعديل
+    const editableClass = isEditable ? 'editable-step' : '';
+    const currentClass = isCurrent ? 'current' : ''; // يبقى كما هو
 
     timelineHTML += `
-      <div class="timeline-step ${stepClass} ${currentClass}" title="${state.description}">
+      <div class="timeline-step ${stepClass} ${currentClass} ${editableClass}" 
+           title="${isEditable ? `تغيير الحالة إلى: ${state.state}` : state.description}"
+           ${isEditable ? `data-order-key="${orderKey}" data-status-id="${state.id}"` : ''}>
         <div class="timeline-dot"></div>
         <div class="timeline-label">${state.state}</div>
       </div>
@@ -149,7 +155,7 @@ async function showSalesMovementModal(userKey) {
             <p><strong>تاريخ الطلب:</strong> ${orderDate}</p>
             <p><strong>إجمالي الطلب:</strong> ${order.total_amount.toFixed(2)} جنيه</p>
             <div class="purchase-status-container">
-              ${createStatusTimelineHTML(ORDER_STATUSES.find(s => s.id === order.order_status) || ORDER_STATUSES[0])}
+              ${createStatusTimelineHTML(ORDER_STATUSES.find(s => s.id === order.order_status) || ORDER_STATUSES[0], order.order_key, isAdmin)}
             </div>
             <h4>المنتجات:</h4>
             ${itemsTable}
@@ -195,9 +201,48 @@ async function showSalesMovementModal(userKey) {
           MainCategory: productData.MainCategory, // ✅ إضافة: تمرير ID الفئة الرئيسية
           SubCategory: productData.SubCategory    // ✅ إضافة: تمرير ID الفئة الفرعية
         };
-        window.showProductDetails(productDataForModal);
+        // ✅ تعديل: تمرير خيار لإخفاء زر "إضافة إلى السلة"
+        window.showProductDetails(productDataForModal, null, { showAddToCart: false });
       } else {
         Swal.fire('خطأ', 'فشل في جلب تفاصيل المنتج. قد يكون المنتج قد تم حذفه.', 'error');
+      }
+    });
+  });
+
+  // ✅ جديد: ربط حدث النقر على خطوات الحالة القابلة للتعديل
+  modalContentEl.querySelectorAll('.editable-step').forEach(step => {
+    step.addEventListener('click', async (event) => {
+      const targetStep = event.currentTarget;
+      const orderKey = targetStep.dataset.orderKey;
+      const newStatusId = parseInt(targetStep.dataset.statusId, 10);
+      const statusInfo = ORDER_STATUSES.find(s => s.id === newStatusId);
+
+      if (!statusInfo) return;
+
+      const result = await Swal.fire({
+        title: 'تأكيد تغيير الحالة',
+        html: `هل أنت متأكد من تغيير حالة الطلب <strong>${orderKey}</strong> إلى <strong>"${statusInfo.state}"</strong>؟`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، قم بالتغيير!',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+      });
+
+      if (result.isConfirmed) {
+        Swal.fire({ title: 'جاري تحديث الحالة...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        
+        const updateResult = await updateOrderStatus(orderKey, newStatusId);
+        
+        if (updateResult && !updateResult.error) {
+          Swal.fire('تم التحديث!', 'تم تحديث حالة الطلب بنجاح.', 'success');
+          // إعادة تحميل النافذة بالكامل لعرض البيانات المحدثة
+          const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+          showSalesMovementModal(loggedInUser.user_key);
+        } else {
+          Swal.fire('خطأ', `فشل تحديث الحالة: ${updateResult.error}`, 'error');
+        }
       }
     });
   });

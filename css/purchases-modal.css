@@ -182,3 +182,7 @@
 .status-timeline-exception.status-33 {
   background-color: #f39c12; /* برتقالي */
 }
+/* ✅ جديد: تغيير شكل المؤشر عند المرور فوق خطوات الحالة القابلة للتعديل */
+.timeline-step.editable-step {
+  cursor: pointer;
+}

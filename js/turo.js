@@ -555,7 +555,7 @@ async function sendNotification(token, title, body) {
  * يعرض نافذة منبثقة تحتوي على تفاصيل المنتج.
  * @param {object} productData - بيانات المنتج الكاملة.
  */
-window.showProductDetails = async function(productData, onCloseCallback) {
+window.showProductDetails = async function(productData, onCloseCallback, options = {}) {
   // ✅ جديد: التحقق من وجود بيانات الفئة قبل فتح النافذة
   if (!productData.MainCategory || !productData.SubCategory) {
     console.error('[Modal] Missing category data. Cannot open product details.', productData);
@@ -581,7 +581,7 @@ window.showProductDetails = async function(productData, onCloseCallback) {
     modal.innerHTML = await response.text();
     // ✅ **الإصلاح الرئيسي**: يجب أن يتم استدعاء الدوال التي تعتمد على محتوى النافذة
     // **بعد** تحميل المحتوى بنجاح.
-    populateProductDetails(productData, onCloseCallback);
+    populateProductDetails(productData, onCloseCallback, options);
   } catch (error) {
     console.error('[Modal] Failed to fetch or render showProduct.html:', error);
     Swal.fire('خطأ في التحميل', 'حدث خطأ أثناء محاولة تحميل تفاصيل المنتج. يرجى المحاولة مرة أخرى.', 'error').then(() => {
@@ -602,7 +602,7 @@ window.showProductDetails = async function(productData, onCloseCallback) {
 /**
  * @description يملأ تفاصيل المنتج ويربط الأحداث بعد تحميل محتوى النافذة المنبثقة.
  */
-function populateProductDetails(productData, onCloseCallback) {
+function populateProductDetails(productData, onCloseCallback, options = {}) {
   document.getElementById("product-modal-description").textContent = productData.description || "لا يوجد وصف متاح.";
   document.getElementById("product-modal-seller-message").textContent = productData.sellerMessage || "لا توجد رسالة من البائع.";
 
@@ -612,13 +612,20 @@ function populateProductDetails(productData, onCloseCallback) {
   const priceContainer = document.getElementById("product-modal-price-container");
   const cartActionsContainer = document.getElementById("product-modal-cart-actions");
 
+  // ✅ جديد: إخفاء قسم السلة بناءً على الخيار القادم من استدعاء الدالة
+  const showAddToCart = options.showAddToCart !== false; // يكون true افتراضيًا
+
   if (isServiceCategory) {
     quantityContainer.style.display = 'none';
     priceContainer.style.display = 'none';
     cartActionsContainer.style.display = 'none';
+  } else if (!showAddToCart) {
+    // إذا كانت الإشارة موجودة لإخفاء السلة
+    cartActionsContainer.style.display = 'none';
   } else {
     quantityContainer.style.display = 'block';
     priceContainer.style.display = 'block';
+    // تأكد من إظهار الحاوية إذا لم تكن هناك إشارة لإخفائها
     cartActionsContainer.style.display = 'block';
     document.getElementById("product-modal-quantity").textContent = productData.availableQuantity;
     document.getElementById("product-modal-price").textContent = `${productData.pricePerItem} جنيه`;
@@ -693,7 +700,7 @@ function populateProductDetails(productData, onCloseCallback) {
   const totalPriceEl = document.getElementById('product-modal-total-price');
 
   // ✅ جديد: لا تقم بتهيئة عناصر التحكم بالكمية إذا كانت من فئة الخدمات
-  if (isServiceCategory) {
+  if (isServiceCategory || !showAddToCart) {
     // لا تفعل شيئًا، فقد تم إخفاء الحاوية بالفعل
     return;
   }
