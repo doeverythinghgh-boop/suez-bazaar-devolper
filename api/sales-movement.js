@@ -82,10 +82,10 @@ export default async function handler(request) {
       whereClause = 'WHERE oi.seller_key = ?';
       args.push(userKey); // userKey is guaranteed to exist here
       logMessage = `Filtering by seller_key: ${userKey} (is_seller = 1).`;
-    } else if (userRole === 3) {
-      // حالة المشرف: جلب جميع الطلبات
+    } else if (userRole === 3 || userRole === 2) {
+      // حالة المشرف (3) أو خدمة التوصيل (2): جلب جميع الطلبات
       whereClause = ''; // لا يتم إضافة شرط WHERE
-      logMessage = `Fetching all sales movement (is_seller = 3, Admin view).`;
+      logMessage = `Fetching all sales movement (userRole = ${userRole}, Admin/Delivery view).`;
     } else {
       // حالة عدم الصلاحية (is_seller = 0): لا نتائج
       whereClause = 'WHERE 1 = 0'; // شرط مستحيل يحول دون إرجاع أي صفوف
