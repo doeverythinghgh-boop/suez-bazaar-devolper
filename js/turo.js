@@ -890,4 +890,4 @@ async function getLatestUpdate() {
     console.error('%c[API] getLatestUpdate failed:', 'color: red;', error);
     return null;
   }
-}}
+}}}
