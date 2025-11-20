@@ -140,8 +140,10 @@ async function showSalesMovementModal(userKey) {
       contentHTML += `
         <div class="purchase-item">
           <div class="purchase-item-details">
-            <p><strong>رقم الطلب:</strong> ${order.order_key}</p>            ${isAdmin ? `
-              <p><strong>العميل:</strong> ${order.customer_name} (${order.customer_phone})</p>
+            <p><strong>رقم الطلب:</strong> ${order.order_key}</p>
+            ${isAdmin ? `
+              <p><strong>العميل:</strong> ${order.customer_name}</p>
+              <p><strong>هاتف العميل:</strong> ${order.customer_phone}</p>
               <p><strong>العنوان:</strong> ${order.customer_address || 'غير محدد'}</p>
             ` : ''}
             <p><strong>تاريخ الطلب:</strong> ${orderDate}</p>
