@@ -1,0 +1,2612 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أداة تحليل ملفات المشروع - النسخة المحسنة</title>
+
+<style>
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --success-color: #27ae60;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --light-color: #ecf0f1;
+    --dark-color: #34495e;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    direction: rtl;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    padding: 25px;
+    backdrop-filter: blur(10px);
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+h1 {
+    color: var(--secondary-color);
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+}
+
+h2 {
+    color: var(--secondary-color);
+    margin: 25px 0 15px;
+    font-size: 1.5rem;
+}
+
+h3 {
+    color: var(--secondary-color);
+    margin: 20px 0 10px;
+    font-size: 1.2rem;
+}
+
+h4 {
+    color: var(--primary-color);
+    margin: 15px 0 10px;
+    font-size: 1.1rem;
+}
+
+.controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    justify-content: center;
+}
+
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    transform: translateY(-2px);
+}
+
+.btn-success {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #219653;
+    transform: translateY(-2px);
+}
+
+.btn-warning {
+    background-color: var(--warning-color);
+    color: white;
+}
+
+.btn-warning:hover {
+    background-color: #e67e22;
+    transform: translateY(-2px);
+}
+
+.btn-danger {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #c0392b;
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: #1a252f;
+    transform: translateY(-2px);
+}
+
+.stats {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    gap: 15px;
+}
+
+.stat-card {
+    background: white;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    text-align: center;
+    flex: 1;
+    min-width: 150px;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--dark-color);
+}
+
+textarea {
+    width: 100%;
+    height: 250px;
+    margin-top: 10px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+    direction: ltr;
+}
+
+.list-box {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    box-shadow: var(--box-shadow);
+}
+
+.folder {
+    color: var(--primary-color);
+    font-weight: bold;
+    cursor: pointer;
+    padding: 8px 5px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.folder:hover {
+    background-color: #f0f8ff;
+}
+
+.file {
+    color: var(--success-color);
+    cursor: pointer;
+    padding: 6px 5px;
+    margin-right: 15px;
+    border-radius: 4px;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.file:hover {
+    background-color: #f0fff0;
+}
+
+.ignore-btn {
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    margin-right: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background 0.2s;
+}
+
+.ignore-btn:hover {
+    background: #c0392b;
+}
+
+.sub {
+    margin-right: 20px;
+    display: none;
+}
+
+.search-box {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+}
+
+.file-type-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.file-type-btn {
+    padding: 8px 15px;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.file-type-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.file-type-btn:hover {
+    background: #f0f0f0;
+}
+
+.file-type-btn.active:hover {
+    background: #2980b9;
+}
+
+.search-results {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.search-result-item {
+    background: white;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: var(--border-radius);
+    border-right: 4px solid var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.search-result-header {
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-result-content {
+    margin-right: 25px;
+}
+
+.function-list {
+    list-style: none;
+    margin: 10px 0;
+}
+
+.function-list li {
+    padding: 5px 10px;
+    margin: 3px 0;
+    background: #f8f9fa;
+    border-radius: 4px;
+    border-right: 3px solid var(--success-color);
+}
+
+.dependency-list {
+    list-style: none;
+    margin: 10px 0;
+}
+
+.dependency-list li {
+    padding: 5px 10px;
+    margin: 3px 0;
+    background: #fff3cd;
+    border-radius: 4px;
+    border-right: 3px solid var(--warning-color);
+}
+
+.relation-list {
+    list-style: none;
+    margin: 10px 0;
+}
+
+.relation-list li {
+    padding: 5px 10px;
+    margin: 3px 0;
+    background: #d1ecf1;
+    border-radius: 4px;
+    border-right: 3px solid var(--primary-color);
+}
+
+/* نافذة عرض محتوى ملف واحد */
+#modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+#modalContent {
+    background: white;
+    width: 90%;
+    max-width: 900px;
+    height: 80%;
+    padding: 25px;
+    overflow-y: auto;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+#modalClose {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: var(--danger-color);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+}
+
+.file-content {
+    direction: ltr;
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    margin-top: 20px;
+}
+
+.file-info {
+    background: #f8f9fa;
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    margin-bottom: 15px;
+    border-right: 4px solid var(--primary-color);
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-left-color: var(--primary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .stats {
+        flex-direction: column;
+    }
+    
+    .stat-card {
+        min-width: 100%;
+    }
+    
+    .search-box {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>📂 أداة تحليل ملفات المشروع - النسخة المحسنة</h1>
+        <p>أداة متكاملة لقراءة وتحليل وتصدير ملفات المشاريع البرمجية مع تحليل معمق للعلاقات</p>
+    </header>
+
+    <div class="controls">
+        <button id="pickFolder" class="btn btn-primary">
+            <span>📁</span> اختر مجلد المشروع
+        </button>
+        <button id="reRead" class="btn btn-secondary">
+            <span>🔄</span> إعادة القراءة
+        </button>
+        <button id="exportTxt" class="btn btn-success">
+            <span>📄</span> تصدير كمحتوى TXT
+        </button>
+        <button id="exportMd" class="btn btn-success">
+            <span>📝</span> تصدير كـ MD
+        </button>
+        <button id="exportByType" class="btn btn-warning">
+            <span>📊</span> تصدير حسب النوع مع التحليل
+        </button>
+        <button id="exportRelations" class="btn btn-primary">
+            <span>🔗</span> تصدير خريطة العلاقات
+        </button>
+    </div>
+
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p>جاري تحليل الملفات والعلاقات...</p>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value" id="fileCount">0</div>
+            <div class="stat-label">عدد الملفات</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="lineCount">0</div>
+            <div class="stat-label">عدد الأسطر</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="totalSize">0 KB</div>
+            <div class="stat-label">الحجم الإجمالي</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="projectName">-</div>
+            <div class="stat-label">اسم المشروع</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="relationCount">0</div>
+            <div class="stat-label">العلاقات المكتشفة</div>
+        </div>
+    </div>
+
+    <!-- البحث عن الملفات -->
+    <h3>🔍 البحث عن الملفات</h3>
+    <div class="search-box">
+        <input type="text" id="fileSearchInput" placeholder="ابحث باسم الملف أو الامتداد (مثال: main.js أو .css)">
+        <button id="searchFile" class="btn btn-primary">بحث في الملفات</button>
+        <button id="clearFileSearch" class="btn btn-secondary">مسح</button>
+    </div>
+    <div id="fileSearchResults" class="search-results" style="display: none;"></div>
+
+    <!-- البحث عن الدوال -->
+    <h3>🔍 البحث عن الدوال</h3>
+    <div class="search-box">
+        <input type="text" id="functionSearchInput" placeholder="ابحث باسم الدالة (مثال: calculate أو init)">
+        <button id="searchFunction" class="btn btn-primary">بحث في الدوال</button>
+        <button id="clearFunctionSearch" class="btn btn-secondary">مسح</button>
+    </div>
+    <div id="functionSearchResults" class="search-results" style="display: none;"></div>
+
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="ابحث في الملفات والمجلدات...">
+        <button id="clearSearch" class="btn btn-secondary">مسح البحث</button>
+    </div>
+
+    <div class="file-type-filters">
+        <button class="file-type-btn active" data-type="all">الكل</button>
+        <button class="file-type-btn" data-type="html">HTML</button>
+        <button class="file-type-btn" data-type="css">CSS</button>
+        <button class="file-type-btn" data-type="js">JavaScript</button>
+        <button class="file-type-btn" data-type="json">JSON</button>
+        <button class="file-type-btn" data-type="other">أخرى</button>
+    </div>
+
+    <h3>📁 ملفات المشروع (منظمة شجريًا):</h3>
+    <div class="list-box" id="treeView"></div>
+
+    <h3>📝 المحتوى المجمّع:</h3>
+    <textarea id="output" placeholder="سيظهر محتوى الملفات هنا بعد اختيار المجلد..."></textarea>
+
+    <h3>🔗 خريطة العلاقات المكتشفة:</h3>
+    <div class="list-box" id="relationsView"></div>
+
+    <h3>📛 قائمة التجاهل (ملفات أو مجلدات):</h3>
+    <textarea id="ignoreList" placeholder="أدخل أسماء الملفات أو المجلدات التي تريد تجاهلها (سطر لكل اسم)"></textarea>
+    <div class="controls">
+        <button id="saveIgnore" class="btn btn-danger">حفظ قائمة التجاهل</button>
+        <button id="resetIgnore" class="btn btn-secondary">إعادة تعيين القائمة</button>
+    </div>
+</div>
+
+<!-- نافذة عرض ملف -->
+<div id="modal">
+    <div id="modalContent">
+        <button id="modalClose">✕</button>
+        <div id="fileInfo" class="file-info"></div>
+        <div id="fileContent" class="file-content"></div>
+    </div>
+</div>
+
+<script>
+let directoryHandle = null;
+let projectName = "";
+
+let cssContent   = "";
+let htmlContent  = "";
+let jsContent    = "";
+let jsonContent  = "";
+let otherContent = "";
+
+// هياكل بيانات متقدمة لتتبع العلاقات
+let relations = {
+    html: {},
+    css: {},
+    js: {},
+    json: {},
+    other: {}
+};
+
+let dependencyMap = {
+    htmlToCss: {},
+    htmlToJs: {},
+    cssToJs: {},
+    jsToJson: {},
+    jsToHtml: {},
+    crossReferences: {}
+};
+
+let projectStructure = {
+    entryPoints: [],
+    components: {},
+    modules: {},
+    dataFlows: [],
+    architecture: {}
+};
+
+// هياكل بيانات جديدة للبحث المتقدم
+let fileAnalysis = {};
+let functionAnalysis = {};
+let fileDependencies = {};
+let functionDependencies = {};
+let reverseDependencies = {};
+
+// تهيئة التطبيق
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("ignoreList").value =
+        localStorage.getItem("ignored") || "node_modules\n.git\n.vscode\n.DS_Store\nThumbs.db";
+
+    // إضافة مستمعي الأحداث
+    document.getElementById("pickFolder").addEventListener("click", pickFolder);
+    document.getElementById("reRead").addEventListener("click", readAll);
+    document.getElementById("exportTxt").addEventListener("click", exportTxt);
+    document.getElementById("exportMd").addEventListener("click", exportMd);
+    document.getElementById("exportByType").addEventListener("click", exportByType);
+    document.getElementById("exportRelations").addEventListener("click", exportRelations);
+    document.getElementById("saveIgnore").addEventListener("click", saveIgnore);
+    document.getElementById("resetIgnore").addEventListener("click", resetIgnore);
+    document.getElementById("modalClose").addEventListener("click", closeModal);
+    document.getElementById("searchInput").addEventListener("input", filterTree);
+    document.getElementById("clearSearch").addEventListener("click", clearSearch);
+    
+    // أحداث البحث الجديدة
+    document.getElementById("searchFile").addEventListener("click", searchFiles);
+    document.getElementById("clearFileSearch").addEventListener("click", clearFileSearch);
+    document.getElementById("searchFunction").addEventListener("click", searchFunctions);
+    document.getElementById("clearFunctionSearch").addEventListener("click", clearFunctionSearch);
+    document.getElementById("fileSearchInput").addEventListener("keypress", function(e) {
+        if (e.key === 'Enter') searchFiles();
+    });
+    document.getElementById("functionSearchInput").addEventListener("keypress", function(e) {
+        if (e.key === 'Enter') searchFunctions();
+    });
+    
+    // إضافة مستمعي الأحداث لأزرار التصفية حسب النوع
+    document.querySelectorAll('.file-type-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.file-type-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterByType(this.dataset.type);
+        });
+    });
+    
+    // إغلاق النافذة المنبثقة بالنقر خارج المحتوى
+    document.getElementById("modal").addEventListener("click", function(e) {
+        if (e.target === this) closeModal();
+    });
+});
+
+async function pickFolder() {
+    try {
+        directoryHandle = await window.showDirectoryPicker();
+        projectName = directoryHandle.name;
+        document.getElementById("projectName").textContent = projectName;
+        await readAll();
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            alert('حدث خطأ أثناء اختيار المجلد: ' + error.message);
+        }
+    }
+}
+
+async function readAll() {
+    if (!directoryHandle) {
+        alert('يرجى اختيار مجلد المشروع أولاً');
+        return;
+    }
+    
+    showLoading(true);
+    
+    let output = "";
+    let fileCount = 0;
+    let lineCount = 0;
+    let totalSize = 0;
+
+    cssContent   = "";
+    htmlContent  = "";
+    jsContent    = "";
+    jsonContent  = "";
+    otherContent = "";
+
+    // إعادة تهيئة هياكل البيانات
+    relations = { html:{}, css:{}, js:{}, json:{}, other:{} };
+    dependencyMap = {
+        htmlToCss: {},
+        htmlToJs: {},
+        cssToJs: {},
+        jsToJson: {},
+        jsToHtml: {},
+        crossReferences: {}
+    };
+    projectStructure = {
+        entryPoints: [],
+        components: {},
+        modules: {},
+        dataFlows: [],
+        architecture: {}
+    };
+    
+    // إعادة تهيئة هياكل البحث الجديدة
+    fileAnalysis = {};
+    functionAnalysis = {};
+    fileDependencies = {};
+    functionDependencies = {};
+    reverseDependencies = {};
+
+    let ignored = document.getElementById("ignoreList").value
+        .split("\n").map(s => s.trim()).filter(s => s);
+
+    async function traverse(dirHandle, path="") {
+        let treeHTML = `<div class="folder" data-path="${path || '/'}" data-type="folder">
+            <span>📁</span> ${path || "/"}
+        </div>
+        <div class="sub" style="display:none;">`;
+
+        for await (let [name, handle] of dirHandle.entries()) {
+            // تجاهل العناصر في قائمة التجاهل
+            if (ignored.includes(name)) continue;
+
+            let fullPath = path ? `${path}/${name}` : name;
+
+            if (handle.kind === "file") {
+                let fileType = getFileType(name);
+                let file = await handle.getFile();
+                let text = await file.text();
+                let sizeKB = (file.size / 1024).toFixed(2);
+
+                treeHTML += `
+                    <div class="file" data-path="${fullPath}" data-type="${fileType}">
+                        <span>${getFileIcon(fileType)}</span> ${name}
+                        <span style="margin-right: auto; font-size: 0.8rem; color: #777;">${sizeKB} KB</span>
+                        <button class="ignore-btn" onclick="ignoreItem(event, '${name}')">تجاهل</button>
+                    </div>
+                `;
+
+                output += `\n------ بداية الملف: ${fullPath} ------\n`;
+                output += text;
+                output += `\n------ نهاية الملف: ${fullPath} ------\n`;
+
+                fileCount++;
+                lineCount += text.split("\n").length;
+                totalSize += file.size;
+
+                // تحليل العلاقات والتبعيات
+                analyzeFileRelations(fullPath, fileType, text);
+                
+                // التحليل المتقدم للملفات والدوال
+                performAdvancedAnalysis(fullPath, fileType, text);
+                
+                // إنشاء وصف تفصيلي للملف
+                let relationText = generateFileDescription(name, fullPath, fileType, text);
+                
+                // تصنيف حسب النوع + إضافة علاقة
+                switch(fileType) {
+                    case "css":
+                        relations.css[fullPath] = relationText;
+                        cssContent += `\n/* FILE: ${fullPath} */\n/* DESCRIPTION: ${relationText} */\n${text}\n`;
+                        break;
+                    case "html":
+                        relations.html[fullPath] = relationText;
+                        htmlContent += `\n<!-- FILE: ${fullPath} -->\n<!-- DESCRIPTION: ${relationText} -->\n${text}\n`;
+                        break;
+                    case "js":
+                        relations.js[fullPath] = relationText;
+                        jsContent += `\n// FILE: ${fullPath}\n// DESCRIPTION: ${relationText}\n${text}\n`;
+                        break;
+                    case "json":
+                        relations.json[fullPath] = relationText;
+                        jsonContent += `\n// FILE: ${fullPath}\n// DESCRIPTION: ${relationText}\n${text}\n`;
+                        break;
+                    default:
+                        relations.other[fullPath] = relationText;
+                        otherContent += `\n# FILE: ${fullPath}\n# DESCRIPTION: ${relationText}\n${text}\n`;
+                }
+            }
+            else if (handle.kind === "directory") {
+                treeHTML += `
+                    <div class="folder" data-path="${fullPath}" data-type="folder">
+                        <span>📁</span> ${name}
+                        <button class="ignore-btn" onclick="ignoreItem(event, '${name}')">تجاهل</button>
+                    </div>`;
+                treeHTML += `<div class="sub" style="display:none;">`;
+                treeHTML += await traverse(handle, fullPath);
+                treeHTML += `</div>`;
+            }
+        }
+
+        treeHTML += "</div>";
+        return treeHTML;
+    }
+
+    try {
+        document.getElementById("treeView").innerHTML = await traverse(directoryHandle);
+        
+        // إضافة مستمعي الأحداث للمجلدات
+        document.querySelectorAll('.folder').forEach(folder => {
+            folder.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('ignore-btn')) {
+                    toggleFolder(this);
+                }
+            });
+        });
+        
+        // إضافة مستمعي الأحداث للملفات
+        document.querySelectorAll('.file').forEach(file => {
+            file.addEventListener('click', function(e) {
+                if (!e.target.classList.contains('ignore-btn')) {
+                    openFile(this.dataset.path);
+                }
+            });
+        });
+
+        document.getElementById("output").value = output;
+        document.getElementById("fileCount").innerText = fileCount;
+        document.getElementById("lineCount").innerText = lineCount;
+        document.getElementById("totalSize").innerText = (totalSize / 1024).toFixed(2) + " KB";
+        
+        // تحديث خريطة العلاقات
+        updateRelationsView();
+        
+        showLoading(false);
+    } catch (error) {
+        showLoading(false);
+        alert('حدث خطأ أثناء قراءة الملفات: ' + error.message);
+    }
+}
+
+// التحليل المتقدم للملفات والدوال
+function performAdvancedAnalysis(filePath, fileType, content) {
+    fileAnalysis[filePath] = {
+        type: fileType,
+        functions: [],
+        dependencies: [],
+        dependents: [],
+        size: content.length,
+        lines: content.split('\n').length
+    };
+
+    if (fileType === "js") {
+        analyzeJavaScriptFunctions(filePath, content);
+    } else if (fileType === "html") {
+        analyzeHTMLDependencies(filePath, content);
+    } else if (fileType === "css") {
+        analyzeCSSDependencies(filePath, content);
+    }
+}
+
+// تحليل دوال JavaScript
+function analyzeJavaScriptFunctions(filePath, content) {
+    const functionRegex = /(?:function\s+(\w+)|const\s+(\w+)\s*=\s*(?:\([^)]*\)\s*=>|function)|let\s+(\w+)\s*=\s*(?:\([^)]*\)\s*=>|function)|var\s+(\w+)\s*=\s*(?:\([^)]*\)\s*=>|function)|class\s+(\w+))/g;
+    let match;
+    
+    while ((match = functionRegex.exec(content)) !== null) {
+        const functionName = match[1] || match[2] || match[3] || match[4] || match[5];
+        if (functionName) {
+            fileAnalysis[filePath].functions.push(functionName);
+            functionAnalysis[functionName] = {
+                file: filePath,
+                dependencies: findFunctionDependencies(content, functionName),
+                calls: findFunctionCalls(content, functionName),
+                definition: extractFunctionDefinition(content, functionName)
+            };
+        }
+    }
+}
+
+// إيجاد تبعيات الدالة
+function findFunctionDependencies(content, functionName) {
+    const dependencies = new Set();
+    const functionBody = extractFunctionBody(content, functionName);
+    
+    if (functionBody) {
+        // البحث عن استدعاءات دوال أخرى
+        const functionCallRegex = /(\w+)\s*\(/g;
+        let callMatch;
+        while ((callMatch = functionCallRegex.exec(functionBody)) !== null) {
+            const calledFunction = callMatch[1];
+            if (calledFunction !== functionName && !isReservedKeyword(calledFunction)) {
+                dependencies.add(calledFunction);
+            }
+        }
+        
+        // البحث عن متغيرات عالمية
+        const globalVarRegex = /window\.(\w+)|document\.(\w+)/g;
+        let globalMatch;
+        while ((globalMatch = globalVarRegex.exec(functionBody)) !== null) {
+            const globalVar = globalMatch[1] || globalMatch[2];
+            dependencies.add(globalVar);
+        }
+    }
+    
+    return Array.from(dependencies);
+}
+
+// إيجاد من يستدعي الدالة
+function findFunctionCalls(content, functionName) {
+    const calls = [];
+    const callRegex = new RegExp(`\\b${functionName}\\s*\\(`, 'g');
+    let callMatch;
+    
+    while ((callMatch = callRegex.exec(content)) !== null) {
+        const lineNumber = content.substring(0, callMatch.index).split('\n').length;
+        calls.push({ line: lineNumber, context: extractCallContext(content, callMatch.index) });
+    }
+    
+    return calls;
+}
+
+// استخراج تعريف الدالة
+function extractFunctionDefinition(content, functionName) {
+    const functionRegex = new RegExp(`(?:function\\s+${functionName}|(?:const|let|var)\\s+${functionName}\\s*=\\s*(?:\\([^)]*\\)\\s*=>|function))[^{]*{`, 'g');
+    const match = functionRegex.exec(content);
+    return match ? match[0] : null;
+}
+
+// استخراج جسم الدالة
+function extractFunctionBody(content, functionName) {
+    const functionStartRegex = new RegExp(`(?:function\\s+${functionName}|(?:const|let|var)\\s+${functionName}\\s*=\\s*(?:\\([^)]*\\)\\s*=>|function))[^{]*{`, 'g');
+    const match = functionStartRegex.exec(content);
+    
+    if (match) {
+        let braceCount = 1;
+        let index = match.index + match[0].length;
+        
+        while (index < content.length && braceCount > 0) {
+            if (content[index] === '{') braceCount++;
+            if (content[index] === '}') braceCount--;
+            index++;
+        }
+        
+        return content.substring(match.index, index);
+    }
+    
+    return null;
+}
+
+// استخراج سياق الاستدعاء
+function extractCallContext(content, callIndex) {
+    const start = Math.max(0, callIndex - 50);
+    const end = Math.min(content.length, callIndex + 50);
+    return content.substring(start, end).replace(/\n/g, ' ').trim();
+}
+
+// التحقق من الكلمات المحجوزة
+function isReservedKeyword(word) {
+    const reserved = ['if', 'for', 'while', 'switch', 'case', 'return', 'break', 'continue', 'var', 'let', 'const', 'function', 'class'];
+    return reserved.includes(word);
+}
+
+// تحليل تبعيات HTML
+function analyzeHTMLDependencies(filePath, content) {
+    const dependencies = [];
+    
+    // البحث عن روابط CSS
+    const cssLinks = content.match(/<link[^>]*href="([^"]*\.css)[^>]*>/g) || [];
+    cssLinks.forEach(link => {
+        const href = link.match(/href="([^"]*)"/)[1];
+        dependencies.push({ type: 'css', file: href, relation: 'stylesheet' });
+    });
+    
+    // البحث عن سكريبتات JS
+    const jsScripts = content.match(/<script[^>]*src="([^"]*\.js)[^>]*>/g) || [];
+    jsScripts.forEach(script => {
+        const src = script.match(/src="([^"]*)"/)[1];
+        dependencies.push({ type: 'js', file: src, relation: 'script' });
+    });
+    
+    // البحث عن صور
+    const images = content.match(/<img[^>]*src="([^"]*\.(?:png|jpg|jpeg|gif|svg))[^>]*>/g) || [];
+    images.forEach(img => {
+        const src = img.match(/src="([^"]*)"/)[1];
+        dependencies.push({ type: 'image', file: src, relation: 'image' });
+    });
+    
+    fileAnalysis[filePath].dependencies = dependencies;
+}
+
+// تحليل تبعيات CSS
+function analyzeCSSDependencies(filePath, content) {
+    const dependencies = [];
+    
+    // البحث عن استيرادات CSS
+    const imports = content.match(/@import\s+url\(['"]?([^'")]*)['"]?\)/g) || [];
+    imports.forEach(imp => {
+        const url = imp.match(/@import\s+url\(['"]?([^'")]*)['"]?\)/)[1];
+        dependencies.push({ type: 'css', file: url, relation: 'import' });
+    });
+    
+    fileAnalysis[filePath].dependencies = dependencies;
+}
+
+// البحث عن الملفات
+function searchFiles() {
+    const searchTerm = document.getElementById("fileSearchInput").value.trim();
+    if (!searchTerm) {
+        alert('يرجى إدخال مصطلح البحث');
+        return;
+    }
+    
+    const results = performFileSearch(searchTerm);
+    displayFileSearchResults(results, searchTerm);
+}
+
+// تنفيذ البحث في الملفات
+function performFileSearch(searchTerm) {
+    const results = {
+        exactMatches: [],
+        partialMatches: [],
+        extensionMatches: [],
+        dependencyMatches: []
+    };
+    
+    Object.keys(fileAnalysis).forEach(filePath => {
+        const fileName = filePath.split('/').pop();
+        
+        // مطابقة تامة
+        if (fileName === searchTerm || filePath === searchTerm) {
+            results.exactMatches.push(filePath);
+        }
+        
+        // مطابقة جزئية
+        if (fileName.includes(searchTerm) || filePath.includes(searchTerm)) {
+            results.partialMatches.push(filePath);
+        }
+        
+        // مطابقة الامتداد
+        if (searchTerm.startsWith('.') && fileName.endsWith(searchTerm)) {
+            results.extensionMatches.push(filePath);
+        }
+        
+        // البحث في التبعيات
+        const fileDeps = fileAnalysis[filePath].dependencies || [];
+        const hasDependency = fileDeps.some(dep => 
+            dep.file.includes(searchTerm) || dep.type.includes(searchTerm)
+        );
+        
+        if (hasDependency) {
+            results.dependencyMatches.push(filePath);
+        }
+    });
+    
+    // إزالة التكرارات
+    results.partialMatches = results.partialMatches.filter(file => !results.exactMatches.includes(file));
+    results.extensionMatches = results.extensionMatches.filter(file => !results.exactMatches.includes(file) && !results.partialMatches.includes(file));
+    results.dependencyMatches = results.dependencyMatches.filter(file => !results.exactMatches.includes(file) && !results.partialMatches.includes(file) && !results.extensionMatches.includes(file));
+    
+    return results;
+}
+
+// عرض نتائج البحث عن الملفات
+function displayFileSearchResults(results, searchTerm) {
+    const container = document.getElementById("fileSearchResults");
+    let html = `<h4>نتائج البحث عن: "${searchTerm}"</h4>`;
+    
+    if (results.exactMatches.length === 0 && results.partialMatches.length === 0 && 
+        results.extensionMatches.length === 0 && results.dependencyMatches.length === 0) {
+        html += `<p>❌ لم يتم العثور على نتائج مطابقة</p>`;
+    } else {
+        // المطابقات التامة
+        if (results.exactMatches.length > 0) {
+            html += `<div class="search-result-item">
+                <div class="search-result-header">✅ مطابقات تامة</div>
+                <ul class="function-list">`;
+            results.exactMatches.forEach(file => {
+                html += `<li onclick="openFile('${file}')" style="cursor: pointer;">📄 ${file}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        // المطابقات الجزئية
+        if (results.partialMatches.length > 0) {
+            html += `<div class="search-result-item">
+                <div class="search-result-header">🔍 مطابقات جزئية</div>
+                <ul class="function-list">`;
+            results.partialMatches.forEach(file => {
+                html += `<li onclick="openFile('${file}')" style="cursor: pointer;">📄 ${file}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        // مطابقات الامتداد
+        if (results.extensionMatches.length > 0) {
+            html += `<div class="search-result-item">
+                <div class="search-result-header">📁 ملفات بالامتداد ${searchTerm}</div>
+                <ul class="function-list">`;
+            results.extensionMatches.forEach(file => {
+                html += `<li onclick="openFile('${file}')" style="cursor: pointer;">📄 ${file}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        // مطابقات التبعيات
+        if (results.dependencyMatches.length > 0) {
+            html += `<div class="search-result-item">
+                <div class="search-result-header">🔗 ملفات تحتوي على تبعيات مرتبطة</div>
+                <ul class="function-list">`;
+            results.dependencyMatches.forEach(file => {
+                html += `<li onclick="openFile('${file}')" style="cursor: pointer;">📄 ${file}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        // تحليل مفصل للنتيجة الأولى
+        const firstResult = results.exactMatches[0] || results.partialMatches[0] || results.extensionMatches[0] || results.dependencyMatches[0];
+        if (firstResult) {
+            html += generateFileDetailedAnalysis(firstResult);
+        }
+    }
+    
+    container.innerHTML = html;
+    container.style.display = 'block';
+}
+
+// إنشاء تحليل مفصل للملف
+function generateFileDetailedAnalysis(filePath) {
+    const analysis = fileAnalysis[filePath];
+    if (!analysis) return '';
+    
+    let html = `<div class="search-result-item">
+        <div class="search-result-header">📊 تحليل مفصل لـ: ${filePath}</div>
+        <div class="search-result-content">`;
+    
+    // المعلومات الأساسية
+    html += `<p><strong>نوع الملف:</strong> ${analysis.type}</p>`;
+    html += `<p><strong>الحجم:</strong> ${analysis.size} حرف</p>`;
+    html += `<p><strong>عدد الأسطر:</strong> ${analysis.lines}</p>`;
+    
+    // الدوال الموجودة في الملف (للملفات البرمجية)
+    if (analysis.functions && analysis.functions.length > 0) {
+        html += `<div class="search-result-header">📝 الدوال المحددة في هذا الملف:</div>
+                <ul class="function-list">`;
+        analysis.functions.forEach(func => {
+            html += `<li onclick="searchFunctionByName('${func}')" style="cursor: pointer; color: var(--primary-color);">⚙️ ${func}</li>`;
+        });
+        html += `</ul>`;
+    }
+    
+    // التبعيات (الملفات التي يعتمد عليها هذا الملف)
+    if (analysis.dependencies && analysis.dependencies.length > 0) {
+        html += `<div class="search-result-header">📥 الملفات التي يعتمد عليها هذا الملف:</div>
+                <ul class="dependency-list">`;
+        analysis.dependencies.forEach(dep => {
+            html += `<li>🔗 ${dep.file} (${dep.type}) - ${dep.relation}</li>`;
+        });
+        html += `</ul>`;
+    }
+    
+    // الملفات التي تعتمد على هذا الملف
+    const dependents = findFileDependents(filePath);
+    if (dependents.length > 0) {
+        html += `<div class="search-result-header">📤 الملفات التي تعتمد على هذا الملف:</div>
+                <ul class="relation-list">`;
+        dependents.forEach(dep => {
+            html += `<li onclick="openFile('${dep.file}')" style="cursor: pointer;">📄 ${dep.file} (${dep.relation})</li>`;
+        });
+        html += `</ul>`;
+    }
+    
+    html += `</div></div>`;
+    return html;
+}
+
+// البحث عن الملفات التي تعتمد على ملف معين
+function findFileDependents(targetFile) {
+    const dependents = [];
+    const fileName = targetFile.split('/').pop();
+    
+    Object.keys(fileAnalysis).forEach(filePath => {
+        const dependencies = fileAnalysis[filePath].dependencies || [];
+        dependencies.forEach(dep => {
+            if (dep.file.includes(fileName) || dep.file === targetFile) {
+                dependents.push({
+                    file: filePath,
+                    relation: dep.relation
+                });
+            }
+        });
+    });
+    
+    return dependents;
+}
+
+// البحث عن الدوال
+function searchFunctions() {
+    const searchTerm = document.getElementById("functionSearchInput").value.trim();
+    if (!searchTerm) {
+        alert('يرجى إدخال اسم الدالة');
+        return;
+    }
+    
+    const results = performFunctionSearch(searchTerm);
+    displayFunctionSearchResults(results, searchTerm);
+}
+
+// البحث عن دالة بالاسم (للاستخدام من الروابط)
+function searchFunctionByName(functionName) {
+    document.getElementById("functionSearchInput").value = functionName;
+    searchFunctions();
+}
+
+// تنفيذ البحث في الدوال
+function performFunctionSearch(searchTerm) {
+    const results = {
+        exactMatches: [],
+        partialMatches: [],
+        calls: [],
+        dependencies: []
+    };
+    
+    Object.keys(functionAnalysis).forEach(funcName => {
+        // مطابقة تامة
+        if (funcName === searchTerm) {
+            results.exactMatches.push(funcName);
+        }
+        
+        // مطابقة جزئية
+        if (funcName.includes(searchTerm)) {
+            results.partialMatches.push(funcName);
+        }
+    });
+    
+    // البحث في استدعاءات الدوال
+    Object.keys(functionAnalysis).forEach(funcName => {
+        const func = functionAnalysis[funcName];
+        if (func.dependencies && func.dependencies.includes(searchTerm)) {
+            results.calls.push(funcName);
+        }
+    });
+    
+    // إزالة التكرارات
+    results.partialMatches = results.partialMatches.filter(func => !results.exactMatches.includes(func));
+    results.calls = results.calls.filter(func => !results.exactMatches.includes(func) && !results.partialMatches.includes(func));
+    
+    return results;
+}
+
+// عرض نتائج البحث عن الدوال
+function displayFunctionSearchResults(results, searchTerm) {
+    const container = document.getElementById("functionSearchResults");
+    let html = `<h4>نتائج البحث عن الدالة: "${searchTerm}"</h4>`;
+    
+    if (results.exactMatches.length === 0 && results.partialMatches.length === 0 && results.calls.length === 0) {
+        html += `<p>❌ لم يتم العثور على دوال مطابقة</p>`;
+    } else {
+        // المطابقات التامة
+        if (results.exactMatches.length > 0) {
+            html += `<div class="search-result-item">
+                <div class="search-result-header">✅ مطابقات تامة للدوال</div>
+                <ul class="function-list">`;
+            results.exactMatches.forEach(func => {
+                html += `<li onclick="showFunctionDetails('${func}')" style="cursor: pointer;">⚙️ ${func}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        // المطابقات الجزئية
+        if (results.partialMatches.length > 0) {
+            html += `<div class="search-result-item">
+                <div class="search-result-header">🔍 مطابقات جزئية للدوال</div>
+                <ul class="function-list">`;
+            results.partialMatches.forEach(func => {
+                html += `<li onclick="showFunctionDetails('${func}')" style="cursor: pointer;">⚙️ ${func}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        // الدوال التي تستدعي الدالة المبحوث عنها
+        if (results.calls.length > 0) {
+            html += `<div class="search-result-item">
+                <div class="search-result-header">🔄 الدوال التي تستدعي "${searchTerm}"</div>
+                <ul class="function-list">`;
+            results.calls.forEach(func => {
+                html += `<li onclick="showFunctionDetails('${func}')" style="cursor: pointer;">⚙️ ${func}</li>`;
+            });
+            html += `</ul></div>`;
+        }
+        
+        // تحليل مفصل للنتيجة الأولى
+        const firstResult = results.exactMatches[0] || results.partialMatches[0] || results.calls[0];
+        if (firstResult) {
+            html += generateFunctionDetailedAnalysis(firstResult);
+        }
+    }
+    
+    container.innerHTML = html;
+    container.style.display = 'block';
+}
+
+// إنشاء تحليل مفصل للدالة
+function generateFunctionDetailedAnalysis(functionName) {
+    const analysis = functionAnalysis[functionName];
+    if (!analysis) return '';
+    
+    let html = `<div class="search-result-item">
+        <div class="search-result-header">📊 تحليل مفصل للدالة: ${functionName}</div>
+        <div class="search-result-content">`;
+    
+    // المعلومات الأساسية
+    html += `<p><strong>الملف:</strong> <span onclick="openFile('${analysis.file}')" style="cursor: pointer; color: var(--primary-color);">📄 ${analysis.file}</span></p>`;
+    
+    // الدوال التي تعتمد عليها هذه الدالة
+    if (analysis.dependencies && analysis.dependencies.length > 0) {
+        html += `<div class="search-result-header">📥 الدوال التي تعتمد عليها هذه الدالة:</div>
+                <ul class="dependency-list">`;
+        analysis.dependencies.forEach(dep => {
+            html += `<li onclick="searchFunctionByName('${dep}')" style="cursor: pointer; color: var(--warning-color);">🔗 ${dep}</li>`;
+        });
+        html += `</ul>`;
+    }
+    
+    // الدوال التي تعتمد على هذه الدالة
+    const dependents = findFunctionDependents(functionName);
+    if (dependents.length > 0) {
+        html += `<div class="search-result-header">📤 الدوال التي تعتمد على هذه الدالة:</div>
+                <ul class="relation-list">`;
+        dependents.forEach(dep => {
+            html += `<li onclick="searchFunctionByName('${dep}')" style="cursor: pointer; color: var(--primary-color);">🔄 ${dep}</li>`;
+        });
+        html += `</ul>`;
+    }
+    
+    // استدعاءات الدالة
+    if (analysis.calls && analysis.calls.length > 0) {
+        html += `<div class="search-result-header">📍 أماكن استدعاء الدالة:</div>
+                <ul class="function-list">`;
+        analysis.calls.forEach(call => {
+            html += `<li>📝 السطر ${call.line}: ${call.context}</li>`;
+        });
+        html += `</ul>`;
+    }
+    
+    // تعريف الدالة
+    if (analysis.definition) {
+        html += `<div class="search-result-header">📋 تعريف الدالة:</div>
+                <div style="background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: 'Courier New', monospace; direction: ltr;">
+                    ${analysis.definition}
+                </div>`;
+    }
+    
+    html += `</div></div>`;
+    return html;
+}
+
+// البحث عن الدوال التي تعتمد على دالة معينة
+function findFunctionDependents(targetFunction) {
+    const dependents = [];
+    
+    Object.keys(functionAnalysis).forEach(funcName => {
+        const func = functionAnalysis[funcName];
+        if (func.dependencies && func.dependencies.includes(targetFunction)) {
+            dependents.push(funcName);
+        }
+    });
+    
+    return dependents;
+}
+
+// عرض تفاصيل الدالة
+function showFunctionDetails(functionName) {
+    const analysis = functionAnalysis[functionName];
+    if (!analysis) return;
+    
+    // فتح الملف الذي يحتوي على الدالة
+    openFile(analysis.file);
+    
+    // إظهار تحليل الدالة في نتائج البحث
+    document.getElementById("functionSearchInput").value = functionName;
+    const container = document.getElementById("functionSearchResults");
+    container.innerHTML = `<h4>تفاصيل الدالة: ${functionName}</h4>` + generateFunctionDetailedAnalysis(functionName);
+    container.style.display = 'block';
+}
+
+// مسح البحث عن الملفات
+function clearFileSearch() {
+    document.getElementById("fileSearchInput").value = '';
+    document.getElementById("fileSearchResults").style.display = 'none';
+}
+
+// مسح البحث عن الدوال
+function clearFunctionSearch() {
+    document.getElementById("functionSearchInput").value = '';
+    document.getElementById("functionSearchResults").style.display = 'none';
+}
+
+// =============================================================================
+// الدوال الأصلية من الكود السابق (بدون تغيير)
+// =============================================================================
+
+// تحليل العلاقات بين الملفات
+function analyzeFileRelations(filePath, fileType, content) {
+    switch(fileType) {
+        case "html":
+            analyzeHTMLRelations(filePath, content);
+            break;
+        case "css":
+            analyzeCSSRelations(filePath, content);
+            break;
+        case "js":
+            analyzeJSRelations(filePath, content);
+            break;
+        case "json":
+            analyzeJSONRelations(filePath, content);
+            break;
+    }
+}
+
+// تحليل العلاقات في ملفات HTML
+function analyzeHTMLRelations(filePath, content) {
+    // اكتشاف استدعاءات CSS
+    const cssLinks = content.match(/<link[^>]*href="([^"]*\.css)[^>]*>/g) || [];
+    cssLinks.forEach(link => {
+        const href = link.match(/href="([^"]*)"/)[1];
+        if (!dependencyMap.htmlToCss[filePath]) {
+            dependencyMap.htmlToCss[filePath] = [];
+        }
+        dependencyMap.htmlToCss[filePath].push(href);
+    });
+    
+    // اكتشاف استدعاءات JS
+    const jsScripts = content.match(/<script[^>]*src="([^"]*\.js)[^>]*>/g) || [];
+    jsScripts.forEach(script => {
+        const src = script.match(/src="([^"]*)"/)[1];
+        if (!dependencyMap.htmlToJs[filePath]) {
+            dependencyMap.htmlToJs[filePath] = [];
+        }
+        dependencyMap.htmlToJs[filePath].push(src);
+    });
+    
+    // اكتشاف العناصر ذات الأيدي (IDs) والفئات (Classes)
+    const elementsWithIds = content.match(/id="([^"]*)"/g) || [];
+    const elementsWithClasses = content.match(/class="([^"]*)"/g) || [];
+    
+    if (elementsWithIds.length > 0 || elementsWithClasses.length > 0) {
+        projectStructure.components[filePath] = {
+            ids: elementsWithIds.map(id => id.match(/id="([^"]*)"/)[1]),
+            classes: elementsWithClasses.map(cls => cls.match(/class="([^"]*)"/)[1].split(' ')).flat()
+        };
+    }
+    
+    // تحديد إذا كان ملف دخول رئيسي
+    if (filePath.includes('index') || filePath.includes('main')) {
+        projectStructure.entryPoints.push(filePath);
+    }
+}
+
+// تحليل العلاقات في ملفات CSS
+function analyzeCSSRelations(filePath, content) {
+    // اكتشاف استدعاءات CSS الأخرى
+    const imports = content.match(/@import\s+url\(['"]?([^'")]*)['"]?\)/g) || [];
+    imports.forEach(imp => {
+        const url = imp.match(/@import\s+url\(['"]?([^'")]*)['"]?\)/)[1];
+        if (!dependencyMap.cssToJs[filePath]) {
+            dependencyMap.cssToJs[filePath] = [];
+        }
+        dependencyMap.cssToJs[filePath].push(url);
+    });
+    
+    // تحليل الفئات والأيدي المستخدمة
+    const classes = content.match(/\.([a-zA-Z0-9_-]+)/g) || [];
+    const ids = content.match(/#([a-zA-Z0-9_-]+)/g) || [];
+    
+    if (classes.length > 0 || ids.length > 0) {
+        projectStructure.components[filePath] = {
+            classes: [...new Set(classes.map(c => c.substring(1)))],
+            ids: [...new Set(ids.map(id => id.substring(1)))]
+        };
+    }
+}
+
+// تحليل العلاقات في ملفات JavaScript
+function analyzeJSRelations(filePath, content) {
+    // اكتشاف استدعاءات JSON
+    const jsonImports = content.match(/fetch\(['"]([^'"]*\.json)['"]\)|import\s+.*from\s+['"]([^'"]*\.json)['"]/g) || [];
+    jsonImports.forEach(imp => {
+        const match = imp.match(/['"]([^'"]*\.json)['"]/);
+        if (match) {
+            if (!dependencyMap.jsToJson[filePath]) {
+                dependencyMap.jsToJson[filePath] = [];
+            }
+            dependencyMap.jsToJson[filePath].push(match[1]);
+        }
+    });
+    
+    // اكتشاف التلاعب بالـ DOM
+    const domSelectors = content.match(/document\.(querySelector|getElementById|getElementsByClassName)\(['"]([^'"]*)['"]\)/g) || [];
+    domSelectors.forEach(selector => {
+        const match = selector.match(/\(['"]([^'"]*)['"]\)/);
+        if (match) {
+            if (!dependencyMap.jsToHtml[filePath]) {
+                dependencyMap.jsToHtml[filePath] = [];
+            }
+            dependencyMap.jsToHtml[filePath].push(match[1]);
+        }
+    });
+    
+    // اكتشاف الوظائف والمتغيرات
+    const functions = content.match(/(function\s+(\w+)|const\s+(\w+)\s*=\s*\(|let\s+(\w+)\s*=\s*\(|var\s+(\w+)\s*=\s*\()/g) || [];
+    if (functions.length > 0) {
+        projectStructure.modules[filePath] = {
+            functions: functions.map(f => {
+                const match = f.match(/(function\s+(\w+)|const\s+(\w+)|let\s+(\w+)|var\s+(\w+))/);
+                return match[2] || match[3] || match[4] || match[5];
+            })
+        };
+    }
+    
+    // اكتشاف استدعاءات APIs
+    const apiCalls = content.match(/(fetch|axios|XMLHttpRequest)\(['"]([^'"]*)['"]\)/g) || [];
+    if (apiCalls.length > 0) {
+        projectStructure.dataFlows.push({
+            file: filePath,
+            apis: apiCalls.map(api => {
+                const match = api.match(/\(['"]([^'"]*)['"]\)/);
+                return match ? match[1] : 'unknown';
+            })
+        });
+    }
+}
+
+// تحليل العلاقات في ملفات JSON
+function analyzeJSONRelations(filePath, content) {
+    try {
+        const data = JSON.parse(content);
+        
+        // تحليل هيكل البيانات
+        projectStructure.architecture[filePath] = {
+            type: determineJSONType(data),
+            structure: analyzeJSONStructure(data),
+            size: Object.keys(data).length
+        };
+    } catch(e) {
+        // في حالة خطأ في تحليل JSON
+        console.error(`Error parsing JSON file ${filePath}:`, e);
+    }
+}
+
+// تحديد نوع ملف JSON
+function determineJSONType(data) {
+    if (data.dependencies || data.devDependencies) return 'package';
+    if (data.name && data.version) return 'config';
+    if (Array.isArray(data)) return 'array-data';
+    if (typeof data === 'object') {
+        if (Object.keys(data).every(key => typeof data[key] === 'string')) return 'key-value';
+        return 'complex-object';
+    }
+    return 'unknown';
+}
+
+// تحليل هيكل JSON
+function analyzeJSONStructure(obj, depth = 0) {
+    if (depth > 3) return 'deep-structure';
+    
+    const structure = {};
+    for (let key in obj) {
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+            if (Array.isArray(obj[key])) {
+                structure[key] = `array[${obj[key].length}]`;
+                if (obj[key].length > 0 && typeof obj[key][0] === 'object') {
+                    structure[key] += ` of ${analyzeJSONStructure(obj[key][0], depth + 1)}`;
+                }
+            } else {
+                structure[key] = analyzeJSONStructure(obj[key], depth + 1);
+            }
+        } else {
+            structure[key] = typeof obj[key];
+        }
+    }
+    return structure;
+}
+
+// تحديث عرض العلاقات
+function updateRelationsView() {
+    let relationsHTML = '<div class="relations-container">';
+    
+    // إحصاء العلاقات
+    let relationCount = 0;
+    
+    // عرض العلاقات من HTML إلى CSS
+    if (Object.keys(dependencyMap.htmlToCss).length > 0) {
+        relationsHTML += '<h4>🔗 علاقات HTML → CSS:</h4>';
+        for (let htmlFile in dependencyMap.htmlToCss) {
+            relationsHTML += `<div class="relation-item">${htmlFile} → ${dependencyMap.htmlToCss[htmlFile].join(', ')}</div>`;
+            relationCount += dependencyMap.htmlToCss[htmlFile].length;
+        }
+    }
+    
+    // عرض العلاقات من HTML إلى JS
+    if (Object.keys(dependencyMap.htmlToJs).length > 0) {
+        relationsHTML += '<h4>🔗 علاقات HTML → JavaScript:</h4>';
+        for (let htmlFile in dependencyMap.htmlToJs) {
+            relationsHTML += `<div class="relation-item">${htmlFile} → ${dependencyMap.htmlToJs[htmlFile].join(', ')}</div>`;
+            relationCount += dependencyMap.htmlToJs[htmlFile].length;
+        }
+    }
+    
+    // عرض العلاقات من JS إلى JSON
+    if (Object.keys(dependencyMap.jsToJson).length > 0) {
+        relationsHTML += '<h4>🔗 علاقات JavaScript → JSON:</h4>';
+        for (let jsFile in dependencyMap.jsToJson) {
+            relationsHTML += `<div class="relation-item">${jsFile} → ${dependencyMap.jsToJson[jsFile].join(', ')}</div>`;
+            relationCount += dependencyMap.jsToJson[jsFile].length;
+        }
+    }
+    
+    // عرض نقاط الدخول
+    if (projectStructure.entryPoints.length > 0) {
+        relationsHTML += '<h4>🚪 نقاط الدخول الرئيسية:</h4>';
+        projectStructure.entryPoints.forEach(entry => {
+            relationsHTML += `<div class="relation-item">${entry}</div>`;
+        });
+    }
+    
+    relationsHTML += '</div>';
+    document.getElementById("relationsView").innerHTML = relationsHTML;
+    document.getElementById("relationCount").innerText = relationCount;
+}
+
+// إنشاء وصف تفصيلي للملف
+function generateFileDescription(name, fullPath, fileType, content) {
+    let description = "";
+    
+    switch(fileType) {
+        case "css":
+            description = `ملف أنماط CSS - ${getCSSRole(name)} - ${getCSSTargets(name)}`;
+            if (content.includes('@media')) description += " - يحتوي على استعلامات وسائط للتصميم المتجاوب";
+            if (content.includes('animation') || content.includes('@keyframes')) description += " - يحتوي على حركات وتفاعلات";
+            break;
+            
+        case "html":
+            description = `ملف هيكل HTML - ${getHTMLPageType(name)} - ${getHTMLComponents(name)}`;
+            if (content.includes('<form')) description += " - يحتوي على نماذج إدخال";
+            if (content.includes('<script')) description += " - يتضمن أكواد JavaScript";
+            if (content.includes('<link rel="stylesheet"')) description += " - يستدعي ملفات أنماط خارجية";
+            break;
+            
+        case "js":
+            description = `ملف JavaScript - ${getJSPattern(name)} - ${getJSFunctions(name)}`;
+            if (content.includes('function')) description += ` - يحتوي على ${countFunctions(content)} وظيفة`;
+            if (content.includes('addEventListener')) description += " - يعالج أحداث المستخدم";
+            if (content.includes('fetch') || content.includes('ajax')) description += " - يتواصل مع APIs خارجية";
+            if (content.includes('import') || content.includes('require')) description += " - يستدعي وحدات خارجية";
+            break;
+            
+        case "json":
+            description = `ملف بيانات JSON - ${getJSONDataType(name)} - ${getJSONStructure(content)}`;
+            try {
+                const data = JSON.parse(content);
+                description += ` - يحتوي على ${Object.keys(data).length} خاصية رئيسية`;
+            } catch(e) {}
+            break;
+            
+        default:
+            description = `ملف ${getOtherFileType(name)} - ${getOtherFileRole(name)} - ${getOtherFileImportance(name)}`;
+    }
+    
+    return description;
+}
+
+// تحديد نوع الملف بناءً على الامتداد
+function getFileType(filename) {
+    if (filename.endsWith(".css")) return "css";
+    if (filename.endsWith(".html") || filename.endsWith(".htm")) return "html";
+    if (filename.endsWith(".js")) return "js";
+    if (filename.endsWith(".json")) return "json";
+    return "other";
+}
+
+// الحصول على أيقونة مناسبة لنوع الملف
+function getFileIcon(fileType) {
+    const icons = {
+        css: "🎨",
+        html: "🌐",
+        js: "⚙️",
+        json: "📋",
+        other: "📄"
+    };
+    return icons[fileType] || "📄";
+}
+
+// فتح ملف داخل نافذة
+function openFile(filePath) {
+    let allText = document.getElementById("output").value;
+
+    let start = allText.indexOf(`بداية الملف: ${filePath}`);
+    if (start === -1) return;
+
+    let end = allText.indexOf(`نهاية الملف: ${filePath}`);
+    let content = allText.substring(start, end + `نهاية الملف: ${filePath}`.length);
+
+    document.getElementById("fileInfo").innerHTML = `
+        <strong>اسم الملف:</strong> ${filePath}<br>
+        <strong>النوع:</strong> ${getFileType(filePath)}<br>
+        <strong>الوصف:</strong> ${relations[getFileType(filePath)]?.[filePath] || 'لا يوجد وصف'}<br>
+        <strong>العلاقات:</strong> ${getFileRelationsSummary(filePath)}
+    `;
+    document.getElementById("fileContent").innerText = content;
+    document.getElementById("modal").style.display = "flex";
+}
+
+// الحصول على ملخص علاقات الملف
+function getFileRelationsSummary(filePath) {
+    const fileType = getFileType(filePath);
+    let relations = [];
+    
+    if (fileType === 'html') {
+        if (dependencyMap.htmlToCss[filePath]) {
+            relations.push(`يستدعي ${dependencyMap.htmlToCss[filePath].length} ملف CSS`);
+        }
+        if (dependencyMap.htmlToJs[filePath]) {
+            relations.push(`يستدعي ${dependencyMap.htmlToJs[filePath].length} ملف JS`);
+        }
+    } else if (fileType === 'js') {
+        if (dependencyMap.jsToJson[filePath]) {
+            relations.push(`يستدعي ${dependencyMap.jsToJson[filePath].length} ملف JSON`);
+        }
+        if (dependencyMap.jsToHtml[filePath]) {
+            relations.push(`يتفاعل مع ${dependencyMap.jsToHtml[filePath].length} عنصر HTML`);
+        }
+    }
+    
+    return relations.length > 0 ? relations.join('، ') : 'لا توجد علاقات محددة';
+}
+
+function closeModal() {
+    document.getElementById("modal").style.display = "none";
+}
+
+// فتح/إغلاق مجلد شجري
+function toggleFolder(el) {
+    let panel = el.nextElementSibling;
+    panel.style.display = panel.style.display === "none" ? "block" : "none";
+    
+    // تغيير الأيقونة
+    let icon = el.querySelector('span');
+    if (panel.style.display === "block") {
+        icon.textContent = "📂";
+    } else {
+        icon.textContent = "📁";
+    }
+}
+
+// تجاهل عنصر
+function ignoreItem(event, name) {
+    event.stopPropagation();
+    let area = document.getElementById("ignoreList");
+    if (!area.value.includes(name)) {
+        area.value += `\n${name}`;
+        localStorage.setItem("ignored", area.value);
+    }
+    readAll();
+}
+
+// حفظ قائمة التجاهل
+function saveIgnore() {
+    localStorage.setItem("ignored", document.getElementById("ignoreList").value);
+    alert("تم حفظ قائمة التجاهل بنجاح");
+}
+
+// إعادة تعيين قائمة التجاهل
+function resetIgnore() {
+    if (confirm("هل تريد حقًا إعادة تعيين قائمة التجاهل؟")) {
+        document.getElementById("ignoreList").value = "node_modules\n.git\n.vscode\n.DS_Store\nThumbs.db";
+        localStorage.setItem("ignored", document.getElementById("ignoreList").value);
+        readAll();
+    }
+}
+
+// تصدير حسب النوع مع شرح مفصل للذكاء الاصطناعي
+function exportByType() {
+    function generateDetailedContent(content, fileType, files) {
+        let header = "";
+        
+        switch(fileType) {
+            case "css":
+                header = `/*
+================================================================================
+ملف تجميعي لجميع ملفات CSS في المشروع: ${projectName}
+تم إنشاؤه تلقائياً بواسطة أداة تحليل المشاريع
+تاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}
+================================================================================
+
+📋 نظرة عامة:
+-------------
+هذا الملف يحتوي على جميع أنماط CSS المستخدمة في المشروع
+يشمل ملفات التصميم الرئيسية، الاستجابية، والمكونات
+
+🔗 العلاقات بين الملفات:
+------------------------
+${generateDependencyAnalysis('css')}
+
+🎯 أدوار الملفات:
+----------------
+${Object.keys(files).map(path => `
+📁 ${path}:
+   - الوظيفة: ${files[path]}
+   - التأثير: ${getCSSRole(path)}
+   - المكونات المستهدفة: ${getCSSTargets(path)}
+   - العلاقات: ${getCSSRelations(path)}
+   - الفئات المستخدمة: ${projectStructure.components[path]?.classes?.join(', ') || 'غير محدد'}
+   - الأيدي المستخدمة: ${projectStructure.components[path]?.ids?.join(', ') || 'غير محدد'}
+`).join('')}
+
+📊 إحصائيات:
+-----------
+- عدد ملفات CSS: ${Object.keys(files).length}
+- إجمالي الأسطر: ${countLines(content)}
+- الملفات الرئيسية: ${getMainCSSFiles(files)}
+- نسبة التكرار: ${calculateRepetitionRate(content)}
+
+⚡ التوصيات الفنية:
+------------------
+${getCSSRecommendations(files)}
+
+🔍 الأنماط الرئيسية المكتشفة:
+--------------------------
+${detectCSSPatterns(content)}
+
+================================================================================
+*/`;
+                break;
+
+            case "html":
+                header = `<!--
+================================================================================
+ملف تجميعي لجميع ملفات HTML في المشروع: ${projectName}
+تم إنشاؤه تلقائياً بواسطة أداة تحليل المشاريع  
+تاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}
+================================================================================
+
+📋 نظرة عامة:
+-------------
+هذا الملف يحتوي على جميع هيكل المشروع (HTML)
+يشمل الصفحات الرئيسية، المكونات، والقوالب
+
+🔗 العلاقات بين الملفات:
+------------------------
+${generateDependencyAnalysis('html')}
+
+🎯 أدوار الملفات:
+----------------
+${Object.keys(files).map(path => `
+📁 ${path}:
+   - الوظيفة: ${files[path]}
+   - نوع الصفحة: ${getHTMLPageType(path)}
+   - المكونات الرئيسية: ${getHTMLComponents(path)}
+   - الملفات المرتبطة: ${getHTMLLinkedFiles(path)}
+   - الهيكل: ${getHTMLStructureAnalysis(path)}
+   - الأيدي المستخدمة: ${projectStructure.components[path]?.ids?.join(', ') || 'غير محدد'}
+   - الفئات المستخدمة: ${projectStructure.components[path]?.classes?.join(', ') || 'غير محدد'}
+`).join('')}
+
+📊 إحصائيات:
+-----------
+- عدد صفحات HTML: ${Object.keys(files).length}
+- إجمالي العناصر: ${countHTMLElements(content)}
+- المكونات المتكررة: ${getCommonComponents(files)}
+- نسبة التفاعل: ${calculateInteractivityRate(content)}
+
+🏗️  الهيكل العام:
+--------------
+${getHTMLStructure(files)}
+
+🔍 الأنماط المعمارية:
+-------------------
+${detectHTMLPatterns(content)}
+
+================================================================================
+-->`;
+                break;
+
+            case "js":
+                header = `/*
+================================================================================
+ملف تجميعي لجميع ملفات JavaScript في المشروع: ${projectName}
+تم إنشاؤه تلقائياً بواسطة أداة تحليل المشاريع
+تاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}
+================================================================================
+
+📋 نظرة عامة:
+-------------
+هذا الملف يحتوي على جميع منطق المشروع (JavaScript)
+يشمل الوظائف، المعالجات، الاتصالات، والتفاعلات
+
+🔗 العلاقات بين الملفات:
+------------------------
+${generateDependencyAnalysis('js')}
+
+🎯 أدوار الملفات:
+----------------
+${Object.keys(files).map(path => `
+📁 ${path}:
+   - الوظيفة: ${files[path]}
+   - النمط: ${getJSPattern(path)}
+   - الوظائف الرئيسية: ${getJSFunctions(path)}
+   - التبعيات: ${getJSDependencies(path)}
+   - التعقيد: ${calculateJSComplexity(path)}
+   - عدد الوظائف: ${projectStructure.modules[path]?.functions?.length || 0}
+   - APIs المستدعاة: ${getJSAPIs(path)}
+`).join('')}
+
+🏗️  الأنماط المعمارية:
+--------------------
+${getJSArchitecture(files)}
+
+📊 إحصائيات:
+-----------
+- عدد ملفات JS: ${Object.keys(files).length}
+- إجمالي الوظائف: ${countJSFunctions(content)}
+- المكتبات المستخدمة: ${getJSLibraries(files)}
+- نسبة التفاعل: ${calculateJSInteractivity(content)}
+
+⚡ تدفق البيانات:
+---------------
+${getJSDataFlow(files)}
+
+🔍 الأنماط البرمجية:
+------------------
+${detectJSPatterns(content)}
+
+================================================================================
+*/`;
+                break;
+
+            case "json":
+                header = `/*
+================================================================================
+ملف تجميعي لجميع ملفات JSON في المشروع: ${projectName}
+تم إنشاؤه تلقائياً بواسطة أداة تحليل المشاريع
+تاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}
+================================================================================
+
+📋 نظرة عامة:
+-------------
+هذا الملف يحتوي على جميع بيانات المشروع (JSON)
+يشمل الإعدادات، التهيئة، البيانات الثابتة، والترجمة
+
+🔗 العلاقات بين الملفات:
+------------------------
+${generateDependencyAnalysis('json')}
+
+🎯 أدوار الملفات:
+----------------
+${Object.keys(files).map(path => `
+📁 ${path}:
+   - الوظيفة: ${files[path]}
+   - نوع البيانات: ${getJSONDataType(path)}
+   - الهيكل: ${getJSONStructure(path)}
+   - الاستخدام: ${getJSONUsage(path)}
+   - الحجم: ${getJSONSize(path)}
+   - التعقيد: ${projectStructure.architecture[path]?.type || 'غير محدد'}
+   - عدد الخصائص: ${projectStructure.architecture[path]?.size || 0}
+`).join('')}
+
+📊 إحصائيات:
+-----------
+- عدد ملفات JSON: ${Object.keys(files).length}
+- إجمالي مفاتيح البيانات: ${countJSONKeys(content)}
+- أحجام البيانات: ${getJSONSizes(files)}
+- معدل التعقيد: ${calculateJSONComplexity(content)}
+
+🔧 هيكل البيانات:
+---------------
+${getJSONSchemas(files)}
+
+🔍 أنماط البيانات:
+---------------
+${detectJSONPatterns(content)}
+
+================================================================================
+*/`;
+                break;
+
+            default:
+                header = `/*
+================================================================================
+ملف تجميعي لجميع الملفات الأخرى في المشروع: ${projectName}
+تم إنشاؤه تلقائياً بواسطة أداة تحليل المشاريع
+تاريخ الإنشاء: ${new Date().toLocaleString('ar-EG')}
+================================================================================
+
+📋 نظرة عامة:
+-------------
+هذا الملف يحتوي على جميع الملفات المساعدة في المشروع
+يشمل: صور، خطوط، إعدادات، نصوص، وملفات التهيئة
+
+🔗 العلاقات بين الملفات:
+------------------------
+${generateDependencyAnalysis('other')}
+
+🎯 أدوار الملفات:
+----------------
+${Object.keys(files).map(path => `
+📁 ${path}:
+   - الوظيفة: ${files[path]}
+   - النوع: ${getOtherFileType(path)}
+   - الدور: ${getOtherFileRole(path)}
+   - الأهمية: ${getOtherFileImportance(path)}
+   - العلاقات: ${getOtherFileRelations(path)}
+`).join('')}
+
+📊 إحصائيات:
+-----------
+- عدد الملفات الأخرى: ${Object.keys(files).length}
+- أنواع الملفات: ${getOtherFileTypes(files)}
+- أحجام الملفات: ${getOtherFileSizes(files)}
+- التوزيع: ${getOtherFilesDistribution(files)}
+
+📁 تصنيف الملفات:
+---------------
+${getOtherFilesClassification(files)}
+
+🔍 التحليل التقني:
+---------------
+${analyzeOtherFiles(files)}
+
+================================================================================
+*/`;
+        }
+
+        return header + '\n\n' + content;
+    }
+
+    function generateDependencyAnalysis(fileType) {
+        let analysis = "";
+        
+        switch(fileType) {
+            case "html":
+                if (Object.keys(dependencyMap.htmlToCss).length > 0) {
+                    analysis += "- يستدعي ملفات CSS عبر <link rel=\"stylesheet\">\n";
+                    for (let htmlFile in dependencyMap.htmlToCss) {
+                        analysis += `  - ${htmlFile} → ${dependencyMap.htmlToCss[htmlFile].join(', ')}\n`;
+                    }
+                }
+                if (Object.keys(dependencyMap.htmlToJs).length > 0) {
+                    analysis += "- يستدعي ملفات JavaScript عبر <script>\n";
+                    for (let htmlFile in dependencyMap.htmlToJs) {
+                        analysis += `  - ${htmlFile} → ${dependencyMap.htmlToJs[htmlFile].join(', ')}\n`;
+                    }
+                }
+                break;
+                
+            case "css":
+                if (Object.keys(dependencyMap.cssToJs).length > 0) {
+                    analysis += "- يستدعي ملفات CSS أخرى عبر @import\n";
+                    for (let cssFile in dependencyMap.cssToJs) {
+                        analysis += `  - ${cssFile} → ${dependencyMap.cssToJs[cssFile].join(', ')}\n`;
+                    }
+                }
+                analysis += "- يتم استدعاؤها من قبل ملفات HTML\n";
+                for (let htmlFile in dependencyMap.htmlToCss) {
+                    dependencyMap.htmlToCss[htmlFile].forEach(cssFile => {
+                        analysis += `  - ${htmlFile} ← ${cssFile}\n`;
+                    });
+                }
+                break;
+                
+            case "js":
+                if (Object.keys(dependencyMap.jsToJson).length > 0) {
+                    analysis += "- يستدعي ملفات JSON\n";
+                    for (let jsFile in dependencyMap.jsToJson) {
+                        analysis += `  - ${jsFile} → ${dependencyMap.jsToJson[jsFile].join(', ')}\n`;
+                    }
+                }
+                if (Object.keys(dependencyMap.jsToHtml).length > 0) {
+                    analysis += "- يتفاعل مع عناصر HTML\n";
+                    for (let jsFile in dependencyMap.jsToHtml) {
+                        analysis += `  - ${jsFile} → ${dependencyMap.jsToHtml[jsFile].join(', ')}\n`;
+                    }
+                }
+                analysis += "- يتم استدعاؤها من قبل ملفات HTML\n";
+                for (let htmlFile in dependencyMap.htmlToJs) {
+                    dependencyMap.htmlToJs[htmlFile].forEach(jsFile => {
+                        analysis += `  - ${htmlFile} ← ${jsFile}\n`;
+                    });
+                }
+                break;
+                
+            case "json":
+                analysis += "- يتم قراءتها بواسطة ملفات JavaScript\n";
+                for (let jsFile in dependencyMap.jsToJson) {
+                    dependencyMap.jsToJson[jsFile].forEach(jsonFile => {
+                        analysis += `  - ${jsFile} ← ${jsonFile}\n`;
+                    });
+                }
+                break;
+        }
+        
+        return analysis || "- لا توجد علاقات خارجية محددة";
+    }
+
+    function saveFile(content, name, type, fileType, files) {
+        if (!content.trim()) {
+            alert(`لا يوجد محتوى لملفات ${name.split('.')[0]}`);
+            return;
+        }
+        
+        let detailedContent = generateDetailedContent(content, fileType, files);
+        let blob = new Blob([detailedContent], { type });
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = name;
+        a.click();
+    }
+
+    saveFile(cssContent, "all-css-with-detailed-analysis.css", "text/css", "css", relations.css);
+    saveFile(htmlContent, "all-html-with-detailed-analysis.html", "text/html", "html", relations.html);
+    saveFile(jsContent, "all-js-with-detailed-analysis.js", "application/javascript", "js", relations.js);
+    saveFile(jsonContent, "all-json-with-detailed-analysis.json", "application/json", "json", relations.json);
+    saveFile(otherContent, "other-files-with-detailed-analysis.txt", "text/plain", "other", relations.other);
+}
+
+// تصدير خريطة العلاقات
+function exportRelations() {
+    const relationData = {
+        project: projectName,
+        timestamp: new Date().toISOString(),
+        dependencies: dependencyMap,
+        structure: projectStructure,
+        files: {
+            html: Object.keys(relations.html),
+            css: Object.keys(relations.css),
+            js: Object.keys(relations.js),
+            json: Object.keys(relations.json),
+            other: Object.keys(relations.other)
+        }
+    };
+    
+    const content = JSON.stringify(relationData, null, 2);
+    let blob = new Blob([content], { type: "application/json" });
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "project-relations-map.json";
+    a.click();
+}
+
+// =============================================================================
+// الدوال المساعدة للتحليل التفصيلي
+// =============================================================================
+
+// دوال تحليل CSS
+function getCSSRole(path) {
+    if (path.includes('main') || path.includes('style')) return 'التصميم الرئيسي والتخطيط العام';
+    if (path.includes('responsive') || path.includes('mobile')) return 'التصميم الاستجابي للشاشات المختلفة';
+    if (path.includes('component') || path.includes('module')) return 'أنماط المكونات الخاصة';
+    if (path.includes('layout')) return 'تخطيط الصفحة والهيكل العام';
+    return 'أنماط مساعدة وإضافية';
+}
+
+function getCSSTargets(path) {
+    if (path.includes('layout')) return 'الهيكل العام، الشبكة، والتخطيط';
+    if (path.includes('form')) return 'الحقول، الأزرار، والنماذج';
+    if (path.includes('nav')) return 'القوائم والتنقل';
+    if (path.includes('button')) return 'الأزرار وتفاعلاتها';
+    return 'عناصر عامة ومتنوعة';
+}
+
+function getCSSRelations(path) {
+    if (path.includes('component')) return 'مرتبط بمكونات JavaScript';
+    if (path.includes('theme')) return 'يحدد السمات العامة للتطبيق';
+    return 'مستقل أو مرتبط بعدة مكونات';
+}
+
+function getMainCSSFiles(files) {
+    return Object.keys(files).filter(f => 
+        f.includes('main') || f.includes('style') || f.includes('global')
+    ).join(', ');
+}
+
+function calculateRepetitionRate(content) {
+    const lines = content.split('\n');
+    const uniqueLines = [...new Set(lines)];
+    return ((1 - uniqueLines.length / lines.length) * 100).toFixed(1) + '%';
+}
+
+function detectCSSPatterns(content) {
+    const patterns = [];
+    if (content.includes('grid')) patterns.push('• CSS Grid للتخطيط');
+    if (content.includes('flex')) patterns.push('• Flexbox للمحاذاة');
+    if (content.includes('@media')) patterns.push('• التصميم المتجاوب');
+    if (content.includes('animation')) patterns.push('• الحركات والتفعيلات');
+    return patterns.join('\n');
+}
+
+function getCSSRecommendations(files) {
+    const recommendations = [];
+    const fileCount = Object.keys(files).length;
+    
+    if (fileCount > 5) recommendations.push('• يمكن تقسيم ملفات CSS إلى وحدات أصغر');
+    if (Object.keys(files).some(f => f.includes('important'))) recommendations.push('• تجنب استخدام !important بشكل مفرط');
+    
+    return recommendations.length > 0 ? recommendations.join('\n') : '• الهيكل الحالي جيد';
+}
+
+// دوال تحليل HTML
+function getHTMLPageType(path) {
+    if (path.includes('index')) return 'الصفحة الرئيسية';
+    if (path.includes('admin')) return 'لوحة التحكم';
+    if (path.includes('login')) return 'صفحة تسجيل الدخول';
+    if (path.includes('dashboard')) return 'لوحة الإحصائيات';
+    return 'صفحة محتوى';
+}
+
+function getHTMLComponents(path) {
+    if (path.includes('header')) return 'رأس الصفحة، شعار، قوائم';
+    if (path.includes('footer')) return 'تذييل الصفحة، روابط، معلومات';
+    if (path.includes('sidebar')) return 'الشريط الجانبي، التنقل الثانوي';
+    return 'محتوى رئيسي وعناصر متنوعة';
+}
+
+function getHTMLLinkedFiles(path) {
+    if (path.includes('app') || path.includes('main')) return 'جميع ملفات CSS وJS الرئيسية';
+    return 'ملفات محددة حسب الصفحة';
+}
+
+function countHTMLElements(content) {
+    const matches = content.match(/<[^>]+>/g);
+    return matches ? matches.length : 0;
+}
+
+function calculateInteractivityRate(content) {
+    const totalElements = countHTMLElements(content);
+    const interactiveElements = (content.match(/onclick|onchange|onsubmit|addEventListener/g) || []).length;
+    return totalElements > 0 ? ((interactiveElements / totalElements) * 100).toFixed(1) + '%' : '0%';
+}
+
+function getCommonComponents(files) {
+    const components = [];
+    if (Object.keys(files).some(f => f.includes('header'))) components.push('رأس الصفحة');
+    if (Object.keys(files).some(f => f.includes('footer'))) components.push('تذييل الصفحة');
+    if (Object.keys(files).some(f => f.includes('nav'))) components.push('التنقل');
+    return components.join('، ');
+}
+
+function detectHTMLPatterns(content) {
+    const patterns = [];
+    if (content.includes('<!DOCTYPE html>')) patterns.push('• HTML5 Standard');
+    if (content.includes('<section')) patterns.push('• HTML5 Semantic Sections');
+    if (content.includes('data-')) patterns.push('• Custom Data Attributes');
+    return patterns.join('\n');
+}
+
+// دوال تحليل JavaScript
+function getJSPattern(path) {
+    if (path.includes('module') || path.includes('class')) return 'برمجة كائنية التوجه (OOP)';
+    if (path.includes('util') || path.includes('helper')) return 'وظائف مساعدة (Utility)';
+    if (path.includes('component')) return 'مكونات UI';
+    return 'برمجة إجرائية (Procedural)';
+}
+
+function getJSFunctions(path) {
+    if (path.includes('api')) return 'الاتصال بالخوادم وAPIs';
+    if (path.includes('event')) return 'معالجة الأحداث والتفاعلات';
+    if (path.includes('util')) return 'وظائف مساعدة وعمليات';
+    return 'وظائف عامة ومنطق تطبيقي';
+}
+
+function getJSDependencies(path) {
+    if (path.includes('app') || path.includes('main')) return 'التبعيات الأساسية للتطبيق';
+    return 'تبعيات محدودة أو داخلية';
+}
+
+function getJSAPIs(path) {
+    const apis = projectStructure.dataFlows
+        .filter(flow => flow.file === path)
+        .flatMap(flow => flow.apis);
+    return apis.length > 0 ? apis.join(', ') : 'لا توجد';
+}
+
+function countJSFunctions(content) {
+    return (content.match(/function\s+(\w+)|const\s+(\w+)\s*=\s*\(|let\s+(\w+)\s*=\s*\(/g) || []).length;
+}
+
+function calculateJSComplexity(path) {
+    if (path.includes('util') || path.includes('helper')) return 'منخفض';
+    if (path.includes('component')) return 'متوسط';
+    return 'مرتفع';
+}
+
+function calculateJSInteractivity(content) {
+    const totalLines = content.split('\n').length;
+    const eventLines = (content.match(/addEventListener|onclick|onchange|onsubmit/g) || []).length;
+    return totalLines > 0 ? ((eventLines / totalLines) * 100).toFixed(1) + '%' : '0%';
+}
+
+function detectJSPatterns(content) {
+    const patterns = [];
+    if (content.includes('document.querySelector')) patterns.push('• DOM Manipulation');
+    if (content.includes('addEventListener')) patterns.push('• Event Handling');
+    if (content.includes('fetch') || content.includes('axios')) patterns.push('• API Calls');
+    if (content.includes('class ')) patterns.push('• ES6 Classes');
+    return patterns.join('\n');
+}
+
+// دوال تحليل JSON
+function getJSONDataType(path) {
+    if (path.includes('config')) return 'إعدادات التطبيق';
+    if (path.includes('data')) return 'بيانات التطبيق';
+    if (path.includes('i18n')) return 'ترجمة ونصوص';
+    if (path.includes('package')) return 'إعدادات المشروع';
+    return 'بيانات عامة';
+}
+
+function getJSONStructure(path) {
+    if (path.includes('config')) return 'مفتاح-قيمة للإعدادات';
+    if (path.includes('i18n')) return 'كائنات متداخلة للغات';
+    return 'هيكل متداخل أو مصفوفات';
+}
+
+function getJSONUsage(path) {
+    if (path.includes('config')) return 'التهيئة والإعدادات';
+    if (path.includes('data')) return 'تخزين وعرض البيانات';
+    return 'أغراض متعددة';
+}
+
+function countJSONKeys(content) {
+    try {
+        const data = JSON.parse(content);
+        return countKeys(data);
+    } catch(e) {
+        return 'غير محدد';
+    }
+}
+
+function countKeys(obj) {
+    let count = 0;
+    for (let key in obj) {
+        count++;
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+            count += countKeys(obj[key]);
+        }
+    }
+    return count;
+}
+
+function calculateJSONComplexity(content) {
+    try {
+        const data = JSON.parse(content);
+        const depth = calculateDepth(data);
+        if (depth > 3) return 'مرتفع';
+        if (depth > 2) return 'متوسط';
+        return 'منخفض';
+    } catch(e) {
+        return 'غير محدد';
+    }
+}
+
+// إضافة الدالة المفقودة detectJSONPatterns
+function detectJSONPatterns(content) {
+    try {
+        const data = JSON.parse(content);
+        const patterns = [];
+        
+        if (Array.isArray(data)) {
+            patterns.push('• مصفوفة بيانات');
+            if (data.length > 0 && typeof data[0] === 'object') {
+                patterns.push('• مصفوفة من الكائنات');
+            }
+        } else if (typeof data === 'object') {
+            patterns.push('• كائن بيانات');
+            
+            if (data.dependencies || data.devDependencies) {
+                patterns.push('• تبعيات المشروع (package.json)');
+            }
+            
+            if (data.scripts) {
+                patterns.push('• سكريبتات التشغيل');
+            }
+            
+            if (data.name && data.version) {
+                patterns.push('• إعدادات التطبيق');
+            }
+            
+            // تحليل عمق الكائن
+            const depth = calculateDepth(data);
+            if (depth > 3) patterns.push('• هيكل متداخل بعمق');
+            else if (depth > 1) patterns.push('• هيكل متداخل متوسط');
+            else patterns.push('• هيكل بسيط');
+        }
+        
+        return patterns.length > 0 ? patterns.join('\n') : '• هيكل قياسي';
+    } catch(e) {
+        return '• هيكل غير صالح أو به أخطاء';
+    }
+}
+
+// تأكد من وجود الدالة calculateDepth إذا لم تكن موجودة
+function calculateDepth(obj, currentDepth = 0) {
+    if (typeof obj !== 'object' || obj === null) return currentDepth;
+    
+    let maxDepth = currentDepth;
+    for (let key in obj) {
+        if (typeof obj[key] === 'object' && obj[key] !== null) {
+            const depth = calculateDepth(obj[key], currentDepth + 1);
+            maxDepth = Math.max(maxDepth, depth);
+        }
+    }
+    return maxDepth;
+}
+
+// دوال الملفات الأخرى
+function getOtherFileType(path) {
+    if (path.endsWith('.md')) return 'وثائق Markdown';
+    if (path.endsWith('.txt')) return 'نص عادي';
+    if (path.endsWith('.xml')) return 'بيانات XML';
+    if (path.endsWith('.svg')) return 'صور متجهية';
+    return 'ملف نظام أو إعدادات';
+}
+
+function getOtherFileRole(path) {
+    if (path.includes('readme')) return 'وثائق المشروع';
+    if (path.includes('license')) return 'الترخيص والشروط';
+    if (path.includes('gitignore')) return 'إعدادات Git';
+    return 'ملف مساعد أو إعدادات';
+}
+
+function getOtherFileImportance(path) {
+    if (path.includes('readme') || path.includes('license')) return 'عالية';
+    if (path.includes('config')) return 'متوسطة';
+    return 'منخفضة';
+}
+
+// دوال عامة
+function countLines(content) {
+    return content.split('\n').length;
+}
+
+function countFunctions(content) {
+    return (content.match(/function\s+\w+|const\s+\w+\s*=\s*\(|let\s+\w+\s*=\s*\(/g) || []).length;
+}
+
+function showLoading(show) {
+    document.getElementById("loading").style.display = show ? "block" : "none";
+}
+
+// تصفية الشجرة حسب البحث
+function filterTree() {
+    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+    const allItems = document.querySelectorAll('.folder, .file');
+    
+    if (!searchTerm) {
+        allItems.forEach(item => item.style.display = 'flex');
+        return;
+    }
+    
+    allItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(searchTerm)) {
+            item.style.display = 'flex';
+            // فتح المجلدات التي تحتوي على نتائج
+            if (item.classList.contains('file')) {
+                let parentFolder = item.closest('.sub').previousElementSibling;
+                if (parentFolder) {
+                    parentFolder.style.display = 'flex';
+                    let panel = parentFolder.nextElementSibling;
+                    if (panel && panel.style.display === "none") {
+                        toggleFolder(parentFolder);
+                    }
+                }
+            }
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// مسح البحث
+function clearSearch() {
+    document.getElementById("searchInput").value = '';
+    filterTree();
+}
+
+// التصفية حسب نوع الملف
+function filterByType(type) {
+    const allItems = document.querySelectorAll('.folder, .file');
+    
+    if (type === 'all') {
+        allItems.forEach(item => item.style.display = 'flex');
+        return;
+    }
+    
+    allItems.forEach(item => {
+        if (item.classList.contains('folder')) {
+            // إظهار المجلدات دائمًا
+            item.style.display = 'flex';
+        } else if (item.dataset.type === type) {
+            item.style.display = 'flex';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// تصدير TXT
+function exportTxt() {
+    let content = document.getElementById("output").value;
+    if (!content.trim()) {
+        alert("لا يوجد محتوى للتصدير");
+        return;
+    }
+    
+    let blob = new Blob([content], { type:"text/plain" });
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "all-project.txt";
+    a.click();
+}
+
+// تصدير MD
+function exportMd() {
+    let content = document.getElementById("output").value;
+    if (!content.trim()) {
+        alert("لا يوجد محتوى للتصدير");
+        return;
+    }
+    
+    let blob = new Blob([content], { type:"text/markdown" });
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "all-project.md";
+    a.click();
+}
+
+// دوال إضافية للتحليل (يمكن تطويرها)
+function getHTMLStructure(files) {
+    return "هيكل تقليدي HTML5 مع أقسام دلالية";
+}
+
+function getJSArchitecture(files) {
+    return "هندسة تقليدية تعتمد على DOM والوظائف";
+}
+
+function getJSDataFlow(files) {
+    return "تدفق بيانات من الخادم إلى الواجهة والعكس";
+}
+
+function getJSONSchemas(files) {
+    return "هياكل بيانات متداخلة للإعدادات والمحتوى";
+}
+
+function getOtherFilesClassification(files) {
+    return "ملفات وثائقية وإعدادات وموارد";
+}
+
+function getOtherFilesDistribution(files) {
+    return "توزيع متنوع بين الوثائق والإعدادات";
+}
+
+function analyzeOtherFiles(files) {
+    return "تحليل تقني للملفات المساعدة والإعدادات";
+}
+
+function getHTMLStructureAnalysis(path) {
+    return "هيكل قياسي مع رأس ومحتوى وتذييل";
+}
+
+function getJSLibraries(files) {
+    return "مكتبات JavaScript محتملة";
+}
+
+function getJSONSize(path) {
+    return "حجم بيانات متوسط";
+}
+
+function getOtherFileRelations(path) {
+    return "مرتبط بالملفات الرئيسية للتطبيق";
+}
+
+function getOtherFileTypes(files) {
+    const types = [];
+    Object.keys(files).forEach(path => {
+        if (path.endsWith('.md')) types.push('وثائق');
+        else if (path.endsWith('.txt')) types.push('نص');
+        else types.push('إعدادات');
+    });
+    return [...new Set(types)].join('، ');
+}
+
+function getOtherFileSizes(files) {
+    return "أحجام متنوعة حسب نوع الملف";
+}
+
+function getJSONSizes(files) {
+    return "أحجام متنوعة حسب نوع البيانات";
+}
+</script>
+
+</body>
+</html>
