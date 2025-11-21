@@ -123,7 +123,7 @@ function generateOrderKey() {
  */
 async function handleCheckout() {
   // 1. جلب البيانات
-  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+  const loggedInUser = getCurrentUser();
   const cart = getCart();
 
   // التحقق من الشروط

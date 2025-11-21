@@ -65,7 +65,7 @@ async function setupFCM() {
   }
 
   // جلب بيانات المستخدم المسجل دخوله
-  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+  const loggedInUser = getCurrentUser();
   // ✅ خطوة حاسمة: التحقق إذا كان الكود يعمل داخل تطبيق الأندرويد
 
   // الخطوة الحاسمة: إعلام كود الأندرويد الأصلي (فقط إذا كان مطلوبًا)
@@ -271,7 +271,7 @@ async function handleRevokedPermissions() {
     console.warn(
       "[FCM] تم اكتشاف أن إذن الإشعارات لم يعد ممنوحًا. سيتم حذف التوكن..."
     );
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    const loggedInUser = getCurrentUser();
 
     if (loggedInUser?.user_key) {
       try {
@@ -305,6 +305,23 @@ async function handleRevokedPermissions() {
 }
 
 /**
+ * ✅ جديد: دالة مركزية لقراءة بيانات المستخدم الحالي من localStorage بأمان.
+ * @returns {object|null} كائن المستخدم إذا كان موجودًا وصحيحًا، وإلا `null`.
+ */
+function getCurrentUser() {
+  try {
+    const userJSON = localStorage.getItem("loggedInUser");
+    if (!userJSON) return null;
+    return JSON.parse(userJSON);
+  } catch (error) {
+    console.error("[Auth] فشل في تحليل بيانات المستخدم من localStorage:", error);
+    // في حالة وجود بيانات تالفة، من الأفضل حذفها
+    localStorage.removeItem("loggedInUser");
+    return null;
+  }
+}
+
+/**
  * ✅ جديد: دالة مساعدة للتحقق مما إذا كان المستخدم مؤهلاً لاستقبال الإشعارات.
  * الإشعارات مخصصة فقط للمسؤولين، البائعين، وخدمات التوصيل.
  * @param {object} user - كائن المستخدم.
@@ -314,12 +331,36 @@ function isUserEligibleForNotifications(user) {
   if (!user || user.is_guest) {
     return false;
   }
-  // ✅ تعديل: توحيد طريقة التحقق من المسؤول لتشمل is_seller === 3 أو رقم الهاتف
-  const isAdmin = user.is_seller === 3 || (adminPhoneNumbers && adminPhoneNumbers.includes(user.phone));
-  
+  // ✅ تعديل: استخدام دالة isUserAdmin للتحقق
+  const isAdmin = isUserAdmin(user);
+
   return user.is_seller === 1 || // بائع
          user.is_seller === 2 || // خدمة توصيل
          isAdmin;              // مسؤول
+}
+
+/**
+ * ✅ جديد: دالة مساعدة للتحقق مما إذا كان المستخدم بائعًا (أو مسؤولاً).
+ * @param {object} user - كائن المستخدم.
+ * @returns {boolean} - `true` إذا كان المستخدم بائعًا أو مسؤولاً، وإلا `false`.
+ */
+function isUserSeller(user) {
+  if (!user) return false;
+  // المسؤول (3) يعتبر بائعًا أيضًا
+  return user.is_seller === 1 || user.is_seller === 3;
+}
+
+/**
+ * ✅ جديد: دالة مساعدة للتحقق مما إذا كان المستخدم مسؤولاً.
+ * @param {object} user - كائن المستخدم.
+ * @returns {boolean} - `true` إذا كان المستخدم مسؤولاً، وإلا `false`.
+ */
+function isUserAdmin(user) {
+  if (!user) return false;
+  // التحقق من الدور (is_seller === 3) أو من رقم الهاتف
+  const isAdminByRole = user.is_seller === 3;
+  const isAdminByPhone = adminPhoneNumbers && adminPhoneNumbers.includes(user.phone);
+  return isAdminByRole || isAdminByPhone;
 }
 
 /**
@@ -328,13 +369,11 @@ function isUserEligibleForNotifications(user) {
  */
 function checkAdminStatus() {
   console.log('[Auth] Checking admin status...');
-  const loggedInUser = localStorage.getItem("loggedInUser");
-  if (!loggedInUser) {
+  const user = getCurrentUser();
+  if (!user) {
     console.log('[Auth] No user is logged in.');
     return null;
   }
-
-  const user = JSON.parse(loggedInUser);
 
   // adminPhoneNumbers معرفة بشكل عام في config.js
   if (adminPhoneNumbers && adminPhoneNumbers.includes(user.phone)) {
@@ -347,7 +386,7 @@ function checkAdminStatus() {
  * يتحقق من حالة تسجيل دخول المستخدم ويقوم بتحديث واجهة المستخدم بناءً عليها.
  */
 function checkLoginStatus() {
-  const loggedInUser = localStorage.getItem("loggedInUser");
+  const user = getCurrentUser();
   const userProfileButton = document.getElementById("user-profile-button");
 
   if (!userProfileButton) return; // الخروج إذا لم يتم العثور على العنصر
@@ -356,9 +395,7 @@ function checkLoginStatus() {
   const userIcon = document.getElementById("user-icon");
   const userText = userProfileLink.querySelector(".user-text");
 
-  if (loggedInUser) {
-    const user = JSON.parse(loggedInUser);
-
+  if (user) {
     // تغيير الأيقونة إلى كلمة "مرحباً"
     if (userIcon) {
       userIcon.className = "welcome-text";
@@ -375,10 +412,9 @@ function checkLoginStatus() {
  * يتم استدعاؤها من الصفحات التي تحتاج إلى استقبال الإشعارات.
  */
 async function initializeNotifications() {
-  const loggedInUser = localStorage.getItem("loggedInUser");
-  if (!loggedInUser) return;
+  const user = getCurrentUser();
+  if (!user) return;
 
-  const user = JSON.parse(loggedInUser);
 
   handleRevokedPermissions();
 
@@ -398,7 +434,7 @@ async function logout() {
   const existingWebToken = localStorage.getItem("fcm_token");
   const existingAndroidToken = localStorage.getItem("android_fcm_key");
 
-  const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+  const loggedInUser = getCurrentUser();
 
   Swal.fire({
     title: "هل أنت متأكد؟",

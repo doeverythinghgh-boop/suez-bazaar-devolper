@@ -357,7 +357,7 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
   const addToCartBtn = document.getElementById("product-modal-add-to-cart");
   addToCartBtn.addEventListener("click", () => {
     // التحقق مما إذا كان المستخدم قد سجل دخوله (وليس ضيفًا).
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+    const loggedInUser = getCurrentUser();
 
     if (loggedInUser && !loggedInUser.is_guest) {
       console.log("[Modal] Add to cart button clicked by a registered user.");
