@@ -1,5 +1,5 @@
 /**
- * @file js/ui/seller.js
+ * @file js/seller.js
  * @description يحتوي على المنطق الخاص بلوحة تحكم البائع (إضافة/تعديل/عرض المنتجات).
  */
 
@@ -7,44 +7,15 @@
  * يعرض نافذة منبثقة لإضافة منتج جديد.
  */
 async function showAddProductModal() {
-  const addProductModal = document.getElementById("add-product-modal");
-  
-  // تحميل محتوى نموذج إضافة المنتج
-  const response = await fetch("pages/addProduct.html");
-  const modalContent = await response.text();
-  addProductModal.innerHTML = modalContent;
-
-  // إظهار النافذة المنبثقة
-  document.body.classList.add("modal-open");
-  addProductModal.style.display = "block";
-
-  // استخراج وتنفيذ السكريبت من المحتوى المحمل
-  const scriptElement = addProductModal.querySelector("script");
-  if (scriptElement) {
-    // الطريقة الأكثر أمانًا وموثوقية: إضافة السكريبت إلى الصفحة
-    const newScript = document.createElement("script");
-    newScript.innerHTML = scriptElement.innerHTML;
-    document.body.appendChild(newScript);
-    // استدعاء دالة التهيئة مباشرة بعد إضافة السكريبت
-    if (typeof initializeAddProductForm === "function") initializeAddProductForm();
-    document.body.removeChild(newScript); // تنظيف
-  }
-
-  // وظيفة لإغلاق النافذة
-  const closeAddProductModal = () => {
-    addProductModal.style.display = "none";
-    addProductModal.innerHTML = ""; // تنظيف المحتوى
-    document.body.classList.remove("modal-open");
-  };
-
-  // إضافة حدث النقر لزر الإغلاق
-  const closeBtn = document.getElementById("add-product-modal-close-btn");
-  if (closeBtn) closeBtn.onclick = closeAddProductModal;
-
-  // إغلاق النافذة عند النقر خارجها
-  window.addEventListener('click', (event) => {
-    if (event.target == addProductModal) closeAddProductModal();
-  }, { once: true });
+  await loadAndShowModal(
+    "add-product-modal",
+    "pages/addProduct.html",
+    () => {
+      if (typeof initializeAddProductForm === "function") {
+        initializeAddProductForm();
+      }
+    }
+  );
 }
 
 /**
@@ -53,53 +24,17 @@ async function showAddProductModal() {
  * @param {function} [onCloseCallback] - دالة اختيارية يتم استدعاؤها عند إغلاق النافذة.
  */
 async function showEditProductModal(productData, onCloseCallback) {
-  const addProductModal = document.getElementById("add-product-modal");
-
-  // تحميل محتوى نموذج إضافة المنتج
-  const response = await fetch("pages/addProduct.html");
-  const modalContent = await response.text();
-  addProductModal.innerHTML = modalContent;
-
-  // إظهار النافذة المنبثقة
-  document.body.classList.add("modal-open");
-  addProductModal.style.display = "block";
-
-  // استخراج وتنفيذ السكريبت من المحتوى المحمل
-  const scriptElement = addProductModal.querySelector("script");
-  if (scriptElement) {
-    const newScript = document.createElement("script");
-    newScript.innerHTML = scriptElement.innerHTML;
-    document.body.appendChild(newScript);
-    
-    // استدعاء دالة التهيئة وتمرير بيانات المنتج لوضع التعديل
-    if (typeof initializeAddProductForm === "function") {
-      // ننتظر قليلاً لضمان تحميل كل شيء قبل التعبئة.
-      setTimeout(() => initializeAddProductForm(productData), 100);
-    }
-    
-    document.body.removeChild(newScript); // تنظيف
-  }
-
-  // وظيفة لإغلاق النافذة
-  const closeEditModal = () => {
-    addProductModal.style.display = "none";
-    addProductModal.innerHTML = ""; // تنظيف المحتوى
-    document.body.classList.remove("modal-open");
-    // استدعاء دالة رد الاتصال إذا كانت موجودة
-    if (typeof onCloseCallback === 'function') {
-      onCloseCallback();
-    }
-  };
-
-  // إضافة حدث النقر لزر الإغلاق
-  const closeBtn = document.getElementById("add-product-modal-close-btn");
-  if (closeBtn) closeBtn.onclick = closeEditModal;
-
-  // إغلاق النافذة عند النقر خارجها.
-  // استخدام { once: true } يضمن أن المستمع يعمل مرة واحدة ثم يزيل نفسه تلقائيًا
-  window.addEventListener('click', (event) => {
-    if (event.target == addProductModal) closeEditModal();
-  }, { once: true });
+  await loadAndShowModal(
+    "add-product-modal",
+    "pages/addProduct.html",
+    () => {
+      if (typeof initializeAddProductForm === "function") {
+        // ننتظر قليلاً لضمان تحميل كل شيء قبل التعبئة.
+        setTimeout(() => initializeAddProductForm(productData), 100);
+      }
+    },
+    onCloseCallback
+  );
 }
 
 /**
@@ -107,28 +42,9 @@ async function showEditProductModal(productData, onCloseCallback) {
  * @param {string} userKey - المفتاح الفريد للمستخدم.
  */
 async function showMyProducts(userKey) {
-  const modalContainer = document.getElementById("my-products-modal-container");
-
-  // 1. تحميل هيكل النافذة المنبثقة وعرضها مع مؤشر تحميل
-  const response = await fetch("pages/myProductsModal.html");
-  modalContainer.innerHTML = await response.text();
-  const contentWrapper = modalContainer.querySelector("#my-products-content-wrapper");
-  contentWrapper.innerHTML = '<div class="loader" style="margin: 2rem auto;"></div>';
-
-  document.body.classList.add("modal-open");
-  modalContainer.style.display = "block";
-
-  // 2. إعداد وظيفة الإغلاق
-  const closeModal = () => {
-    modalContainer.style.display = "none";
-    modalContainer.innerHTML = ""; // تنظيف المحتوى عند الإغلاق
-    document.body.classList.remove("modal-open");
-  };
-
-  modalContainer.querySelector("#my-products-modal-close-btn").onclick = closeModal;
-  window.addEventListener('click', (event) => {
-    if (event.target == modalContainer) closeModal();
-  }, { once: true });
+  await loadAndShowModal("my-products-modal-container", "pages/myProductsModal.html", async (modal) => {
+    const contentWrapper = modal.querySelector("#my-products-content-wrapper");
+    contentWrapper.innerHTML = '<div class="loader" style="margin: 2rem auto;"></div>';
 
   // 3. جلب بيانات المنتجات
   const products = await getProductsByUser(userKey);
@@ -157,10 +73,10 @@ async function showMyProducts(userKey) {
     contentWrapper.querySelectorAll('.my-products-edit-btn').forEach(button => {
       button.addEventListener('click', (event) => {
         const productData = JSON.parse(event.currentTarget.dataset.product);
-        modalContainer.style.display = "none";
+        modal.style.display = "none"; // إخفاء النافذة الحالية
         showEditProductModal(productData, () => {
-          modalContainer.style.display = "block";
-        });
+          modal.style.display = "block"; // إعادة إظهارها عند إغلاق نافذة التعديل
+        }); 
       });
     });
 
@@ -239,7 +155,8 @@ async function showMyProducts(userKey) {
   } else {
     contentWrapper.innerHTML = "<p style='text-align: center; padding: 2rem 0; color: red;'>حدث خطأ أثناء تحميل منتجاتك.</p>";
   }
-}
+  });
+} 
 
 /**
  * يتعامل مع عملية حذف منتج وصوره المرتبطة به.

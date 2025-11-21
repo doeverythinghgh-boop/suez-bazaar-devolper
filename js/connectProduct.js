@@ -148,37 +148,15 @@ async function showProductDetails(productData, onCloseCallback, options = {}) {
     productData.productName
   );
   const modal = document.getElementById("product-details-modal");
-
-  // تحميل محتوى النافذة المنبثقة من ملف HTML خارجي.
-  try {
-    console.log("[Modal] Fetching showProduct.html content...");
-    const response = await fetch("pages/showProduct.html");
-    if (!response.ok)
-      throw new Error(`فشل تحميل محتوى النافذة (status: ${response.status})`);
-    modal.innerHTML = await response.text();
-    // بعد تحميل المحتوى بنجاح، يتم استدعاء دالة `populateProductDetails`
-    // لتعبئة البيانات وربط الأحداث بالعناصر الجديدة.
-    populateProductDetails(productData, onCloseCallback, options);
-  } catch (error) {
-    console.error("[Modal] Failed to fetch or render showProduct.html:", error);
-    Swal.fire(
-      "خطأ في التحميل",
-      "حدث خطأ أثناء محاولة تحميل تفاصيل المنتج. يرجى المحاولة مرة أخرى.",
-      "error"
-    ).then(() => {
-      // استدعاء دالة رد الاتصال إذا فشل تحميل محتوى النافذة.
-      if (typeof onCloseCallback === "function") onCloseCallback();
-    });
-    return; // إيقاف التنفيذ
-  }
-
-  // تعبئة اسم المنتج في عنوان النافذة.
-  document.getElementById("product-modal-name").textContent =
-    productData.productName || "تفاصيل المنتج";
-
-  // إظهار النافذة المنبثقة وإضافة فئة للجسم لمنع التمرير في الخلفية.
-  modal.style.display = "block";
-  document.body.classList.add("modal-open");
+  await loadAndShowModal(
+    "product-details-modal",
+    "pages/showProduct.html",
+    () => {
+      populateProductDetails(productData, onCloseCallback, options);
+      document.getElementById("product-modal-name").textContent = productData.productName || "تفاصيل المنتج";
+    },
+    onCloseCallback
+  );
 }
 
 /**

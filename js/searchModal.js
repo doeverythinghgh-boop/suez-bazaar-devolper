@@ -10,40 +10,24 @@
  * @param {string} openTriggerId - معرف الزر الذي يفتح النافذة.
  */
 async function initSearchModal(containerId, openTriggerId) {
-  const modalContainer = document.getElementById(containerId);
   const openSearchBtn = document.getElementById(openTriggerId);
 
-  if (!modalContainer || !openSearchBtn) {
+  if (!openSearchBtn) {
     console.error('[SearchModal] لم يتم العثور على حاوية النافذة أو زر الفتح.');
     return;
   }
 
-  try {
-    // تحميل محتوى النافذة من الملف الخارجي
-    const response = await fetch('pages/searchModal.html');
-    if (!response.ok) throw new Error('فشل تحميل محتوى نافذة البحث');
-    modalContainer.innerHTML = await response.text();
-    console.log('%c[SearchModal] تم تحميل محتوى نافذة البحث بنجاح.', 'color: #20c997');
-
-    // بعد تحميل المحتوى، يمكننا الوصول للعناصر
-    const searchModal = document.getElementById('search-modal');
-    const closeSearchBtn = document.getElementById('search-modal-close-btn');
+  const openModal = async () => {
+    await loadAndShowModal("search-modal-container", "pages/searchModal.html", async (modal) => {
     const searchModalInput = document.getElementById('search-modal-input');
-    // ✅ جديد: الوصول إلى عناصر الفلاتر
     const mainCategoryFilter = document.getElementById('main-category-filter');
     const subCategoryFilter = document.getElementById('sub-category-filter');
-    // ✅ جديد: الوصول إلى حاوية الفلتر الفرعي للتحكم في إظهارها وإخفائها
     const subCategoryFilterGroup = document.getElementById('sub-category-filter-group');
-    // ✅ جديد: الوصول إلى حاوية عرض النتائج
     const searchResultsContainer = document.getElementById('search-results-container');
-    // ✅ جديد: الوصول إلى زر البحث الجديد
     const performSearchBtn = document.getElementById('perform-search-btn');
-    // ✅ جديد: الوصول إلى رابط التحكم بالفلاتر وحاوية الفلاتر
     const toggleFiltersBtn = document.getElementById('toggle-filters-btn');
     const filtersContainer = document.getElementById('search-filters-container');
-    // ✅ جديد: الوصول إلى قائمة الترتيب
     const sortFilter = document.getElementById('sort-filter');
-    // ✅ جديد: متغير لتخزين نتائج البحث الحالية للترتيب من جهة العميل
     let currentResults = [];
 
     // ✅ جديد: دالة لتأخير التنفيذ (Debounce) لتحسين أداء البحث أثناء الكتابة
@@ -153,38 +137,15 @@ async function initSearchModal(containerId, openTriggerId) {
               SubCategory: productData.SubCategory    // ✅ إضافة: تمرير ID الفئة الفرعية
             };
 
-            // 1. إخفاء نافذة البحث الحالية
-            searchModal.style.display = 'none';
-            // 2. إظهار نافذة تفاصيل المنتج مع تمرير دالة رد اتصال
+            modal.style.display = 'none';
             window.showProductDetails(productDataForModal, () => {
-              // 3. هذه الدالة ستعمل عند إغلاق نافذة التفاصيل، لتعيد إظهار نافذة البحث
-              searchModal.style.display = 'block';
+              modal.style.display = 'block';
             });
           }
         });
       });
     }
 
-    const openModal = () => {
-      searchModal.style.display = 'block';
-      document.body.classList.add('modal-open');
-      // ✅ تحسين: مسح النتائج السابقة عند فتح النافذة لتوفير واجهة نظيفة
-      searchResultsContainer.innerHTML = '';
-      setTimeout(() => searchModalInput.focus(), 50); // التركيز على حقل البحث
-    };
-
-    const closeModal = () => {
-      searchModal.style.display = 'none';
-      document.body.classList.remove('modal-open');
-    };
-
-    openSearchBtn.addEventListener('click', openModal);
-    closeSearchBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', (event) => {
-      if (event.target === searchModal) {
-        closeModal();
-      }
-    });
 
     // ✅ جديد: إضافة حدث النقر على رابط التحكم بالفلاتر
     toggleFiltersBtn.addEventListener('click', (e) => {
@@ -276,11 +237,11 @@ async function initSearchModal(containerId, openTriggerId) {
     subCategoryFilter.addEventListener('change', performSearch);
     // ✅ جديد: ربط حدث النقر على زر البحث لتنفيذ البحث فورًا
     performSearchBtn.addEventListener('click', performSearch);
-
-  } catch (error) {
-    console.error('%c[SearchModal] خطأ في تهيئة نافذة البحث:', 'color: red;', error);
-  }
-
+    
+    setTimeout(() => searchModalInput.focus(), 50);
+    });
+  };
+  openSearchBtn.addEventListener('click', openModal);
   // ✅ جديد: إضافة حدث للتحكم في حركة زر البحث أثناء الكتابة
   const searchInputForAnimation = document.getElementById('search-modal-input');
   const searchBtnForAnimation = document.getElementById('perform-search-btn');

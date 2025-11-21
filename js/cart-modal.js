@@ -1,103 +1,81 @@
 /**
- * @file js/ui/cart-modal.js
+ * @file js/cart-modal.js
  * @description يحتوي على المنطق الخاص بعرض سلة المشتريات وإتمام عملية الشراء.
  */
 
 /**
  * يعرض نافذة منبثقة بمحتويات سلة المشتريات.
  */
-function showCartModal() {
-  const cartModal = document.getElementById("cart-modal-container");
-  const cart = getCart();
-  let total = 0;
+async function showCartModal() {
+  await loadAndShowModal("cart-modal-container", "../js/cartModal.html", (modal) => {
+    const cart = getCart();
+    const modalContent = modal.querySelector(".modal-content");
+    const itemsListContainer = modalContent.querySelector("#cart-items-list");
+    const cartFooter = modalContent.querySelector("#cart-footer");
 
-  let modalContent = `
-    <div class="modal-content">
-      <span class="close-button" id="cart-modal-close-btn">&times;</span>
-      <h2><i class="fas fa-shopping-cart"></i> سلة المشتريات</h2>`;
+    if (cart.length > 0) {
+      let total = 0;
+      itemsListContainer.innerHTML = cart
+        .map((item) => {
+          total += item.price * item.quantity;
+          return generateCartItemHTML(item);
+        })
+        .join("");
 
-  if (cart.length > 0) {
-    modalContent += '<div id="cart-items-list">';
-    cart.forEach(item => {
-      const itemTotal = item.price * item.quantity;
-      total += itemTotal;
-      modalContent += `
-        <div class="cart-item" data-key="${item.product_key}">
-          <img src="${item.image}" alt="${item.productName}">
-          <div class="cart-item-details">
-            <strong>${item.productName}</strong>
-            <p>${item.price} جنيه × ${item.quantity}</p>
-          </div>
-          <div><strong>${itemTotal.toFixed(2)} جنيه</strong></div>
-          <button class="btn-ghost remove-from-cart-btn" title="إزالة من السلة">&times;</button>
+      cartFooter.innerHTML = `
+        <div class="cart-total">الإجمالي: ${total.toFixed(2)} جنيه</div>
+        <div class="action-buttons" style="margin-top: 20px; display: flex; justify-content: space-between; gap: 10px;">
+          <button id="clear-cart-btn" class="button logout-btn-small" style="background-color: #e74c3c;">إفراغ السلة</button>
+          <button id="checkout-btn" class="button logout-btn-small" style="background-color: #2ecc71;">إتمام الشراء</button>
         </div>`;
-    });
-    modalContent += '</div>';
-    modalContent += `<div class="cart-total">الإجمالي: ${total.toFixed(2)} جنيه</div>`;
-    modalContent += `
-      <div class="action-buttons" style="margin-top: 20px; display: flex; justify-content: space-between; gap: 10px;">
-        <button id="clear-cart-btn" class="button logout-btn-small" style="background-color: #e74c3c;">إفراغ السلة</button>
-        <button id="checkout-btn" class="button logout-btn-small" style="background-color: #2ecc71;">إتمام الشراء</button>
-      </div>`;
-  } else {
-    modalContent += '<p style="text-align: center; padding: 2rem 0;">سلة المشتريات فارغة.</p>';
-  }
 
-  modalContent += '</div>';
-  cartModal.innerHTML = modalContent;
+      // ربط الأحداث
+      itemsListContainer.querySelectorAll(".remove-from-cart-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const cartItem = e.target.closest(".cart-item");
+          const productKey = cartItem.dataset.key;
+          const productName = cartItem.querySelector(".cart-item-details strong").textContent;
 
-  // ✅ تعديل: استخدام الدالة المساعدة لإدارة النافذة
-  const modalLogic = setupModalLogic(
-    "cart-modal-container",
-    "cart-modal-close-btn"
-  );
-  if (modalLogic) modalLogic.open();
-
-  // أحداث أزرار التحكم بالسلة
-  document.querySelectorAll('.remove-from-cart-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      const cartItem = e.target.closest('.cart-item');
-      const productKey = cartItem.dataset.key;
-      const productName = cartItem.querySelector('.cart-item-details strong').textContent;
-
-      Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: `هل تريد بالتأكيد إزالة "${productName}" من السلة؟`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'نعم، قم بالإزالة!',
-        cancelButtonText: 'إلغاء'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          removeFromCart(productKey);
-          showCartModal(); // إعادة رسم المودال
-        }
+          Swal.fire({
+            title: "هل أنت متأكد؟",
+            text: `هل تريد بالتأكيد إزالة "${productName}" من السلة؟`,
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "نعم، قم بالإزالة!",
+            cancelButtonText: "إلغاء",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              removeFromCart(productKey);
+              showCartModal(); // إعادة رسم المودال
+            }
+          });
+        });
       });
-    });
+
+      cartFooter.querySelector("#clear-cart-btn").addEventListener("click", () => {
+        Swal.fire({
+          title: "هل أنت متأكد؟",
+          text: "سيتم إفراغ السلة بالكامل!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "نعم، أفرغها!",
+          cancelButtonText: "إلغاء",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            clearCart();
+            showCartModal(); // إعادة رسم المودال
+          }
+        });
+      });
+
+      cartFooter.querySelector("#checkout-btn").addEventListener("click", handleCheckout);
+    } else {
+      itemsListContainer.innerHTML = '<p style="text-align: center; padding: 2rem 0;">سلة المشتريات فارغة.</p>';
+      cartFooter.innerHTML = "";
+    }
   });
-
-  const clearCartBtn = document.getElementById('clear-cart-btn');
-  if (clearCartBtn) {
-    clearCartBtn.addEventListener('click', () => {
-      Swal.fire({
-        title: 'هل أنت متأكد؟', text: "سيتم إفراغ السلة بالكامل!", icon: 'warning',
-        showCancelButton: true, confirmButtonText: 'نعم، أفرغها!', cancelButtonText: 'إلغاء'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          clearCart();
-          showCartModal(); // إعادة رسم المودال
-        }
-      });
-    });
-  }
-
-  // حدث النقر على زر "إتمام الشراء"
-  const checkoutBtn = document.getElementById('checkout-btn');
-  if (checkoutBtn) {
-    checkoutBtn.addEventListener('click', handleCheckout);
-  }
 }
 
 /**

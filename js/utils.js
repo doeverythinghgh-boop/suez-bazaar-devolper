@@ -208,6 +208,48 @@ function setupModalLogic(modalId, closeBtnId, options = {}) {
 }
 
 /**
+ * ✅ جديد: تحميل وعرض نافذة منبثقة من قالب HTML.
+ *
+ * @param {string} modalId - معرف حاوية النافذة.
+ * @param {string|null} templatePath - مسار ملف القالب (null إذا كان الهيكل موجودًا بالفعل).
+ * @param {function(HTMLElement):void} initCallback - دالة تُستدعى بعد تحميل المحتوى لتهيئة المنطق.
+ * @param {function():void} [onCloseCallback] - دالة اختيارية تُستدعى عند إغلاق النافذة.
+ */
+async function loadAndShowModal(modalId, templatePath, initCallback, onCloseCallback) {
+  const modal = document.getElementById(modalId);
+  if (!modal) {
+    console.error(`[Modal Loader] لم يتم العثور على حاوية النافذة: ${modalId}`);
+    return;
+  }
+
+  const modalLogic = setupModalLogic(modalId, `${modalId}-close-btn`, { onClose: onCloseCallback });
+
+  try {
+    // تحميل المحتوى فقط إذا لم يكن موجودًا أو تم تحديد مسار
+    if (templatePath && modal.children.length === 0) {
+      const response = await fetch(templatePath);
+      if (!response.ok) throw new Error(`فشل تحميل القالب: ${response.status}`);
+      modal.innerHTML = await response.text();
+
+      // تنفيذ أي سكربتات مضمنة
+      modal.querySelectorAll("script").forEach(script => {
+        const newScript = document.createElement("script");
+        newScript.textContent = script.textContent;
+        document.body.appendChild(newScript).remove();
+      });
+    }
+
+    modalLogic.open();
+    if (typeof initCallback === 'function') initCallback(modal);
+
+  } catch (error) {
+    console.error(`[Modal Loader] خطأ في تحميل أو عرض النافذة ${modalId}:`, error);
+    Swal.fire("خطأ في التحميل", "حدث خطأ أثناء محاولة تحميل المحتوى. يرجى المحاولة مرة أخرى.", "error");
+    if (typeof onCloseCallback === 'function') onCloseCallback();
+  }
+}
+
+/**
  * ✅ جديد: دالة مركزية لإجراء طلبات API.
  * تغلف منطق fetch، معالجة الأخطاء، وتحويل JSON.
  * @param {string} endpoint - نقطة النهاية (e.g., '/api/users').
@@ -354,4 +396,191 @@ function generateProductCardHTML(product, viewType) {
   }
 
   return `<div class="${cardClass}" ${cardAttributes}>${cardContent}</div>`;
+}
+
+/**
+ * ✅ جديد: يولد HTML لصف واحد في سلة المشتريات.
+ * @param {object} item - بيانات المنتج في السلة.
+ * @returns {string} - سلسلة HTML لصف العنصر.
+ */
+function generateCartItemHTML(item) {
+  const itemTotal = (item.price * item.quantity).toFixed(2);
+  return `
+    <div class="cart-item" data-key="${item.product_key}">
+      <img src="${item.image}" alt="${item.productName}">
+      <div class="cart-item-details">
+        <strong>${item.productName}</strong>
+        <p>${item.price} جنيه × ${item.quantity}</p>
+      </div>
+      <div><strong>${itemTotal} جنيه</strong></div>
+      <button class="btn-ghost remove-from-cart-btn" title="إزالة من السلة">&times;</button>
+    </div>`;
+}
+
+/**
+ * ✅ جديد: يولد HTML لعنصر واحد في سجل المشتريات.
+ * @param {object} item - بيانات المنتج المشترى.
+ * @returns {string} - سلسلة HTML لبطاقة العنصر.
+ */
+function generatePurchaseItemHTML(item) {
+  const firstImage = item.ImageName ? item.ImageName.split(',')[0] : '';
+  const imageUrl = firstImage 
+    ? `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${firstImage}`
+    : 'images/placeholder.png';
+
+  const isoDateTime = item.created_at.replace(' ', 'T') + 'Z';
+  const purchaseDate = new Date(isoDateTime).toLocaleString('ar-EG', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true,
+    timeZone: 'Africa/Cairo'
+  });
+
+  const itemPrice = parseFloat(item.product_price) || 0;
+  const itemQuantity = parseInt(item.quantity, 10) || 0;
+  const itemTotal = (itemPrice * itemQuantity).toFixed(2);
+
+  return `
+    <div class="purchase-item">
+      <img src="${imageUrl}" alt="${item.productName}">
+      <div class="purchase-item-details">
+        <strong>${item.productName}</strong>
+        <p><strong>سعر القطعة:</strong> ${itemPrice.toFixed(2)} جنيه</p>
+        <p><strong>الكمية:</strong> ${item.quantity}</p>
+        <p><strong>الإجمالي:</strong> ${itemTotal} جنيه</p>
+        <p><strong>تاريخ الطلب:</strong> ${purchaseDate}</p>
+        <div class="purchase-status-container">
+          ${createStatusTimelineHTML(null, item.status_details, false, 0)}
+        </div>
+      </div>
+    </div>`;
+}
+
+/**
+ * ✅ جديد: يولد HTML لبطاقة طلب في تقرير حركة المبيعات.
+ * @param {object} order - بيانات الطلب الكاملة.
+ * @param {object} loggedInUser - بيانات المستخدم المسجل دخوله.
+ * @param {boolean} isAdmin - هل المستخدم مسؤول.
+ * @returns {string} - سلسلة HTML لبطاقة الطلب.
+ */
+function generateSalesMovementItemHTML(order, loggedInUser, isAdmin) {
+  const userRole = loggedInUser ? loggedInUser.is_seller : 0;
+  const isSellerOfThisOrder = userRole === 1 && order.items.some(item => item.seller_key === loggedInUser.user_key);
+  const canEdit = isAdmin || isSellerOfThisOrder || userRole === 2;
+
+  const isoDateTime = order.created_at.replace(' ', 'T') + 'Z';
+  const orderDate = new Date(isoDateTime).toLocaleString('ar-EG', {
+    year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Cairo'
+  });
+
+  const itemsTable = `<table class="order-items-table"><thead><tr><th>المنتج</th><th>الكمية</th><th>سعر القطعة</th><th>الإجمالي</th><th>عرض</th></tr></thead><tbody>
+    ${order.items.map(item => {
+      const itemTotal = (item.product_price * item.quantity).toFixed(2);
+      const productKey = item.product_key || '';
+      return `<tr>
+        <td data-label="المنتج">${item.productName}</td>
+        <td data-label="الكمية">${item.quantity}</td>
+        <td data-label="سعر القطعة">${item.product_price.toFixed(2)} ج.م</td>
+        <td data-label="الإجمالي">${itemTotal} ج.م</td>
+        <td data-label="عرض">
+          <button class="button icon-btn view-product-details-btn" data-product-key="${productKey}" title="عرض تفاصيل المنتج"><i class="fas fa-eye"></i></button>
+        </td>
+      </tr>`;
+    }).join('')}
+  </tbody></table>`;
+
+  return `
+    <div class="purchase-item">
+      <div class="purchase-item-details">
+        <p><strong>رقم الطلب:</strong> ${order.order_key}</p>
+        ${isAdmin ? `
+          <p><strong>العميل:</strong> ${order.customer_name}</p>
+          <p><strong>هاتف العميل:</strong> ${order.customer_phone}</p>
+          <p><strong>العنوان:</strong> ${order.customer_address || 'غير محدد'}</p>
+        ` : ''}
+        <p><strong>تاريخ الطلب:</strong> ${orderDate}</p>
+        <p><strong>إجمالي الطلب:</strong> ${order.total_amount.toFixed(2)} جنيه</p>
+        <div class="purchase-status-container">
+          ${createStatusTimelineHTML(order.order_key, ORDER_STATUSES.find(s => s.id === order.order_status), canEdit, userRole)}
+        </div>
+        <h4>المنتجات:</h4>
+        ${itemsTable}
+      </div>
+    </div>`;
+}
+
+/**
+ * ✅ جديد: يولد HTML لبطاقة مستخدم في لوحة تحكم المسؤول.
+ * @param {object} user - بيانات المستخدم.
+ * @returns {string} - سلسلة HTML لبطاقة المستخدم.
+ */
+function generateUserCardHTML(user) {
+  let notificationUI = '';
+  if (isUserEligibleForNotifications(user)) {
+    notificationUI = user.fcm_token
+      ? `<div class="notification-sender">
+           <input type="text" placeholder="اكتب رسالتك هنا..." class="notification-input" id="notif-input-${user.user_key}">
+           <button class="send-notif-btn" data-token="${user.fcm_token}" data-user-key="${user.user_key}" title="إرسال"><i class="fas fa-paper-plane"></i></button>
+         </div>`
+      : '<span class="no-token">مؤهل (لم يسجل الجهاز)</span>';
+  } else {
+    notificationUI = '<span class="no-token">غير مؤهل للإشعارات</span>';
+  }
+
+  const isAdmin = adminPhoneNumbers.includes(user.phone);
+  const roleUI = isAdmin
+    ? `<div class="user-role-static"><i class="fas fa-user-shield"></i> <span>مسؤول</span></div>`
+    : `<select id="role-select-${user.user_key}" class="user-role-select" data-phone="${user.phone}" data-original-state="${user.is_seller}">
+         <option value="0" ${user.is_seller === 0 ? 'selected' : ''}>عميل</option>
+         <option value="1" ${user.is_seller === 1 ? 'selected' : ''}>بائع</option>
+         <option value="2" ${user.is_seller === 2 ? 'selected' : ''}>خدمة توصيل</option>
+       </select>`;
+
+  return `
+    <div class="user-card" data-phone="${user.phone}">
+      <div class="user-card-header">
+        <i class="fas fa-user-circle user-avatar"></i>
+        <div class="user-info">
+          <span class="user-name">${user.username || 'غير متوفر'}</span>
+          <span class="user-phone">${user.phone}</span>
+        </div>
+      </div>
+      <div class="user-card-body">
+        <div class="user-card-field">
+          <label for="role-select-${user.user_key}">دور المستخدم</label>
+          ${roleUI}
+        </div>
+        <div class="user-card-field">
+          <label>إرسال إشعار</label>
+          ${notificationUI}
+        </div>
+      </div>
+    </div>`;
+}
+
+/**
+ * ✅ جديد: يولد HTML لعنصر سجل إشعارات.
+ * @param {object} log - بيانات سجل الإشعار.
+ * @returns {string} - سلسلة HTML لعنصر السجل.
+ */
+function generateNotificationLogItemHTML(log) {
+  const logDate = new Date(log.timestamp).toLocaleString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  let iconClass = log.type === 'sent' ? 'fa-paper-plane' : 'fa-inbox';
+  let statusClass = log.type;
+  let titlePrefix = log.type === 'sent' ? `إلى: ${log.relatedUser.name}` : `من: ${log.relatedUser.name}`;
+
+  if (log.status === 'failed') {
+    statusClass += ' failed';
+    iconClass = 'fa-exclamation-triangle';
+  }
+
+  return `
+    <div class="notification-log-item ${statusClass}">
+      <i class="fas ${iconClass} notification-log-icon"></i>
+      <div class="notification-log-content">
+        <h4>${log.title}</h4>
+        <p>${log.body}</p>
+        <p><em>${titlePrefix}</em></p>
+        ${log.status === 'failed' ? `<p style="color: #e74c3c;"><strong>سبب الفشل:</strong> ${log.errorMessage || 'غير معروف'}</p>` : ''}
+        <div class="notification-log-timestamp">${logDate}</div>
+      </div>
+    </div>`;
 }

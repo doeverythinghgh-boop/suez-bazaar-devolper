@@ -151,50 +151,15 @@ function initializeAdminPanel(user) {
  * جديد: يعرض نافذة منبثقة لإدارة الإعلان.
  */
 async function showAdvertiesmentModal() {
-  const adverModal = document.getElementById("adver-modal");
-  if (!adverModal) {
-    console.error("Error: Modal container #adver-modal not found.");
-    return;
-  }
-
-  // تحميل محتوى نموذج الإعلان
-  const response = await fetch("pages/Advertiesment.html");
-  const modalContent = await response.text();
-  adverModal.innerHTML = modalContent;
-
-  // إظهار النافذة المنبثقة
-  document.body.classList.add("modal-open");
-  adverModal.style.display = "block";
-
-  // استخراج وتنفيذ السكريبت من المحتوى المحمل
-  const scriptElement = adverModal.querySelector("script");
-  if (scriptElement) {
-    const newScript = document.createElement("script");
-    newScript.innerHTML = scriptElement.innerHTML;
-    document.body.appendChild(newScript);
-    // استدعاء دالة التهيئة مباشرة بعد إضافة السكريبت
-    if (typeof initializeAdvertiesmentForm === "function") {
-        initializeAdvertiesmentForm();
-        initializeAdvertiesmentForm(adverModal); // ✅ تمرير حاوية المودال
+  await loadAndShowModal(
+    "adver-modal",
+    "pages/Advertiesment.html",
+    (modal) => {
+      if (typeof initializeAdvertiesmentForm === "function") {
+        initializeAdvertiesmentForm(modal);
+      }
     }
-    document.body.removeChild(newScript); // تنظيف
-  }
-
-  // وظيفة لإغلاق النافذة
-  const closeModal = () => {
-    adverModal.style.display = "none";
-    adverModal.innerHTML = ""; // تنظيف المحتوى
-    document.body.classList.remove("modal-open");
-  };
-
-  // إضافة حدث النقر لزر الإغلاق
-  const closeBtn = document.getElementById("adver-modal-close-btn");
-  if (closeBtn) closeBtn.onclick = closeModal;
-
-  // إغلاق النافذة عند النقر خارجها
-  window.addEventListener('click', (event) => {
-    if (event.target == adverModal) closeModal();
-  }, { once: true });
+  );
 }
 
 /**

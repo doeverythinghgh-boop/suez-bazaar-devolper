@@ -95,27 +95,9 @@ function createStatusTimelineHTML(orderKey, statusDetails, canEdit, userRole) {
  * @param {string} userKey - مفتاح المستخدم الذي يطلب التقرير.
  */
 async function showSalesMovementModal(userKey) {
-  const modalContainer = document.getElementById("sales-movement-modal-container");
-
-  modalContainer.innerHTML = `
-    <div class="modal-content large extra-large">
-      <span class="close-button" id="sales-movement-modal-close-btn">&times;</span>
-      <h2><i class="fas fa-dolly-flatbed"></i> حركة المشتريات</h2>
-      <div class="loader" style="margin: 2rem auto;"></div>
-    </div>`;
-  
-  document.body.classList.add("modal-open");
-  modalContainer.style.display = "block";
-
-  const closeModal = () => {
-    modalContainer.style.display = "none";
-    document.body.classList.remove("modal-open");
-  };
-
-  document.getElementById("sales-movement-modal-close-btn").onclick = closeModal;
-  window.addEventListener('click', (event) => {
-    if (event.target == modalContainer) closeModal();
-  }, { once: true });
+  await loadAndShowModal("sales-movement-modal-container", "../js/salesMovementModal.html", async (modal) => {
+    const contentWrapper = modal.querySelector("#sales-movement-content-wrapper");
+    contentWrapper.innerHTML = '<div class="loader" style="margin: 2rem auto;"></div>';
 
   const orders = await getSalesMovement(userKey);
   // ✅ إصلاح: جلب بيانات المستخدم الحالي للتحقق مما إذا كان مسؤولاً أم لا
@@ -131,100 +113,16 @@ async function showSalesMovementModal(userKey) {
   // ✅ تتبع: تسجيل البيانات فور استلامها من الخادم
   console.log('%c[DEV-LOG] showSalesMovementModal: البيانات المستلمة من getSalesMovement():', 'color: blue; font-weight: bold;', orders);
 
-  const modalContentEl = modalContainer.querySelector('.modal-content');
-
-  let contentHTML = `
-    <span class="close-button" id="sales-movement-modal-close-btn">&times;</span>
-    <h2><i class="fas fa-dolly-flatbed"></i> حركة المشتريات</h2>`;
-
   if (orders && orders.length > 0) {
-    contentHTML += '<div id="sales-movement-list">';
-    orders.forEach(order => {
-      // ✅ تتبع: تسجيل بيانات كل طلب على حدة
-      console.log(`%c[DEV-LOG] ... جاري معالجة الطلب: ${order.order_key}`, 'color: darkcyan;', order);
-
-      // ✅ جديد: تحديد دور المستخدم (بائع، خدمة توصيل، إلخ)
-      const userRole = loggedInUser ? loggedInUser.is_seller : 0;
-      console.log(`[DEV-LOG] ......... 1. دور المستخدم الحالي (userRole): ${userRole}`);
-      
-      // ✅ تتبع للمطور: فحص مفتاح البائع لكل منتج في الطلب
-      const sellerKeysInOrder = order.items.map(item => item.seller_key);
-      console.log(`[DEV-LOG] ......... 2. مفاتيح البائعين في هذا الطلب:`, sellerKeysInOrder);
-      console.log(`[DEV-LOG] ......... 3. مفتاح المستخدم الحالي (loggedInUser.user_key): "${loggedInUser.user_key}"`);
-
-      // ✅ تتبع للمطور: التحقق من تطابق المفاتيح
-      const isSellerOfThisOrder = userRole === 1 && order.items.some(item => item.seller_key === loggedInUser.user_key);
-      console.log(`[DEV-LOG] ......... 4. هل المستخدم الحالي هو بائع أحد المنتجات في هذا الطلب؟ -> ${isSellerOfThisOrder}`);
-
-      // ✅ تعديل: يمكن للمستخدم التعديل إذا كان مسؤولاً، أو بائع الطلب، أو خدمة توصيل.
-      // سيتم تحديد صلاحيات كل خطوة داخل `createStatusTimelineHTML`.
-      const canEdit = isAdmin || isSellerOfThisOrder || userRole === 2;
-
-      // ✅ تتبع للمطور: النتيجة النهائية لصلاحية التعديل
-      console.log(`%c[DEV-LOG] .........>> النتيجة النهائية: صلاحية التعديل (canEdit) لهذا الطلب هي: ${canEdit}`, 'font-weight: bold; color: green;');
-
-      const isoDateTime = order.created_at.replace(' ', 'T') + 'Z';
-      const orderDate = new Date(isoDateTime).toLocaleString('ar-EG', {
-        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Cairo'
-      });
-
-      let itemsTable = `<table class="order-items-table"><thead><tr><th>المنتج</th><th>الكمية</th><th>سعر القطعة</th><th>الإجمالي</th><th>عرض</th></tr></thead><tbody>`;
-      order.items.forEach(item => {
-        const itemTotal = (item.product_price * item.quantity).toFixed(2);
-        // ✅ تتبع: تسجيل بيانات كل منتج داخل الطلب
-        console.log(`%c[DEV-LOG] ...... جاري معالجة المنتج: ${item.productName}`, 'color: grey;', item);
-
-        // ✅ إصلاح: تخزين مفتاح المنتج فقط بدلاً من الكائن الكامل
-        const productKey = item.product_key || item.productKey || (item.product_details ? item.product_details.product_key : '') || '';
-        console.log(`[DEV-LOG] ......... تم استخلاص productKey: "${productKey}"`);
-
-        itemsTable += `<tr>
-          <td data-label="المنتج">${item.productName}</td>
-          <td data-label="الكمية">${item.quantity}</td>
-          <td data-label="سعر القطعة">${item.product_price.toFixed(2)} ج.م</td>
-          <td data-label="الإجمالي">${itemTotal} ج.م</td>
-          <td data-label="عرض">
-            <button class="button icon-btn view-product-details-btn" data-product-key="${productKey}" title="عرض تفاصيل المنتج"><i class="fas fa-eye"></i></button>
-          </td>
-        </tr>`;
-      });
-      itemsTable += '</tbody></table>';
-
-      contentHTML += `
-        <div class="purchase-item">
-          <div class="purchase-item-details">
-            <p><strong>رقم الطلب:</strong> ${order.order_key}</p>
-            ${isAdmin ? `
-              <p><strong>العميل:</strong> ${order.customer_name}</p>
-              <p><strong>هاتف العميل:</strong> ${order.customer_phone}</p>
-              <p><strong>العنوان:</strong> ${order.customer_address || 'غير محدد'}</p>
-            ` : ''}
-            <p><strong>تاريخ الطلب:</strong> ${orderDate}</p>
-            <p><strong>إجمالي الطلب:</strong> ${order.total_amount.toFixed(2)} جنيه</p>
-            <div class="purchase-status-container">
-              <!-- ✅ تعديل: تمرير المفتاح وصلاحية التعديل -->
-              ${createStatusTimelineHTML(
-                order.order_key, 
-                ORDER_STATUSES.find(s => s.id === order.order_status),
-                canEdit, // ✅ إصلاح: تمرير صلاحية التعديل المحسوبة لكل طلب
-                userRole // ✅ جديد: تمرير دور المستخدم لتحديد الصلاحيات بدقة
-              )}
-            </div>
-            <h4>المنتجات:</h4>
-            ${itemsTable}
-          </div>
-        </div>`;
-    });
-    contentHTML += '</div>';
+    contentWrapper.innerHTML = `<div id="sales-movement-list">
+        ${orders.map(order => generateSalesMovementItemHTML(order, loggedInUser, isAdmin)).join('')}
+      </div>`;
   } else {
-    contentHTML += '<p style="text-align: center; padding: 2rem 0;">لا توجد طلبات لعرضها.</p>';
+    contentWrapper.innerHTML = '<p style="text-align: center; padding: 2rem 0;">لا توجد طلبات لعرضها.</p>';
   }
 
-  modalContentEl.innerHTML = contentHTML;
-  modalContentEl.querySelector('#sales-movement-modal-close-btn').onclick = closeModal;
-
   // ✅ جديد: إضافة مستمع حدث للنقر على خطوات الحالة القابلة للتعديل
-  modalContentEl.addEventListener('click', async (event) => {
+  contentWrapper.addEventListener('click', async (event) => {
     const stepElement = event.target.closest('.editable-step');
     if (!stepElement) return;
 
@@ -273,7 +171,7 @@ async function showSalesMovementModal(userKey) {
   });
 
   // ✅ جديد: ربط حدث النقر بأزرار "عرض المنتج"
-  modalContentEl.querySelectorAll('.view-product-details-btn').forEach(button => {
+  contentWrapper.querySelectorAll('.view-product-details-btn').forEach(button => {
     button.addEventListener('click', async (event) => {
       // ✅ تتبع: تسجيل الحدث عند النقر على الزر
       console.log('%c[DEV-LOG] تم النقر على زر "عرض تفاصيل المنتج".', 'color: purple; font-weight: bold;');
@@ -309,5 +207,6 @@ async function showSalesMovementModal(userKey) {
         Swal.fire('خطأ', 'فشل في جلب تفاصيل المنتج. قد يكون المنتج قد تم حذفه.', 'error');
       }
     });
+  });
   });
 }
