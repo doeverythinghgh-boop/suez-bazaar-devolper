@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../css/style.css" />
     <!-- Link to login styles for header consistency -->
     <link rel="stylesheet" href="../css/login.css" />
+    <link rel="stylesheet" href="../css/show-page.css" /> <!-- ✅ جديد: إضافة ملف الأنماط الخاص بالصفحة -->
     <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap"
@@ -22,63 +23,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
     />
-    <style>
-      /* Custom styles for this page */
-      body {
-        font-family: "Tajawal", sans-serif;
-        background-color: #f9f9f9;
-        padding-top: 12vh; /* To avoid content being hidden by fixed header if used */
-        /* New styles to center content and fill screen */
-        display: flex;
-        flex-direction: column;
-        justify-content: center; /* Center vertically */
-        align-items: center; /* Center horizontally */
-        min-height: 88vh; /* Fill remaining vertical space (100vh - 12vh header) */
-        box-sizing: border-box;
-        padding: 20px;
-      }
-      .selection-container {
-        width: 100%;
-        max-width: 700px;
-        margin: 0 auto; /* Keep it centered horizontally */
-        padding: 30px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      }
-      h2 {
-        text-align: center;
-        color: #333;
-        margin-bottom: 30px;
-      }
-      .form-group {
-        margin-bottom: 25px;
-      }
-      label {
-        display: block;
-        margin-bottom: 10px;
-        font-weight: bold;
-        color: #555;
-        font-size: 16px;
-      }
-      select {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-sizing: border-box;
-        font-family: "Tajawal", sans-serif;
-        font-size: 16px;
-        background-color: white;
-        cursor: pointer;
-        transition: border-color 0.3s, box-shadow 0.3s;
-      }
-      select:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-      }
-    </style>
   </head>
   <body>
     <!-- المحتوى الرئيسي للصفحة -->
