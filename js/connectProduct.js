@@ -118,7 +118,7 @@ async function getProductByKey(productKey) {
     return null;
   }
 }
-
+ 
 /**
  * يعرض نافذة منبثقة (Modal) تحتوي على تفاصيل المنتج.
  * @param {object} productData - بيانات المنتج الكاملة.
