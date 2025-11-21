@@ -146,50 +146,8 @@ async function showMyProducts(userKey) {
   if (products && products.length > 0) {
     let cardsHTML = `<div class="my-products-cards-container">`;
 
-    products.forEach(product => {
-      let imagesHtml = '';
-      if (product.ImageName) {
-        const imageNames = product.ImageName.split(',');
-        imageNames.forEach(imageName => {
-          if (imageName) {
-            const imageUrl = `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${imageName}`;
-            imagesHtml += `<img src="${imageUrl}" alt="صورة منتج" onerror="this.style.display='none'">`;
-          }
-        });
-      } else {
-        imagesHtml = '<span>لا توجد صور</span>';
-      }
-
-      const productJson = JSON.stringify(product);
-
-      let priceHtml = `<p><strong>السعر:</strong> ${product.product_price} جنيه</p>`;
-      if (product.original_price && parseFloat(product.original_price) > 0) {
-        priceHtml += `<p><strong>السعر قبل الخصم:</strong> <span style="text-decoration: line-through; color: #7f8c8d;">${product.original_price} جنيه</span></p>`;
-      }
-
-      const mainCatData = `data-main-category="${product.MainCategory || ''}"`;
-      const subCatData = `data-sub-category="${product.SubCategory || ''}"`;
-
-      cardsHTML += `
-        <div class="my-products-card" ${mainCatData} ${subCatData}>
-          <div class="my-products-card-images">${imagesHtml}</div>
-          <div class="my-products-card-details">
-            <h4>${product.productName || 'منتج بلا اسم'}</h4>
-            <p><strong>الوصف:</strong> ${product.product_description || 'لا يوجد'}</p>
-            <p><strong>رسالة البائع:</strong> ${product.user_message || 'لا يوجد'}</p>
-            ${priceHtml}
-            <p><strong>الكمية:</strong> ${product.product_quantity}</p>
-            <p><strong>ملاحظات خاصة:</strong> ${product.user_note || 'لا يوجد'}</p>
-          </div>
-          <div class="my-products-card-actions">
-            <button class="button logout-btn-small my-products-edit-btn" data-product='${productJson}'>
-              <i class="fas fa-edit"></i> تعديل
-            </button>
-            <button class="button delete-btn-small my-products-delete-btn" data-product='${productJson}'>
-              <i class="fas fa-trash-alt"></i> إزالة
-            </button>
-          </div>
-        </div>`;
+    products.forEach(product => { 
+      cardsHTML += generateProductCardHTML(product, 'seller');
     });
 
     cardsHTML += `</div>`;

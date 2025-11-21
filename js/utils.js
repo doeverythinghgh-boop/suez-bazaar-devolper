@@ -270,3 +270,88 @@ async function showNotificationsModal() {
     }
   }
 }
+
+/**
+ * ✅ جديد: دالة مركزية لتوليد HTML لبطاقة المنتج.
+ * تقلل من تكرار الكود وتضمن التناسق في عرض المنتجات عبر التطبيق.
+ * @param {object} product - كائن المنتج الكامل.
+ * @param {string} viewType - نوع العرض ('gallery', 'search', 'seller').
+ * @returns {string} - سلسلة HTML لبطاقة المنتج.
+ */
+function generateProductCardHTML(product, viewType) {
+  // 1. معالجة الصور
+  const firstImageName = product.ImageName ? product.ImageName.split(',')[0] : null;
+  const imageUrl = firstImageName
+    ? `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${firstImageName}`
+    : 'images/placeholder.png'; // صورة افتراضية
+
+  // 2. منطق الخدمات والأسعار
+  const isService = product.MainCategory == SERVICE_CATEGORY_NoPrice_ID;
+  const price = parseFloat(product.product_price);
+  const originalPrice = product.original_price ? parseFloat(product.original_price) : 0;
+
+  let priceHtml = '';
+  if (!isService) {
+    priceHtml = `<p class="product-price">${price.toFixed(2)} جنيه</p>`;
+    if (originalPrice > price) {
+      priceHtml += `<p class="original-price"><del>${originalPrice.toFixed(2)} جنيه</del></p>`;
+    }
+  }
+
+  // 3. تخصيص الهيكل بناءً على نوع العرض
+  let cardClass = '';
+  let cardContent = '';
+  let cardAttributes = `data-product-key="${product.product_key}"`;
+
+  switch (viewType) {
+    case 'gallery':
+      cardClass = 'product-card';
+      cardContent = `
+        <div class="product-image-container">
+          <img src="${imageUrl}" alt="${product.productName}" class="product-image" loading="lazy">
+        </div>
+        <div class="product-info">
+          <h3 class="product-title">${product.productName}</h3>
+          ${priceHtml}
+        </div>
+        ${!isService ? '<button class="add-to-cart-btn-gallery"><i class="fas fa-cart-plus"></i></button>' : ''}
+      `;
+      break;
+
+    case 'search':
+      cardClass = 'search-result-item';
+      cardContent = `
+        <img src="${imageUrl}" alt="${product.productName}" class="search-result-image">
+        <div class="search-result-details">
+          <h4 class="search-result-title">${product.productName}</h4>
+          ${!isService ? `<p class="search-result-price">${price.toFixed(2)} جنيه</p>` : ''}
+        </div>
+      `;
+      break;
+
+    case 'seller':
+      cardClass = 'my-products-card';
+      const productJson = JSON.stringify(product).replace(/'/g, "&apos;");
+      cardAttributes += ` data-main-category="${product.MainCategory || ''}" data-sub-category="${product.SubCategory || ''}"`;
+      const imagesHtml = (product.ImageName || '').split(',').filter(Boolean).map(name => 
+        `<img src="https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}" alt="صورة منتج" onerror="this.style.display='none'">`
+      ).join('') || '<span>لا توجد صور</span>';
+
+      cardContent = `
+        <div class="my-products-card-images">${imagesHtml}</div>
+        <div class="my-products-card-details">
+          <h4>${product.productName || 'منتج بلا اسم'}</h4>
+          <p><strong>الوصف:</strong> ${product.product_description || 'لا يوجد'}</p>
+          ${priceHtml.replace('product-price', '').replace('original-price', '')}
+          <p><strong>الكمية:</strong> ${product.product_quantity}</p>
+        </div>
+        <div class="my-products-card-actions">
+          <button class="button logout-btn-small my-products-edit-btn" data-product='${productJson}'><i class="fas fa-edit"></i> تعديل</button>
+          <button class="button delete-btn-small my-products-delete-btn" data-product='${productJson}'><i class="fas fa-trash-alt"></i> إزالة</button>
+        </div>
+      `;
+      break;
+  }
+
+  return `<div class="${cardClass}" ${cardAttributes}>${cardContent}</div>`;
+}
