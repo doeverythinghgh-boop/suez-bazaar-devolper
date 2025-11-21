@@ -17,11 +17,17 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon" />
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <!-- CSS Core & Layout -->
-    <link rel="stylesheet" href="css/base.css" />
+        <link rel="stylesheet" href="css/base/variables.css" />
+    <link rel="stylesheet" href="css/base/base.css" />
+    <link rel="stylesheet" href="css/components/button.css" />
+    <link rel="stylesheet" href="css/components/loader.css" />
+    <link rel="stylesheet" href="css/components/offline-container.css" />
     <link rel="stylesheet" href="css/utilities.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <!-- Page-Specific Styles -->
-    <link rel="stylesheet" href="css/index-page.css" />
+        <link rel="stylesheet" href="css/pages/index-categories.css" />
+    <link rel="stylesheet" href="css/pages/index-products-gallery.css" />
+    <link rel="stylesheet" href="css/components/adver-module.css" />
     <!-- Non-blocking Modals & Dialogs Styles -->
     <link rel="preload" href="css/modals-and-dialogs.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="css/modals-and-dialogs.css"></noscript>
@@ -92,8 +98,8 @@
     
     <!-- قسم جديد لعرض الفئات الرئيسية -->
     <div id="categories-section" class="categories-section">
-      <table id="categories-table" class="categories-table">
-        <tbody id="categories-tbody">
+      <table id="categories-table" class="categories-section__table">
+        <tbody id="categories-tbody" class="categories-section__tbody">
           <!-- سيتم ملء صفوف الفئات هنا بواسطة جافاسكريبت -->
         </tbody>
       </table>
@@ -130,7 +136,9 @@
 
 
     <script id="config-script" src="js/config.js"></script> <!-- ✅ إضافة: تحميل ملف الإعدادات أولاً -->
-    <script id="utils-script" src="js/utils.js"></script> <!-- ✅ جديد: تحميل ملف الدوال المساعدة -->
+    <script src="js/helpers/network.js"></script> <!-- دوال الشبكة -->
+    <script src="js/helpers/format.js"></script> <!-- دوال التنسيق -->
+    <script src="js/helpers/dom.js"></script>   <!-- دوال DOM وتوليد HTML -->
     <script id="connect1-script" src="js/connect1.js"></script> <!-- ✅ إصلاح: تحميل connect1.js مبكرًا لضمان توفر دوال الـ API -->
      <script src="js/connectProduct.js"></script>
   <script src="js/connectUsers.js"></script>
@@ -174,22 +182,22 @@
           for (let i = 0; i < categories.length; i += 4) {
             const chunk = categories.slice(i, i + 4);
             const mainRow = document.createElement("tr");
-            mainRow.className = "main-category-row"; // ✅ إصلاح: تطبيق الكلاس على الصف
+            mainRow.className = "categories-section__main-row"; // ✅ BEM
 
             chunk.forEach((category) => {
               const cell = document.createElement("td");
-              cell.className = "category-cell"; // ✅ إصلاح: استخدام كلاس جديد للخلية
+              cell.className = "categories-section__cell"; // ✅ BEM
               cell.dataset.categoryId = category.id;
 
               // ✅ تحسين: قراءة الأيقونة مباشرة من بيانات الفئة
               const iconClass = category.icon || "fas fa-store"; // استخدام أيقونة افتراضية
-              const iconHtml = `<i class="${iconClass}"></i>`;
+              const iconHtml = `<i class="category-cell-content__icon ${iconClass}"></i>`; // ✅ BEM
 
               cell.innerHTML = `
                 <div class="category-cell-content">
                   ${iconHtml}
-                  <span>${category.title}</span>
-                </div>`;
+                  <span class="category-cell-content__text">${category.title}</span>
+                </div>`; // ✅ BEM
 
               // جديد: إضافة تأخير للحركة لكل خلية للحصول على تأثير متدرج
               // يتم حساب التأخير بناءً على فهرس الفئة الكلي
@@ -197,7 +205,7 @@
 
               // إضافة حدث النقر فقط إذا كانت هناك فئات فرعية
               if (category.subcategories && category.subcategories.length > 0) {
-                cell.classList.add("has-subcategories"); // لإضافة مؤشر النقر
+                cell.classList.add("categories-section__cell--has-subcategories"); // ✅ BEM
                 cell.addEventListener("click", () => {
                   toggleSubcategories(mainRow, category.subcategories, cell);
                 });
@@ -228,11 +236,11 @@
       function toggleSubcategories(mainRow, subcategories, clickedCell) {
         console.log(`%c[Subcategories] تم النقر على الفئة الرئيسية (ID: ${clickedCell.dataset.categoryId})`, 'color: purple;');
         const tbody = document.getElementById("categories-tbody");
-        const currentlyActiveCell = tbody.querySelector("td.active-category");
+        const currentlyActiveCell = tbody.querySelector("td.categories-section__cell--active"); // ✅ BEM
         const existingProductsRow = document.querySelector(
           ".products-gallery-row"
         );
-        const existingSubRow = document.querySelector(".sub-category-row");
+        const existingSubRow = document.querySelector(".categories-section__sub-row"); // ✅ BEM
         const isClickingSameCell = currentlyActiveCell === clickedCell;
 
         // --- ✅ إصلاح جذري: إعادة ترتيب منطق الإغلاق لضمان إزالة الصفوف القديمة دائمًا ---
@@ -263,18 +271,18 @@
           if (currentlyActiveCell) {
             console.log('[DevLog] 1. إزالة التمييز من الخلية القديمة:', currentlyActiveCell);
             // ✅ إصلاح جذري: إزالة حالة الاختيار من الجدول هنا لضمان إعادة التعيين الكاملة
-            tbody.classList.remove("selection-active");
-            currentlyActiveCell.classList.remove("active-category");
+            tbody.classList.remove("categories-section__tbody--selection-active"); // ✅ BEM
+            currentlyActiveCell.classList.remove("categories-section__cell--active"); // ✅ BEM
           }
           // ثانيًا: تطبيق التمييز على الخلية الجديدة والجدول.
           console.log('[DevLog] 2. إضافة حالة الاختيار للجدول (tbody).');
-          tbody.classList.add("selection-active"); // إضافة حالة "الاختيار النشط" للجدول
+          tbody.classList.add("categories-section__tbody--selection-active"); // ✅ BEM
           console.log('[DevLog] 3. إضافة التمييز للخلية الجديدة (المنقور عليها).');
-          clickedCell.classList.add("active-category"); // إضافة التمييز للخلية المختارة
+          clickedCell.classList.add("categories-section__cell--active"); // ✅ BEM
 
           console.log('[DevLog] 4. بناء وإدراج صف الفئات الفرعية.');
           const subRow = document.createElement("tr");
-          subRow.className = "sub-category-row";
+          subRow.className = "categories-section__sub-row"; // ✅ BEM
           // إضافة تأثير انزلاق للأسفل
           subRow.style.animation = "slide-fade-in 1.5s ease-out forwards"; /* ✅ تعديل: جعل الحركة تظهر من الأعلى للأسفل خلال 1.5 ثانية */
 
@@ -289,17 +297,17 @@
             subItem.href = `#`;
             subItem.className = "subcategory-item";
             // ✅ تحسين: قراءة الأيقونة مباشرة من بيانات الفئة الفرعية
-            const iconHtml = sub.icon ? `<i class="${sub.icon}"></i>` : '<i class="fas fa-tag"></i>';
+            const iconHtml = sub.icon ? `<i class="subcategory-item__icon ${sub.icon}"></i>` : '<i class="subcategory-item__icon fas fa-tag"></i>'; // ✅ BEM
             subItem.innerHTML = `${iconHtml} ${sub.title}`.trim();
             // إضافة حدث النقر لعرض المنتجات
             subItem.addEventListener("click", (e) => {
               e.preventDefault();
               // إزالة التمييز من أي فئة فرعية أخرى
               document
-                .querySelectorAll(".subcategory-item.active")
-                .forEach((item) => item.classList.remove("active"));
+                .querySelectorAll(".subcategory-item--active") // ✅ BEM
+                .forEach((item) => item.classList.remove("subcategory-item--active")); // ✅ BEM
               console.log(`[Subcategories] تم النقر على الفئة الفرعية (ID: ${sub.id})`);
-              subItem.classList.add("active"); // تمييز الفئة الفرعية الحالية
+              subItem.classList.add("subcategory-item--active"); // ✅ BEM
               showProductGallery(
                 subRow,
                 clickedCell.dataset.categoryId,
@@ -319,10 +327,10 @@
           // إذا كانت النقرة على نفس الخلية (للإغلاق)، نزيل التمييز.
           if (currentlyActiveCell) {
             console.log('[DevLog] 1. إزالة التمييز من الخلية الحالية:', currentlyActiveCell);
-            currentlyActiveCell.classList.remove("active-category");
+            currentlyActiveCell.classList.remove("categories-section__cell--active"); // ✅ BEM
           }
           console.log('[DevLog] 2. إزالة حالة الاختيار من الجدول (tbody).');
-          tbody.classList.remove("selection-active");
+          tbody.classList.remove("categories-section__tbody--selection-active"); // ✅ BEM
         }
         console.groupEnd();
       }
@@ -342,7 +350,7 @@
         }
 
         const galleryRow = document.createElement("tr");
-        galleryRow.className = "products-gallery-row";
+        galleryRow.className = "products-gallery__row";
         const galleryCell = document.createElement("td");
         galleryCell.colSpan = 4; // ✅ تعديل: مطابقة عدد الأعمدة الجديد
         galleryRow.appendChild(galleryCell);
@@ -360,7 +368,7 @@
         const currentRow = subRow.nextElementSibling;
         if (
           !currentRow ||
-          !currentRow.classList.contains("products-gallery-row")
+          !currentRow.classList.contains("products-gallery__row")
         ) {
           console.warn('[Products] تم إغلاق القسم قبل اكتمال تحميل المنتجات. تتوقف العملية.');
           return; // توقف إذا تم إغلاق القسم
@@ -372,7 +380,7 @@
         if (products && products.length > 0) {
           console.log(`[Products] تم العثور على ${products.length} منتج. جاري بناء المعرض...`);
           const galleryContainer = document.createElement("div");
-          galleryContainer.className = "gallery-container";
+          galleryContainer.className = "products-gallery__container";
           currentGalleryCell.innerHTML = ""; // إزالة مؤشر التحميل
           currentGalleryCell.appendChild(galleryContainer);
 
@@ -385,7 +393,7 @@
                 productItem.className = "product-item no-image"; // كلاس إضافي للتحكم بالتنسيق
 
                 const productName = document.createElement("p");
-                productName.className = "product-name";
+                productName.className = "product-item__name";
                 productName.textContent = product.productName || 'منتج غير مسمى';
 
                 productItem.appendChild(productName);
@@ -411,6 +419,7 @@
               productItem.className = "product-item";
 
               const img = document.createElement("img");
+              img.className = "product-item__image";
               const imageUrl = `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${firstImage}`;
               img.alt = product.product_description;
               img.title = product.product_description;
@@ -450,7 +459,7 @@
               img.onload = () => {
                 // ✅ إضافة: إنشاء عنصر اسم المنتج هنا لضمان الترتيب الصحيح
                 const productName = document.createElement("p");
-                productName.className = "product-name";
+                productName.className = "product-item__name";
                 productName.id = `product-name-${product.product_key}`; // ✅ إضافة: ID فريد
                 productName.textContent = product.productName || 'منتج غير مسمى';
 

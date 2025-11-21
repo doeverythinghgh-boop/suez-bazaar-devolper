@@ -10,22 +10,22 @@
   - شيفرة JavaScript مدمجة للتحقق من صحة النموذج، ومعالجة الصور، ورفع البيانات إلى الخادم.
 -->
 
-<div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="addProductTitle">
+<div class="add-product-modal" role="dialog" aria-modal="true" aria-labelledby="addProductTitle">
   <!-- ✅ تعديل: تحويل زر الإغلاق إلى أيقونة داخل زر -->
   <button class="close-button" id="add-product-modal-close-btn" aria-label="إغلاق"><i class="fas fa-times"></i></button>
 
-  <h2 id="addProductTitle"><i class="fas fa-cart-plus"></i> إضافة منتج جديد</h2>
+  <h2 class="add-product-modal__title" id="addProductTitle"><i class="fas fa-cart-plus"></i> إضافة منتج جديد</h2>
 
-  <form id="add-product-form" novalidate>
+  <form class="add-product-modal__form" id="add-product-form" novalidate>
       <!-- موديول رفع الصور -->
-    <section class="form-group" aria-labelledby="imagesHeading">
-      <label id="imagesHeading"><i class="fas fa-images"></i> صور المنتج</label>
+    <section class="add-product-modal__form-group" aria-labelledby="imagesHeading">
+      <label id="imagesHeading" class="add-product-modal__label"><i class="fas fa-images"></i> صور المنتج</label>
 
-      <div class="image-uploader" id="image-uploader" tabindex="0" role="group" aria-label="منطقة رفع الصور">
+      <div class="add-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group" aria-label="منطقة رفع الصور">
 
-        <div class="uploader-actions">
+        <div class="add-product-modal__uploader-actions">
           <!-- input مع capture لتفعيل الكاميرا على الأجهزة المحمولة -->
-          <input class="hidden-file" id="file-input" type="file" accept="image/*" multiple aria-hidden="true">
+          <input class="add-product-modal__hidden-file" id="file-input" type="file" accept="image/*" multiple aria-hidden="true">
 
           <!-- تم تغيير btn-primary إلى btn-ghost لتوحيد التصميم -->
           <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i class="fas fa-folder-open"></i></button>
@@ -33,80 +33,80 @@
           <button type="button" class="btn btn-ghost btn-icon" id="clear-all-btn" title="مسح الكل"><i class="fas fa-trash-alt"></i></button>
         </div>
 
-        <div class="hint">المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp. </div>
+        <div class="add-product-modal__hint">المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp. </div>
 
-        <div class="previews" id="previews" aria-live="polite" aria-atomic="false"></div>
+        <div class="add-product-modal__previews" id="previews" aria-live="polite" aria-atomic="false"></div>
 
       </div>
 
     </section>
     <!-- حاوية الفئات (في سطر واحد) -->
-    <div class="form-row" id="table-product-category">
-      <div class="form-group" id="main-category-group">
-        <label for="main-category"><i class="fas fa-tags"></i> الفئة الرئيسية</label>
-        <select id="main-category" name="main-category" required>
+    <div class="add-product-modal__form-row" id="table-product-category">
+      <div class="add-product-modal__form-group" id="main-category-group">
+        <label for="main-category" class="add-product-modal__label"><i class="fas fa-tags"></i> الفئة الرئيسية</label>
+        <select id="main-category" name="main-category" class="add-product-modal__select" required>
           <option value="" selected disabled>-- اختر الفئة الرئيسية --</option>
         </select>
       </div>
-      <div class="form-group" id="sub-category-group" style="display: none;">
-        <label for="sub-category"><i class="fas fa-tag"></i> الفئة الفرعية</label>
-        <select id="sub-category" name="sub-category" disabled>
+      <div class="add-product-modal__form-group" id="sub-category-group" style="display: none;">
+        <label for="sub-category" class="add-product-modal__label"><i class="fas fa-tag"></i> الفئة الفرعية</label>
+        <select id="sub-category" name="sub-category" class="add-product-modal__select" disabled>
           <option value="">-- اختر الفئة الفرعية --</option>
         </select>
       </div>
     </div>
 
     <!-- جديد: حقل اسم المنتج -->
-    <div class="form-group">
-      <label for="product-name"><i class="fas fa-signature"></i> اسم المنتج</label>
-      <input type="text" id="product-name" name="product-name" maxlength="100" placeholder="اكتب اسمًا واضحًا للمنتج..." required>
-      <div id="product-name-char-counter" class="char-counter">0 / 100</div>
+    <div class="add-product-modal__form-group">
+      <label for="product-name" class="add-product-modal__label"><i class="fas fa-signature"></i> اسم المنتج</label>
+      <input type="text" id="product-name" name="product-name" class="add-product-modal__input" maxlength="100" placeholder="اكتب اسمًا واضحًا للمنتج..." required>
+      <div id="product-name-char-counter" class="add-product-modal__char-counter">0 / 100</div>
     </div>
 
     <!-- حقل وصف المنتج -->
-    <div class="form-group">
-      <label for="product-description"><i class="fas fa-file-alt"></i> الوصف</label>
-      <textarea id="product-description" name="product-description" rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
-      <div id="description-char-counter" class="char-counter">0 / 400</div>
+    <div class="add-product-modal__form-group">
+      <label for="product-description" class="add-product-modal__label"><i class="fas fa-file-alt"></i> الوصف</label>
+      <textarea id="product-description" name="product-description" class="add-product-modal__textarea" rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
+      <div id="description-char-counter" class="add-product-modal__char-counter">0 / 400</div>
     </div>
 
     <!-- حقل رسالة من البائع -->
-    <div class="form-group">
-      <label for="seller-message"><i class="fas fa-comment-dots"></i> رسالة من البائع</label>
-      <input type="text" id="seller-message" name="seller-message" maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للمشتري...">
-      <div id="seller-message-char-counter" class="char-counter">0 / 100</div>
+    <div class="add-product-modal__form-group">
+      <label for="seller-message" class="add-product-modal__label"><i class="fas fa-comment-dots"></i> رسالة من البائع</label>
+      <input type="text" id="seller-message" name="seller-message" class="add-product-modal__input" maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للمشتري...">
+      <div id="seller-message-char-counter" class="add-product-modal__char-counter">0 / 100</div>
     </div>
 
     <!-- حقل ملاحظات -->
-    <div class="form-group">
-      <label for="product-notes"><i class="fas fa-sticky-note"></i> ملاحظات</label>
-      <input type="text" id="product-notes" name="product-notes" maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
-      <div id="notes-char-counter" class="char-counter">0 / 100</div>
+    <div class="add-product-modal__form-group">
+      <label for="product-notes" class="add-product-modal__label"><i class="fas fa-sticky-note"></i> ملاحظات</label>
+      <input type="text" id="product-notes" name="product-notes" class="add-product-modal__input" maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
+      <div id="notes-char-counter" class="add-product-modal__char-counter">0 / 100</div>
     </div>
 
 
     <!-- صف جديد للسعر والكمية -->
-    <div class="form-row" id="price-quantity-row">
+    <div class="add-product-modal__form-row" id="price-quantity-row">
       <!-- حقل الكمية -->
-      <div class="form-group">
-        <label for="product-quantity"><i class="fas fa-boxes-stacked"></i> الكمية المتاحة</label>
-        <input type="number" id="product-quantity" name="product-quantity" placeholder="مثال: 50" required min="1">
+      <div class="add-product-modal__form-group">
+        <label for="product-quantity" class="add-product-modal__label"><i class="fas fa-boxes-stacked"></i> الكمية المتاحة</label>
+        <input type="number" id="product-quantity" name="product-quantity" class="add-product-modal__input" placeholder="مثال: 50" required min="1">
       </div>
       <!-- حقل السعر -->
-      <div class="form-group">
-        <label for="product-price"><i class="fas fa-dollar-sign"></i>سعر القطعة</label>
-        <input type="text" inputmode="decimal" id="product-price" name="product-price" placeholder="بالجنيه" required>
+      <div class="add-product-modal__form-group">
+        <label for="product-price" class="add-product-modal__label"><i class="fas fa-dollar-sign"></i>سعر القطعة</label>
+        <input type="text" inputmode="decimal" id="product-price" name="product-price" class="add-product-modal__input" placeholder="بالجنيه" required>
       </div>
       <!-- جديد: حقل السعر قبل الخصم -->
-      <div class="form-group">
-        <label for="original-price"><i class="fas fa-tag"></i>السعر قبل الخصم</label>
-        <input type="text" inputmode="decimal" id="original-price" name="original-price" placeholder="اختياري">
+      <div class="add-product-modal__form-group">
+        <label for="original-price" class="add-product-modal__label"><i class="fas fa-tag"></i>السعر قبل الخصم</label>
+        <input type="text" inputmode="decimal" id="original-price" name="original-price" class="add-product-modal__input" placeholder="اختياري">
       </div>
     </div>
 
 
     <!-- زر إرسال النموذج -->
-    <div class="submit-container">
+    <div class="add-product-modal__submit-container">
       <button type="submit" class="btn btn-primary">اضف المنتج الآن</button>
     </div>
   </form>
@@ -218,7 +218,7 @@ async function initializeAddProductForm(editProductData = null) {
     console.log('[ProductForm] Populating form with existing product data.');
     // تغيير عنوان النافذة وزر الإرسال
     document.getElementById('addProductTitle').innerHTML = '<i class="fas fa-edit"></i> تعديل المنتج';
-    document.querySelector('.submit-container .btn').textContent = 'حفظ التعديلات';
+    document.querySelector('.add-product-modal__submit-container .btn').textContent = 'حفظ التعديلات';
 
     // تعبئة الحقول النصية
     document.getElementById('product-name').value = editProductData.productName || ''; // جديد
@@ -317,7 +317,7 @@ window.productModule = (function() {
   function showError(element, message) {
     clearError(element); // مسح أي خطأ قديم أولاً
     const errorDiv = document.createElement('div');
-    errorDiv.className = 'error-message';
+    errorDiv.className = 'add-product-modal__error-message';
     errorDiv.textContent = message;
     // إدراج رسالة الخطأ بعد العنصر مباشرة أو بعد حاويته
     element.parentElement.appendChild(errorDiv);
@@ -328,7 +328,7 @@ window.productModule = (function() {
    * @param {HTMLElement} element - العنصر المراد مسح الخطأ من أسفله.
    */
   function clearError(element) {
-    const errorDiv = element.parentElement.querySelector('.error-message');
+    const errorDiv = element.parentElement.querySelector('.add-product-modal__error-message');
     if (errorDiv) errorDiv.remove();
   }
 
@@ -400,22 +400,22 @@ window.productModule = (function() {
   // --- دالة إنشاء معاينة مصغرة وإظهارها في الواجهة ---
   function createPreviewItem(state, existingImageUrl = null) {
     const wrapper = document.createElement('div');
-    wrapper.className = 'preview';
+    wrapper.className = 'add-product-modal__preview';
     wrapper.setAttribute('data-id', state.id);
 
     // عند النقر على الصورة، يتم تحديدها وإظهار زر الحذف
     wrapper.addEventListener('click', (e) => {
       // لا تقم بأي شيء إذا كان النقر على زر الحذف أو أيقونته الداخلية
-      if (e.target.closest('.remove')) return;
+      if (e.target.closest('.add-product-modal__preview-remove')) return;
 
       // إزالة التحديد من كل الصور الأخرى
-      document.querySelectorAll('.preview.selected').forEach(p => p.classList.remove('selected'));
+      document.querySelectorAll('.add-product-modal__preview--selected').forEach(p => p.classList.remove('add-product-modal__preview--selected'));
       // إضافة التحديد للصورة الحالية
-      wrapper.classList.add('selected');
+      wrapper.classList.add('add-product-modal__preview--selected');
     });
     const removeBtn = document.createElement('button');
     removeBtn.type = "button"; // ✅ إصلاح: منع الزر من إرسال النموذج
-    removeBtn.className = 'remove';
+    removeBtn.className = 'add-product-modal__preview-remove';
     removeBtn.setAttribute('title', 'إزالة الصورة');
     removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>'; // تغيير الأيقونة إلى سلة محذوفات
     removeBtn.addEventListener('click', () => removeImage(state.id));
@@ -423,7 +423,7 @@ window.productModule = (function() {
     const img = document.createElement('img'); // تم إزالة alt لأنه لا يوجد اسم الآن
 
     const meta = document.createElement('div');
-    meta.className = 'meta';
+    meta.className = 'add-product-modal__preview-meta';
     meta.textContent = 'جاري الحساب...'; // نص مؤقت
 
     wrapper.appendChild(removeBtn);

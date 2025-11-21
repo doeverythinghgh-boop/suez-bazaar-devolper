@@ -1,0 +1,197 @@
+/**
+ * @file css/components/purchases-modal.css
+ * @description Styles for the "Purchases" modal, including purchase items and the order status timeline.
+ */
+
+/* Purchase Item styles */
+.purchase-item {
+  /* Change layout to vertical to display image above details */
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 15px;
+  background-color: #f9f9f9;
+  animation: slide-fade-in 0.5s ease-out forwards;
+  overflow: hidden; /* Ensure elements are contained within rounded corners */
+}
+.purchase-item__image {
+  /* Make the image take full width and set its height */
+  width: 100%;
+  height: 180px; /* Suitable image height */
+  object-fit: cover;
+  border-radius: 8px; /* Rounded corners for the image */
+  margin-bottom: 15px; /* Add space between image and details */
+}
+.purchase-item__details {
+  flex-grow: 1;
+  /* Add inner padding for better appearance */
+  padding: 0 5px;
+  text-align: right; /* Ensure text is right-aligned */
+}
+.purchase-item__details p {
+  margin: 0 0 8px 0;
+}
+.purchase-item__status {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: white;
+}
+.purchase-item__status--pending {
+  background-color: #f39c12;
+} /* Pending */
+.purchase-item__status--shipped {
+  background-color: #3498db;
+} /* Shipped */
+.purchase-item__status--delivered {
+  background-color: #2ecc71;
+} /* Delivered */
+
+/* ============================================= */
+/* == Order Status Timeline Styles            == */
+/* ============================================= */
+
+/* Status Timeline container */
+.purchase-status-timeline {
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* Main timeline strip */
+.purchase-status-timeline__strip {
+  display: flex;
+  align-items: flex-start; /* Align elements from top */
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 0;
+}
+
+/* Each step in the timeline (dot + text) */
+.purchase-status-timeline__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 80px; /* Fixed width for each step */
+  opacity: 0.5;
+  transition: opacity 0.4s ease;
+}
+
+/* The dot */
+.purchase-status-timeline__dot {
+  width: 18px;
+  height: 18px;
+  background-color: #ccc;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 2px #ccc;
+  transition: all 0.4s ease;
+  z-index: 2;
+}
+
+/* Step text (Under Review, Shipped, ...) */
+.purchase-status-timeline__label {
+  margin-top: 8px;
+  font-size: 0.75rem; /* 12px */
+  font-weight: 500;
+  color: #888;
+  transition: color 0.4s ease;
+}
+
+/* Line connecting the dots */
+.purchase-status-timeline__line {
+  flex-grow: 1;
+  height: 4px;
+  background-color: #ccc;
+  margin-top: 10px; /* To be at the same level as the center of the dot */
+  transition: background-color 0.4s ease;
+  z-index: 1;
+}
+
+/* --- Styles when the stage is active --- */
+
+/* Activate step (dot and text) */
+.purchase-status-timeline__step--active {
+  opacity: 1;
+}
+
+/* Activate dot */
+.purchase-status-timeline__step--active .purchase-status-timeline__dot {
+  background-color: #2ecc71; /* Green */
+  box-shadow: 0 0 0 2px #2ecc71;
+}
+
+/* Activate text */
+.purchase-status-timeline__step--active .purchase-status-timeline__label {
+  color: #333;
+  font-weight: 600;
+}
+
+/* Activate line */
+.purchase-status-timeline__line--active {
+  background-color: #2ecc71; /* Green */
+}
+
+/* --- Highlight current stage --- */
+.purchase-status-timeline__step--current .purchase-status-timeline__dot {
+  transform: scale(1.3); /* Enlarge current dot */
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 2px #2ecc71; }
+  50% { box-shadow: 0 0 0 6px rgba(46, 204, 113, 0.4); }
+  100% { box-shadow: 0 0 0 2px #2ecc71; }
+}
+
+/* --- Exception status styles (Cancelled, Rejected) --- */
+.purchase-status-timeline__exception {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #fff;
+  gap: 8px;
+}
+
+/* Cancelled and Rejected status */
+.purchase-status-timeline__exception--status-31,
+.purchase-status-timeline__exception--status-32 {
+  background-color: #e74c3c; /* Red */
+}
+
+/* Status description text format */
+.purchase-status-timeline__description {
+  font-size: 0.85rem; /* 13.6px */
+  color: #777;
+  text-align: center;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+/* Returned status */
+.purchase-status-timeline__exception--status-33 {
+  background-color: #f39c12; /* Orange */
+}
+/* ✅ New: Change cursor shape on hover over editable status steps */
+.purchase-status-timeline__step--editable {
+  cursor: pointer;
+}
+
+/* ✅ Improvement: Add a subtle hover effect to highlight clickable steps */
+.purchase-status-timeline__step--editable:hover .purchase-status-timeline__dot {
+  transform: scale(1.5);
+  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.3);
+}
+
+/* ✅ Improvement: Add a subtle hover effect to highlight clickable steps */
+.purchase-status-timeline__step--editable:hover .purchase-status-timeline__dot {
+  transform: scale(1.5);
+  box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.3);
+}

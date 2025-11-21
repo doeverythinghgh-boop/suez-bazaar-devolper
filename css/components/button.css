@@ -1,0 +1,22 @@
+/*
+  @file css/components/button.css
+  @description Contains general button styles.
+*/
+
+button,
+.button {
+  background-color: var(--primary-color);
+  color: var(--bg-color-white);
+  border: none;
+  padding: 10px 20px;
+  font-family: var(--font-primary);
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px; /* Space between icon and text */
+}

@@ -1,0 +1,32 @@
+/*
+  @file css/base/variables.css
+  @description Contains the main color and font variables for the project.
+*/
+
+:root {
+  --primary-color: #007bff; /* Main blue color */
+  --primary-color-light: #e6f2ff; /* Lighter version for glows and effects */
+  --dark-blue: #03478f; /* Darker shade of blue for headings and important text */
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --danger-color-dark: #ef4444;
+  --danger-color-light: #fee2e2;
+  --danger-color-lighter: #fecaca;
+  --warning-color: #f59e0b;
+  --info-color: #3498db;
+  --secondary-color: #6c757d;
+
+  --text-color-dark: #222222;
+  --text-color-medium: #4a5568;
+  --text-color-light: #7f8c8d;
+
+  --bg-color-light: #f9f9f9;
+  --bg-color-white: #ffffff;
+  --border-color: #e9ecef;
+
+  --font-primary: "Tajawal", sans-serif;
+  --font-secondary: "Orbitron", sans-serif;
+
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-focus: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}

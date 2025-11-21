@@ -6,7 +6,11 @@
   <title>لوحة تحكم المسؤول - Suez Bazaar</title>
   <!-- Styles -->
   <!-- ✅ إصلاح: استخدام ملفات CSS المقسمة بدلاً من style.css القديم -->
-  <link rel="stylesheet" href="css/base.css" />
+      <link rel="stylesheet" href="css/base/variables.css" />
+    <link rel="stylesheet" href="css/base/base.css" />
+    <link rel="stylesheet" href="css/components/button.css" />
+    <link rel="stylesheet" href="css/components/loader.css" />
+    <link rel="stylesheet" href="css/components/offline-container.css" />
   <link rel="stylesheet" href="css/header.css" />
   <link rel="stylesheet" href="css/login.css" />
   <link rel="stylesheet" href="css/login-page.css" />
@@ -196,8 +200,9 @@
   <script src="js/connect1.js"></script>
   <script src="js/connectProduct.js"></script>
   <script src="js/connectUsers.js"></script>
-  <script src="js/utils.js"></script> <!-- ✅ إصلاح: إضافة ملف الدوال المساعدة للتحقق من الاتصال -->
-  <script src="js/db-manager.js"></script> <!-- ✅ إصلاح: إضافة مدير قاعدة البيانات المحلي لتسجيل الإشعارات -->
+      <script src="js/helpers/network.js"></script>
+      <script src="js/helpers/format.js"></script>
+      <script src="js/helpers/dom.js"></script>  <script src="js/db-manager.js"></script> <!-- ✅ إصلاح: إضافة مدير قاعدة البيانات المحلي لتسجيل الإشعارات -->
   <!-- ✅ إضافة: ضروري لعمل موديول الإعلان -->
   <script src="cloudflare-workers/cloudFileManager.js"></script>
   <script src="js/users-admin-modal.js"></script> <!-- ✅ جديد: إضافة ملف منطق موديول إدارة المستخدمين -->

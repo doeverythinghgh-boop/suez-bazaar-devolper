@@ -1,0 +1,86 @@
+/**
+ * @file css/components/sales-movement-modal.css
+ * @description Styles for the "Sales Movement" modal.
+ */
+
+/* --- Modern design for the product table inside the sales movement modal --- */
+.sales-movement-modal__table {
+  width: 100%;
+  border-collapse: collapse; /* Merge borders */
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  border-radius: 8px; /* Rounded corners */
+  overflow: hidden; /* To hide any overflow outside the rounded corners */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Light shadow */
+}
+
+.sales-movement-modal__table thead tr {
+  background-color: #4a5568; /* Dark gray background for the header */
+  color: #ffffff; /* White text */
+  text-align: center; /* Center text in the header */
+}
+
+.sales-movement-modal__table th,
+.sales-movement-modal__table td {
+  padding: 12px 15px; /* Comfortable padding */
+}
+
+.sales-movement-modal__table tbody tr {
+  border-bottom: 1px solid #e2e8f0; /* Light horizontal line between rows */
+  background-color: #ffffff;
+}
+
+.sales-movement-modal__table tbody tr:nth-of-type(even) {
+  background-color: #f8f9fa; /* Alternating background color for even rows */
+}
+
+.sales-movement-modal__table tbody tr:last-of-type {
+  border-bottom: none; /* Remove the bottom border for the last row */
+}
+
+.sales-movement-modal__table tbody tr:hover {
+  background-color: #e9ecef; /* Change background color on hover */
+}
+
+/* --- Responsive styles for the sales movement table on small screens --- */
+@media screen and (max-width: 768px) {
+  .sales-movement-modal__table {
+    border: none; /* Remove outer border */
+    box-shadow: none; /* Remove shadow */
+  }
+
+  .sales-movement-modal__table thead {
+    display: none; /* Hide the traditional table header */
+  }
+
+  .sales-movement-modal__table tr {
+    display: block; /* Convert each row into an independent block (card) */
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .sales-movement-modal__table td {
+    display: flex; /* Use flex to organize title and content */
+    justify-content: space-between; /* Place title on the right and content on the left */
+    align-items: center;
+    padding: 10px 15px;
+    text-align: left; /* Align content to the left */
+    border-bottom: 1px solid #f1f5f9;
+  }
+
+  .sales-movement-modal__table td::before {
+    content: attr(data-label); /* Display data-label content as cell title */
+    font-weight: bold;
+    color: #4a5568;
+    text-align: right; /* Align title to the right */
+    margin-left: 10px; /* Space between title and content */
+  }
+
+  /* Remove padding from the view button cell in card mode */
+  .sales-movement-modal__table td[data-label="عرض"] {
+    padding: 5px 15px;
+  }
+}
