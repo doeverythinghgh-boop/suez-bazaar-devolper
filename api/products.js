@@ -143,20 +143,9 @@ export default async function handler(request) {
 
   if (request.method === "POST") {
     try {
-      const {
-        productName, // جديد
-        user_key,
-        product_key,
-        product_description,
-        product_price,
-        product_quantity,
-        original_price, // ✅ إضافة: استقبال السعر قبل الخصم
-        user_message,
-        user_note,
-        ImageName,
-        MainCategory,
         SubCategory,
-        ImageIndex
+        ImageIndex,
+        serviceType // جديد: استقبال نوع الخدمة
       } = await request.json();
 
       // تحقق بسيط من وجود البيانات الأساسية
@@ -168,8 +157,8 @@ export default async function handler(request) {
       }
 
       await db.execute({
-        sql: "INSERT INTO marketplace_products (productName, user_key, product_key, product_description, product_price, original_price, product_quantity, user_message, user_note, ImageName, MainCategory, SubCategory, ImageIndex) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        args: [productName, user_key, product_key, product_description, parseFloat(product_price), original_price ? parseFloat(original_price) : null, parseInt(product_quantity), user_message, user_note, ImageName, parseInt(MainCategory), parseInt(SubCategory) || null, parseInt(ImageIndex)]
+        sql: "INSERT INTO marketplace_products (productName, user_key, product_key, product_description, product_price, original_price, product_quantity, user_message, user_note, ImageName, MainCategory, SubCategory, ImageIndex, serviceType) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        args: [productName, user_key, product_key, product_description, parseFloat(product_price), original_price ? parseFloat(original_price) : null, parseInt(product_quantity), user_message, user_note, ImageName, parseInt(MainCategory), parseInt(SubCategory) || null, parseInt(ImageIndex), serviceType || 0]
       });
 
       return new Response(JSON.stringify({ message: "تم إضافة المنتج إلى قاعدة البيانات بنجاح." }), {
@@ -200,7 +189,8 @@ export default async function handler(request) {
         ImageName,
         MainCategory,
         SubCategory,
-        ImageIndex
+        ImageIndex,
+        serviceType // جديد: استقبال نوع الخدمة
       } = await request.json();
 
       // التحقق من وجود مفتاح المنتج
@@ -223,7 +213,8 @@ export default async function handler(request) {
         ImageName,
         MainCategory: MainCategory !== undefined ? parseInt(MainCategory) : undefined,
         SubCategory: SubCategory !== undefined ? parseInt(SubCategory) || null : undefined,
-        ImageIndex: ImageIndex !== undefined ? parseInt(ImageIndex) : undefined
+        ImageIndex: ImageIndex !== undefined ? parseInt(ImageIndex) : undefined,
+        serviceType: serviceType !== undefined ? parseInt(serviceType) : undefined // جديد: استقبال نوع الخدمة
       };
 
       const updateEntries = Object.entries(fieldsToUpdate).filter(([key, value]) => value !== undefined);

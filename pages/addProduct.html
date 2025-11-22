@@ -106,6 +106,21 @@
       </div>
     </div>
 
+    <!-- جديد: حقول نوع الخدمة (تظهر فقط للفئة 6) -->
+    <div class="add-product-modal__form-group" id="service-type-options" style="display: none;">
+      <label class="add-product-modal__label"><i class="fas fa-concierge-bell"></i> نوع الخدمة</label>
+      <div class="add-product-modal__radio-group">
+        <label class="add-product-modal__radio-label">
+          <input type="radio" name="serviceType" value="1" class="add-product-modal__radio-input">
+          تحديد موعد
+        </label>
+        <label class="add-product-modal__radio-label">
+          <input type="radio" name="serviceType" value="2" class="add-product-modal__radio-input">
+          إرسال بيانات
+        </label>
+      </div>
+    </div>
+
 
     <!-- زر إرسال النموذج -->
     <div class="add-product-modal__submit-container">
@@ -186,10 +201,24 @@ async function initializeAddProductForm(editProductData = null) {
         priceQuantityRow.style.display = 'none';
         quantityInput.required = false; // إلغاء شرط الإدخال الإجباري
         priceInput.required = false;    // إلغاء شرط الإدخال الإجباري
+
+        // ✅ جديد: إظهار حقول نوع الخدمة وجعلها مطلوبة
+        serviceTypeOptions.style.display = 'block';
+        serviceTypeRadioInputs.forEach(radio => {
+          radio.required = true;
+        });
+
       } else {
         priceQuantityRow.style.display = 'flex';
         quantityInput.required = true;
         priceInput.required = true;
+
+        // ✅ جديد: إخفاء حقول نوع الخدمة وإلغاء تحديدها وإلغاء كونها مطلوبة
+        serviceTypeOptions.style.display = 'none';
+        serviceTypeRadioInputs.forEach(radio => {
+          radio.checked = false; // إلغاء التحديد
+          radio.required = false; // ليست مطلوبة
+        });
       }
       if (!selectedCategoryId) {
         subCategoryGroup.style.display = "none";
@@ -236,6 +265,23 @@ async function initializeAddProductForm(editProductData = null) {
     priceInput.value = isServiceCategory ? 0 : (editProductData.product_price || '');
 
     document.getElementById('original-price').value = editProductData.original_price || ''; // جديد
+
+    // ✅ جديد: معالجة حقل serviceType
+    if (isServiceCategory && editProductData.serviceType > 0) {
+      serviceTypeOptions.style.display = 'block'; // إظهار الحاوية
+      serviceTypeRadioInputs.forEach(radio => {
+        if (radio.value == editProductData.serviceType) {
+          radio.checked = true;
+        }
+        radio.required = true; // اجعلها مطلوبة
+      });
+    } else {
+      serviceTypeOptions.style.display = 'none'; // إخفاء الحاوية
+      serviceTypeRadioInputs.forEach(radio => {
+        radio.checked = false; // إلغاء التحديد
+        radio.required = false; // ليست مطلوبة
+      });
+    }
 
     // جديد: تعبئة الصور الموجودة مسبقًا
     if (editProductData.ImageName) {
@@ -285,6 +331,9 @@ async function initializeAddProductForm(editProductData = null) {
     }
   }
 }
+
+const serviceTypeOptions = document.getElementById('service-type-options'); // جديد: حقل نوع الخدمة
+const serviceTypeRadioInputs = document.querySelectorAll('input[name="serviceType"]'); // جديد: أزرار الراديو لنوع الخدمة
 
 // جعل الدوال والمتغيرات متاحة عالميًا ضمن نطاق النافذة
 window.productModule = (function() {
@@ -815,6 +864,15 @@ window.productModule = (function() {
       isValid = false;
     }
 
+    // ✅ جديد: التحقق من حقل serviceType إذا كانت الفئة هي الخدمات
+    if (mainCategoryIdForValidation === SERVICE_CATEGORY_NoPrice_ID) {
+      const selectedServiceType = document.querySelector('input[name="serviceType"]:checked');
+      clearError(serviceTypeOptions);
+      if (!selectedServiceType) {
+        showError(serviceTypeOptions, 'يجب اختيار نوع الخدمة.');
+        isValid = false;
+      }
+    }
 
     if (!isValid) {
       console.warn('[ProductForm] Validation failed. Submission aborted.');
@@ -823,10 +881,16 @@ window.productModule = (function() {
 
     // ✅ إصلاح شامل: قبل الإرسال، تأكد من أن قيم السعر والكمية هي 0 إذا كانت الفئة هي الخدمات
     const mainCatForSubmit = document.getElementById('main-category').value;
+    let finalServiceType = 0; // القيمة الافتراضية
     if (mainCatForSubmit === SERVICE_CATEGORY_NoPrice_ID) {
       console.log('[ProductForm] Service category detected. Forcing price and quantity to 0 before submission.');
       document.getElementById('product-price').value = 0;
       document.getElementById('product-quantity').value = 0;
+      // الحصول على قيمة serviceType المختارة
+      const selectedServiceTypeRadio = document.querySelector('input[name="serviceType"]:checked');
+      if (selectedServiceTypeRadio) {
+        finalServiceType = parseInt(selectedServiceTypeRadio.value, 10);
+      }
     }
 
     // إذا كانت جميع البيانات صالحة، استمر في عملية الرفع
@@ -905,7 +969,8 @@ window.productModule = (function() {
         ImageName: finalImageNames.join(','),
         MainCategory: document.getElementById('main-category').value, // جديد
         SubCategory: document.getElementById('sub-category').value,   // جديد
-        ImageIndex: finalImageNames.length // جديد
+        ImageIndex: finalImageNames.length, // جديد
+        serviceType: finalServiceType // جديد: نوع الخدمة
       };
 
       // 6. التحقق من وضع النموذج (إضافة أو تعديل)
