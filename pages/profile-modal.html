@@ -1,0 +1,52 @@
+<!--
+  @file pages/profile-modal.html
+  @description هيكل نافذة تعديل الملف الشخصي للمستخدم.
+-->
+   
+    <button class="close-button" id="profile-modal-close-btn" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+  <h3>تعديل بياناتك الشخصية</h3>
+
+  <div class="profile-form-container">
+    <div class="form-group">
+      <label for="profile-username"><i class="fas fa-user"></i> الاسم</label>
+      <input id="profile-username" class="form-control" placeholder="الاسم">
+      <div id="profile-username-error" class="error-message"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="profile-phone"><i class="fas fa-phone"></i> رقم الهاتف</label>
+      <input id="profile-phone" class="form-control" placeholder="رقم الهاتف">
+      <div id="profile-phone-error" class="error-message"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="profile-address"><i class="fas fa-map-marker-alt"></i> العنوان (اختياري)</label>
+      <input id="profile-address" class="form-control" placeholder="العنوان (اختياري)">
+    </div>
+
+    <div class="form-group form-group-checkbox">
+      <input type="checkbox" id="profile-change-password-checkbox">
+      <label for="profile-change-password-checkbox">تغيير كلمة المرور</label>
+    </div>
+
+    <div id="profile-password-fields" style="display: none;">
+      <div class="profile-separator"></div>
+      <div class="form-group password-container">
+        <label for="profile-password"><i class="fas fa-lock"></i> كلمة المرور الجديدة</label>
+        <input type="password" id="profile-password" class="form-control" placeholder="كلمة المرور الجديدة">
+        <i class="fas fa-eye toggle-password" id="profile-toggle-password"></i>
+      </div>
+      <div class="form-group password-container">
+        <label for="profile-confirm-password"><i class="fas fa-lock"></i> تأكيد كلمة المرور</label>
+        <input type="password" id="profile-confirm-password" class="form-control" placeholder="تأكيد كلمة المرور الجديدة">
+        <i class="fas fa-eye toggle-password" id="profile-toggle-confirm-password"></i>
+        <div id="profile-password-error" class="error-message"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer-controls profile-modal-footer">
+    <button id="profile-delete-account-btn" class="button delete-btn-small">حذف الحساب</button>
+    <button id="profile-save-btn" class="button save-btn">حفظ التغييرات</button>
+  </div>
+</div>

@@ -5,155 +5,224 @@
 
 /**
  * @description يعرض نافذة منبثقة (Modal) لتعديل بيانات المستخدم الشخصية (الاسم، رقم الهاتف، العنوان، وكلمة المرور).
- *   يتضمن منطق التحقق من صحة المدخلات، ومطالبة المستخدم بكلمة المرور القديمة لتغييرها،
- *   وإمكانية حذف الحساب.
+ *   يستخدم الآن بنية المودال القياسية في المشروع.
  * @function showEditProfileModal
  * @param {object} currentUser - كائن يحتوي على بيانات المستخدم الحالية التي يتم عرضها وتعديلها.
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
  * @see handleAccountDeletion
  * @see verifyUserPassword
  * @see updateUser
  */
 async function showEditProfileModal(currentUser) {
-  const { value: formValues } = await Swal.fire({
-    title: 'تعديل بياناتك الشخصية',
-    html: `
-      <div style="text-align: right; display: flex; flex-direction: column; gap: 1rem;">
-        <input id="swal-username" class="swal2-input" placeholder="الاسم" value="${currentUser.username || ''}">
-        <input id="swal-phone" class="swal2-input" placeholder="رقم الهاتف" value="${currentUser.phone || ''}">
-        <input id="swal-address" class="swal2-input" placeholder="العنوان (اختياري)" value="${currentUser.Address || ''}">
-        <hr style="border-top: 1px solid #eee; margin: 0.5rem 0;">
-        <p style="font-size: 0.9rem; color: #555;">لتغيير كلمة المرور، أدخل كلمة المرور الجديدة أدناه.</p>
-        <div class="swal2-password-container">
-          <input type="password" id="swal-password" class="swal2-input" placeholder="كلمة المرور الجديدة (اختياري)">
-          <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-password"></i>
-        </div>
-        <div class="swal2-password-container">
-          <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="تأكيد كلمة المرور الجديدة">
-          <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-confirm-password"></i>
-        </div>
-      </div>
-    `,
-    focusConfirm: false,
-    showCancelButton: true,
-    confirmButtonText: 'حفظ التغييرات',
-    cancelButtonText: 'إلغاء',
-    footer: `<a href="#" id="swal-delete-account-btn" class="swal-delete-link">حذف الحساب</a>`,
-    showLoaderOnConfirm: true,
-    didOpen: () => {
-      // وظيفة تبديل عرض كلمة المرور
-      const togglePasswordVisibility = (inputId, toggleId) => {
-        const passwordInput = document.getElementById(inputId);
-        const toggleIcon = document.getElementById(toggleId);
+  await loadAndShowModal("profile-modal-container", "pages/profile-modal.html", (modal) => {
+    // --- Get DOM Elements ---
+    const usernameInput = document.getElementById('profile-username');
+    const phoneInput = document.getElementById('profile-phone');
+    const addressInput = document.getElementById('profile-address');
+    const changePasswordCheckbox = document.getElementById('profile-change-password-checkbox');
+    const passwordFields = document.getElementById('profile-password-fields');
+    const passwordInput = document.getElementById('profile-password');
+    const confirmPasswordInput = document.getElementById('profile-confirm-password');
+    const saveBtn = document.getElementById('profile-save-btn');
+    const deleteBtn = document.getElementById('profile-delete-account-btn');
+    const closeBtn = document.getElementById('profile-modal-close-btn');
+
+    // --- Populate Initial Data ---
+    usernameInput.value = currentUser.username || '';
+    phoneInput.value = currentUser.phone || '';
+    addressInput.value = currentUser.Address || '';
+
+    // --- Close Button Logic ---
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        const modalLogic = setupModalLogic("profile-modal-container");
+        if (modalLogic) modalLogic.close();
+      });
+    }
+
+    // --- Event Listeners ---
+
+    // Logic to show/hide password fields
+    changePasswordCheckbox.addEventListener('click', async (event) => {
+      if (!event.target.checked) {
+        passwordFields.style.display = 'none';
+        return;
+      }
+
+      event.preventDefault();
+
+      if (!currentUser.Password) {
+        changePasswordCheckbox.checked = true;
+        passwordFields.style.display = 'block';
+        return;
+      }
+
+      const { value: oldPassword, isConfirmed } = await Swal.fire({
+        title: 'التحقق من الهوية',
+        text: 'لتغيير كلمة المرور، الرجاء إدخال كلمة المرور القديمة أولاً.',
+        input: 'password',
+        inputPlaceholder: 'أدخل كلمة المرور القديمة',
+        inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+        showCancelButton: true,
+        confirmButtonText: 'تحقق',
+        cancelButtonText: 'إلغاء',
+        showLoaderOnConfirm: true,
+        preConfirm: async (enteredOldPassword) => {
+          if (!enteredOldPassword) {
+            Swal.showValidationMessage('يجب إدخال كلمة المرور القديمة.');
+            return false;
+          }
+          const verificationResult = await verifyUserPassword(currentUser.phone, enteredOldPassword);
+          if (verificationResult.error) {
+            Swal.showValidationMessage(`كلمة المرور القديمة غير صحيحة.`);
+            return false;
+          }
+          return true;
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+      });
+
+      if (isConfirmed && oldPassword) {
+        changePasswordCheckbox.checked = true;
+        passwordFields.style.display = 'block';
+      }
+    });
+
+    // Toggle password visibility
+    const togglePasswordVisibility = (inputId, toggleId) => {
+      const input = document.getElementById(inputId);
+      const toggleIcon = document.getElementById(toggleId);
+      if (input && toggleIcon) {
         toggleIcon.addEventListener('click', () => {
-          const isPassword = passwordInput.type === 'password';
-          passwordInput.type = isPassword ? 'text' : 'password';
+          const isPassword = input.type === 'password';
+          input.type = isPassword ? 'text' : 'password';
           toggleIcon.classList.toggle('fa-eye');
           toggleIcon.classList.toggle('fa-eye-slash');
+          // Adjust position if label exists
+          const label = input.previousElementSibling;
+          if (label && label.tagName === 'LABEL') {
+            toggleIcon.style.top = '70%';
+          }
         });
+      }
+    };
+    togglePasswordVisibility('profile-password', 'profile-toggle-password');
+    togglePasswordVisibility('profile-confirm-password', 'profile-toggle-confirm-password');
+
+    // Handle account deletion
+    deleteBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleAccountDeletion(currentUser);
+    });
+
+    // Handle save changes
+    saveBtn.addEventListener('click', async () => {
+      // --- Validation ---
+      let isValid = true;
+      const showError = (input, message) => {
+        const errorDiv = document.getElementById(`${input.id}-error`);
+        if (errorDiv) errorDiv.textContent = message;
+        isValid = false;
       };
-      togglePasswordVisibility('swal-password', 'swal-toggle-password');
-      togglePasswordVisibility('swal-confirm-password', 'swal-toggle-confirm-password');
+      const clearErrors = () => {
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        isValid = true;
+      };
+      clearErrors();
 
-      // ربط حدث النقر بزر حذف الحساب
-      const deleteBtn = document.getElementById('swal-delete-account-btn');
-      deleteBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        handleAccountDeletion(currentUser); // استدعاء دالة الحذف
-      });
-    },
-    preConfirm: async () => {
-      const username = document.getElementById('swal-username').value;
-      const phone = document.getElementById('swal-phone').value;
-      const address = document.getElementById('swal-address').value;
-      const password = document.getElementById('swal-password').value;
-      const confirmPassword = document.getElementById('swal-confirm-password').value;
+      const username = usernameInput.value.trim();
+      const phone = phoneInput.value.trim();
+      const address = addressInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
 
-      if (!username.trim() || username.length < 8) {
-        Swal.showValidationMessage('الاسم مطلوب ويجب أن يكون 8 أحرف على الأقل.');
-        return false;
+      if (!username || username.length < 8) {
+        showError(usernameInput, 'الاسم مطلوب ويجب أن يكون 8 أحرف على الأقل.');
       }
-      if (!phone.trim() || phone.length < 11) {
-        Swal.showValidationMessage('رقم الهاتف مطلوب ويجب أن يكون 11 رقمًا على الأقل.');
-        return false;
+      if (!phone || phone.length < 11) {
+        showError(phoneInput, 'رقم الهاتف مطلوب ويجب أن يكون 11 رقمًا على الأقل.');
       }
-      if (password && password !== confirmPassword) {
-        Swal.showValidationMessage('كلمتا المرور غير متطابقتين.');
-        return false;
+      if (changePasswordCheckbox.checked && password !== confirmPassword) {
+        showError(confirmPasswordInput, 'كلمتا المرور غير متطابقتين.');
       }
+      if (!isValid) return;
 
-      if (password && currentUser.Password) {
-        const { value: oldPassword } = await Swal.fire({
-          title: 'التحقق من الهوية',
-          text: 'لتغيير كلمة المرور، الرجاء إدخال كلمة المرور القديمة.',
-          input: 'password',
-          inputPlaceholder: 'أدخل كلمة المرور القديمة',
-          inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
-          showCancelButton: true,
-          confirmButtonText: 'تحقق',
-          cancelButtonText: 'إلغاء',
-          showLoaderOnConfirm: true,
-          preConfirm: async (enteredOldPassword) => {
-            if (!enteredOldPassword) {
-              Swal.showValidationMessage('يجب إدخال كلمة المرور القديمة.');
-              return false;
-            }
-            const verificationResult = await verifyUserPassword(currentUser.phone, enteredOldPassword);
-            if (verificationResult.error) {
-              Swal.showValidationMessage(`كلمة المرور القديمة غير صحيحة.`);
-              return false;
-            }
-            return true;
-          },
-          allowOutsideClick: () => !Swal.isLoading()
-        });
-
-        if (!oldPassword) {
-          Swal.showValidationMessage('تم إلغاء تغيير كلمة المرور.');
-          return false;
-        }
-      }
-
+      // --- Prepare and Send Data ---
       const updatedData = { user_key: currentUser.user_key };
       if (username !== currentUser.username) updatedData.username = username;
       if (phone !== currentUser.phone) updatedData.phone = phone;
       if (address !== (currentUser.Address || '')) updatedData.address = address;
-      if (password) updatedData.password = password;
+      if (changePasswordCheckbox.checked && password) updatedData.password = password;
 
       if (Object.keys(updatedData).length === 1) {
-         Swal.fire('لم يتغير شيء', 'لم تقم بإجراء أي تغييرات على بياناتك.', 'info');
-         return false;
+        Swal.fire('لم يتغير شيء', 'لم تقم بإجراء أي تغييرات على بياناتك.', 'info');
+        return;
       }
 
-      return updatedData;
-    }
+      // --- Password Verification before saving ---
+      // If the user has a password, we must verify it before saving any changes.
+      if (currentUser.Password) {
+        const { value: password, isConfirmed } = await Swal.fire({
+          title: 'تأكيد الهوية',
+          text: 'لحفظ التغييرات، يرجى إدخال كلمة المرور الحالية.',
+          input: 'password',
+          inputPlaceholder: 'أدخل كلمة المرور الحالية',
+          inputAttributes: { autocapitalize: 'off', autocorrect: 'off' },
+          showCancelButton: true,
+          confirmButtonText: 'تأكيد وحفظ',
+          cancelButtonText: 'إلغاء',
+          showLoaderOnConfirm: true,
+          preConfirm: async (enteredPassword) => {
+            if (!enteredPassword) {
+              Swal.showValidationMessage('يجب إدخال كلمة المرور.');
+              return false;
+            }
+            const verificationResult = await verifyUserPassword(currentUser.phone, enteredPassword);
+            if (verificationResult.error) {
+              Swal.showValidationMessage(`كلمة المرور غير صحيحة.`);
+              return false;
+            }
+            return true; // Verification successful
+          },
+          allowOutsideClick: () => !Swal.isLoading()
+        });
+
+        if (!isConfirmed) return; // User cancelled
+      }
+
+      Swal.fire({ title: 'جاري حفظ التغييرات...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+      const result = await updateUser(updatedData);
+      Swal.close();
+
+      if (result && !result.error) {
+        const updatedUser = { ...currentUser };
+        if (updatedData.username) updatedUser.username = updatedData.username;
+        if (updatedData.phone) updatedUser.phone = updatedData.phone;
+        if (updatedData.address !== undefined) updatedUser.Address = updatedData.address;
+
+        localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
+        document.getElementById("welcome-message").textContent = `أهلاً بك، ${updatedUser.username}`;
+
+        Swal.fire({
+          icon: 'success',
+          title: 'تم التحديث بنجاح!',
+          text: result.message,
+        }).then(() => {
+          // Close the modal after success
+          const modalLogic = setupModalLogic("profile-modal-container");
+          if (modalLogic) modalLogic.close();
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'حدث خطأ',
+          text: result.error || 'فشل تحديث البيانات. يرجى المحاولة مرة أخرى.',
+        });
+      }
+    });
   });
-
-  if (formValues) {
-    const result = await updateUser(formValues);
-
-    if (result && !result.error) {
-      const updatedUser = { ...currentUser };
-      if (formValues.username) updatedUser.username = formValues.username;
-      if (formValues.phone) updatedUser.phone = formValues.phone;
-      if (formValues.address !== undefined) updatedUser.Address = formValues.address;
-
-      localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
-      document.getElementById("welcome-message").textContent = `أهلاً بك، ${updatedUser.username}`;
-
-      Swal.fire({
-        icon: 'success',
-        title: 'تم التحديث بنجاح!',
-        text: result.message,
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'حدث خطأ',
-        text: result.error || 'فشل تحديث البيانات. يرجى المحاولة مرة أخرى.',
-      });
-    }
-  }
 }
 
 /**
@@ -161,12 +230,14 @@ async function showEditProfileModal(currentUser) {
  *   حذف المستخدم من قاعدة البيانات، ومسح بيانات الجلسة والتخزين المحلي، ثم إعادة توجيه المستخدم.
  * @function handleAccountDeletion
  * @param {object} currentUser - كائن يحتوي على بيانات المستخدم الحالي المراد حذف حسابه.
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+* @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
  * @see verifyUserPassword
  * @see deleteUser
  */
 async function handleAccountDeletion(currentUser) {
-  Swal.close();
+  // Close the profile modal first
+  const modalLogic = setupModalLogic("profile-modal-container");
+  if (modalLogic) modalLogic.close();
 
   const confirmationResult = await Swal.fire({
     title: 'هل أنت متأكد تمامًا؟',

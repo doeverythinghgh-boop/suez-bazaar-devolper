@@ -61,7 +61,6 @@ function updateViewForLoggedInUser(user) {
 
     // ربط حدث تسجيل الخروج
     document.getElementById("logout-btn-alt").addEventListener("click", logout);
-
   } else {
     // --- منطق المستخدم المسجل (غير الضيف) ---
     // إضافة وظيفة لزر تسجيل الخروج
@@ -70,20 +69,30 @@ function updateViewForLoggedInUser(user) {
     // إظهار حاوية إجراءات العميل (السلة والمشتريات)
     const customerActions = document.getElementById("customer-actions");
     customerActions.style.display = "block";
-    document.getElementById("view-cart-btn").addEventListener("click", showCartModal);
-    document.getElementById("view-purchases-btn").addEventListener("click", () => showPurchasesModal(user.user_key));
+    document
+      .getElementById("view-cart-btn")
+      .addEventListener("click", showCartModal);
+    document
+      .getElementById("view-purchases-btn")
+      .addEventListener("click", () => showPurchasesModal(user.user_key));
 
     // إظهار حاوية الإجراءات العامة (تعديل البيانات وتسجيل الخروج)
     const userActions = document.getElementById("user-actions");
     userActions.style.display = "block";
-    document.getElementById("edit-profile-btn").addEventListener("click", () => showEditProfileModal(user));
+    document
+      .getElementById("edit-profile-btn")
+      .addEventListener("click", () => showEditProfileModal(user));
 
     // ✅ تعديل: التحقق مما إذا كان المستخدم بائعًا (1) أو مسؤولاً (adminPhoneNumbers)
     if (user.is_seller === 1 || adminPhoneNumbers.includes(user.phone)) {
       const sellerActions = document.getElementById("seller-actions");
       sellerActions.style.display = "block";
-      document.getElementById("add-product-btn").addEventListener("click", showAddProductModal);
-      document.getElementById("view-my-products-btn").addEventListener("click", () => showMyProducts(user.user_key));
+      document
+        .getElementById("add-product-btn")
+        .addEventListener("click", showAddProductModal);
+      document
+        .getElementById("view-my-products-btn")
+        .addEventListener("click", () => showMyProducts(user.user_key));
     }
 
     // التحقق مما إذا كان المستخدم "خدمة توصيل"
@@ -102,7 +111,8 @@ function updateViewForLoggedInUser(user) {
       adminPanelButton.id = "admin-panel-btn";
       adminPanelButton.href = "admin.html";
       adminPanelButton.className = "button logout-btn-small";
-      adminPanelButton.innerHTML = '<i class="fas fa-user-shield"></i> لوحة تحكم المسؤول';
+      adminPanelButton.innerHTML =
+        '<i class="fas fa-user-shield"></i> لوحة تحكم المسؤول';
       const adminButtonRow = adminActions.querySelector(".button-row");
       // التأكد من عدم إضافة الزر أكثر من مرة
       if (!document.getElementById("admin-panel-btn")) {
@@ -112,24 +122,35 @@ function updateViewForLoggedInUser(user) {
 
     // ✅ جديد: إظهار زر "سجل الإشعارات" للمستخدمين المؤهلين
     if (isUserEligibleForNotifications(user)) {
-      const viewNotificationsBtn = document.getElementById("view-notifications-log-btn");
+      const viewNotificationsBtn = document.getElementById(
+        "view-notifications-log-btn"
+      );
       if (viewNotificationsBtn) {
-        viewNotificationsBtn.style.display = 'inline-flex';
+        viewNotificationsBtn.style.display = "inline-flex";
         // التأكد من وجود الدالة قبل ربط الحدث
         // ✅ إصلاح: يجب استدعاء الدالة الوسيطة showNotificationsModal للتحقق من الصلاحيات أولاً.
-        if (typeof showNotificationsModal === 'function') {
-          viewNotificationsBtn.addEventListener("click", showNotificationsModal);
+        if (typeof showNotificationsModal === "function") {
+          viewNotificationsBtn.addEventListener(
+            "click",
+            showNotificationsModal
+          );
         }
       }
     }
 
     // ✅ جديد: إظهار زر "حركة المشتريات" للمسؤول أو البائع أو خدمة التوصيل
     // ✅ تعديل: تحديث الشرط ليشمل المسؤول (adminPhoneNumbers)
-    if (user.is_seller === 1 || user.is_seller === 2 || adminPhoneNumbers.includes(user.phone)) {
+    if (
+      user.is_seller === 1 ||
+      user.is_seller === 2 ||
+      adminPhoneNumbers.includes(user.phone)
+    ) {
       const reportsActions = document.getElementById("reports-actions");
       reportsActions.style.display = "block";
-      // ✅ تفعيل: ربط حدث النقر بالزر 
-      document.getElementById("view-sales-movement-btn").addEventListener("click", () => showSalesMovementModal(user.user_key));
+      // ✅ تفعيل: ربط حدث النقر بالزر
+      document
+        .getElementById("view-sales-movement-btn")
+        .addEventListener("click", () => showSalesMovementModal(user.user_key));
     }
   }
 }
@@ -139,7 +160,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const loggedInUser = localStorage.getItem("loggedInUser");
   // ✅ إصلاح: تهيئة مستمع الإشعارات فورًا عند تحميل الصفحة للمستخدم المسجل دخوله.
   // ✅ حل بديل: استدعاء الدالة الجديدة المخصصة للإشعارات.
-  if (typeof initializeNotifications === 'function') initializeNotifications();
+  if (typeof initializeNotifications === "function") initializeNotifications();
   if (loggedInUser) {
     const user = JSON.parse(loggedInUser);
     updateViewForLoggedInUser(user);
@@ -186,7 +207,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // إضافة مستمع لحدث الإرسال للنموذج
   form.addEventListener("submit", async function (e) {
-    console.log('%c[Login Page] تم الضغط على زر تسجيل الدخول.', 'color: blue; font-weight: bold;');
+    console.log(
+      "%c[Login Page] تم الضغط على زر تسجيل الدخول.",
+      "color: blue; font-weight: bold;"
+    );
     e.preventDefault(); // منع الإرسال الافتراضي للنموذج
     let isValid = true;
 
@@ -202,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (isValid) {
-      console.log('[Login Page] النموذج صالح، جاري التحقق من المستخدم...');
+      console.log("[Login Page] النموذج صالح، جاري التحقق من المستخدم...");
       // إظهار رسالة تحميل باستخدام SweetAlert2
       Swal.fire({
         title: "جاري تسجيل الدخول...",
@@ -216,38 +240,42 @@ document.addEventListener("DOMContentLoaded", () => {
       const initialCheck = await getUserByPhone(phoneValue);
 
       if (initialCheck && initialCheck.passwordRequired) {
-        console.log('[Login Page] الحساب يتطلب كلمة مرور.');
+        console.log("[Login Page] الحساب يتطلب كلمة مرور.");
         // إذا كان الحساب يتطلب كلمة مرور
         Swal.close(); // إغلاق رسالة التحميل
         const { value: passwordResult } = await Swal.fire({
-          title: 'التحقق من الهوية',
+          title: "التحقق من الهوية",
           html: `
-            <div class="swal-password-prompt">
+            <div class="password-container">
               <i class="fas fa-shield-alt swal-password-prompt-icon"></i>
               <p class="swal-password-prompt-text">هذا الحساب محمي بكلمة مرور</p>
-              <div class="swal2-password-container">
-                <input type="password" id="swal-password-input" class="swal2-input" placeholder="ادخل كلمة المرور">
-                <i class="fas fa-eye swal2-password-toggle-icon" id="swal-toggle-password"></i>
+              <div class="password-container">
+               <input type="password" id="swal-password-input" class="swal2-input" placeholder="دخل كلمة المرور">
+                  <i class="fas fa-eye toggle-password" id="swal-toggle-password" style="top: 60%;"></i>
               </div>
             </div>
           `,
           showCancelButton: true,
-          confirmButtonText: 'تسجيل الدخول',
-          cancelButtonText: 'إلغاء',
+          confirmButtonText: "تسجيل الدخول",
+          cancelButtonText: "إلغاء",
           showLoaderOnConfirm: true,
           didOpen: () => {
-            const passwordInput = document.getElementById('swal-password-input');
-            const toggleIcon = document.getElementById('swal-toggle-password');
+            const passwordInput = document.getElementById(
+              "swal-password-input"
+            );
+            const toggleIcon = document.getElementById("swal-toggle-password");
             passwordInput.focus();
-            toggleIcon.addEventListener('click', () => {
-              const isPassword = passwordInput.type === 'password';
-              passwordInput.type = isPassword ? 'text' : 'password';
-              toggleIcon.classList.toggle('fa-eye');
-              toggleIcon.classList.toggle('fa-eye-slash');
+            toggleIcon.addEventListener("click", () => {
+              const isPassword = passwordInput.type === "password";
+              passwordInput.type = isPassword ? "text" : "password";
+              toggleIcon.classList.toggle("fa-eye");
+              toggleIcon.classList.toggle("fa-eye-slash");
             });
           },
           preConfirm: async (password) => {
-            const passwordInput = document.getElementById('swal-password-input');
+            const passwordInput = document.getElementById(
+              "swal-password-input"
+            );
             let passwordValue = passwordInput.value;
 
             if (!passwordValue) {
@@ -256,27 +284,34 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             // ✅ جديد: استخدام normalizeDigits لتحويل أي أرقام هندية في كلمة المرور
             passwordValue = normalizeDigits(passwordValue);
-            const verificationResult = await verifyUserPassword(phoneValue, passwordValue);
+            const verificationResult = await verifyUserPassword(
+              phoneValue,
+              passwordValue
+            );
             if (verificationResult.error) {
               Swal.showValidationMessage(`خطأ: ${verificationResult.error}`);
               return;
             }
             return verificationResult;
           },
-          allowOutsideClick: () => !Swal.isLoading()
+          allowOutsideClick: () => !Swal.isLoading(),
         });
-        
-        if (passwordResult) { // passwordResult هنا هو كائن المستخدم الكامل بعد التحقق الناجح
-          console.log('[Login Page] التحقق من كلمة المرور نجح. جاري استدعاء handleLoginSuccess...');
+
+        if (passwordResult) {
+          // passwordResult هنا هو كائن المستخدم الكامل بعد التحقق الناجح
+          console.log(
+            "[Login Page] التحقق من كلمة المرور نجح. جاري استدعاء handleLoginSuccess..."
+          );
           handleLoginSuccess(passwordResult);
         }
-
       } else if (initialCheck) {
-        console.log('[Login Page] تسجيل دخول ناجح (بدون كلمة مرور). جاري استدعاء handleLoginSuccess...');
+        console.log(
+          "[Login Page] تسجيل دخول ناجح (بدون كلمة مرور). جاري استدعاء handleLoginSuccess..."
+        );
         // تسجيل دخول ناجح بدون كلمة مرور
         handleLoginSuccess(initialCheck);
       } else {
-        console.error('[Login Page] المستخدم غير موجود.');
+        console.error("[Login Page] المستخدم غير موجود.");
         // المستخدم غير موجود
         Swal.close();
         showError(phoneInput, "هذا الرقم غير مسجل. هل تريد إنشاء حساب جديد؟");
@@ -285,9 +320,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // ربط الحدث برابط "الدخول كضيف"
-  const guestLoginBtn = document.getElementById('guest-login-btn');
+  const guestLoginBtn = document.getElementById("guest-login-btn");
   if (guestLoginBtn) {
-    guestLoginBtn.addEventListener('click', handleGuestLogin);
+    guestLoginBtn.addEventListener("click", handleGuestLogin);
   }
 });
 
@@ -305,24 +340,31 @@ document.addEventListener("DOMContentLoaded", () => {
  * @see updateCartBadge
  */
 async function handleLoginSuccess(user) {
-  console.log('%c[Login Page] دخلنا دالة handleLoginSuccess. بيانات المستخدم:', 'color: green;', user);
+  console.log(
+    "%c[Login Page] دخلنا دالة handleLoginSuccess. بيانات المستخدم:",
+    "color: green;",
+    user
+  );
   localStorage.setItem("loggedInUser", JSON.stringify(user));
 
   // ✅ تعديل: استدعاء setupFCM() فقط إذا كان المستخدم مؤهلاً (مسؤول، بائع، خدمة توصيل).
   // isUserEligibleForNotifications معرفة في auth.js
-  if (typeof isUserEligibleForNotifications === 'function' && isUserEligibleForNotifications(user)) {
-    console.log('[Login Page] المستخدم مؤهل، جاري استدعاء setupFCM() الآن...');
-    if (typeof setupFCM === 'function') {
-     await setupFCM();
+  if (
+    typeof isUserEligibleForNotifications === "function" &&
+    isUserEligibleForNotifications(user)
+  ) {
+    console.log("[Login Page] المستخدم مؤهل، جاري استدعاء setupFCM() الآن...");
+    if (typeof setupFCM === "function") {
+      await setupFCM();
       await askForNotificationPermission();
     }
   } else {
-    console.log('[Login Page] المستخدم غير مؤهل للإشعارات، تم تخطي استدعاء setupFCM().');
+    console.log(
+      "[Login Page] المستخدم غير مؤهل للإشعارات، تم تخطي استدعاء setupFCM()."
+    );
   }
   updateViewForLoggedInUser(user);
   if (window.updateCartBadge) window.updateCartBadge();
-
-
 
   Swal.fire({
     icon: "success",
@@ -332,7 +374,6 @@ async function handleLoginSuccess(user) {
     confirmButtonText: "موافق",
     cancelButtonText: "لا",
   }).then((result) => {
-    
     if (result.isConfirmed) {
       window.location.href = "index.html";
     }
@@ -347,8 +388,13 @@ async function handleLoginSuccess(user) {
  */
 async function askForNotificationPermission() {
   // التحقق من وجود الكائن 'Android' للتأكد من أن الكود يعمل داخل تطبيق أندرويد
-  if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
-    console.log("Calling native function to request notification permission...");
+  if (
+    window.Android &&
+    typeof window.Android.requestNotificationPermission === "function"
+  ) {
+    console.log(
+      "Calling native function to request notification permission..."
+    );
     window.Android.requestNotificationPermission();
   } else {
     console.log("Android interface not available.");
@@ -364,29 +410,29 @@ async function askForNotificationPermission() {
  */
 function handleGuestLogin(event) {
   event.preventDefault(); // منع الرابط من تحديث الصفحة
-  console.log('[Auth] Logging in as a guest.');
-  
+  console.log("[Auth] Logging in as a guest.");
+
   // إنشاء كائن مستخدم ضيف
   const guestUser = {
-    username: 'ضيف',
+    username: "ضيف",
     is_guest: true,
-    user_key: 'guest_user' // مفتاح خاص للضيف
+    user_key: "guest_user", // مفتاح خاص للضيف
   };
 
   // حفظ بيانات الضيف في localStorage
-  localStorage.setItem('loggedInUser', JSON.stringify(guestUser));
+  localStorage.setItem("loggedInUser", JSON.stringify(guestUser));
 
   // عرض رسالة ترحيب وتوجيه المستخدم
   Swal.fire({
-    title: 'أهلاً بك كضيف!',
-    text: 'يمكنك الآن تصفح المنتجات. ستحتاج إلى تسجيل الدخول لحفظ سلتك وإتمام الشراء.',
-    icon: 'success',
+    title: "أهلاً بك كضيف!",
+    text: "يمكنك الآن تصفح المنتجات. ستحتاج إلى تسجيل الدخول لحفظ سلتك وإتمام الشراء.",
+    icon: "success",
     showConfirmButton: true,
-    confirmButtonText: 'موافق'
+    confirmButtonText: "موافق",
   }).then((result) => {
     // توجيه المستخدم فقط بعد الضغط على زر "موافق"
     if (result.isConfirmed) {
-      window.location.href = 'index.html';
+      window.location.href = "index.html";
     }
   });
 }
