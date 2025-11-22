@@ -77,15 +77,14 @@
             <input type="tel" id="phone" name="phone" required />
             <div id="phone-error" class="error-message"></div>
           </div>
-          <div class="form-group ">
-            <label for="password"><i class="fas fa-lock"></i> كلمة المرور (اختياري)</label>
+          <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> كلمة المرور</label>
             <div class="password-container">
-              <input type="password" id="password" name="password" />
-              <i class="fas fa-eye toggle-password" id="toggle-password-icon"></i>
+              <input type="password" id="password" name="password" required />
+              <i class="fas fa-eye toggle-password" id="toggle-password-icon" ></i>
             </div>
             <div id="password-error" class="error-message"></div>
-            <small class="form-hint">اختياري. إذا قمت بتعيينها، لن يتمكن أي شخص آخر من استخدام رقم هاتفك.
-            </small>
+            <small class="form-hint">يجب أن تتكون من 4 أحرف على الأقل لحماية حسابك.</small>
           </div>
           <div class="form-group">
             <label for="address"><i class="fas fa-map-marker-alt"></i> العنوان (اختياري)</label>
@@ -212,53 +211,63 @@
           isValid = false;
         }
 
+        // 3. Password validation
+        clearError(password);
+        const passwordValue = password.value.trim();
+        console.log('[Register] Validating password...');
+        if (passwordValue === "") {
+          showError(password, "كلمة المرور مطلوبة.");
+          isValid = false;
+        } else if (passwordValue.length < 4) {
+          showError(password, "كلمة المرور يجب أن تكون 4 أحرف على الأقل.");
+          isValid = false;
+        }
+
         if (!isValid) {
           console.warn('[Register] Validation failed.');
           return;
         }
 
-        if (isValid) {
-          // ✅ جديد: التحقق مما إذا كان المستخدم قد أدخل كلمة مرور
-          if (password.value.trim() !== "") {
-            console.log('[Register] Password entered. Prompting for confirmation...');
-            const { value: confirmedPassword } = await Swal.fire({
-              title: "تأكيد كلمة المرور",
-              html: `
-                <p>الرجاء إعادة إدخال كلمة المرور للتأكيد</p>
-                <div class="password-container">
-                  <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="أعد إدخال كلمة المرور">
-                  <i class="fas fa-eye toggle-password" id="swal-toggle-confirm-password" style="top: 60%;"></i>
-                </div>
-              `,
-              showCancelButton: true,
-              confirmButtonText: "تأكيد",
-              cancelButtonText: "إلغاء",
-              didOpen: () => {
-                const confirmInput = document.getElementById('swal-confirm-password');
-                const toggleIcon = document.getElementById('swal-toggle-confirm-password');
-                confirmInput.focus();
-                toggleIcon.addEventListener('click', () => {
-                  const isPassword = confirmInput.type === 'password';
-                  confirmInput.type = isPassword ? 'text' : 'password';
-                  toggleIcon.classList.toggle('fa-eye');
-                  toggleIcon.classList.toggle('fa-eye-slash');
-                });
-              },
-              inputValidator: (value) => {
-                const confirmValue = document.getElementById('swal-confirm-password').value;
-                if (confirmValue !== password.value) {
-                  return "كلمتا المرور غير متطابقتين!";
-                }
-              }
+        // Password confirmation is now mandatory
+        console.log('[Register] Prompting for password confirmation...');
+        const { value: confirmedPassword } = await Swal.fire({
+          title: "تأكيد كلمة المرور",
+          html: `
+            <p>الرجاء إعادة إدخال كلمة المرور للتأكيد</p>
+            <div class="password-container">
+              <input type="password" id="swal-confirm-password" class="swal2-input" placeholder="أعد إدخال كلمة المرور">
+              <i class="fas fa-eye toggle-password" id="swal-toggle-confirm-password" style="top: 60%;"></i>
+            </div>
+          `,
+          showCancelButton: true,
+          confirmButtonText: "تأكيد",
+          cancelButtonText: "إلغاء",
+          didOpen: () => {
+            const confirmInput = document.getElementById('swal-confirm-password');
+            const toggleIcon = document.getElementById('swal-toggle-confirm-password');
+            confirmInput.focus();
+            toggleIcon.addEventListener('click', () => {
+              const isPassword = confirmInput.type === 'password';
+              confirmInput.type = isPassword ? 'text' : 'password';
+              toggleIcon.classList.toggle('fa-eye');
+              toggleIcon.classList.toggle('fa-eye-slash');
             });
-
-            // إذا ألغى المستخدم، أوقف عملية التسجيل
-            if (!confirmedPassword) {
-              console.log('[Register] Password confirmation cancelled by user.');
-              return;
+          },
+          preConfirm: () => {
+            const confirmValue = document.getElementById('swal-confirm-password').value;
+            if (confirmValue !== password.value) {
+              Swal.showValidationMessage("كلمتا المرور غير متطابقتين!");
+              return false;
             }
+            return confirmValue;
           }
+        });
 
+        // إذا ألغى المستخدم، أوقف عملية التسجيل
+        if (!confirmedPassword) {
+          console.log('[Register] Password confirmation cancelled by user.');
+          return;
+        }
           const userKey = generateSerialNumber(); // 🔑 توليد الرقم التسلسلي
           console.log(`[Register] Generated new user_key: ${userKey}`);
           const newUser = {
@@ -326,7 +335,6 @@
             // هذا الخطأ يحدث إذا كانت هناك مشكلة في الاتصال بالخادم أو الكود
             showError(form, "حدث خطأ في التطبيق. يرجى المحاولة لاحقاً.");
           }
-        }
       });
 
       // جديد: إضافة وظيفة تبديل عرض كلمة المرور للنموذج الرئيسي
