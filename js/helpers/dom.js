@@ -197,7 +197,7 @@ function generateProductCardHTML(product, viewType) {
           <h4>${product.productName || 'منتج بلا اسم'}</h4>
           <p><strong>الوصف:</strong> ${product.product_description || 'لا يوجد'}</p>
           ${priceHtml.replace('product-price', '').replace('original-price', '')}
-          <p><strong>الكمية:</strong> ${product.product_quantity}</p>
+    ${product.MainCategory != SERVICE_CATEGORY_NoPrice_ID ? `<p><strong>الكمية:</strong> ${product.product_quantity}</p>` : ''}
         </div>
         <div class="my-products-card-actions">
           <button class="button logout-btn-small my-products-edit-btn" data-product='${productJson}'><i class="fas fa-edit"></i> تعديل</button>
