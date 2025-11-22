@@ -12,10 +12,10 @@ import fs from "fs";
  * @type {object}
  * @const
  */
- const db = createClient({
-        url: process.env.DATABASE_URL,
-        authToken: process.env.TURSO_AUTH_TOKEN,
-      });
+const db = createClient({
+  url: "libsql://bazaar-bazaar.aws-eu-west-1.turso.io",
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
 
 /**
  * @description تحليل قاعدة البيانات بالكامل وتخزينها في ملف JSON.
