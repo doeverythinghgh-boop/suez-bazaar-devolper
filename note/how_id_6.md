@@ -6,7 +6,7 @@ const SERVICE_CATEGORY_NoPrice_ID = "6";
 
 والموجود داخل:
 
-js/utils.js
+js/helpers/dom.js
 
 وهي فئة "الخدمات العامة"، والتي يتم التعامل معها بشكل خاص لضمان أن المنتجات التي تندرج تحتها (كونها خدمات) لا تتطلب سعرًا أو كمية. هذا يحقق تجربة مستخدم منطقية ومتسقة.
 
@@ -105,18 +105,19 @@ if (isServiceCategory) {
 الملف: js/searchModal.js
 الدالة: displaySearchResults
 
+داخل الدالة `displaySearchResults`، يتم استخدام الدالة المساعدة `generateProductCardHTML` (الموجودة في `js/helpers/dom.js`) لتوليد HTML لكل بطاقة منتج. هذه الدالة تتولى منطق إخفاء وعرض السعر بناءً على ما إذا كانت الفئة الرئيسية للمنتج هي `SERVICE_CATEGORY_NoPrice_ID`.
+
+مثال من `generateProductCardHTML` (معالجة خاصة لنوع العرض 'search'):
+
 const isService = product.MainCategory == SERVICE_CATEGORY_NoPrice_ID;
-
-const priceHTML = isService
-  ? ''
-  : `<p class="search-result-price">${product.product_price} جنيه</p>`;
-
-resultsHTML += `
-  <div class="search-result-item" data-product-key="${product.product_key}">
+// ...
+case 'search':
+  // ...
+  cardContent = `
     <img src="${imageUrl}" alt="${product.productName}" class="search-result-image">
     <div class="search-result-details">
       <h4 class="search-result-title">${product.productName}</h4>
-      ${priceHTML}
+      ${!isService ? `<p class="search-result-price">${price.toFixed(2)} جنيه</p>` : ''}
     </div>
-  </div>
-`;
+  `;
+  break;
