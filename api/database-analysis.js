@@ -1,4 +1,6 @@
 import { createClient } from "@libsql/client";
+import fs from "fs";
+import path from "path";
 
 export const config = {
   runtime: 'edge',
@@ -72,9 +74,10 @@ export async function analyzeAndSaveDatabase() {
     result.foreignKeys = foreignKeys;
 
     // 5️⃣ حفظ النتائج في ملف JSON
-    const filePath = "./database-analysis.json";
+    // Use path.resolve to ensure the file is created in the project root
+    const filePath = path.resolve(process.cwd(), "database-analysis.json");
     console.log(`[DatabaseAnalysis] حفظ النتائج في الملف ${filePath}...`);
-    fs.writeFileSync(filePath, JSON.stringify(result, null, 2), "utf-8");
+    fs.writeFileSync(filePath, JSON.stringify(result, null, 2), "utf8");
 
     console.log("[DatabaseAnalysis] تم الانتهاء من التحليل بنجاح!");
     return {

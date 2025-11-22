@@ -12,18 +12,26 @@
 (async () => {
   console.log("[RunDatabaseAnalysis] بدء تشغيل السكربت...");
 
-  // 1️⃣ التحقق من وجود متغير البيئة TURSO_AUTH_TOKEN
-  if (!process.env.TURSO_AUTH_TOKEN) {
-    console.error("[RunDatabaseAnalysis] خطأ: متغير البيئة TURSO_AUTH_TOKEN غير موجود أو فارغ.");
-    console.error("يرجى ضبط التوكن قبل تشغيل التحليل:");
-    console.error("PowerShell: $env:TURSO_AUTH_TOKEN=\"YOUR_TOKEN\"");
-    console.error("CMD: set TURSO_AUTH_TOKEN=YOUR_TOKEN");
-    console.error("Linux/macOS: export TURSO_AUTH_TOKEN=YOUR_TOKEN");
+  // 1️⃣ التحقق من وجود متغيرات البيئة المطلوبة
+  const requiredEnv = ['DATABASE_URL', 'TURSO_AUTH_TOKEN'];
+  const missingEnv = requiredEnv.filter(envVar => !process.env[envVar]);
+
+  if (missingEnv.length > 0) {
+    console.error(`[RunDatabaseAnalysis] خطأ: متغيرات البيئة التالية غير موجودة أو فارغة: ${missingEnv.join(', ')}`);
+    console.error("يرجى ضبط المتغيرات قبل تشغيل التحليل. مثال:");
+    
+    if (process.platform === "win32") {
+        console.error("PowerShell: $env:DATABASE_URL=\"YOUR_URL\"; $env:TURSO_AUTH_TOKEN=\"YOUR_TOKEN\"");
+        console.error("CMD: set DATABASE_URL=YOUR_URL && set TURSO_AUTH_TOKEN=YOUR_TOKEN");
+    } else {
+        console.error("Linux/macOS: export DATABASE_URL=\"YOUR_URL\" && export TURSO_AUTH_TOKEN=\"YOUR_TOKEN\"");
+    }
+
     process.exit(1); // إيقاف السكربت بسبب عدم وجود التوكن
   }
 
   try {
-    console.log("[RunDatabaseAnalysis] تم العثور على توكن Turso، جاري التحليل...");
+    console.log("[RunDatabaseAnalysis] تم العثور على متغيرات البيئة، جاري التحليل...");
     
     const result = await analyzeAndSaveDatabase();
 
