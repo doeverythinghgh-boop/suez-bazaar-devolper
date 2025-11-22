@@ -8,6 +8,16 @@
  * - توفير وظيفة مسح بيانات المتصفح.
  */
 
+/**
+ * @description Handles the initial setup when the DOM is fully loaded.
+ * It checks if a user is logged in and if that user has administrator privileges.
+ * Based on the user's status, it either redirects to the login page, displays an
+ * access denied message, or initializes the admin panel.
+ * @listens DOMContentLoaded
+ * @returns {void}
+ * @see initializeAdminPanel
+ * @see adminPhoneNumbers (from js/config.js)
+ */
 document.addEventListener("DOMContentLoaded", () => {
   const loggedInUser = localStorage.getItem("loggedInUser");
   // adminPhoneNumbers معرفة بشكل عام في js/config.js
@@ -43,12 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
 /**
  * @description تهيئة لوحة تحكم المسؤول، بما في ذلك عرض رسالة الترحيب، والتحقق من حالة الإشعارات،
  *   وإنشاء الأزرار الخاصة بإدارة الإعلانات، عرض المستخدمين، ومسح بيانات المتصفح، ثم ربط الأحداث بها.
+ *   يتضمن هذا الزر وظيفة مسح جميع البيانات المحلية (localStorage, sessionStorage, service workers, caches, cookies)
+ *   مع تأكيد من المستخدم وإعادة تحميل الصفحة.
  * @function initializeAdminPanel
- * @param {object} user - كائن المستخدم الحالي (المسؤول) الذي تم تسجيل دخوله.
+ * @param {object} user - كائن المستخدم الحالي (المسؤول) الذي تم تسجيل دخوله. يحتوي على خصائص مثل `username` و `phone`.
  * @returns {void}
  * @see checkAndDisplayNotificationStatus
  * @see showAdvertiesmentModal
  * @see showUsersAdminModal
+ * @throws {Error} قد يرمي خطأ إذا فشلت عملية مسح Service Workers أو Caches.
  */
 function initializeAdminPanel(user) {
   document.getElementById("welcome-message").textContent = `لوحة تحكم المسؤول | ${user.username}`;
@@ -157,9 +170,10 @@ function initializeAdminPanel(user) {
  * @description يعرض نافذة منبثقة (Modal) لإدارة الإعلانات، ويقوم بتحميل محتواها من `pages/Advertiesment.html`.
  *   بعد تحميل المحتوى، يستدعي دالة `initializeAdvertiesmentForm` لتهيئة النموذج.
  * @function showAdvertiesmentModal
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
- * @see loadAndShowModal
- * @see initializeAdvertiesmentForm
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال. ينجح إذا تم تحميل وعرض المودال بنجاح.
+ * @see loadAndShowModal (assumed to be global or imported)
+ * @see initializeAdvertiesmentForm (assumed to be global or imported from js/Advertiesment.js)
+ * @throws {Error} إذا فشل تحميل أو عرض المودال.
  */
 async function showAdvertiesmentModal() {
   await loadAndShowModal(
@@ -175,10 +189,14 @@ async function showAdvertiesmentModal() {
 
 /**
  * @description يتحقق من حالة إذن الإشعارات ووجود توكن FCM، ثم يعرض رسالة وزر تفعيل أو معلومات الحالة بناءً على ذلك.
- *   يوفر للمستخدمين واجهة للتفاعل مع أذونات الإشعارات.
+ *   يوفر للمستخدمين واجهة للتفاعل مع أذونات الإشعارات ويوجههم حول كيفية تفعيلها أو إلغائها.
  * @function checkAndDisplayNotificationStatus
+ * @async
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
- * @see setupFCM
+ * @see setupFCM (from js/auth.js)
+ * @see Notification.permission
+ * @see localStorage 'fcm_token'
+ * @throws {Error} إذا فشلت عملية إعداد FCM عند محاولة التفعيل.
  */
 async function checkAndDisplayNotificationStatus() {
   const statusContainer = document.getElementById('notification-status-container');
