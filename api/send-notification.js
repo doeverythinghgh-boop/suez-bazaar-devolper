@@ -9,6 +9,11 @@
 
 import admin from "firebase-admin";
 
+/**
+ * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @type {object}
+ * @const
+ */
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -16,13 +21,37 @@ const corsHeaders = {
 };
 
 // ✅ إصلاح جذري: التحقق من وجود جميع متغيرات البيئة المطلوبة قبل أي شيء آخر.
+/**
+ * @description مصفوفة بأسماء متغيرات البيئة المطلوبة لتهيئة Firebase Admin SDK.
+ * @type {string[]}
+ * @const
+ */
 const requiredEnvVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY_ID', 'FIREBASE_CLIENT_ID'];
+/**
+ * @description مصفوفة بأسماء متغيرات البيئة المفقودة اللازمة لتهيئة Firebase.
+ * @type {string[]}
+ * @const
+ */
 const missingEnvVars = requiredEnvVars.filter(v => !process.env[v]);
 
+/**
+ * @description علم لتتبع ما إذا كانت Firebase Admin SDK قد تم تهيئتها بنجاح.
+ * @type {boolean}
+ */
 let firebaseInitialized = false;
+/**
+ * @description يخزن رسالة الخطأ في حالة فشل تهيئة Firebase Admin SDK.
+ * @type {string|null}
+ */
 let initializationError = null;
 
 // إعداد serviceAccount باستخدام متغيرات البيئة
+/**
+ * @description كائن بيانات حساب الخدمة الخاص بـ Firebase، يُستخدم لتهيئة Firebase Admin SDK.
+ *   يتم جلب قيم هذا الكائن من متغيرات البيئة.
+ * @type {object}
+ * @const
+ */
 const serviceAccount = {
   type: "service_account",
   project_id: process.env.FIREBASE_PROJECT_ID,
@@ -53,6 +82,15 @@ if (!admin.apps.length && missingEnvVars.length === 0) {
     firebaseInitialized = true; // تم تهيئته بالفعل في استدعاء سابق
 }
 
+/**
+ * @description نقطة نهاية API (Vercel Serverless Function) لإرسال إشعارات Push عبر Firebase Cloud Messaging (FCM).
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS وطلبات `POST` لإرسال إشعارات.
+ *   تتطلب تهيئة Firebase Admin SDK الناجحة.
+ * @function handler
+ * @param {object} req - كائن طلب HTTP الوارد من Vercel.
+ * @param {object} res - كائن استجابة HTTP من Vercel.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة، ولكنه يرسل استجابة HTTP.
+ */
 export default async function handler(req, res) {
   // التعامل مع طلبات OPTIONS (preflight) أولاً لمنع أخطاء CORS
   if (req.method === 'OPTIONS') {

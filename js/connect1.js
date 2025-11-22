@@ -9,14 +9,15 @@
  */
 
 /**
- * ينشئ طلبًا جديدًا في قاعدة البيانات عبر واجهة برمجة التطبيقات.
- * @async
- * @param {object} orderData - كائن يحتوي على جميع بيانات الطلب.
+ * @description ينشئ طلبًا جديدًا في قاعدة البيانات عبر واجهة برمجة التطبيقات (API).
+ * @function createOrder
+ * @param {object} orderData - كائن يحتوي على جميع بيانات الطلب المراد إنشاؤه.
  * @param {string} orderData.order_key - المفتاح الفريد الذي تم إنشاؤه للطلب.
  * @param {string} orderData.user_key - مفتاح المستخدم الذي قام بالطلب.
  * @param {number} orderData.total_amount - المبلغ الإجمالي للطلب.
  * @param {Array<object>} orderData.items - مصفوفة من المنتجات الموجودة في الطلب.
- * @returns {Promise<Object>} كائن يحتوي على بيانات الطلب الذي تم إنشاؤه، أو كائن خطأ في حالة الفشل.
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن بيانات الطلب الذي تم إنشاؤه، أو كائن خطأ في حالة الفشل.
+ * @see apiFetch
  */
 async function createOrder(orderData) {
   return await apiFetch('/api/orders', {
@@ -26,10 +27,14 @@ async function createOrder(orderData) {
 }
 
 /**
- * يجلب سجل المشتريات الخاص بمستخدم معين.
- * @async
- * @param {string} userKey - المفتاح الفريد للمستخدم (user_key) الذي نريد جلب مشترياته.
- * @returns {Promise<Array|null>} مصفوفة تحتوي على تفاصيل مشتريات المستخدم، أو `null` في حالة حدوث خطأ.
+ * @description يجلب سجل المشتريات الخاص بمستخدم معين من واجهة برمجة التطبيقات (API).
+ *   يضيف تفاصيل حالة الطلب إلى كل عملية شراء قبل إعادتها.
+ * @function getUserPurchases
+ * @param {string} userKey - المفتاح الفريد للمستخدم (`user_key`) الذي نريد جلب مشترياته.
+ * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات المشتريات المعالجة، أو `null` في حالة حدوث خطأ.
+ * @throws {Error} - إذا فشل جلب البيانات من API.
+ * @see apiFetch
+ * @see ORDER_STATUSES
  */
 async function getUserPurchases(userKey) {
   try {
@@ -72,10 +77,13 @@ async function getUserPurchases(userKey) {
 }
 
 /**
- * يجلب بيانات حركة المشتريات الكاملة (مخصصة للمسؤولين والبائعين وخدمات التوصيل).
- * @async
- * @param {string} userKey - مفتاح المستخدم الذي يقوم بطلب التقرير للتحقق من صلاحياته.
- * @returns {Promise<Array|null>} مصفوفة من الطلبات المجمعة مع تفاصيلها، أو `null` في حالة الفشل.
+ * @description يجلب بيانات حركة المبيعات الكاملة من واجهة برمجة التطبيقات (API).
+ *   هذه الدالة مخصصة للمسؤولين والبائعين وخدمات التوصيل، وتستخدم مفتاح المستخدم للتحقق من الصلاحيات.
+ * @function getSalesMovement
+ * @param {string} userKey - مفتاح المستخدم (`user_key`) الذي يقوم بطلب التقرير.
+ * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من الطلبات المجمعة مع تفاصيلها، أو `null` في حالة الفشل.
+ * @throws {Error} - إذا فشل جلب البيانات من API.
+ * @see apiFetch
  */
 async function getSalesMovement(userKey) {
   try {
@@ -91,12 +99,13 @@ async function getSalesMovement(userKey) {
 }
 
 /**
- * يرسل إشعارًا فوريًا (Push Notification) إلى جهاز معين باستخدام توكن FCM.
- * @async
+ * @description يرسل إشعارًا فوريًا (Push Notification) إلى جهاز معين باستخدام توكن Firebase Cloud Messaging (FCM).
+ * @function sendNotification
  * @param {string} token - توكن Firebase Cloud Messaging (FCM) الخاص بالجهاز المستهدف.
  * @param {string} title - عنوان الإشعار.
  * @param {string} body - نص الإشعار.
- * @returns {Promise<Object>} كائن يحتوي على نتيجة الإرسال من الخادم، أو كائن خطأ.
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن يحتوي على نتيجة الإرسال من الخادم، أو كائن خطأ في حالة الفشل.
+ * @see apiFetch
  */
 async function sendNotification(token, title, body) {
   return await apiFetch('/api/send-notification', {
@@ -106,10 +115,12 @@ async function sendNotification(token, title, body) {
 }
 
 /**
- * يحدث حالة طلب معين في قاعدة البيانات.
- * @param {string} orderKey - المفتاح الفريد للطلب المراد تحديثه.
+ * @description يحدث حالة طلب معين في قاعدة البيانات عبر واجهة برمجة التطبيقات (API).
+ * @function updateOrderStatus
+ * @param {string} orderKey - المفتاح الفريد للطلب المراد تحديث حالته.
  * @param {number} newStatusId - المعرف الرقمي للحالة الجديدة للطلب.
- * @returns {Promise<Object>} كائن الاستجابة من الخادم.
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن الاستجابة من الخادم.
+ * @see apiFetch
  */
 async function updateOrderStatus(orderKey, newStatusId) {
   return await apiFetch('/api/orders', {
@@ -122,10 +133,12 @@ async function updateOrderStatus(orderKey, newStatusId) {
 }
 
 /**
- * يضيف سجلاً جديدًا إلى جدول `updates` في قاعدة البيانات.
- * يُستخدم هذا عادةً لتسجيل وقت آخر تغيير مهم في البيانات (مثل تحديث الإعلانات) للمساعدة في إدارة التخزين المؤقت (Caching).
+ * @description يضيف سجلاً جديدًا إلى جدول `updates` في قاعدة البيانات.
+ *   يُستخدم هذا لتسجيل وقت آخر تغيير مهم في البيانات (مثل تحديث الإعلانات) للمساعدة في إدارة التخزين المؤقت (Caching).
+ * @function addUpdate
  * @param {string} text - النص المراد تسجيله في التحديث.
- * @returns {Promise<Object>} كائن الاستجابة من الخادم، أو كائن خطأ.
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن الاستجابة من الخادم، أو كائن خطأ في حالة الفشل.
+ * @see apiFetch
  */
 async function addUpdate(text) {
   return await apiFetch('/api/updates', {
@@ -135,9 +148,11 @@ async function addUpdate(text) {
 }
 
 /**
- * يجلب آخر تاريخ تحديث مسجل في جدول `updates`.
- * @async
- * @returns {Promise<Object|null>} كائن يحتوي على تاريخ التحديث (`{ datetime: '...' }`)، أو `null` في حالة الفشل.
+ * @description يجلب آخر تاريخ تحديث مسجل في جدول `updates` من واجهة برمجة التطبيقات (API).
+ * @function getLatestUpdate
+ * @returns {Promise<Object|null>} - وعد (Promise) يحتوي على كائن يتضمن تاريخ التحديث (`{ datetime: '...' }`)، أو `null` في حالة الفشل أو عدم وجود تحديثات.
+ * @throws {Error} - إذا فشل جلب البيانات من API.
+ * @see apiFetch
  */
 async function getLatestUpdate() {
   try {

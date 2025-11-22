@@ -6,6 +6,17 @@
  * في حاوية محددة كشريط إعلاني ينتقل تلقائيًا.
  */
 
+/**
+ * @description تهيئة وعرض موديول الإعلانات.
+ *   يقوم بجلب الصور الإعلانية من الذاكرة المؤقتة المحلية أو من الخادم، ثم يقوم ببناء وعرض شريط تمرير (Slider) للإعلانات.
+ *   يدعم آلية التخزين المؤقت لتجنب جلب البيانات بشكل متكرر.
+ * @function initAdverModule
+ * @param {string} containerId - المعرف (ID) لعنصر DOM الذي سيحتوي على شريط الإعلانات.
+ * @param {boolean} [forceRefresh=false] - إذا كان `true`، سيتم تجاوز الذاكرة المؤقتة وجلب الإعلانات من الخادم مباشرة.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see getLatestUpdate
+ * @see buildSlider
+ */
 async function initAdverModule(containerId, forceRefresh = false) {
   const container = document.getElementById(containerId);
   if (!container) {
@@ -55,7 +66,12 @@ async function initAdverModule(containerId, forceRefresh = false) {
   const MAX_ADS = 10; // أقصى عدد من الإعلانات للبحث عنه
   const fetchedImages = [];
 
-  // دالة للتحقق من وجود صورة
+  /**
+   * @description دالة مساعدة للتحقق مما إذا كانت الصورة موجودة عن طريق محاولة تحميلها.
+   * @function checkImage
+   * @param {string} url - عنوان URL للصورة للتحقق منها.
+   * @returns {Promise<{exists: boolean, url: string}>} - وعد (Promise) يُرجع كائنًا يوضح ما إذا كانت الصورة موجودة أم لا، بالإضافة إلى عنوان URL.
+   */
   function checkImage(url) {
     return new Promise(resolve => {
       const img = new Image();
@@ -88,6 +104,18 @@ async function initAdverModule(containerId, forceRefresh = false) {
   buildSlider(container, fetchedImages);
 }
 
+/**
+ * @description يبني ويعرض شريط تمرير (Slider) للصور الإعلانية داخل حاوية محددة.
+ *   ينشئ الشرائح والنقاط وأزرار التنقل، ويدير الحركة التلقائية والتفاعلات اليدوية.
+ * @function buildSlider
+ * @param {HTMLElement} container - عنصر DOM الذي سيحتوي على شريط التمرير.
+ * @param {string[]} adImages - مصفوفة من عناوين URL لصور الإعلانات.
+ * @returns {void}
+ * @see goToSlide
+ * @see startAutoPlay
+ * @see pauseAutoPlay
+ * @see resetAutoPlay
+ */
 function buildSlider(container, adImages) {
   // إذا لم توجد صور، اعرض رسالة
   if (adImages.length === 0) {
@@ -137,8 +165,11 @@ function buildSlider(container, adImages) {
   });
 
   /**
-   * ✅ تعديل شامل: تحديث الدالة لتطبيق تأثير الكاروسيل الدائري.
-   * تقوم الآن بحساب وتطبيق transform لكل شريحة بناءً على موقعها.
+   * @description تنتقل إلى شريحة محددة وتطبق تأثير الكاروسيل الدائري.
+   *   تقوم بحساب وتطبيق التحويلات (transform) لكل شريحة بناءً على موقعها الحالي.
+   * @function goToSlide
+   * @param {number} index - فهرس الشريحة المستهدفة.
+   * @returns {void}
    */
   function goToSlide(index) {
     const newIndex = (index + slides.length) % slides.length;
@@ -174,17 +205,33 @@ function buildSlider(container, adImages) {
     }
   }
 
-  // ✅ جديد: دوال للتحكم في الحركة التلقائية
+  /**
+   * @description تبدأ الحركة التلقائية لشريط التمرير، حيث تنتقل الشرائح كل 4 ثوانٍ.
+   * @function startAutoPlay
+   * @returns {void}
+   */
   function startAutoPlay() {
     if (autoPlayInterval) clearInterval(autoPlayInterval); // مسح المؤقت القديم
     // تغيير الشريحة كل 4 ثوانٍ
     autoPlayInterval = setInterval(() => goToSlide(currentIndex + 1), 4000);
   }
 
+  /**
+   * @description توقف الحركة التلقائية لشريط التمرير عن طريق مسح المؤقت.
+   * @function pauseAutoPlay
+   * @returns {void}
+   */
   function pauseAutoPlay() {
     clearInterval(autoPlayInterval);
   }
 
+  /**
+   * @description تعيد ضبط الحركة التلقائية لشريط التمرير عن طريق إيقافها ثم إعادة تشغيلها.
+   * @function resetAutoPlay
+   * @returns {void}
+   * @see pauseAutoPlay
+   * @see startAutoPlay
+   */
   function resetAutoPlay() {
     pauseAutoPlay();
     startAutoPlay();

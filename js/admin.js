@@ -4,8 +4,14 @@
  */
 
 /**
- * تهيئة لوحة تحكم المسؤول.
- * @param {object} user - كائن المستخدم (المسؤول).
+ * @description تهيئة لوحة تحكم المسؤول لعرض وإدارة المستخدمين.
+ *   تتحقق من صلاحيات المسؤول، وتنشئ الأزرار الخاصة بإدارة المستخدمين،
+ *   وتقوم بإعداد مستمعي الأحداث لتحميل وعرض جدول المستخدمين وتحديث حالاتهم.
+ * @function initializeAdminPanel
+ * @param {object} user - كائن المستخدم الحالي (المسؤول) الذي تم تسجيل دخوله.
+ * @returns {void}
+ * @see fetchUsers
+ * @see updateUsers
  */
 function initializeAdminPanel(user) {
   const adminPhoneNumbers = ["01024182175", "01026546550"];
@@ -33,7 +39,13 @@ function initializeAdminPanel(user) {
   const updateBtn = document.getElementById("update-users-btn");
   const cancelBtn = document.getElementById("cancel-update-btn");
 
-  // دالة لتحميل وتعبئة جدول المستخدمين
+  /**
+   * @description تقوم بتحميل قائمة المستخدمين من الخادم وعرضها في لوحة تحكم المسؤول باستخدام تصميم البطاقات.
+   *   تظهر مؤشر تحميل أثناء جلب البيانات وتُخفي أزرار الإجراءات بعد التحميل.
+   * @function loadUsersTable
+   * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+   * @see fetchUsers
+   */
   async function loadUsersTable() {
     const tableContentWrapper = document.getElementById("table-content-wrapper");
     tableContentWrapper.innerHTML = '<div class="loader"></div>'; // إظهار مؤشر تحميل

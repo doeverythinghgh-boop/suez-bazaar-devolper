@@ -4,8 +4,15 @@
  */
 
 /**
- * يعرض نافذة منبثقة لتعديل بيانات المستخدم.
- * @param {object} currentUser - بيانات المستخدم الحالية.
+ * @description يعرض نافذة منبثقة (Modal) لتعديل بيانات المستخدم الشخصية (الاسم، رقم الهاتف، العنوان، وكلمة المرور).
+ *   يتضمن منطق التحقق من صحة المدخلات، ومطالبة المستخدم بكلمة المرور القديمة لتغييرها،
+ *   وإمكانية حذف الحساب.
+ * @function showEditProfileModal
+ * @param {object} currentUser - كائن يحتوي على بيانات المستخدم الحالية التي يتم عرضها وتعديلها.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see handleAccountDeletion
+ * @see verifyUserPassword
+ * @see updateUser
  */
 async function showEditProfileModal(currentUser) {
   const { value: formValues } = await Swal.fire({
@@ -150,8 +157,13 @@ async function showEditProfileModal(currentUser) {
 }
 
 /**
- * يعالج عملية حذف الحساب بالكامل.
- * @param {object} currentUser - بيانات المستخدم الحالي.
+ * @description يعالج عملية حذف الحساب بالكامل، بما في ذلك تأكيد المستخدم، التحقق من كلمة المرور إذا كانت موجودة،
+ *   حذف المستخدم من قاعدة البيانات، ومسح بيانات الجلسة والتخزين المحلي، ثم إعادة توجيه المستخدم.
+ * @function handleAccountDeletion
+ * @param {object} currentUser - كائن يحتوي على بيانات المستخدم الحالي المراد حذف حسابه.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see verifyUserPassword
+ * @see deleteUser
  */
 async function handleAccountDeletion(currentUser) {
   Swal.close();

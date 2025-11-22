@@ -1,14 +1,43 @@
+/**
+ * @file js/helpers/network.js
+ * @description يدير حالة الاتصال بالشبكة في التطبيق ويقدم دالة مركزية لإجراء طلبات API.
+ *   يشمل آليات للتحقق الدوري من الاتصال، وعرض إشعارات عدم الاتصال، وتخزين حالة الاتصال مؤقتًا.
+ */
+
 /* ----------------------------------------
     🟦 تخزين حالة الاتصال مؤقتاً (Cache)
 ---------------------------------------- */
+/**
+ * @description Timestamp لآخر مرة تم فيها التحقق من الاتصال بالإنترنت.
+ * @type {number}
+ */
 let lastConnectionCheck = 0;
+/**
+ * @description حالة الاتصال بالإنترنت المخزنة مؤقتًا.
+ * @type {boolean}
+ */
 let isConnectedCache = false;
+/**
+ * @description مرجع لكائن "Swal" (SweetAlert) الخاص بإشعار عدم الاتصال، لتمكين إغلاقه.
+ * @type {object|null}
+ */
 let offlineToast = null; 
+/**
+ * @description الفاصل الزمني (بالمللي ثانية) بين عمليات التحقق الدورية من الاتصال بالإنترنت.
+ * @type {number}
+ * @const
+ */
 const CONNECTION_CHECK_INTERVAL = 3000; // 3 ثوانٍ
 
 /* ----------------------------------------
     🟦 دالة مستخدمة من أي مكان
 ---------------------------------------- */
+/**
+ * @description تعيد حالة الاتصال بالإنترنت المخزنة مؤقتًا.
+ * @function checkInternetConnection
+ * @returns {boolean} - `true` إذا كان هناك اتصال بالإنترنت، وإلا `false`.
+ * @see isConnectedCache
+ */
 async function checkInternetConnection() {
   return isConnectedCache;
 }
@@ -16,6 +45,15 @@ async function checkInternetConnection() {
 /* ----------------------------------------
     🟦 Snackbar ثابت عند فقد الاتصال
 ---------------------------------------- */
+/**
+ * @description يجري فحصًا فعليًا لحالة الاتصال بالإنترنت عن طريق محاولة جلب مورد من `gstatic.com`.
+ *   يقوم بتحديث حالة الاتصال المخزنة مؤقتًا (`isConnectedCache`) ويعرض أو يخفي إشعار عدم الاتصال (`offlineToast`) حسب الحاجة.
+ * @function performActualConnectionCheck
+ * @returns {Promise<boolean>} - وعد (Promise) يُرجع `true` إذا كان الاتصال متاحًا، وإلا `false`.
+ * @see isConnectedCache
+ * @see offlineToast
+ * @see lastConnectionCheck
+ */
 async function performActualConnectionCheck() {
   lastConnectionCheck = Date.now();
 
@@ -83,6 +121,15 @@ async function performActualConnectionCheck() {
 /* ----------------------------------------
     🟦 الفحص الدوري
 ---------------------------------------- */
+/**
+ * @description يبدأ الفحص الدوري لحالة الاتصال بالإنترنت ويُعدل معالجات الأحداث لتغييرات حالة الاتصال عبر المتصفح.
+ * @function startPeriodicConnectionCheck
+ * @returns {void}
+ * @see performActualConnectionCheck
+ * @see CONNECTION_CHECK_INTERVAL
+ * @see isConnectedCache
+ * @see offlineToast
+ */
 function startPeriodicConnectionCheck() {
   performActualConnectionCheck();
   setInterval(performActualConnectionCheck, CONNECTION_CHECK_INTERVAL);
@@ -107,11 +154,17 @@ startPeriodicConnectionCheck();
 
 
 /**
- * ✅ جديد: دالة مركزية لإجراء طلبات API.
- * تغلف منطق fetch، معالجة الأخطاء، وتحويل JSON.
- * @param {string} endpoint - نقطة النهاية (e.g., '/api/users').
- * @param {object} [options={}] - خيارات fetch، بما في ذلك method, body, headers.
- * @returns {Promise<Object>} - بيانات الاستجابة أو كائن خطأ.
+ * @description دالة مركزية لإجراء طلبات API.
+ *   تغلف منطق `fetch`، معالجة الأخطاء، وتحويل JSON.
+ * @function apiFetch
+ * @param {string} endpoint - نقطة النهاية (المسار) في API (e.g., '/users').
+ * @param {object} [options={}] - خيارات طلب `fetch`، بما في ذلك `method`, `body`, `headers`, و `specialHandlers`.
+ * @param {string} [options.method='GET'] - طريقة طلب HTTP (GET, POST, PUT, DELETE).
+ * @param {object|null} [options.body=null] - البيانات التي سيتم إرسالها مع الطلب، يتم تحويلها إلى JSON.
+ * @param {object} [options.headers={}] - رأس الطلب HTTP.
+ * @param {object} [options.specialHandlers={}] - كائن يحتوي على دوال لمعالجة حالات استجابة HTTP محددة (مثل 401, 404).
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على بيانات الاستجابة من الخادم ككائن JSON، أو كائن خطأ في حالة الفشل.
+ * @see baseURL
  */
 async function apiFetch(endpoint, options = {}) {
   const { method = 'GET', body = null, specialHandlers = {}, ...restOptions } = options;

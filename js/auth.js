@@ -8,9 +8,15 @@
  */
 
 /**
- * إعداد Firebase Cloud Messaging (FCM) للمستخدم الحالي.
- * هذه الدالة تقوم بتسجيل الـ Service Worker، طلب إذن الإشعارات،
- * الحصول على توكن FCM، وإرساله إلى السيرفر.
+ * @description تهيئة Firebase Cloud Messaging (FCM) للمستخدم الحالي.
+ *   تتضمن هذه العملية تسجيل Service Worker، طلب إذن الإشعارات،
+ *   الحصول على توكن FCM، وإرساله إلى الخادم. تتعامل أيضًا مع تهيئة
+ *   FCM للأجهزة التي تعمل بنظام Android.
+ * @function setupFCM
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see sendTokenToServer
+ * @see getCurrentUser
+ * @see handleRevokedPermissions
  */
 async function setupFCM() {
   // ✅ تحسين: إضافة علم لمنع إعادة التهيئة في كل مرة يتم فيها تحميل الصفحة.
@@ -22,7 +28,15 @@ async function setupFCM() {
 
   
 
-  // دالة مساعدة لإرسال التوكن إلى الخادم لتجنب التكرار
+  /**
+   * @description دالة مساعدة لإرسال توكن FCM إلى الخادم.
+   * @function sendTokenToServer
+   * @param {string} userKey - المفتاح التعريفي للمستخدم.
+   * @param {string} token - توكن FCM الذي سيتم إرساله.
+   * @param {string} platform - منصة الجهاز (مثل "android" أو "web").
+   * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، ولكنه يعالج الاستجابة من الخادم.
+   * @throws {Error} - في حالة فشل الاتصال بالشبكة أو وجود مشكلة في استجابة الخادم.
+   */
   async function sendTokenToServer(userKey, token, platform) {
     console.log(`%c[FCM] Sending token to server...`, "color: #fd7e14");
     console.log(`[FCM] User Key: ${userKey}`);
@@ -238,6 +252,12 @@ async function setupFCM() {
   }
 }
 
+/**
+ * @description تنتظر حتى يتم حفظ `android_fcm_key` في `localStorage` ثم تستدعي دالة رد الاتصال (callback).
+ * @function waitForFcmKey
+ * @param {function(string): void} callback - الدالة التي سيتم استدعاؤها مع مفتاح FCM بمجرد توفره.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ */
 async function waitForFcmKey(callback) {
   const checkInterval = setInterval(() => {
     const key = localStorage.getItem("android_fcm_key");
@@ -250,8 +270,11 @@ async function waitForFcmKey(callback) {
   }, 300); // يتم الفحص كل 300 مللي ثانية
 }
 /**
- * يعالج سيناريو قيام المستخدم بإلغاء أذونات الإشعارات من إعدادات المتصفح.
- * إذا تم العثور على توكن مخزن محليًا بينما الإذن مرفوض، فإنه يحاول حذفه من الخادم.
+ * @description يعالج سيناريو قيام المستخدم بإلغاء أذونات الإشعارات من إعدادات المتصفح.
+ *   إذا تم العثور على توكن مخزن محليًا بينما الإذن مرفوض، فإنه يحاول حذفه من الخادم.
+ * @function handleRevokedPermissions
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see getCurrentUser
  */
 async function handleRevokedPermissions() {
   // هذا المنطق خاص بالويب فقط، لا ينطبق داخل تطبيق الأندرويد.
@@ -305,8 +328,9 @@ async function handleRevokedPermissions() {
 }
 
 /**
- * ✅ جديد: دالة مركزية لقراءة بيانات المستخدم الحالي من localStorage بأمان.
- * @returns {object|null} كائن المستخدم إذا كان موجودًا وصحيحًا، وإلا `null`.
+ * @description دالة مركزية لقراءة بيانات المستخدم الحالي من `localStorage` بأمان.
+ * @function getCurrentUser
+ * @returns {object|null} - كائن المستخدم إذا كان موجودًا وصحيحًا (parsed JSON)، وإلا `null`.
  */
 function getCurrentUser() {
   try {
@@ -322,10 +346,12 @@ function getCurrentUser() {
 }
 
 /**
- * ✅ جديد: دالة مساعدة للتحقق مما إذا كان المستخدم مؤهلاً لاستقبال الإشعارات.
- * الإشعارات مخصصة فقط للمسؤولين، البائعين، وخدمات التوصيل.
+ * @description دالة مساعدة للتحقق مما إذا كان المستخدم مؤهلاً لاستقبال الإشعارات.
+ *   الإشعارات مخصصة فقط للمسؤولين، البائعين، وخدمات التوصيل.
+ * @function isUserEligibleForNotifications
  * @param {object} user - كائن المستخدم.
  * @returns {boolean} - `true` إذا كان المستخدم مؤهلاً، وإلا `false`.
+ * @see isUserAdmin
  */
 function isUserEligibleForNotifications(user) {
   if (!user || user.is_guest) {
@@ -340,7 +366,8 @@ function isUserEligibleForNotifications(user) {
 }
 
 /**
- * ✅ جديد: دالة مساعدة للتحقق مما إذا كان المستخدم بائعًا (أو مسؤولاً).
+ * @description دالة مساعدة للتحقق مما إذا كان المستخدم بائعًا (أو مسؤولاً).
+ * @function isUserSeller
  * @param {object} user - كائن المستخدم.
  * @returns {boolean} - `true` إذا كان المستخدم بائعًا أو مسؤولاً، وإلا `false`.
  */
@@ -351,7 +378,8 @@ function isUserSeller(user) {
 }
 
 /**
- * ✅ جديد: دالة مساعدة للتحقق مما إذا كان المستخدم مسؤولاً.
+ * @description دالة مساعدة للتحقق مما إذا كان المستخدم مسؤولاً.
+ * @function isUserAdmin
  * @param {object} user - كائن المستخدم.
  * @returns {boolean} - `true` إذا كان المستخدم مسؤولاً، وإلا `false`.
  */
@@ -364,8 +392,11 @@ function isUserAdmin(user) {
 }
 
 /**
- * ✅ جديد: يتحقق مما إذا كان المستخدم الحالي مسؤولاً.
- * @returns {object|null} كائن المستخدم إذا كان مسؤولاً، وإلا `null`.
+ * @description يتحقق مما إذا كان المستخدم الحالي مسؤولاً.
+ * @function checkAdminStatus
+ * @returns {object|null} - كائن المستخدم إذا كان مسؤولاً، وإلا `null`.
+ * @see getCurrentUser
+ * @see adminPhoneNumbers
  */
 function checkAdminStatus() {
   console.log('[Auth] Checking admin status...');
@@ -383,7 +414,10 @@ function checkAdminStatus() {
   return null;
 }
 /**
- * يتحقق من حالة تسجيل دخول المستخدم ويقوم بتحديث واجهة المستخدم بناءً عليها.
+ * @description يتحقق من حالة تسجيل دخول المستخدم ويقوم بتحديث واجهة المستخدم بناءً عليها.
+ * @function checkLoginStatus
+ * @returns {void}
+ * @see getCurrentUser
  */
 function checkLoginStatus() {
   const user = getCurrentUser();
@@ -408,8 +442,15 @@ function checkLoginStatus() {
 }
 
 /**
- * ✅ حل بديل: دالة جديدة ومستقلة لتهيئة الإشعارات.
- * يتم استدعاؤها من الصفحات التي تحتاج إلى استقبال الإشعارات.
+ * @description دالة جديدة ومستقلة لتهيئة الإشعارات.
+ *   يتم استدعاؤها من الصفحات التي تحتاج إلى استقبال الإشعارات.
+ *   تتحقق من أهلية المستخدم للإشعارات وتقوم بتهيئة FCM إذا كان مؤهلاً.
+ * @function initializeNotifications
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see getCurrentUser
+ * @see handleRevokedPermissions
+ * @see isUserEligibleForNotifications
+ * @see setupFCM
  */
 async function initializeNotifications() {
   const user = getCurrentUser();
@@ -427,7 +468,11 @@ async function initializeNotifications() {
 }
 
 /**
- * يقوم بتسجيل خروج المستخدم عن طريق إزالة بياناته من التخزين المحلي وإعادة التوجيه.
+ * @description يقوم بتسجيل خروج المستخدم عن طريق إزالة بياناته من التخزين المحلي وإعادة التوجيه إلى صفحة `index.html`.
+ *   يتضمن ذلك حذف توكنات FCM من الخادم و`localStorage`.
+ * @function logout
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، يعالج عمليات تسجيل الخروج غير المتزامنة.
+ * @see getCurrentUser
  */
 async function logout() {
  
@@ -502,9 +547,12 @@ async function logout() {
 }
 
 /**
- * ✅ جديد: دالة مخصصة ليتم استدعاؤها من كود الأندرويد الأصلي.
- * تقوم هذه الدالة باستلام بيانات إشعار كـ JSON string وحفظه في IndexedDB.
+ * @description دالة مخصصة ليتم استدعاؤها من كود الأندرويد الأصلي.
+ *   تقوم هذه الدالة باستلام بيانات إشعار كـ JSON string وحفظه في IndexedDB.
+ * @function saveNotificationFromAndroid
  * @param {string} notificationJson - سلسلة JSON تحتوي على بيانات الإشعار (title, body).
+ * @returns {void}
+ * @see addNotificationLog
  */
 function saveNotificationFromAndroid(notificationJson) {
   console.log("[Auth] تم استدعاء saveNotificationFromAndroid من الأندرويد:", notificationJson);

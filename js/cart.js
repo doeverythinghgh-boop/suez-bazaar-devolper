@@ -7,8 +7,10 @@
  */
 
 /**
- * ✅ جديد: ينشئ مفتاح تخزين فريد للسلة بناءً على المستخدم المسجل دخوله.
- * @returns {string|null} مفتاح السلة (مثل 'cart_abcd1234') أو null إذا لم يكن هناك مستخدم.
+ * @description ينشئ مفتاح تخزين فريد للسلة بناءً على المستخدم المسجل دخوله.
+ * @function getCartStorageKey
+ * @returns {string|null} - مفتاح السلة (مثل 'cart_abcd1234') إذا كان هناك مستخدم مسجل دخوله، وإلا `null`.
+ * @see localStorage
  */
 function getCartStorageKey() {
   const loggedInUser = localStorage.getItem("loggedInUser");
@@ -22,8 +24,10 @@ function getCartStorageKey() {
 }
 
 /**
- * يجلب السلة الحالية من LocalStorage.
- * @returns {Array<Object>} مصفوفة من منتجات السلة.
+ * @description يجلب السلة الحالية من LocalStorage.
+ * @function getCart
+ * @returns {Array<Object>} - مصفوفة من كائنات المنتجات الموجودة في السلة، أو مصفوفة فارغة إذا كانت السلة فارغة أو حدث خطأ.
+ * @see getCartStorageKey
  */
 function getCart() {
   const CART_STORAGE_KEY = getCartStorageKey();
@@ -39,8 +43,11 @@ function getCart() {
 }
 
 /**
- * يحفظ السلة المحدثة في LocalStorage.
- * @param {Array<Object>} cart - مصفوفة منتجات السلة.
+ * @description يحفظ السلة المحدثة في LocalStorage ويرسل حدثًا مخصصًا (`cartUpdated`) لإعلام المكونات الأخرى بالتغيير.
+ * @function saveCart
+ * @param {Array<Object>} cart - مصفوفة كائنات المنتجات التي تمثل السلة الحالية.
+ * @returns {void}
+ * @see getCartStorageKey
  */
 function saveCart(cart) {
   const CART_STORAGE_KEY = getCartStorageKey();
@@ -56,9 +63,14 @@ function saveCart(cart) {
 }
 
 /**
- * يضيف منتجًا إلى السلة أو يحدث كميته إذا كان موجودًا بالفعل.
- * @param {Object} product - كائن المنتج المراد إضافته.
- * @param {number} quantity - الكمية المراد إضافتها.
+ * @description يضيف منتجًا إلى السلة، أو يقوم بتحديث كميته إذا كان المنتج موجودًا بالفعل.
+ *   يعرض رسالة تأكيد للمستخدم بعد الإضافة أو التحديث.
+ * @function addToCart
+ * @param {Object} product - كائن المنتج المراد إضافته، يحتوي على تفاصيل المنتج مثل `product_key` و `productName`.
+ * @param {number} quantity - الكمية المراد إضافتها للمنتج.
+ * @returns {void}
+ * @see getCart
+ * @see saveCart
  */
 function addToCart(product, quantity) {
   const cart = getCart();
@@ -89,8 +101,12 @@ function addToCart(product, quantity) {
 }
 
 /**
- * يزيل منتجًا من السلة.
- * @param {string} productKey - المفتاح الفريد للمنتج المراد إزالته.
+ * @description يزيل منتجًا محددًا من السلة بناءً على مفتاحه الفريد.
+ * @function removeFromCart
+ * @param {string} productKey - المفتاح الفريد للمنتج المراد إزالته من السلة.
+ * @returns {void}
+ * @see getCart
+ * @see saveCart
  */
 function removeFromCart(productKey) {
   let cart = getCart();
@@ -99,9 +115,13 @@ function removeFromCart(productKey) {
 }
 
 /**
- * يحدث كمية منتج معين في السلة.
- * @param {string} productKey - المفتاح الفريد للمنتج.
- * @param {number} newQuantity - الكمية الجديدة.
+ * @description يحدث كمية منتج معين في السلة. إذا كانت الكمية الجديدة صفرًا أو أقل، يتم إزالة المنتج من السلة.
+ * @function updateCartQuantity
+ * @param {string} productKey - المفتاح الفريد للمنتج المراد تحديث كميته.
+ * @param {number} newQuantity - الكمية الجديدة للمنتج.
+ * @returns {void}
+ * @see getCart
+ * @see saveCart
  */
 function updateCartQuantity(productKey, newQuantity) {
   const cart = getCart();
@@ -119,15 +139,20 @@ function updateCartQuantity(productKey, newQuantity) {
 }
 
 /**
- * يفرغ السلة بالكامل.
+ * @description يفرغ السلة بالكامل عن طريق حفظ مصفوفة فارغة بدلاً من السلة الحالية.
+ * @function clearCart
+ * @returns {void}
+ * @see saveCart
  */
 function clearCart() {
   saveCart([]);
 }
 
 /**
- * يحسب عدد العناصر الإجمالي في السلة.
- * @returns {number} إجمالي عدد الوحدات في السلة.
+ * @description يحسب العدد الإجمالي للوحدات من جميع المنتجات في السلة.
+ * @function getCartItemCount
+ * @returns {number} - إجمالي عدد الوحدات (الكميات المجمعة) لجميع المنتجات في السلة.
+ * @see getCart
  */
 function getCartItemCount() {
   const cart = getCart();
@@ -135,7 +160,10 @@ function getCartItemCount() {
 }
 
 /**
- * يحدث شارة عدد عناصر السلة في الواجهة.
+ * @description يحدث شارة عدد عناصر السلة في الواجهة الرسومية (UI) لتعكس العدد الحالي للمنتجات في السلة.
+ * @function updateCartBadge
+ * @returns {void}
+ * @see getCartItemCount
  */
 function updateCartBadge() {
     const cartBadge = document.getElementById('cart-badge');

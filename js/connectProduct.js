@@ -9,9 +9,11 @@
  */
 
 /**
- * يضيف منتجًا جديدًا إلى قاعدة البيانات عبر استدعاء الواجهة البرمجية (API).
+ * @description يضيف منتجًا جديدًا إلى قاعدة البيانات عبر استدعاء الواجهة البرمجية (API).
+ * @function addProduct
  * @param {object} productData - كائن يحتوي على جميع بيانات المنتج المراد إضافته.
- * @returns {Promise<Object>} كائن يحتوي على بيانات المنتج الذي تم إنشاؤه، أو كائن خطأ في حالة الفشل.
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن بيانات المنتج الذي تم إنشاؤه، أو كائن خطأ في حالة الفشل.
+ * @see apiFetch
  */
 async function addProduct(productData) {
   return await apiFetch('/api/products', {
@@ -21,9 +23,11 @@ async function addProduct(productData) {
 }
 
 /**
- * يحدث بيانات منتج موجود في قاعدة البيانات عبر الواجهة البرمجية.
- * @param {object} productData - بيانات المنتج المحدثة. يجب أن يحتوي الكائن على `product_key`.
- * @returns {Promise<Object>} الكائن الذي تم تحديثه، أو كائن خطأ في حالة الفشل.
+ * @description يحدث بيانات منتج موجود في قاعدة البيانات عبر الواجهة البرمجية (API).
+ * @function updateProduct
+ * @param {object} productData - كائن يحتوي على بيانات المنتج المحدثة. يجب أن يحتوي الكائن على `product_key` لتحديد المنتج المراد تحديثه.
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على الكائن الذي تم تحديثه، أو كائن خطأ في حالة الفشل.
+ * @see apiFetch
  */
 async function updateProduct(productData) {
   return await apiFetch('/api/products', {
@@ -33,9 +37,11 @@ async function updateProduct(productData) {
 }
 
 /**
- * يحذف منتجًا موجودًا من قاعدة البيانات عبر الواجهة البرمجية.
+ * @description يحذف منتجًا موجودًا من قاعدة البيانات عبر الواجهة البرمجية (API).
+ * @function deleteProduct
  * @param {string} productKey - المفتاح الفريد للمنتج المراد حذفه.
- * @returns {Promise<Object>} كائن الاستجابة من الخادم.
+ * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن الاستجابة من الخادم.
+ * @see apiFetch
  */
 async function deleteProduct(productKey) {
   return await apiFetch(`/api/products?product_key=${productKey}`, {
@@ -44,10 +50,14 @@ async function deleteProduct(productKey) {
 }
 
 /**
- * يجلب قائمة المنتجات بناءً على الفئة الرئيسية والفرعية المحددة.
- * @param {string} mainCatId - معرف الفئة الرئيسية.
- * @param {string} subCatId - معرف الفئة الفرعية.
- * @returns {Promise<Array|null>} مصفوفة من المنتجات أو null في حالة الفشل.
+ * @description يجلب قائمة المنتجات بناءً على الفئة الرئيسية والفرعية المحددة من واجهة برمجة التطبيقات (API).
+ * @function getProductsByCategory
+ * @param {string} mainCatId - معرف الفئة الرئيسية للمنتجات المراد جلبها.
+ * @param {string} subCatId - معرف الفئة الفرعية للمنتجات المراد جلبها.
+ * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات المنتجات، أو `null` في حالة الفشل.
+ * @throws {Error} - إذا كان `baseURL` غير معرف، أو فشل جلب البيانات من API.
+ * @see apiFetch
+ * @see baseURL
  */
 async function getProductsByCategory(mainCatId, subCatId) {
   try {
@@ -83,9 +93,11 @@ async function getProductsByCategory(mainCatId, subCatId) {
 }
 
 /**
- * يجلب جميع المنتجات التي أضافها مستخدم معين (بائع).
- * @param {string} userKey - المفتاح الفريد للمستخدم (user_key).
- * @returns {Promise<Array|null>} مصفوفة من المنتجات أو null في حالة الفشل.
+ * @description يجلب جميع المنتجات التي أضافها مستخدم معين (بائع) من واجهة برمجة التطبيقات (API).
+ * @function getProductsByUser
+ * @param {string} userKey - المفتاح الفريد للمستخدم (`user_key`) البائع الذي نريد جلب منتجاته.
+ * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات المنتجات، أو `null` في حالة الفشل.
+ * @see apiFetch
  */
 async function getProductsByUser(userKey) {
   try {
@@ -98,9 +110,11 @@ async function getProductsByUser(userKey) {
 }
 
 /**
- * يجلب بيانات منتج واحد بناءً على مفتاحه الفريد.
- * @param {string} productKey - المفتاح الفريد للمنتج.
- * @returns {Promise<Object|null>} كائن المنتج أو null في حالة الفشل.
+ * @description يجلب بيانات منتج واحد بناءً على مفتاحه الفريد من واجهة برمجة التطبيقات (API).
+ * @function getProductByKey
+ * @param {string} productKey - المفتاح الفريد للمنتج المراد جلبه.
+ * @returns {Promise<Object|null>} - وعد (Promise) يحتوي على كائن المنتج، أو `null` إذا لم يتم العثور على المنتج أو حدث خطأ.
+ * @see apiFetch
  */
 async function getProductByKey(productKey) {
   try {
@@ -120,10 +134,15 @@ async function getProductByKey(productKey) {
 }
  
 /**
- * يعرض نافذة منبثقة (Modal) تحتوي على تفاصيل المنتج.
- * @param {object} productData - بيانات المنتج الكاملة.
- * @param {function} [onCloseCallback] - دالة اختيارية يتم استدعاؤها عند إغلاق النافذة.
- * @param {object} [options] - خيارات إضافية للتحكم في عرض النافذة.
+ * @description يعرض نافذة منبثقة (Modal) تحتوي على تفاصيل المنتج.
+ *   يتحقق من بيانات الفئة الأساسية للمنتج قبل العرض ويقوم بتحميل قالب عرض المنتج.
+ * @function showProductDetails
+ * @param {object} productData - كائن يحتوي على جميع بيانات المنتج الكاملة لعرضها.
+ * @param {function(): void} [onCloseCallback] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
+ * @param {object} [options={}] - خيارات إضافية للتحكم في عرض النافذة، مثل `showAddToCart`.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see populateProductDetails
  */
 async function showProductDetails(productData, onCloseCallback, options = {}) {
   // التحقق من وجود بيانات الفئة الرئيسية والفرعية، وهي ضرورية لعرض التفاصيل بشكل صحيح.
@@ -160,10 +179,16 @@ async function showProductDetails(productData, onCloseCallback, options = {}) {
 }
 
 /**
- * يملأ تفاصيل المنتج في النافذة المنبثقة ويربط الأحداث اللازمة.
- * @param {object} productData - بيانات المنتج الكاملة.
- * @param {function} [onCloseCallback] - دالة اختيارية يتم استدعاؤها عند إغلاق النافذة.
- * @param {object} [options] - خيارات إضافية مثل إخفاء زر "إضافة للسلة".
+ * @description يملأ تفاصيل المنتج في النافذة المنبثقة ويربط الأحداث اللازمة للتحكم في الكمية والإضافة إلى السلة.
+ *   تتعامل مع عرض الصور، الأسعار، رسائل البائع، وتظهر أو تخفي حقول معينة بناءً على نوع المنتج وخيارات العرض.
+ * @function populateProductDetails
+ * @param {object} productData - كائن يحتوي على جميع بيانات المنتج الكاملة لملء تفاصيل النافذة.
+ * @param {function(): void} [onCloseCallback] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
+ * @param {object} [options={}] - خيارات إضافية للتحكم في عرض النافذة، مثل `showAddToCart`.
+ * @returns {void}
+ * @see SERVICE_CATEGORY_NoPrice_ID
+ * @see getCurrentUser
+ * @see addToCart
  */
 function populateProductDetails(productData, onCloseCallback, options = {}) {
   // تعبئة الوصف ورسالة البائع.

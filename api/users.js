@@ -10,21 +10,49 @@
  */
 import { createClient } from "@libsql/client/web";
 
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 export const config = {
   runtime: 'edge',
 };
 
+/**
+ * @description عميل قاعدة البيانات المستخدم للاتصال بقاعدة بيانات Turso.
+ * @type {import("@libsql/client/web").Client}
+ * @const
+ * @see createClient
+ */
 const db = createClient({
   url: process.env.DATABASE_URL,
   authToken: process.env.TURSO_AUTH_TOKEN
 });
 
+/**
+ * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @type {object}
+ * @const
+ */
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
+/**
+ * @description نقطة نهاية API لإدارة المستخدمين (الإنشاء، الاستعلام، التحديث، الحذف).
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
+ *   وطلبات `POST` لإنشاء مستخدمين جدد أو التحقق من كلمات المرور،
+ *   وطلبات `GET` لجلب جميع المستخدمين أو مستخدمين معينين،
+ *   وطلبات `PUT` لتحديث بيانات المستخدمين (فردي أو جماعي)،
+ *   وطلبات `DELETE` لحذف المستخدمين.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @see createClient
+ */
 export default async function handler(request) {
   if (request.method === "OPTIONS") {
     console.log(`[CORS] Handled OPTIONS request for: ${request.url}`);

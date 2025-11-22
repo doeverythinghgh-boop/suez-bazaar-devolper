@@ -4,8 +4,15 @@
  */
 
 /**
- * يعرض نافذة منبثقة بسجل مشتريات المستخدم.
- * @param {string} userKey - المفتاح الفريد للمستخدم.
+ * @description يعرض نافذة منبثقة (Modal) بسجل مشتريات المستخدم.
+ *   يقوم بتحميل قالب المشتريات، ويجلب مشتريات المستخدم من API،
+ *   ثم يعرضها في قائمة باستخدام `generatePurchaseItemHTML`.
+ * @function showPurchasesModal
+ * @param {string} userKey - المفتاح الفريد للمستخدم (`user_key`) الذي سيتم عرض مشترياته.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see getUserPurchases
+ * @see generatePurchaseItemHTML
  */
 async function showPurchasesModal(userKey) {
   await loadAndShowModal(

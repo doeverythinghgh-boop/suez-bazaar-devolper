@@ -41,8 +41,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * تهيئة لوحة تحكم المسؤول.
- * @param {object} user - كائن المستخدم (المسؤول).
+ * @description تهيئة لوحة تحكم المسؤول، بما في ذلك عرض رسالة الترحيب، والتحقق من حالة الإشعارات،
+ *   وإنشاء الأزرار الخاصة بإدارة الإعلانات، عرض المستخدمين، ومسح بيانات المتصفح، ثم ربط الأحداث بها.
+ * @function initializeAdminPanel
+ * @param {object} user - كائن المستخدم الحالي (المسؤول) الذي تم تسجيل دخوله.
+ * @returns {void}
+ * @see checkAndDisplayNotificationStatus
+ * @see showAdvertiesmentModal
+ * @see showUsersAdminModal
  */
 function initializeAdminPanel(user) {
   document.getElementById("welcome-message").textContent = `لوحة تحكم المسؤول | ${user.username}`;
@@ -148,7 +154,12 @@ function initializeAdminPanel(user) {
 }
 
 /**
- * جديد: يعرض نافذة منبثقة لإدارة الإعلان.
+ * @description يعرض نافذة منبثقة (Modal) لإدارة الإعلانات، ويقوم بتحميل محتواها من `pages/Advertiesment.html`.
+ *   بعد تحميل المحتوى، يستدعي دالة `initializeAdvertiesmentForm` لتهيئة النموذج.
+ * @function showAdvertiesmentModal
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see initializeAdvertiesmentForm
  */
 async function showAdvertiesmentModal() {
   await loadAndShowModal(
@@ -163,7 +174,11 @@ async function showAdvertiesmentModal() {
 }
 
 /**
- * يتحقق من حالة إذن الإشعارات ووجود توكن FCM ويعرض رسالة وزر تفعيل عند الحاجة.
+ * @description يتحقق من حالة إذن الإشعارات ووجود توكن FCM، ثم يعرض رسالة وزر تفعيل أو معلومات الحالة بناءً على ذلك.
+ *   يوفر للمستخدمين واجهة للتفاعل مع أذونات الإشعارات.
+ * @function checkAndDisplayNotificationStatus
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see setupFCM
  */
 async function checkAndDisplayNotificationStatus() {
   const statusContainer = document.getElementById('notification-status-container');

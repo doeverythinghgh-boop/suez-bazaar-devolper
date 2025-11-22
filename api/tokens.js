@@ -9,16 +9,37 @@
  */
 import { createClient } from "@libsql/client/web";
 
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 export const config = {
   runtime: "edge",
 };
 
+/**
+ * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @type {object}
+ * @const
+ */
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "POST, DELETE, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
+/**
+ * @description نقطة نهاية API لإدارة توكنات Firebase Cloud Messaging (FCM).
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
+ *   وطلبات `GET` لجلب توكنات المستخدمين بناءً على `user_key`،
+ *   وطلبات `POST` لحفظ أو تحديث توكن FCM لمستخدم معين،
+ *   وطلبات `DELETE` لحذف توكن FCM لمستخدم.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @see createClient
+ */
 export default async function handler(request) {
   const db = createClient({
     url: process.env.DATABASE_URL,

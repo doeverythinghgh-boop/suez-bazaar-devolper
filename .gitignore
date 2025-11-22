@@ -1,0 +1,8 @@
+# مجلد تبعيات Node.js
+/node_modules
+
+# ملفات السجل (Logs)
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm

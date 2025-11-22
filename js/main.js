@@ -1,3 +1,12 @@
+/**
+ * @file js/main.js
+ * @description هذا الملف هو نقطة الدخول الرئيسية للتطبيق ويحتوي على المنطق العام الذي يتم تنفيذه
+ *   عند تحميل الصفحة. يتضمن ذلك:
+ *   - تشغيل الرسوم المتحركة الافتتاحية للنص.
+ *   - تحميل وعرض الفئات.
+ *   - تهيئة حالة تسجيل الدخول والإشعارات.
+ *   - تهيئة موديول الإعلانات وموديول البحث.
+ */
 document.addEventListener("DOMContentLoaded", () => {
   // --- DOM Elements ---
   const animatedTextElement = document.getElementById("animated-text");
@@ -12,7 +21,13 @@ document.addEventListener("DOMContentLoaded", () => {
   // دالة مساعدة للانتظار، مُحسّنة للرسوم المتحركة
   const wait = (ms) => new Promise((res) => setTimeout(res, ms));
 
-  // 1. Function to show text with zoom-in letters
+  /**
+   * @description تعرض نصًا محددًا بحركة تكبير تدريجية لكل حرف.
+   *   تُستخدم للرسوم المتحركة الافتتاحية للنص.
+   * @function showTextWithZoom
+   * @param {string} text - النص المراد عرضه بالرسوم المتحركة.
+   * @returns {Promise<void>} - وعد (Promise) يتم حله بعد اكتمال الرسوم المتحركة ووقت الانتظار الإضافي.
+   */
   async function showTextWithZoom(text) {
     return new Promise((resolve) => {
       // ✅ إصلاح: إعادة تعيين كاملة للحالة الأصلية
@@ -39,14 +54,23 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 2. Function to hide the text
+  /**
+   * @description تخفي النص المعروض حاليًا.
+   * @function hideText
+   * @returns {Promise<void>} - وعد (Promise) يتم حله بعد فترة تأخير تتوافق مع مدة تأثير الاختفاء.
+   */
   async function hideText() {
     return new Promise((resolve) => {
       wait(500).then(resolve); // يتوافق مع مدة تأثير الاختفاء
     });
   }
 
-  // 3. Function to show the final "SB" text
+  /**
+   * @description تعرض النص النهائي (مثل "SB") وتطبق التنسيقات النهائية عليه.
+   * @function showFinalText
+   * @param {string} text - النص النهائي المراد عرضه.
+   * @returns {Promise<void>} - وعد (Promise) يتم حله فور عرض النص النهائي.
+   */
   async function showFinalText(text) {
     return new Promise((resolve) => {
       animatedTextElement.innerHTML = text;
@@ -60,7 +84,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 4. Function for the tagline carousel
+  /**
+   * @description تبدأ عرضًا متسلسلاً (carousel) للجمل التسويقية (taglines)،
+   *   حيث يتم التبديل بينها بتأثيرات تلاشي وظهور.
+   * @function startTaglineCarousel
+   * @returns {Promise<void>} - وعد (Promise) يتم حله بعد انتهاء عرض جميع الجمل وتلاشي الجملة الأخيرة.
+   */
   async function startTaglineCarousel() {
     return new Promise(async (resolve) => {
       const sentences = [
@@ -96,7 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 5. Function to load and display content from another page
+  /**
+   * @description تقوم بتحميل محتوى صفحة HTML من عنوان URL محدد وتعرضه داخل عنصر نائب (`contentPlaceholder`).
+   *   تنفذ أي سكربتات مضمنة في المحتوى المحمل بطريقة آمنة.
+   * @function loadPageContent
+   * @param {string} url - عنوان URL لصفحة HTML المراد تحميلها.
+   * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+   * @throws {Error} - إذا فشل تحميل المحتوى من عنوان URL.
+   */
   async function loadPageContent(url) {
     try {
       const loader = document.getElementById("content-loader");
@@ -124,7 +160,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // 6. Main animation cycle function
+  /**
+   * @description تبدأ دورة الرسوم المتحركة الرئيسية للنص، بما في ذلك عرض النص الكامل، إخفائه،
+   *   عرض النص النهائي، وبدء عرض الجمل التسويقية المتسلسل.
+   * @function startAnimationCycle
+   * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، ولكنه يعيد تشغيل الدورة بشكل متكرر.
+   * @see showTextWithZoom
+   * @see hideText
+   * @see showFinalText
+   * @see startTaglineCarousel
+   */
   async function startAnimationCycle() {
     if (isAnimationRunning) return; // منع تشغيل دورات متعددة في نفس الوقت
     isAnimationRunning = true;
@@ -150,7 +195,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // 7. Function to load and display categories
+  /**
+   * @description تقوم بتحميل بيانات الفئات من ملف `shared/list.json` وتعرضها في واجهة المستخدم
+   *   على شكل قائمة قابلة للطي تحتوي على فئات رئيسية وفئات فرعية.
+   * @function loadCategories
+   * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+   * @throws {Error} - إذا فشل تحميل بيانات الفئات.
+   */
   async function loadCategories() {
     try {
       const response = await fetch("shared/list.json");

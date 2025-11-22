@@ -4,9 +4,25 @@
  */
 
 /**
- * يعرض نافذة منبثقة بسجل الإشعارات.
+ * @description يعرض نافذة منبثقة (Modal) بسجل الإشعارات، ويقوم بتحميل سجل الإشعارات من IndexedDB
+ *   ويعرضها في قائمة، مع توفير وظيفة لمسح السجل.
+ *   تستمع هذه الدالة أيضًا للأحداث الجديدة (`notificationLogAdded`) لتحديث السجل في الوقت الفعلي.
+ * @function showNotificationsLogModal
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see getNotificationLogs
+ * @see generateNotificationLogItemHTML
+ * @see clearNotificationLogs
  */
 async function showNotificationsLogModal() {
+  /**
+   * @description دالة مساعدة لمعالجة حدث `notificationLogAdded` وتحديث قائمة الإشعارات في النافذة المنبثقة.
+   *   تضيف الإشعار الجديد إلى أعلى القائمة إذا كانت النافذة مرئية.
+   * @function handleNewNotification
+   * @param {CustomEvent} event - كائن الحدث المخصص الذي يحتوي على تفاصيل الإشعار الجديد (`event.detail`).
+   * @returns {void}
+   * @see generateNotificationLogItemHTML
+   */
   const handleNewNotification = (event) => {
     // ✅ إصلاح: التحقق مما إذا كانت النافذة مفتوحة بالفعل قبل تحديثها.
     // هذا يمنع النافذة من الظهور تلقائيًا إذا كانت مغلقة.

@@ -10,18 +10,37 @@ import { createClient } from "@libsql/client/web";
  * لإرجاع قائمة مفصلة بالمشتريات مرتبة حسب تاريخ الشراء.
  */
 
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 export const config = {
   runtime: 'edge',
 };
 
+/**
+ * @description نقطة نهاية API لجلب سجل مشتريات المستخدم.
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS، وطلبات `GET`
+ *   لجلب تفاصيل جميع المنتجات التي قام مستخدم معين بشرائها،
+ *   مرتبة حسب تاريخ الشراء.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @see createClient
+ */
 export default async function handler(request) {
   // ترويسات CORS للسماح بالطلبات
+  /**
+   * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+   * @type {object}
+   * @const
+   */
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
   };
-
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers: corsHeaders });
   }

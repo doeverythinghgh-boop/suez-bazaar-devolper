@@ -10,10 +10,25 @@ import { createClient } from "@libsql/client/web";
  * هذا يضمن أن يتم إنشاء الطلب وعناصره معًا أو لا يتم إنشاؤها على الإطلاق.
  */
 
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 export const config = {
   runtime: 'edge',
 };
 
+/**
+ * @description نقطة نهاية API لإنشاء وتحديث الطلبات في قاعدة البيانات.
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
+ *   وتطلبات `PUT` لتحديث حالة الطلبات،
+ *   وطلبات `POST` لإنشاء طلبات جديدة وعناصرها.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @see createClient
+ */
 export default async function handler(request) {
   // ✅ جديد: إضافة ترويسات CORS للسماح بالطلبات من أي مصدر
   const corsHeaders = {

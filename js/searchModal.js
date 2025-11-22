@@ -1,6 +1,7 @@
 /**
- * @file searchModal.js
- * @description وحدة للتحكم في نافذة البحث المنبثقة.
+ * @file js/searchModal.js
+ * @description وحدة للتحكم في نافذة البحث المنبثقة، بما في ذلك تحميل محتواها،
+ *   معالجة مدخلات البحث والفلاتر، عرض النتائج، وتوفير وظائف الفرز والتصفية.
  */
 
 /**
@@ -8,6 +9,15 @@
  * يحمل محتوى النافذة من ملف HTML ويربط الأحداث.
  * @param {string} containerId - معرف الحاوية التي سيتم تحميل النافذة بداخلها.
  * @param {string} openTriggerId - معرف الزر الذي يفتح النافذة.
+ */
+/**
+ * @description يقوم بتهيئة نافذة البحث المنبثقة، ويحمل محتوى النافذة من ملف HTML، ويربط الأحداث
+ *   للتحكم في البحث، الفلاتر، والفرز، ويعرض النتائج.
+ * @function initSearchModal
+ * @param {string} containerId - معرف الحاوية التي سيتم تحميل النافذة بداخلها.
+ * @param {string} openTriggerId - معرف الزر الذي يفتح النافذة.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
  */
 async function initSearchModal(containerId, openTriggerId) {
   const openSearchBtn = document.getElementById(openTriggerId);
@@ -31,7 +41,13 @@ async function initSearchModal(containerId, openTriggerId) {
     const sortFilter = document.getElementById('sort-filter');
     let currentResults = [];
 
-    // ✅ جديد: دالة لتأخير التنفيذ (Debounce) لتحسين أداء البحث أثناء الكتابة
+    /**
+     * @description دالة لتأخير تنفيذ دالة معينة (Debounce) لتحسين أداء البحث أثناء الكتابة.
+     * @function debounce
+     * @param {function(...any): any} func - الدالة المراد تأخير تنفيذها.
+     * @param {number} delay - فترة التأخير بالمللي ثانية.
+     * @returns {function(...any): void} - دالة مُعدّلة تنفذ الدالة الأصلية بعد فترة التأخير.
+     */
     function debounce(func, delay) {
       let timeout;
       return function(...args) {
@@ -40,7 +56,14 @@ async function initSearchModal(containerId, openTriggerId) {
       };
     }
 
-    // ✅ جديد: دالة لتنفيذ البحث وإظهار النتائج
+    /**
+     * @description تنفذ عملية البحث بناءً على معايير البحث الحالية (النص، الفئات الرئيسية والفرعية).
+     *   تعرض مؤشر تحميل وتُظهر النتائج أو رسالة خطأ.
+     * @function performSearch
+     * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+     * @see normalizeArabicText
+     * @see displaySearchResults
+     */
     async function performSearch() {
       // ✅ جديد: إيقاف حركة الزر بمجرد بدء البحث
       performSearchBtn.classList.remove('is-pulsing');
@@ -84,7 +107,15 @@ async function initSearchModal(containerId, openTriggerId) {
       }
     }
 
-    // ✅ جديد: دالة لعرض نتائج البحث
+    /**
+     * @description تعرض نتائج البحث في الواجهة، مع تطبيق خيارات الفرز إن وجدت.
+     *   تربط أحداث النقر على بطاقات المنتجات لفتح تفاصيلها في نافذة منبثقة.
+     * @function displaySearchResults
+     * @param {Array<Object>} results - مصفوفة من كائنات المنتجات التي تمثل نتائج البحث.
+     * @returns {void}
+     * @see generateProductCardHTML
+     * @see showProductDetails
+     */
     function displaySearchResults(results) {
       let sortedResults = [...results]; // إنشاء نسخة من النتائج للترتيب
       const sortValue = sortFilter.value;
@@ -178,7 +209,13 @@ async function initSearchModal(containerId, openTriggerId) {
       // إعادة عرض النتائج الحالية مع الترتيب الجديد دون استدعاء API
       displaySearchResults(currentResults);
     });
-    // ✅ جديد: دالة لجلب الفئات وتعبئة الفلاتر
+    /**
+     * @description تجلب الفئات من ملف `shared/list.json` وتعبئ فلاتر الفئات الرئيسية والفرعية في نافذة البحث.
+     *   تقوم أيضًا بإعداد مستمعي الأحداث لتحديث الفلاتر الفرعية عند تغيير الفئة الرئيسية.
+     * @function loadCategoryFilters
+     * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+     * @throws {Error} - إذا فشل تحميل الفئات.
+     */
     async function loadCategoryFilters() {
       try {
         const response = await fetch('shared/list.json');

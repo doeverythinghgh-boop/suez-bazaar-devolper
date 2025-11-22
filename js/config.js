@@ -1,3 +1,7 @@
+/**
+ * @description يحدد عنوان URL الأساسي لنقاط نهاية API بناءً على بيئة التشغيل (محلي، Cloudflare Pages، أو تطبيق Android).
+ * @type {string}
+ */
 let baseURL = "";
 
 // لو محلي → استخدم Vercel
@@ -13,10 +17,19 @@ else if (location.hostname === "appassets.androidplatform.net") {
   baseURL = "https://bazaar-neon-three.vercel.app";
 }
 
-// ✅ جديد: قائمة هواتف المسؤولين لتكون متاحة في كل المشروع
+/**
+ * @description قائمة بأرقام هواتف المسؤولين المسموح لهم بالوصول الإداري.
+ * @type {string[]}
+ * @const
+ */
 const adminPhoneNumbers = ["01024182175", "01026546550"];
 
-// ✅ تحسين: كائن للوصول المباشر للحالات لتجنب الأرقام السحرية
+/**
+ * @description كائن يمثل خريطة لحالات الطلبات المختلفة، مع توفير معرف (id) وحالة (state) ووصف (description) لكل حالة.
+ *   يستخدم لتجنب "الأرقام السحرية" وتوفير وصول مباشر لحالات الطلب.
+ * @type {Object<string, {id: number, state: string, description: string}>}
+ * @const
+ */
 const ORDER_STATUS_MAP = {
   REVIEW: {
     id: 0,
@@ -56,5 +69,11 @@ const ORDER_STATUS_MAP = {
   },
 };
 
-// ✅ مصدر الحقيقة الواحد: اشتقاق المصفوفة من الكائن مباشرة
+/**
+ * @description مصفوفة تحتوي على قيم حالات الطلبات المشتقة مباشرة من `ORDER_STATUS_MAP`.
+ *   تعتبر مصدر الحقيقة الوحيد لحالات الطلبات.
+ * @type {Array<{id: number, state: string, description: string}>}
+ * @const
+ * @see ORDER_STATUS_MAP
+ */
 const ORDER_STATUSES = Object.values(ORDER_STATUS_MAP);

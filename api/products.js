@@ -1,20 +1,47 @@
 import { createClient } from "@libsql/client/web";
 
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 export const config = {
   runtime: 'edge',
 };
 
+/**
+ * @description عميل قاعدة البيانات المستخدم للاتصال بقاعدة بيانات Turso.
+ * @type {import("@libsql/client/web").Client}
+ * @const
+ * @see createClient
+ */
 const db = createClient({
   url: process.env.DATABASE_URL,
   authToken: process.env.TURSO_AUTH_TOKEN
 });
 
+/**
+ * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @type {object}
+ * @const
+ */
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
+/**
+ * @description نقطة نهاية API لإدارة المنتجات (الاستعلام، الإضافة، التحديث، الحذف).
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
+ *   وطلبات `GET` لجلب المنتجات بناءً على معايير مختلفة (مفتاح المستخدم، مصطلحات البحث، الفئات)،
+ *   وطلبات `POST` لإضافة منتج جديد،
+ *   وطلبات `PUT` لتحديث منتج موجود،
+ *   وطلبات `DELETE` لحذف منتج.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ */
 export default async function handler(request) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: corsHeaders });

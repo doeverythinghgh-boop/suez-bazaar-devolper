@@ -1,20 +1,26 @@
 /**
- * ✅ جديد: معرّف الفئة التي لا تتطلب سعرًا أو كمية (مثل الخدمات).
+ * @file js/helpers/dom.js
+ * @description يوفر دوال مساعدة للتعامل مع عناصر DOM، مثل إعداد النوافذ المنبثقة (Modals) وتوليد HTML لبطاقات المنتجات والمستخدمين.
+ */
+
+/**
+ * @description معرف الفئة التي لا تتطلب تحديد سعر أو كمية (تُستخدم للخدمات).
+ * @type {string}
+ * @const
  */
 const SERVICE_CATEGORY_NoPrice_ID = "6";
 
 /**
- * ✅ جديد: إعداد منطق النافذة المنبثقة (Modal) بشكل معياري.
- *
- * هذه الدالة المساعدة تنشئ وتدير دورة حياة نافذة منبثقة.
- * تتولى إظهار وإخفاء النافذة، إضافة وإزالة فئة `modal-open` من الجسم،
- * وربط أحداث الإغلاق (زر الإغلاق والنقر على الخلفية).
- *
+ * @description إعداد منطق النافذة المنبثقة (Modal) بشكل معياري.
+ *   تنشئ وتدير دورة حياة نافذة منبثقة، وتتولى إظهار وإخفاء النافذة،
+ *   وإضافة وإزالة فئة `modal-open` من الجسم، وربط أحداث الإغلاق
+ *   (زر الإغلاق والنقر على الخلفية).
+ * @function setupModalLogic
  * @param {string} modalId - معرف (ID) حاوية النافذة المنبثقة.
  * @param {string} closeBtnId - معرف (ID) زر الإغلاق داخل النافذة.
- * @param {object} [options] - خيارات إضافية.
- * @param {function} [options.onClose] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
- * @returns {{open: function, close: function, modalElement: HTMLElement}|null} - كائن يحتوي على دوال الفتح والإغلاق وعنصر النافذة، أو `null` إذا لم يتم العثور على عنصر النافذة.
+ * @param {object} [options={}] - خيارات إضافية.
+ * @param {function(): void} [options.onClose] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
+ * @returns {{open: function(): void, close: function(): void, modalElement: HTMLElement}|null} - كائن يحتوي على دوال الفتح والإغلاق وعنصر النافذة، أو `null` إذا لم يتم العثور على عنصر النافذة.
  */
 function setupModalLogic(modalId, closeBtnId, options = {}) {
   const modalElement = document.getElementById(modalId);
@@ -49,12 +55,14 @@ function setupModalLogic(modalId, closeBtnId, options = {}) {
 }
 
 /**
- * ✅ جديد: تحميل وعرض نافذة منبثقة من قالب HTML.
- *
- * @param {string} modalId - معرف حاوية النافذة.
- * @param {string|null} templatePath - مسار ملف القالب (null إذا كان الهيكل موجودًا بالفعل).
- * @param {function(HTMLElement):void} initCallback - دالة تُستدعى بعد تحميل المحتوى لتهيئة المنطق.
- * @param {function():void} [onCloseCallback] - دالة اختيارية تُستدعى عند إغلاق النافذة.
+ * @description تحميل وعرض نافذة منبثقة من قالب HTML.
+ * @function loadAndShowModal
+ * @param {string} modalId - معرف حاوية النافذة المنبثقة.
+ * @param {string|null} templatePath - مسار ملف القالب HTML المراد تحميله (إذا كان `null`، يفترض أن الهيكل موجود بالفعل).
+ * @param {function(HTMLElement): void} initCallback - دالة رد نداء تُستدعى بعد تحميل المحتوى وفتح النافذة، لتجهيز المنطق الخاص بها. تستقبل عنصر الـ modal كمعامل.
+ * @param {function(): void} [onCloseCallback] - دالة رد نداء اختيارية تُستدعى عند إغلاق النافذة المنبثقة.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see setupModalLogic
  */
 async function loadAndShowModal(modalId, templatePath, initCallback, onCloseCallback) {
   const modal = document.getElementById(modalId);
@@ -91,7 +99,11 @@ async function loadAndShowModal(modalId, templatePath, initCallback, onCloseCall
 }
 
 /**
- * ✅ تعديل: تفتح نافذة سجل الإشعارات مباشرة في الصفحة الحالية.
+ * @description تفتح نافذة سجل الإشعارات مباشرة في الصفحة الحالية بعد التحقق من تسجيل دخول المستخدم وأهليته لاستقبال الإشعارات.
+ * @function showNotificationsModal
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see isUserEligibleForNotifications
+ * @see showNotificationsLogModal
  */
 async function showNotificationsModal() {
   const loggedInUserJSON = localStorage.getItem("loggedInUser");
@@ -112,11 +124,13 @@ async function showNotificationsModal() {
 }
 
 /**
- * ✅ جديد: دالة مركزية لتوليد HTML لبطاقة المنتج.
- * تقلل من تكرار الكود وتضمن التناسق في عرض المنتجات عبر التطبيق.
- * @param {object} product - كائن المنتج الكامل.
- * @param {string} viewType - نوع العرض ('gallery', 'search', 'seller').
- * @returns {string} - سلسلة HTML لبطاقة المنتج.
+ * @description دالة مركزية لتوليد HTML لبطاقة المنتج.
+ *   تقلل من تكرار الكود وتضمن التناسق في عرض المنتجات عبر التطبيق.
+ * @function generateProductCardHTML
+ * @param {object} product - كائن المنتج الكامل الذي يحتوي على تفاصيله.
+ * @param {string} viewType - نوع العرض الذي يحدد شكل البطاقة ('gallery', 'search', 'seller').
+ * @returns {string} - سلسلة HTML التي تمثل بطاقة المنتج.
+ * @see SERVICE_CATEGORY_NoPrice_ID
  */
 function generateProductCardHTML(product, viewType) {
   // 1. معالجة الصور
@@ -197,9 +211,10 @@ function generateProductCardHTML(product, viewType) {
 }
 
 /**
- * ✅ جديد: يولد HTML لصف واحد في سلة المشتريات.
- * @param {object} item - بيانات المنتج في السلة.
- * @returns {string} - سلسلة HTML لصف العنصر.
+ * @description يولد HTML لصف واحد يمثل منتجًا في سلة المشتريات.
+ * @function generateCartItemHTML
+ * @param {object} item - كائن يمثل بيانات المنتج في السلة (product details, price, quantity).
+ * @returns {string} - سلسلة HTML التي تمثل صف عنصر سلة المشتريات.
  */
 function generateCartItemHTML(item) {
   const itemTotal = (item.price * item.quantity).toFixed(2);
@@ -216,9 +231,11 @@ function generateCartItemHTML(item) {
 }
 
 /**
- * ✅ جديد: يولد HTML لعنصر واحد في سجل المشتريات.
- * @param {object} item - بيانات المنتج المشترى.
- * @returns {string} - سلسلة HTML لبطاقة العنصر.
+ * @description يولد HTML لعنصر واحد في سجل المشتريات.
+ * @function generatePurchaseItemHTML
+ * @param {object} item - كائن يمثل بيانات المنتج الذي تم شراؤه، بما في ذلك تفاصيل المنتج وحالة الطلب.
+ * @returns {string} - سلسلة HTML التي تمثل بطاقة عنصر المشتريات.
+ * @see createStatusTimelineHTML
  */
 function generatePurchaseItemHTML(item) {
   const firstImage = item.ImageName ? item.ImageName.split(',')[0] : '';
@@ -253,11 +270,14 @@ function generatePurchaseItemHTML(item) {
 }
 
 /**
- * ✅ جديد: يولد HTML لبطاقة طلب في تقرير حركة المبيعات.
- * @param {object} order - بيانات الطلب الكاملة.
- * @param {object} loggedInUser - بيانات المستخدم المسجل دخوله.
- * @param {boolean} isAdmin - هل المستخدم مسؤول.
- * @returns {string} - سلسلة HTML لبطاقة الطلب.
+ * @description يولد HTML لبطاقة طلب فردي لعرضه في تقرير حركة المبيعات.
+ * @function generateSalesMovementItemHTML
+ * @param {object} order - كائن يحتوي على بيانات الطلب الكاملة.
+ * @param {object} loggedInUser - كائن يحتوي على بيانات المستخدم المسجل دخوله.
+ * @param {boolean} isAdmin - قيمة منطقية تشير إلى ما إذا كان المستخدم الحالي مسؤولاً.
+ * @returns {string} - سلسلة HTML التي تمثل بطاقة الطلب.
+ * @see createStatusTimelineHTML
+ * @see ORDER_STATUSES
  */
 function generateSalesMovementItemHTML(order, loggedInUser, isAdmin) {
   const userRole = loggedInUser ? loggedInUser.is_seller : 0;
@@ -306,9 +326,12 @@ function generateSalesMovementItemHTML(order, loggedInUser, isAdmin) {
 }
 
 /**
- * ✅ جديد: يولد HTML لبطاقة مستخدم في لوحة تحكم المسؤول.
- * @param {object} user - بيانات المستخدم.
- * @returns {string} - سلسلة HTML لبطاقة المستخدم.
+ * @description يولد HTML لبطاقة مستخدم فردي لعرضها في لوحة تحكم المسؤول، مع عرض معلومات المستخدم وخيارات الإشعارات وتعديل الدور.
+ * @function generateUserCardHTML
+ * @param {object} user - كائن يحتوي على بيانات المستخدم.
+ * @returns {string} - سلسلة HTML التي تمثل بطاقة المستخدم.
+ * @see isUserEligibleForNotifications
+ * @see adminPhoneNumbers
  */
 function generateUserCardHTML(user) {
   let notificationUI = '';
@@ -355,9 +378,10 @@ function generateUserCardHTML(user) {
 }
 
 /**
- * ✅ جديد: يولد HTML لعنصر سجل إشعارات.
- * @param {object} log - بيانات سجل الإشعار.
- * @returns {string} - سلسلة HTML لعنصر السجل.
+ * @description يولد HTML لعنصر سجل إشعارات فردي لعرضه في واجهة المستخدم، مع تفاصيل مثل العنوان، النص، التاريخ، وحالة الإشعار.
+ * @function generateNotificationLogItemHTML
+ * @param {object} log - كائن يحتوي على بيانات سجل الإشعار (messageId, type, title, body, timestamp, status, relatedUser, payload, errorMessage).
+ * @returns {string} - سلسلة HTML التي تمثل عنصر سجل الإشعارات.
  */
 function generateNotificationLogItemHTML(log) {
   const logDate = new Date(log.timestamp).toLocaleString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });

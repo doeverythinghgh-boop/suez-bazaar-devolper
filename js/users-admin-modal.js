@@ -4,7 +4,13 @@
  */
 
 /**
- * يعرض نافذة منبثقة لإدارة المستخدمين.
+ * @description يعرض نافذة منبثقة (Modal) لإدارة المستخدمين.
+ *   يقوم بتحميل قالب إدارة المستخدمين من `pages/usersAdminModal.html`
+ *   ويهيئ المنطق الخاص بإدارة المستخدمين عند الفتح.
+ * @function showUsersAdminModal
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see initializeUsersAdminLogic
  */
 async function showUsersAdminModal() {
   await loadAndShowModal(
@@ -15,8 +21,17 @@ async function showUsersAdminModal() {
 }
 
 /**
- * يهيئ منطق العمل داخل نافذة إدارة المستخدمين.
+ * @description يهيئ منطق العمل داخل نافذة إدارة المستخدمين،
+ *   بما في ذلك جلب المستخدمين وعرضهم، وتفعيل فلاتر البحث والدور،
+ *   وإدارة تحديثات أدوار المستخدمين، وإرسال إشعارات لهم.
+ * @function initializeUsersAdminLogic
  * @param {HTMLElement} modalContainer - حاوية النافذة المنبثقة.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see fetchUsers
+ * @see generateUserCardHTML
+ * @see sendNotification
+ * @see addNotificationLog
+ * @see updateUsers
  */
 async function initializeUsersAdminLogic(modalContainer) {
   const contentWrapper = modalContainer.querySelector("#users-admin-modal-content-wrapper");
@@ -25,7 +40,14 @@ async function initializeUsersAdminLogic(modalContainer) {
   const roleFilterContainer = modalContainer.querySelector(".user-role-filter-container");
   let allUsers = []; // لتخزين جميع المستخدمين للبحث
 
-  // دالة لعرض المستخدمين بناءً على مصفوفة بيانات
+  /**
+   * @description تعرض قائمة بالمستخدمين في الواجهة على شكل بطاقات.
+   *   تُخفي حاوية الإجراءات إذا لم يكن هناك مستخدمين.
+   * @function displayUsers
+   * @param {Array<Object>} users - مصفوفة من كائنات المستخدمين المراد عرضها.
+   * @returns {void}
+   * @see generateUserCardHTML
+   */
   const displayUsers = (users) => {
     actionsContainer.style.display = 'none';
     if (users && users.length > 0) {
@@ -43,7 +65,13 @@ async function initializeUsersAdminLogic(modalContainer) {
   allUsers = await fetchUsers();
   displayUsers(allUsers);
 
-  // دالة التصفية الموحدة
+  /**
+   * @description تقوم بتصفية قائمة المستخدمين المعروضة بناءً على نص البحث والدور المحدد.
+   *   تُحدّث عرض المستخدمين في الواجهة.
+   * @function applyFilters
+   * @returns {void}
+   * @see displayUsers
+   */
   const applyFilters = () => {
     const searchTerm = searchInput.value.toLowerCase().trim();
     const selectedRole = roleFilterContainer.querySelector('input[name="user-role-filter"]:checked').value;

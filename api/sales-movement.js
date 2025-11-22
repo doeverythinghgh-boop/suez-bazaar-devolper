@@ -12,15 +12,21 @@ import { createClient } from "@libsql/client/web";
  */
 
 // إعدادات Vercel لتشغيل هذه الدالة على "Edge Runtime".
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 export const config = {
   runtime: 'edge',
 };
 
 /**
- * يتحقق من صلاحية المستخدم ويعيد دوره.
- * @param {import("@libsql/client/web").Client} db - عميل قاعدة البيانات.
- * @param {string | null} userKey - مفتاح المستخدم.
- * @returns {Promise<number>} - يعيد دور المستخدم (1 للبائع, 3 للمشرف, 0 لغير المصرح له).
+ * @description يتحقق من صلاحية المستخدم ويعيد دوره (`is_seller`) من قاعدة البيانات.
+ * @function getUserRole
+ * @param {import("@libsql/client/web").Client} db - عميل قاعدة البيانات المستخدم للاتصال بـ Turso.
+ * @param {string | null} userKey - مفتاح المستخدم (`user_key`) للتحقق من دوره.
+ * @returns {Promise<number>} - وعد (Promise) يُرجع دور المستخدم (على سبيل المثال: 1 للبائع، 3 للمشرف، 0 لغير المصرح له).
  */
 async function getUserRole(db, userKey) {
   if (!userKey) {
@@ -37,6 +43,17 @@ async function getUserRole(db, userKey) {
 }
 
 // الدالة الرئيسية التي تتعامل مع الطلبات الواردة
+/**
+ * @description نقطة نهاية API لجلب بيانات حركة المبيعات، مع دعم فلترة الطلبات
+ *   بناءً على صلاحية المستخدم (بائع، مشرف، أو خدمة توصيل).
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS وطلبات `GET`
+ *   لجلب تفاصيل الطلبات وعناصرها المجمعة.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @see createClient
+ * @see getUserRole
+ */
 export default async function handler(request) {
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',

@@ -1,5 +1,10 @@
 import { createClient } from "@libsql/client/web";
 
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 export const config = {
   runtime: "edge",
 };
@@ -10,8 +15,23 @@ export const config = {
  *
  * - POST: لإضافة سجل تحديث جديد.
  */
+/**
+ * @description نقطة نهاية API لإدارة جدول التحديثات.
+ *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
+ *   وطلبات `GET` لجلب آخر سجل تحديث،
+ *   وطلبات `POST` لتحديث تاريخ آخر سجل تحديث.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @see createClient
+ */
 export default async function handler(request) {
   // إعداد CORS للسماح بالطلبات من أي مصدر
+/**
+ * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر، بالإضافة إلى نوع المحتوى.
+ * @type {object}
+ * @const
+ */
   const headers = {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",

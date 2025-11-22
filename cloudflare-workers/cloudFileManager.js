@@ -15,8 +15,21 @@
  * const url = URL.createObjectURL(blob); // يمكن عرضه أو حفظه
  */
 
+/**
+ * @description العنوان الأساسي (Base URL) لنقطة نهاية خدمة Cloudflare Worker المسؤولة عن إدارة الملفات.
+ * @type {string}
+ * @const
+ */
 const baseUrl = "https://bidstory-files.bidsstories.workers.dev";
 
+/**
+ * @description يضمن وجود توكن مصادقة (X-Auth-Key) صالح للتفاعل مع خدمة Cloudflare Workers.
+ *   إذا كان التوكن موجودًا في `localStorage`، يتم إعادته. وإلا، يتم جلب توكن جديد من نقطة نهاية `/login`
+ *   وحفظه في `localStorage`.
+ * @function ensureToken2cf
+ * @returns {Promise<string>} - وعد (Promise) يحتوي على توكن المصادقة.
+ * @throws {Error} - إذا فشل جلب التوكن.
+ */
 async function ensureToken2cf() {
   const existing = localStorage.getItem("X-Auth-Key");
   if (existing) return existing;
@@ -31,7 +44,18 @@ async function ensureToken2cf() {
   }
 }
 
- async function uploadFile2cf(blob, fileName, onLog = console.log) {
+/**
+ * @description يقوم برفع ملف من نوع Blob إلى خدمة Cloudflare R2 عبر نقطة نهاية `/upload`.
+ *   يستخدم توكن مصادقة لضمان الأمان.
+ * @function uploadFile2cf
+ * @param {Blob} blob - كائن Blob يمثل الملف المراد رفعه.
+ * @param {string} fileName - اسم الملف الذي سيتم حفظه به في السحابة.
+ * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
+ * @returns {Promise<object>} - وعد (Promise) يحتوي على كائن يوضح نتيجة عملية الرفع.
+ * @throws {Error} - إذا لم يتم توفير Blob أو اسم الملف، أو فشل الرفع.
+ * @see ensureToken2cf
+ */
+async function uploadFile2cf(blob, fileName, onLog = console.log) {
   
   if (!(blob instanceof Blob) || !fileName) {
     throw new Error("❌ يجب توفير ملف Blob واسم الملف.");
@@ -63,7 +87,17 @@ async function ensureToken2cf() {
   }
 }
 
- async function downloadFile2cf(fileName, onLog = console.log) {
+/**
+ * @description يقوم بتحميل ملف من خدمة Cloudflare R2 عبر نقطة نهاية `/download`.
+ *   يستخدم توكن مصادقة لضمان الأمان.
+ * @function downloadFile2cf
+ * @param {string} fileName - اسم الملف المراد تحميله من السحابة.
+ * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
+ * @returns {Promise<Blob>} - وعد (Promise) يحتوي على كائن Blob يمثل محتوى الملف المحمل.
+ * @throws {Error} - إذا لم يتم توفير اسم الملف، أو فشل التحميل.
+ * @see ensureToken2cf
+ */
+async function downloadFile2cf(fileName, onLog = console.log) {
  
   if (!fileName) {
     throw new Error("❌ يجب توفير اسم الملف.");
@@ -95,7 +129,17 @@ async function ensureToken2cf() {
   }
 }
 
- async function deleteFile2cf(fileName, onLog = console.log) {
+/**
+ * @description يقوم بحذف ملف من خدمة Cloudflare R2 عبر نقطة نهاية `/delete`.
+ *   يستخدم توكن مصادقة لضمان الأمان.
+ * @function deleteFile2cf
+ * @param {string} fileName - اسم الملف المراد حذفه من السحابة.
+ * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
+ * @returns {Promise<object>} - وعد (Promise) يحتوي على كائن يوضح نتيجة عملية الحذف.
+ * @throws {Error} - إذا لم يتم توفير اسم الملف، أو فشل الحذف.
+ * @see ensureToken2cf
+ */
+async function deleteFile2cf(fileName, onLog = console.log) {
 
   if (!fileName) {
     throw new Error("❌ يجب توفير اسم الملف.");

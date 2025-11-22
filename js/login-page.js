@@ -12,8 +12,21 @@
  */
 
 /**
- * تحديث واجهة المستخدم لتعكس حالة تسجيل الدخول.
- * @param {object} user - كائن المستخدم المسجل دخوله.
+ * @description تحديث واجهة المستخدم لتعكس حالة تسجيل الدخول،
+ *   حيث تخفي نموذج تسجيل الدخول وتظهر حاوية المستخدم المسجل،
+ *   مع تخصيص الأزرار والإجراءات بناءً على دور المستخدم (ضيف، عميل، بائع، مسؤول).
+ * @function updateViewForLoggedInUser
+ * @param {object} user - كائن المستخدم المسجل دخوله، يحتوي على `username`, `is_guest`, `user_key`, `is_seller`, وغيرها.
+ * @returns {void}
+ * @see logout
+ * @see showCartModal
+ * @see showPurchasesModal
+ * @see showEditProfileModal
+ * @see showAddProductModal
+ * @see showMyProducts
+ * @see showNotificationsModal
+ * @see showSalesMovementModal
+ * @see adminPhoneNumbers
  */
 function updateViewForLoggedInUser(user) {
   // إخفاء حاوية نموذج تسجيل الدخول
@@ -138,14 +151,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const phoneInput = document.getElementById("phone");
 
-  // دالة لإظهار رسالة الخطأ
+  /**
+   * @description تعرض رسالة خطأ تحت حقل الإدخال المحدد وتضيف فئة خطأ إلى حقل الإدخال.
+   * @function showError
+   * @param {HTMLElement} input - عنصر الإدخال (input field) الذي حدث فيه الخطأ.
+   * @param {string} message - رسالة الخطأ المراد عرضها.
+   * @returns {void}
+   */
   const showError = (input, message) => {
     const errorDiv = document.getElementById(`${input.id}-error`);
     input.classList.add("input-error");
     errorDiv.textContent = message;
   };
 
-  // دالة لمسح رسالة الخطأ
+  /**
+   * @description تمسح رسالة الخطأ من تحت حقل الإدخال المحدد وتزيل فئة الخطأ.
+   * @function clearError
+   * @param {HTMLElement} input - عنصر الإدخال (input field) الذي حدث فيه الخطأ.
+   * @returns {void}
+   */
   const clearError = (input) => {
     const errorDiv = document.getElementById(`${input.id}-error`);
     input.classList.remove("input-error");
@@ -268,8 +292,17 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * يتعامل مع الإجراءات بعد تسجيل دخول ناجح.
+ * @description يتعامل مع الإجراءات التي تحدث بعد تسجيل دخول ناجح للمستخدم،
+ *   بما في ذلك حفظ بيانات المستخدم في LocalStorage، تهيئة إشعارات FCM إذا كان المستخدم مؤهلاً،
+ *   تحديث الواجهة، وعرض رسالة ترحيب مع خيار الانتقال للصفحة الرئيسية.
+ * @function handleLoginSuccess
  * @param {object} user - كائن المستخدم المسجل دخوله.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see isUserEligibleForNotifications
+ * @see setupFCM
+ * @see askForNotificationPermission
+ * @see updateViewForLoggedInUser
+ * @see updateCartBadge
  */
 async function handleLoginSuccess(user) {
   console.log('%c[Login Page] دخلنا دالة handleLoginSuccess. بيانات المستخدم:', 'color: green;', user);
@@ -306,6 +339,12 @@ async function handleLoginSuccess(user) {
   });
 }
 
+/**
+ * @description تطلب إذن الإشعارات من النظام الأصلي (Native) إذا كان التطبيق يعمل ضمن بيئة Android،
+ *   وذلك باستخدام واجهة `window.Android` المعرفة.
+ * @function askForNotificationPermission
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ */
 async function askForNotificationPermission() {
   // التحقق من وجود الكائن 'Android' للتأكد من أن الكود يعمل داخل تطبيق أندرويد
   if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
@@ -317,8 +356,11 @@ async function askForNotificationPermission() {
 }
 
 /**
- * جديد: يعالج عملية الدخول كضيف.
- * @param {Event} event - كائن الحدث لمنع السلوك الافتراضي للرابط.
+ * @description يعالج عملية تسجيل الدخول كضيف، حيث يقوم بإنشاء كائن مستخدم ضيف وحفظه في LocalStorage،
+ *   ثم يعرض رسالة ترحيب ويُعيد توجيه المستخدم إلى الصفحة الرئيسية.
+ * @function handleGuestLogin
+ * @param {Event} event - كائن الحدث لمنع السلوك الافتراضي للرابط (مثل إعادة تحميل الصفحة).
+ * @returns {void}
  */
 function handleGuestLogin(event) {
   event.preventDefault(); // منع الرابط من تحديث الصفحة

@@ -4,7 +4,12 @@
  */
 
 /**
- * يعرض نافذة منبثقة لإضافة منتج جديد.
+ * @description يعرض نافذة منبثقة (Modal) لإضافة منتج جديد.
+ *   يقوم بتحميل قالب إضافة المنتج من `pages/addProduct.html` ويهيئ النموذج عند الفتح.
+ * @function showAddProductModal
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see initializeAddProductForm
  */
 async function showAddProductModal() {
   await loadAndShowModal(
@@ -19,9 +24,15 @@ async function showAddProductModal() {
 }
 
 /**
- * يعرض نافذة منبثقة لتعديل منتج موجود.
- * @param {object} productData - بيانات المنتج المراد تعديله.
- * @param {function} [onCloseCallback] - دالة اختيارية يتم استدعاؤها عند إغلاق النافذة.
+ * @description يعرض نافذة منبثقة (Modal) لتعديل منتج موجود.
+ *   يقوم بتحميل قالب إضافة المنتج من `pages/addProduct.html` ويهيئ النموذج مع بيانات المنتج
+ *   للسماح بالتعديل.
+ * @function showEditProductModal
+ * @param {object} productData - كائن يحتوي على بيانات المنتج المراد تعديله.
+ * @param {function(): void} [onCloseCallback] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see initializeAddProductForm
  */
 async function showEditProductModal(productData, onCloseCallback) {
   await loadAndShowModal(
@@ -38,8 +49,16 @@ async function showEditProductModal(productData, onCloseCallback) {
 }
 
 /**
- * يعرض جدولاً بمنتجات المستخدم الحالي.
- * @param {string} userKey - المفتاح الفريد للمستخدم.
+ * @description يعرض نافذة منبثقة (Modal) تحتوي على قائمة بمنتجات المستخدم الحالي (البائع)،
+ *   مع إمكانيات التعديل والحذف والتصفية.
+ * @function showMyProducts
+ * @param {string} userKey - المفتاح الفريد للمستخدم الذي سيتم عرض منتجاته.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see getProductsByUser
+ * @see generateProductCardHTML
+ * @see showEditProductModal
+ * @see deleteProductAndImages
  */
 async function showMyProducts(userKey) {
   await loadAndShowModal("my-products-modal-container", "pages/myProductsModal.html", async (modal) => {
@@ -103,6 +122,11 @@ async function showMyProducts(userKey) {
       mainCategoryFilter.add(new Option(category.title, category.id));
     });
 
+    /**
+     * @description تقوم بتصفية وعرض بطاقات المنتجات بناءً على معايير البحث (النص، الفئة الرئيسية، والفئة الفرعية).
+     * @function filterMyProducts
+     * @returns {void}
+     */
     const filterMyProducts = () => {
       const searchTerm = searchInput.value.toLowerCase().trim();
       const selectedMainCat = mainCategoryFilter.value;
@@ -156,12 +180,19 @@ async function showMyProducts(userKey) {
     contentWrapper.innerHTML = "<p style='text-align: center; padding: 2rem 0; color: red;'>حدث خطأ أثناء تحميل منتجاتك.</p>";
   }
   });
-} 
+}
 
 /**
- * يتعامل مع عملية حذف منتج وصوره المرتبطة به.
- * @param {object} product - كائن المنتج المراد حذفه.
+ * @description يتعامل مع عملية حذف منتج وصوره المرتبطة به.
+ *   يعرض رسالة تأكيد للمستخدم قبل الحذف، ثم يقوم بحذف الصور من التخزين السحابي
+ *   وحذف المنتج من قاعدة البيانات، ثم يُحدث عرض المنتجات.
+ * @function deleteProductAndImages
+ * @param {object} product - كائن يحتوي على بيانات المنتج المراد حذفه، بما في ذلك `productName` و`ImageName` و`product_key`.
  * @param {string} userKey - مفتاح المستخدم الحالي لتحديث العرض بعد الحذف.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see deleteFile2cf
+ * @see deleteProduct
+ * @see showMyProducts
  */
 async function deleteProductAndImages(product, userKey) {
   Swal.fire({

@@ -4,12 +4,15 @@
  */
 
 /**
- * ينشئ شريط تقدم زمني (Timeline) لحالة الطلب.
- * @param {string} orderKey - المفتاح الفريد للطلب.
- * @param {object} statusDetails - كائن تفاصيل الحالة (id, state, description).
- * @param {boolean} canEdit - يحدد ما إذا كان المستخدم لديه صلاحية تعديل هذا الطلب بشكل عام.
- * @param {number} userRole - دور المستخدم الحالي (1=بائع, 2=خدمة توصيل, 3=مسؤول).
- * @returns {string} - كود HTML لشريط التقدم.
+ * @description ينشئ شريط تقدم زمني (Timeline) لحالة الطلب، مع تحديد الخطوات النشطة
+ *   والخطوات القابلة للتعديل بناءً على دور المستخدم وصلاحياته.
+ * @function createStatusTimelineHTML
+ * @param {string} orderKey - المفتاح الفريد للطلب الذي يتم إنشاء شريط التقدم له.
+ * @param {object} statusDetails - كائن يحتوي على تفاصيل الحالة الحالية للطلب (id, state, description).
+ * @param {boolean} canEdit - قيمة منطقية تحدد ما إذا كان المستخدم لديه صلاحية تعديل هذا الطلب بشكل عام.
+ * @param {number} userRole - دور المستخدم الحالي (على سبيل المثال: 1=بائع, 2=خدمة توصيل, 3=مسؤول).
+ * @returns {string} - كود HTML الذي يمثل شريط التقدم الزمني للحالة.
+ * @see ORDER_STATUS_MAP
  */
 function createStatusTimelineHTML(orderKey, statusDetails, canEdit, userRole) {
   const currentStatusId = statusDetails ? statusDetails.id : -1;
@@ -91,8 +94,16 @@ function createStatusTimelineHTML(orderKey, statusDetails, canEdit, userRole) {
 }
 
 /**
- * يعرض نافذة منبثقة بحركة المشتريات لجميع الطلبات.
- * @param {string} userKey - مفتاح المستخدم الذي يطلب التقرير.
+ * @description يعرض نافذة منبثقة (Modal) تحتوي على تقرير حركة المبيعات لجميع الطلبات،
+ *   مع إمكانية عرض تفاصيل الطلبات وتحديث حالتها بناءً على صلاحيات المستخدم.
+ * @function showSalesMovementModal
+ * @param {string} userKey - المفتاح الفريد للمستخدم الذي يطلب التقرير.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see getSalesMovement
+ * @see generateSalesMovementItemHTML
+ * @see updateOrderStatus
+ * @see getProductByKey
  */
 async function showSalesMovementModal(userKey) {
   await loadAndShowModal("sales-movement-modal-container", "pages/salesMovementModal.html", async (modal) => {

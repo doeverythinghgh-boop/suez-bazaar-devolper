@@ -4,7 +4,16 @@
  */
 
 /**
- * يعرض نافذة منبثقة بمحتويات سلة المشتريات.
+ * @description يعرض نافذة منبثقة (Modal) بمحتويات سلة المشتريات.
+ *   يقوم بتحميل قالب السلة، ويعرض المنتجات الموجودة فيها، ويُهيئ أزرار الإفراغ وإتمام الشراء، ويربط الأحداث اللازمة.
+ * @function showCartModal
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see loadAndShowModal
+ * @see getCart
+ * @see generateCartItemHTML
+ * @see removeFromCart
+ * @see clearCart
+ * @see handleCheckout
  */
 async function showCartModal() {
   await loadAndShowModal("cart-modal-container", "pages/cartModal.html", (modal) => {
@@ -79,8 +88,9 @@ async function showCartModal() {
 }
 
 /**
- * دالة لتوليد مفتاح فريد للطلب (3 أرقام و 3 أحرف).
- * @returns {string} مفتاح الطلب.
+ * @description دالة لتوليد مفتاح فريد للطلب يتكون من 3 أحرف و 3 أرقام مختلطة.
+ * @function generateOrderKey
+ * @returns {string} - مفتاح الطلب الفريد الذي تم إنشاؤه.
  */
 function generateOrderKey() {
   const chars = "abcdefghijklmnopqrstuvwxyz";
@@ -97,7 +107,20 @@ function generateOrderKey() {
 }
 
 /**
- * يعالج عملية إتمام الشراء.
+ * @description تعالج عملية إتمام الشراء، بما في ذلك التحقق من صلاحية المستخدم،
+ *   حساب إجمالي المبلغ، إنشاء الطلب، إرسال إشعارات للبائعين والمسؤولين،
+ *   ثم مسح سلة المشتريات وتحديث واجهة المستخدم.
+ * @function handleCheckout
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، يعالج عمليات الشراء غير المتزامنة.
+ * @see getCurrentUser
+ * @see getCart
+ * @see generateOrderKey
+ * @see createOrder
+ * @see getUniqueSellerKeys
+ * @see getNotificationTokensForOrder
+ * @see sendNotification
+ * @see clearCart
+ * @see showCartModal
  */
 async function handleCheckout() {
   // 1. جلب البيانات
@@ -187,11 +210,13 @@ async function handleCheckout() {
   }
 }
 /**
- * تجلب توكنات إشعارات Firebase (FCM Tokens) لكل من المسؤولين (2) والبائعين المعنيين بالطلب.
- * * ✅ ملاحظة: هذه الدالة تعتمد على نقطة النهاية (API Endpoint) /api/tokens التي قمنا بتعديلها
- * لتقبل قائمة المفاتيح عبر متغير الاستعلام (Query Parameter) userKeys.
- * * @param {Array<string>} sellerKeys - قائمة بمفاتيح البائعين (user_key) الذين يملكون المنتجات في الطلب.
- * @returns {Promise<Array<string>>} - مصفوفة تحتوي على جميع توكنات الإشعارات الصالحة.
+ * @description تجلب توكنات إشعارات Firebase (FCM Tokens) لكل من المسؤولين والبائعين المعنيين بالطلب.
+ *   تعتمد على نقطة النهاية `/api/tokens` التي تقبل قائمة المفاتيح عبر `userKeys` كـ Query Parameter.
+ * @function getNotificationTokensForOrder
+ * @param {Array<string>} sellerKeys - قائمة بمفاتيح البائعين (`user_key`) الذين يملكون المنتجات في الطلب.
+ * @returns {Promise<Array<string>>} - مصفوفة تحتوي على جميع توكنات الإشعارات الصالحة التي تم جلبها.
+ * @throws {Error} - إذا فشل جلب التوكنات من الخادم.
+ * @see baseURL
  */
 async function getNotificationTokensForOrder(sellerKeys) {
     console.log("[FCM] Preparing to fetch notification tokens.");
@@ -254,9 +279,11 @@ async function getNotificationTokensForOrder(sellerKeys) {
     }
 }
 /**
- * تستخلص المفاتيح الفريدة للبائعين (seller_key) من بنية بيانات الطلب (orderData).
- * @param {object} orderData - هيكل بيانات الطلب الذي يتم إعداده للإرسال إلى API.
- * @returns {Array<string>} - قائمة بمفاتيح البائعين الفريدة.
+ * @description تستخلص المفاتيح الفريدة للبائعين (`seller_key`) من بنية بيانات الطلب (`orderData`).
+ * @function getUniqueSellerKeys
+ * @param {object} orderData - هيكل بيانات الطلب الذي يتم إعداده للإرسال إلى API، ويحتوي على مصفوفة `items`.
+ * @param {Array<object>} orderData.items - مصفوفة من عناصر المنتج في الطلب، حيث يجب أن يحتوي كل عنصر على `seller_key`.
+ * @returns {Array<string>} - قائمة بمفاتيح البائعين الفريدة المستخرجة من عناصر الطلب.
  */
 function getUniqueSellerKeys(orderData) {
     if (!orderData || !Array.isArray(orderData.items)) {

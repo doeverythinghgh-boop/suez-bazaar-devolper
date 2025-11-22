@@ -3,16 +3,41 @@
  * @description وحدة لإدارة قاعدة بيانات IndexedDB الخاصة بالتطبيق.
  */
 
+/**
+ * @description اسم قاعدة البيانات IndexedDB الخاصة بالتطبيق.
+ * @type {string}
+ * @const
+ */
 const DB_NAME = 'bazaarAppDB';
+/**
+ * @description إصدار قاعدة البيانات IndexedDB. يتم زيادته عند الحاجة لتشغيل `onupgradeneeded`.
+ * @type {number}
+ * @const
+ */
 const DB_VERSION = 3; // ✅ إصلاح نهائي: زيادة الإصدار لإجبار المتصفح على تشغيل onupgradeneeded
+/**
+ * @description اسم مخزن الكائنات (Object Store) الخاص بسجلات الإشعارات داخل قاعدة البيانات.
+ * @type {string}
+ * @const
+ */
 const NOTIFICATIONS_STORE = 'notificationsLog';
 
 let db;
+/**
+ * @description متغير لتخزين الوعد (Promise) الخاص بتهيئة قاعدة البيانات، لضمان عدم تكرار عملية الفتح.
+ * @type {Promise<IDBDatabase>|null}
+ */
 let dbPromise; // ✅ جديد: متغير لتخزين الوعد الخاص بتهيئة قاعدة البيانات
 
 /**
- * يفتح أو ينشئ قاعدة البيانات ويهيئ مخازن الكائنات.
- * @returns {Promise<IDBDatabase>} كائن قاعدة البيانات.
+ * @description يفتح أو ينشئ قاعدة بيانات IndexedDB ويهيئ مخازن الكائنات (Object Stores) اللازمة.
+ *   تستخدم هذه الدالة نمط Singleton لضمان تهيئة قاعدة البيانات مرة واحدة فقط.
+ * @function initDB
+ * @returns {Promise<IDBDatabase>} - وعد (Promise) يحتوي على كائن قاعدة بيانات IndexedDB عند النجاح.
+ * @throws {string} - رسالة خطأ في حالة فشل فتح قاعدة البيانات.
+ * @see DB_NAME
+ * @see DB_VERSION
+ * @see NOTIFICATIONS_STORE
  */
 async function initDB() {
   // ✅ إصلاح: إذا كان هناك وعد قائم بالفعل، قم بإرجاعه مباشرة لمنع السباق الزمني.
@@ -67,9 +92,14 @@ async function initDB() {
 }
 
 /**
- * يضيف سجلاً جديدًا إلى مخزن الإشعارات.
- * @param {object} notificationData - بيانات الإشعار المراد إضافتها.
- * @returns {Promise<number>} مفتاح السجل الجديد.
+ * @description يضيف سجلاً جديدًا إلى مخزن الإشعارات في IndexedDB، مع التحقق من عدم وجود تكرار للإشعارات المستلمة.
+ *   يقوم بإرسال حدث مخصص (`notificationLogAdded`) بعد إضافة السجل بنجاح.
+ * @function addNotificationLog
+ * @param {object} notificationData - كائن يحتوي على بيانات الإشعار المراد إضافته (مثل `messageId`, `type`, `title`, `body`, `timestamp`, `status`, `relatedUser`, `payload`).
+ * @returns {Promise<number>} - وعد (Promise) يحتوي على مفتاح السجل الجديد (`id`) الذي تم إنشاؤه في قاعدة البيانات.
+ * @throws {string} - رسالة خطأ في حالة فشل إضافة السجل.
+ * @see initDB
+ * @see NOTIFICATIONS_STORE
  */
 async function addNotificationLog(notificationData) {
   // ✅ إصلاح: انتظر دائمًا اكتمال تهيئة قاعدة البيانات قبل أي عملية.
@@ -107,8 +137,15 @@ async function addNotificationLog(notificationData) {
 }
 
 /**
- * دالة مساعدة لإضافة سجل وإرسال حدث.
- * @private
+ * @description دالة مساعدة داخلية لإضافة سجل إشعار فعلي إلى مخزن الكائنات `NOTIFICATIONS_STORE` في IndexedDB.
+ *   بعد الإضافة الناجحة، ترسل حدثًا مخصصًا `notificationLogAdded`.
+ * @function addRecord
+ * @param {IDBObjectStore} store - كائن مخزن IndexedDB الذي ستتم الإضافة إليه.
+ * @param {object} notificationData - بيانات الإشعار المراد إضافتها.
+ * @param {function(number): void} resolve - دالة لحل الوعد (Promise) الخاص بـ `addNotificationLog` عند النجاح.
+ * @param {function(string): void} reject - دالة لرفض الوعد (Promise) الخاص بـ `addNotificationLog` عند الفشل.
+ * @returns {void}
+ * @see addNotificationLog
  */
 function addRecord(store, notificationData, resolve, reject) {
     const request = store.add(notificationData);
@@ -132,10 +169,15 @@ function addRecord(store, notificationData, resolve, reject) {
 }
 
 /**
- * يجلب سجلات الإشعارات من قاعدة البيانات.
- * @param {'sent' | 'received' | 'all'} type - نوع الإشعارات المراد جلبها.
- * @param {number} limit - أقصى عدد من السجلات المراد جلبها.
- * @returns {Promise<Array<object>>} مصفوفة من سجلات الإشعارات.
+ * @description يجلب سجلات الإشعارات من قاعدة بيانات IndexedDB، مع إمكانية التصفية حسب النوع والحد الأقصى للعدد.
+ *   يتم جلب السجلات بترتيب زمني عكسي (الأحدث أولاً).
+ * @function getNotificationLogs
+ * @param {'sent' | 'received' | 'all'} [type='all'] - نوع الإشعارات المراد جلبها ('sent', 'received', أو 'all' لجلب جميع الأنواع).
+ * @param {number} [limit=50] - أقصى عدد من السجلات المراد جلبها.
+ * @returns {Promise<Array<object>>} - وعد (Promise) يحتوي على مصفوفة من كائنات سجلات الإشعارات.
+ * @throws {string} - رسالة خطأ في حالة فشل جلب السجلات.
+ * @see initDB
+ * @see NOTIFICATIONS_STORE
  */
 async function getNotificationLogs(type = 'all', limit = 50) {
   const db = await initDB();
@@ -171,8 +213,12 @@ async function getNotificationLogs(type = 'all', limit = 50) {
 }
 
 /**
- * ✅ جديد: يمسح جميع السجلات من مخزن الإشعارات.
- * @returns {Promise<void>}
+ * @description يمسح جميع السجلات من مخزن الإشعارات في IndexedDB.
+ * @function clearNotificationLogs
+ * @returns {Promise<void>} - وعد (Promise) يتم حله عند مسح جميع السجلات بنجاح.
+ * @throws {string} - رسالة خطأ في حالة فشل عملية المسح.
+ * @see initDB
+ * @see NOTIFICATIONS_STORE
  */
 async function clearNotificationLogs() {
   const db = await initDB();
