@@ -1,14 +1,25 @@
 /**
  * @file js/profile-modal.js
- * @description يحتوي على المنطق الخاص بنافذة تعديل الملف الشخصي للمستخدم.
+ * @description يحتوي هذا الملف على المنطق البرمجي الخاص بنافذة تعديل الملف الشخصي للمستخدم.
+ * يوفر دوال لعرض النافذة، تحديث بيانات المستخدم، وحذف الحساب.
+ * @requires module:sweetalert2 - لعرض رسائل وتنبيهات تفاعلية.
+ * @requires module:api/users - للتفاعل مع واجهة برمجة التطبيقات (API) الخاصة بالمستخدمين (updateUser, deleteUser, verifyUserPassword).
+ * @requires js/modal.js - لاستيراد `loadAndShowModal` و `setupModalLogic` لإدارة النوافذ المنبثقة.
  */
 
 /**
- * @description يعرض نافذة منبثقة (Modal) لتعديل بيانات المستخدم الشخصية (الاسم، رقم الهاتف، العنوان، وكلمة المرور).
- *   يستخدم الآن بنية المودال القياسية في المشروع.
+ * @description يعرض نافذة منبثقة (Modal) لتعديل بيانات المستخدم الشخصية.
+ * يقوم بتحميل محتوى النافذة من ملف HTML، يملأ الحقول ببيانات المستخدم الحالية،
+ * ويدير منطق التحقق من صحة المدخلات، تغيير كلمة المرور، وحفظ التغييرات.
  * @function showEditProfileModal
- * @param {object} currentUser - كائن يحتوي على بيانات المستخدم الحالية التي يتم عرضها وتعديلها.
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @async
+ * @param {object} currentUser - كائن يحتوي على بيانات المستخدم الحالية.
+ * @param {string} currentUser.user_key - المفتاح الفريد للمستخدم.
+ * @param {string} [currentUser.username] - اسم المستخدم.
+ * @param {string} [currentUser.phone] - رقم هاتف المستخدم.
+ * @param {string} [currentUser.Address] - عنوان المستخدم.
+ * @param {boolean} currentUser.Password - علامة تشير إلى ما إذا كان المستخدم لديه كلمة مرور.
+ * @returns {Promise<void>} - يُرجع وعدًا (Promise) يتم حله عند إغلاق النافذة أو اكتمال العملية، دون إرجاع قيمة.
  * @see loadAndShowModal
  * @see handleAccountDeletion
  * @see verifyUserPassword
@@ -120,6 +131,12 @@ async function showEditProfileModal(currentUser) {
       }
     };
     togglePasswordVisibility('profile-password', 'profile-toggle-password');
+    /**
+     * @todo يمكن نقل الدالة `togglePasswordVisibility` إلى ملف helpers مشترك
+     * إذا تم استخدامها في أماكن أخرى لتقليل التكرار. حاليًا، هي دالة محلية.
+     * @function togglePasswordVisibility
+     * @inner
+     */
     togglePasswordVisibility('profile-confirm-password', 'profile-toggle-confirm-password');
 
     // Handle account deletion
@@ -241,11 +258,17 @@ async function showEditProfileModal(currentUser) {
 }
 
 /**
- * @description يعالج عملية حذف الحساب بالكامل، بما في ذلك تأكيد المستخدم، التحقق من كلمة المرور إذا كانت موجودة،
- *   حذف المستخدم من قاعدة البيانات، ومسح بيانات الجلسة والتخزين المحلي، ثم إعادة توجيه المستخدم.
+ * @description يعالج عملية حذف حساب المستخدم بشكل آمن.
+ * تبدأ العملية بعرض رسالة تحذير لتأكيد رغبة المستخدم في الحذف.
+ * إذا كان للمستخدم كلمة مرور، يتم طلبها للتحقق النهائي قبل المتابعة.
+ * بعد التحقق، يتم حذف المستخدم من قاعدة البيانات، مسح بياناته من المتصفح، وإعادة توجيهه إلى الصفحة الرئيسية.
  * @function handleAccountDeletion
+ * @async
  * @param {object} currentUser - كائن يحتوي على بيانات المستخدم الحالي المراد حذف حسابه.
-* @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @param {string} currentUser.user_key - المفتاح الفريد للمستخدم.
+ * @param {string} currentUser.phone - رقم هاتف المستخدم (يُستخدم للتحقق من كلمة المرور).
+ * @param {boolean} currentUser.Password - علامة تشير إلى وجود كلمة مرور.
+ * @returns {Promise<void>} - يُرجع وعدًا (Promise) لا يُرجع قيمة، ويكتمل عند انتهاء عملية الحذف أو إلغائها.
  * @see verifyUserPassword
  * @see deleteUser
  */

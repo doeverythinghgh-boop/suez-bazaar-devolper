@@ -1,14 +1,13 @@
 /**
  * @file js/login-page.js
- * @description يحتوي هذا الملف على كل المنطق البرمجي الخاص بصفحة login.html.
- *
- * يشمل ذلك:
- * - التعامل مع نموذج تسجيل الدخول.
- * - تحديث الواجهة للمستخدم المسجل دخوله.
- * - عرض لوحة تحكم المسؤول (Admin) لإدارة المستخدمين.
- * - عرض لوحة تحكم البائع (Seller) لإدارة المنتجات.
- * - عرض وإدارة سلة المشتريات والمشتريات السابقة.
- * - عرض النوافذ المنبثقة (Modals) لإضافة/تعديل المنتجات والبيانات الشخصية.
+ * @description يحتوي هذا الملف على المنطق البرمجي الكامل الخاص بصفحة تسجيل الدخول (`login.html`).
+ * يتولى الملف مسؤولية التحقق من وجود مستخدم مسجل، وعرض الواجهة المناسبة له،
+ * أو معالجة عملية تسجيل دخول جديدة لمستخدم موجود أو تسجيل الدخول كضيف.
+ * @requires module:sweetalert2 - لعرض رسائل تفاعلية للمستخدم.
+ * @requires module:api/users - للتفاعل مع واجهة برمجة التطبيقات لجلب المستخدمين والتحقق من كلمة المرور.
+ * @requires js/auth.js - لاستخدام دوال مثل `logout`, `isUserEligibleForNotifications`, `setupFCM`.
+ * @requires js/utils.js - لاستخدام `normalizeDigits`.
+ * @requires js/modal.js - لاستدعاء دوال عرض النوافذ المنبثقة المختلفة.
  */
 
 /**
@@ -16,7 +15,12 @@
  *   حيث تخفي نموذج تسجيل الدخول وتظهر حاوية المستخدم المسجل،
  *   مع تخصيص الأزرار والإجراءات بناءً على دور المستخدم (ضيف، عميل، بائع، مسؤول).
  * @function updateViewForLoggedInUser
- * @param {object} user - كائن المستخدم المسجل دخوله، يحتوي على `username`, `is_guest`, `user_key`, `is_seller`, وغيرها.
+ * @param {object} user - كائن المستخدم المسجل دخوله.
+ * @param {string} user.username - اسم المستخدم.
+ * @param {boolean} user.is_guest - علامة تشير إذا كان المستخدم ضيفًا.
+ * @param {string} user.user_key - المفتاح الفريد للمستخدم.
+ * @param {number} [user.is_seller] - دور المستخدم (1: بائع, 2: خدمة توصيل).
+ * @param {string} [user.phone] - رقم هاتف المستخدم.
  * @returns {void}
  * @see logout
  * @see showCartModal
@@ -179,6 +183,12 @@ document.addEventListener("DOMContentLoaded", () => {
    * @param {string} message - رسالة الخطأ المراد عرضها.
    * @returns {void}
    */
+  /**
+   * @function showError
+   * @description تعرض رسالة خطأ تحت حقل الإدخال المحدد وتضيف فئة خطأ إليه.
+   * @param {HTMLInputElement} input - عنصر الإدخال الذي حدث فيه الخطأ.
+   * @param {string} message - رسالة الخطأ المراد عرضها.
+   */
   const showError = (input, message) => {
     const errorDiv = document.getElementById(`${input.id}-error`);
     input.classList.add("input-error");
@@ -189,6 +199,12 @@ document.addEventListener("DOMContentLoaded", () => {
    * @description تمسح رسالة الخطأ من تحت حقل الإدخال المحدد وتزيل فئة الخطأ.
    * @function clearError
    * @param {HTMLElement} input - عنصر الإدخال (input field) الذي حدث فيه الخطأ.
+   * @returns {void}
+   */
+  /**
+   * @function clearError
+   * @description تزيل رسالة الخطأ من تحت حقل الإدخال المحدد وتزيل فئة الخطأ منه.
+   * @param {HTMLInputElement} input - عنصر الإدخال لتنظيف الخطأ منه.
    * @returns {void}
    */
   const clearError = (input) => {
@@ -205,7 +221,14 @@ document.addEventListener("DOMContentLoaded", () => {
     e.target.value = normalized.replace(/[^0-9]/g, "");
   });
 
-  // إضافة مستمع لحدث الإرسال للنموذج
+  /**
+   * @description معالج حدث إرسال نموذج تسجيل الدخول.
+   * يقوم بالتحقق من صحة رقم الهاتف، ثم يتواصل مع الواجهة الخلفية لجلب بيانات المستخدم.
+   * إذا كان الحساب يتطلب كلمة مرور، فإنه يعرض نافذة منبثقة لإدخالها والتحقق منها.
+   * عند النجاح، يستدعي `handleLoginSuccess`.
+   * @event submit
+   * @async
+   */
   form.addEventListener("submit", async function (e) {
     console.log(
       "%c[Login Page] تم الضغط على زر تسجيل الدخول.",
@@ -249,6 +272,11 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="password-container">
               <i class="fas fa-shield-alt swal-password-prompt-icon"></i>
               <p class="swal-password-prompt-text">هذا الحساب محمي بكلمة مرور</p>
+              <!-- 
+                @todo يمكن تحويل هذا الجزء إلى دالة مساعدة (helper) قابلة لإعادة الاستخدام
+                لإنشاء حقل إدخال كلمة مرور مع أيقونة تبديل الرؤية داخل SweetAlert2
+                لتقليل تكرار الكود في أماكن أخرى مثل profile-modal.js.
+              -->
               <div class="password-container">
                <input type="password" id="swal-password-input" class="swal2-input" placeholder="دخل كلمة المرور">
                   <i class="fas fa-eye toggle-password" id="swal-toggle-password" style="top: 60%;"></i>
@@ -332,7 +360,8 @@ document.addEventListener("DOMContentLoaded", () => {
  *   تحديث الواجهة، وعرض رسالة ترحيب مع خيار الانتقال للصفحة الرئيسية.
  * @function handleLoginSuccess
  * @param {object} user - كائن المستخدم المسجل دخوله.
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @async
+ * @returns {Promise<void>} - يُرجع وعدًا (Promise) لا يُرجع قيمة عند الاكتمال.
  * @see isUserEligibleForNotifications
  * @see setupFCM
  * @see askForNotificationPermission
@@ -384,7 +413,8 @@ async function handleLoginSuccess(user) {
  * @description تطلب إذن الإشعارات من النظام الأصلي (Native) إذا كان التطبيق يعمل ضمن بيئة Android،
  *   وذلك باستخدام واجهة `window.Android` المعرفة.
  * @function askForNotificationPermission
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @async
+ * @returns {Promise<void>} - يُرجع وعدًا (Promise) لا يُرجع قيمة عند الاكتمال.
  */
 async function askForNotificationPermission() {
   // التحقق من وجود الكائن 'Android' للتأكد من أن الكود يعمل داخل تطبيق أندرويد
@@ -405,7 +435,7 @@ async function askForNotificationPermission() {
  * @description يعالج عملية تسجيل الدخول كضيف، حيث يقوم بإنشاء كائن مستخدم ضيف وحفظه في LocalStorage،
  *   ثم يعرض رسالة ترحيب ويُعيد توجيه المستخدم إلى الصفحة الرئيسية.
  * @function handleGuestLogin
- * @param {Event} event - كائن الحدث لمنع السلوك الافتراضي للرابط (مثل إعادة تحميل الصفحة).
+ * @param {Event} event - كائن الحدث لمنع السلوك الافتراضي للرابط.
  * @returns {void}
  */
 function handleGuestLogin(event) {
