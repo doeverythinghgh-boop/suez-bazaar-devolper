@@ -8,12 +8,15 @@
  *   تتحقق من صلاحيات المسؤول، وتنشئ الأزرار الخاصة بإدارة المستخدمين،
  *   وتقوم بإعداد مستمعي الأحداث لتحميل وعرض جدول المستخدمين وتحديث حالاتهم.
  * @function initializeAdminPanel
- * @param {object} user - كائن المستخدم الحالي (المسؤول) الذي تم تسجيل دخوله.
+ * @param {object} user - كائن المستخدم الحالي الذي تم تسجيل دخوله. يجب أن يحتوي على خاصية `phone` للتحقق من صلاحيات المسؤول.
  * @returns {void}
  * @see fetchUsers
  * @see updateUsers
  */
 function initializeAdminPanel(user) {
+  /**
+   * @constant {Array<string>} adminPhoneNumbers - قائمة بأرقام هواتف المسؤولين المصرح لهم بالوصول إلى لوحة التحكم.
+   */
   const adminPhoneNumbers = ["01024182175", "01026546550"];
   if (!adminPhoneNumbers.includes(user.phone)) {
     return; // ليس مسؤولاً، لا تفعل شيئًا
@@ -43,8 +46,9 @@ function initializeAdminPanel(user) {
    * @description تقوم بتحميل قائمة المستخدمين من الخادم وعرضها في لوحة تحكم المسؤول باستخدام تصميم البطاقات.
    *   تظهر مؤشر تحميل أثناء جلب البيانات وتُخفي أزرار الإجراءات بعد التحميل.
    * @function loadUsersTable
-   * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
-   * @see fetchUsers
+   * @returns {Promise<void>} - وعد (Promise) يُحل عند اكتمال تحميل وعرض المستخدمين. لا تُرجع الدالة قيمة مباشرة، ولكنها تقوم بتعديل DOM.
+   * @see fetchUsers - لجلب بيانات المستخدمين من الواجهة الخلفية.
+   * @throws {Error} - قد تحدث أخطاء إذا فشل جلب المستخدمين من الخادم.
    */
   async function loadUsersTable() {
     const tableContentWrapper = document.getElementById("table-content-wrapper");
@@ -78,7 +82,12 @@ function initializeAdminPanel(user) {
     tableActions.style.display = 'none'; // إخفاء الأزرار عند إعادة التحميل
   }
 
-  // حدث النقر على زر "عرض المستخدمين"
+  /**
+   * @description معالج حدث النقر لزر "عرض المستخدمين".
+   *   يقوم بتبديل عرض جدول المستخدمين وإخفاء حاوية المنتجات إذا كانت مرئية، ثم يقوم بتحميل جدول المستخدمين.
+   * @param {Event} e - كائن الحدث.
+   * @returns {void}
+   */
   viewUsersButton.addEventListener("click", (e) => {
     e.preventDefault();
     const mainContainer = document.getElementById("users-table-container");
@@ -96,20 +105,38 @@ function initializeAdminPanel(user) {
     }
   });
 
-  // إضافة مستمع للتغييرات على مربعات الاختيار لإظهار الأزرار
+  /**
+   * @description معالج حدث التغيير على حاوية جدول المستخدمين.
+   *   إذا كان العنصر الذي تم تغييره هو مربع اختيار البائع، فإنه يظهر حاوية أزرار الإجراءات.
+   * @param {Event} event - كائن الحدث.
+   * @returns {void}
+   */
   document.getElementById("users-table-container").addEventListener('change', (event) => {
     if (event.target.classList.contains('seller-checkbox')) {
       tableActions.style.display = 'flex'; // إظهار حاوية الأزرار
     }
   });
 
-  // حدث النقر على زر "إلغاء التغييرات"
+  /**
+   * @description معالج حدث النقر لزر "إلغاء التغييرات".
+   *   يمنع السلوك الافتراضي ويعيد تحميل جدول المستخدمين لإلغاء أي تغييرات معلقة.
+   * @param {Event} e - كائن الحدث.
+   * @returns {void}
+   */
   cancelBtn.addEventListener('click', (e) => {
     e.preventDefault();
     loadUsersTable(); // إعادة تحميل الجدول لإلغاء التغييرات
   });
 
-  // حدث النقر على زر "حفظ التغييرات"
+  /**
+   * @description معالج حدث النقر لزر "حفظ التغييرات".
+   *   يجمع التغييرات من مربعات اختيار البائع، ويعرض مربع حوار للتأكيد باستخدام SweetAlert2،
+   *   ثم يقوم بتحديث حالات المستخدمين عبر الواجهة الخلفية بناءً على التأكيد.
+   * @async
+   * @returns {Promise<void>} - وعد (Promise) يُحل بعد محاولة تحديث المستخدمين وعرض رسالة للمستخدم.
+   * @see updateUsers - لتحديث بيانات المستخدمين في الواجهة الخلفية.
+   * @throws {Error} - قد تحدث أخطاء إذا فشل تحديث البيانات أو واجهة برمجة التطبيقات.
+   */
   updateBtn.addEventListener('click', async () => {
     const checkboxes = document.querySelectorAll('.seller-checkbox');
     const updates = []; // لتخزين جميع التحديثات

@@ -11,7 +11,19 @@
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js");
 importScripts("https://www.gstatic.com/firebasejs/8.10.1/firebase-messaging.js");
 
-// تهيئة تطبيق Firebase باستخدام الصيغة القديمة (v8)
+/**
+ * @description تهيئة تطبيق Firebase باستخدام الصيغة القديمة (v8).
+ * يحتوي على معلومات الاعتماد اللازمة للاتصال بمشروع Firebase الخاص بك.
+ * @constant
+ * @type {object}
+ * @property {string} apiKey - مفتاح API لمشروع Firebase.
+ * @property {string} authDomain - مجال المصادقة لمشروع Firebase.
+ * @property {string} projectId - معرف المشروع لمشروع Firebase.
+ * @property {string} storageBucket - سلة التخزين لمشروع Firebase.
+ * @property {string} messagingSenderId - معرف مرسل الرسائل لمشروع Firebase.
+ * @property {string} appId - معرف التطبيق لمشروع Firebase.
+ * @property {string} measurementId - معرف القياس لمشروع Firebase (لـ Google Analytics).
+ */
 firebase.initializeApp({
   apiKey: "AIzaSyClapclT8_4UlPvM026gmZbYCiXaiBDUYk",
   authDomain: "suze-bazaar-notifications.firebaseapp.com",
@@ -22,10 +34,25 @@ firebase.initializeApp({
   measurementId: "G-P8FMC3KR7M"
 });
 
-// الحصول على نسخة من خدمة المراسلة (v8)
+/**
+ * @description الحصول على نسخة من خدمة المراسلة (Firebase Messaging) من تطبيق Firebase المهيأ.
+ * تُستخدم هذه النسخة للتعامل مع رسائل الدفع (push messages) في عامل الخدمة.
+ * @constant
+ * @type {firebase.messaging.Messaging}
+ */
 const messaging = firebase.messaging();
 
-// التعامل مع الإشعارات الواردة في الخلفية (v8)
+/**
+ * @description يتعامل مع رسائل FCM (Firebase Cloud Messaging) عندما يكون التطبيق في الخلفية أو مغلقًا.
+ * هذه الوظيفة تستمع لرسائل الدفع وتقوم بعرض إشعار للمستخدم.
+ * @function onBackgroundMessage
+ * @param {object} payload - كائن الحمولة (payload) المستلم من Firebase Cloud Messaging.
+ *   قد يحتوي على حقول `notification` و/أو `data`.
+ * @param {string} [payload.notification.title] - عنوان الإشعار.
+ * @param {string} [payload.notification.body] - نص الإشعار.
+ * @param {object} [payload.data] - حقل البيانات المخصص الذي يمكن استخدامه كبديل لـ `notification`.
+ * @returns {Promise<void>} - وعد (Promise) يتم حله بعد عرض الإشعار بنجاح.
+ */
 messaging.onBackgroundMessage((payload) => {
   console.log('[firebase-messaging-sw.js] تم استقبال رسالة في الخلفية: ', payload);
   
