@@ -93,7 +93,6 @@ async function setupFCM() {
         "[Auth] بيئة أندرويد مكتشفة والتوكن المحلي فارغ. جاري طلب توكن جديد..."
       );
       // استدعِ دالة الأندرويد فقط إذا لم يكن هناك توكن بالفعل
-      // الحل المقترح (يرسل كائن JSON)
       window.Android.onUserLoggedIn(
         JSON.stringify({ user_key: loggedInUser.user_key })
       );
