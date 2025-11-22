@@ -32,6 +32,7 @@
   text-align: center;
   position: relative;
   animation: slideIn 0.4s ease-out;
+  overflow-x: hidden; /* ✅ جديد: منع التمرير الأفقي داخل النافذة */
 }
 
 .modal-content h3 {
