@@ -43,32 +43,58 @@ export async function analyzeAndSaveDatabase() {
   const result = {};
   
   // ✅ جديد: إضافة وصف تفصيلي للبيانات التي سيتم إرجاعها
-  result.analysisDescription = {
-    purpose: "This JSON object provides a comprehensive structural analysis of the SQLite database. It includes details on tables, columns, and foreign key relationships.",
-    tableNames: "An array of strings, where each string is the name of a table in the database. System tables (e.g., 'sqlite_%') are excluded.",
-    createStatements: "An object where each key is a table name (string) and the corresponding value is the full 'CREATE TABLE' SQL statement (string) for that table. This allows for a complete reconstruction of the table's schema.",
-    tablesInfo: {
-      description: "An object where each key is a table name (string). The value is an array of objects, with each object providing detailed information about a single column in that table, based on SQLite's `PRAGMA table_info`.",
-      columnSchema: {
-        cid: "Column ID (integer): The zero-indexed position of the column in the table.",
-        name: "Column Name (string): The name of the column.",
-        type: "Data Type (string): The declared data type of the column (e.g., 'TEXT', 'INTEGER', 'REAL').",
-        notnull: "Not Null Constraint (integer): 1 if the column has a 'NOT NULL' constraint, 0 otherwise.",
-        dflt_value: "Default Value (any): The default value for the column. It is `null` if no default value is specified.",
-        pk: "Primary Key (integer): 1 if this column is part of the primary key, 0 otherwise. For a composite primary key, this will be 1 for all columns in the key."
-      }
-    },
-    foreignKeys: {
-      description: "An object where each key is a table name (string). The value is an array of objects, with each object describing a foreign key constraint originating from that table, based on SQLite's `PRAGMA foreign_key_list`.",
-      foreignKeySchema: {
-        id: "Constraint ID (integer): A unique ID for the foreign key constraint within the table.",
-        seq: "Sequence Number (integer): The sequence number (starting from 0) for columns in a composite foreign key.",
-        table: "Parent Table (string): The name of the parent table that the foreign key references.",
-        from: "Child Column (string): The name of the column in the child table (the current table) that is part of the foreign key.",
-        to: "Parent Column (string): The name of the column in the parent table that is being referenced.",
-        on_update: "On Update Action (string): The action to take on 'ON UPDATE' (e.g., 'NO ACTION', 'CASCADE', 'SET NULL').",
-        on_delete: "On Delete Action (string): The action to take on 'ON DELETE' (e.g., 'NO ACTION', 'CASCADE', 'SET NULL').",
-        match: "Match Clause (string): The 'MATCH' clause for the foreign key (usually 'NONE')."
+  // ✅ تحسين: تم تحويل الوصف إلى مخطط منظم (schema) ليكون قابلاً للتحليل الآلي بواسطة أدوات الذكاء الاصطناعي.
+  result.schemaMetadata = {
+    ai_prompt: "You are a database analysis expert. This JSON contains the complete schema of an SQLite database. Use 'tableNames' to iterate through tables. Use 'tablesInfo' for column details and 'foreignKeys' to understand relationships between tables. Your task is to analyze this schema to answer questions, generate documentation, or create diagrams.",
+    type: "object",
+    properties: {
+      tableNames: {
+        type: "array",
+        description: "An array of all user-defined table names in the database.",
+        items: { type: "string" }
+      },
+      createStatements: {
+        type: "object",
+        description: "A map where each key is a table name and the value is its full 'CREATE TABLE' SQL statement.",
+        additionalProperties: { type: "string" }
+      },
+      tablesInfo: {
+        type: "object",
+        description: "A map where each key is a table name, and the value is an array of objects describing each column in that table.",
+        additionalProperties: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              cid: { type: "integer", description: "Column ID (0-indexed position)." },
+              name: { type: "string", description: "Column name." },
+              type: { type: "string", description: "Declared data type (e.g., 'TEXT', 'INTEGER')." },
+              notnull: { type: "integer", description: "1 if the column has a NOT NULL constraint, 0 otherwise." },
+              dflt_value: { type: "any", description: "The default value for the column." },
+              pk: { type: "integer", description: "1 if this column is part of the primary key, 0 otherwise." }
+            }
+          }
+        }
+      },
+      foreignKeys: {
+        type: "object",
+        description: "A map where each key is a table name, and the value is an array of objects describing the foreign key constraints originating from that table.",
+        additionalProperties: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              id: { type: "integer", description: "Unique ID for the FK constraint within the table." },
+              seq: { type: "integer", description: "Sequence number for composite keys (starts at 0)." },
+              table: { type: "string", description: "The parent table being referenced." },
+              from: { type: "string", description: "The column in the current (child) table." },
+              to: { type: "string", description: "The column in the parent table." },
+              on_update: { type: "string", description: "Action for ON UPDATE (e.g., 'CASCADE')." },
+              on_delete: { type: "string", description: "Action for ON DELETE (e.g., 'CASCADE')." },
+              match: { type: "string", description: "The MATCH clause (usually 'NONE')." }
+            }
+          }
+        }
       }
     }
   };

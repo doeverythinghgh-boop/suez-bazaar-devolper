@@ -1,4 +1,33 @@
 {
+  "analysisDescription": {
+    "purpose": "This JSON object provides a comprehensive structural analysis of the SQLite database. It includes details on tables, columns, and foreign key relationships.",
+    "tableNames": "An array of strings, where each string is the name of a table in the database. System tables (e.g., 'sqlite_%') are excluded.",
+    "createStatements": "An object where each key is a table name (string) and the corresponding value is the full 'CREATE TABLE' SQL statement (string) for that table. This allows for a complete reconstruction of the table's schema.",
+    "tablesInfo": {
+      "description": "An object where each key is a table name (string). The value is an array of objects, with each object providing detailed information about a single column in that table, based on SQLite's `PRAGMA table_info`.",
+      "columnSchema": {
+        "cid": "Column ID (integer): The zero-indexed position of the column in the table.",
+        "name": "Column Name (string): The name of the column.",
+        "type": "Data Type (string): The declared data type of the column (e.g., 'TEXT', 'INTEGER', 'REAL').",
+        "notnull": "Not Null Constraint (integer): 1 if the column has a 'NOT NULL' constraint, 0 otherwise.",
+        "dflt_value": "Default Value (any): The default value for the column. It is `null` if no default value is specified.",
+        "pk": "Primary Key (integer): 1 if this column is part of the primary key, 0 otherwise. For a composite primary key, this will be 1 for all columns in the key."
+      }
+    },
+    "foreignKeys": {
+      "description": "An object where each key is a table name (string). The value is an array of objects, with each object describing a foreign key constraint originating from that table, based on SQLite's `PRAGMA foreign_key_list`.",
+      "foreignKeySchema": {
+        "id": "Constraint ID (integer): A unique ID for the foreign key constraint within the table.",
+        "seq": "Sequence Number (integer): The sequence number (starting from 0) for columns in a composite foreign key.",
+        "table": "Parent Table (string): The name of the parent table that the foreign key references.",
+        "from": "Child Column (string): The name of the column in the child table (the current table) that is part of the foreign key.",
+        "to": "Parent Column (string): The name of the column in the parent table that is being referenced.",
+        "on_update": "On Update Action (string): The action to take on 'ON UPDATE' (e.g., 'NO ACTION', 'CASCADE', 'SET NULL').",
+        "on_delete": "On Delete Action (string): The action to take on 'ON DELETE' (e.g., 'NO ACTION', 'CASCADE', 'SET NULL').",
+        "match": "Match Clause (string): The 'MATCH' clause for the foreign key (usually 'NONE')."
+      }
+    }
+  },
   "tableNames": [
     "users",
     "marketplace_products",
