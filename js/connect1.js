@@ -54,7 +54,7 @@ async function getUserPurchases(userKey) {
     const purchasesWithStatus = purchases.map((purchase) => {
       // البحث عن كائن الحالة المطابق لـ `order_status` في مصفوفة `ORDER_STATUSES` المعرفة في `config.js`.
       const statusInfo = ORDER_STATUSES.find(
-        (s) => s.id === purchase.order_status
+        (s) => s.state === purchase.order_status // ✅ تغيير: المطابقة باستخدام اسم الحالة النصي
       ) || { state: "غير معروف", description: "حالة الطلب غير معروفة." };
       return {
         ...purchase,

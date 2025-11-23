@@ -15,7 +15,7 @@
  * @see ORDER_STATUS_MAP
  */
 function createStatusTimelineHTML(orderKey, statusDetails, canEdit, userRole) {
-  const currentStatusId = statusDetails ? statusDetails.id : -1;
+  const currentStatusId = statusDetails ? statusDetails.id : -1; // لا تغيير هنا، سنمرر statusDetails الصحيح
 
   const progressStates = [
     ORDER_STATUS_MAP.REVIEW,
@@ -125,8 +125,19 @@ async function showSalesMovementModal(userKey) {
   console.log('%c[DEV-LOG] showSalesMovementModal: البيانات المستلمة من getSalesMovement():', 'color: blue; font-weight: bold;', orders);
 
   if (orders && orders.length > 0) {
+    // ✅ جديد: معالجة الطلبات لإضافة تفاصيل الحالة بناءً على النص
+    const processedOrders = orders.map(order => {
+      const statusInfo = ORDER_STATUSES.find(s => s.state === order.order_status) || { state: order.order_status, description: "حالة غير معروفة" };
+      return {
+        ...order,
+        status_details: statusInfo
+      };
+    });
+
+    console.log('%c[DEV-LOG] showSalesMovementModal: البيانات بعد إضافة تفاصيل الحالة:', 'color: green;', processedOrders);
+
     contentWrapper.innerHTML = `<div id="sales-movement-list">
-        ${orders.map(order => generateSalesMovementItemHTML(order, loggedInUser, isAdmin)).join('')}
+        ${processedOrders.map(order => generateSalesMovementItemHTML(order, loggedInUser, isAdmin)).join('')}
       </div>`;
   } else {
     contentWrapper.innerHTML = '<p style="text-align: center; padding: 2rem 0;">لا توجد طلبات لعرضها.</p>';

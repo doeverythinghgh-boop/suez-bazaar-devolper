@@ -80,7 +80,7 @@ export default async function handler(request) {
 
       await db.execute({
         sql: "UPDATE orders SET order_status = ? WHERE order_key = ?",
-        args: [order_status, order_key],
+        args: [String(order_status), order_key], // ✅ تحويل: ضمان أن القيمة نصية
       });
 
       console.log(`[API: /api/orders] نجاح! تم تحديث حالة الطلب ${order_key} إلى ${order_status}.`);
