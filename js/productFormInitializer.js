@@ -79,6 +79,23 @@ async function productInitializeAddProductForm(editProductData = null) {
     window.productModule.cleanup();
   }
   
+  // ⭐⭐ الإصلاح: إعادة تعيين النص والعنوان أولاً ⭐⭐
+  const titleElement = document.getElementById('addProductTitle');
+  const submitButton = document.querySelector('.add-product-modal__submit-container .btn');
+  
+  const isEditMode = editProductData !== null;
+  
+  // ⭐⭐ تحديد النص بناءً على الوضع الحقيقي ⭐⭐
+  if (titleElement) {
+    titleElement.innerHTML = isEditMode 
+      ? '<i class="fas fa-edit"></i> تعديل المنتج'
+      : '<i class="fas fa-cart-plus"></i> إضافة منتج جديد';
+  }
+  
+  if (submitButton) {
+    submitButton.textContent = isEditMode ? 'حفظ التعديلات' : 'اضف المنتج الآن';
+  }
+  
   // تهيئة وحدات JavaScript أولاً
   if (!productInitializeModules()) {
     console.error('Failed to initialize product modules');
@@ -87,7 +104,6 @@ async function productInitializeAddProductForm(editProductData = null) {
   
   const mainCategorySelect = document.getElementById("main-category");
   const subCategorySelect = document.getElementById("sub-category");
-  const subCategoryGroup = document.getElementById("sub-category-group");
   const form = document.getElementById('add-product-form');
   
   if (!mainCategorySelect || !subCategorySelect || !form) {
@@ -99,7 +115,7 @@ async function productInitializeAddProductForm(editProductData = null) {
   images.length = 0;
   window.productModule.originalImageNames = [];
 
-  const isEditMode = editProductData !== null;
+  // ⭐⭐ التحديث: استخدام isEditMode بدلاً من إعادة التعيين ⭐⭐
   form.dataset.mode = isEditMode ? 'edit' : 'add';
   console.log(`[ProductForm] Mode: ${form.dataset.mode}`);
   
@@ -108,6 +124,7 @@ async function productInitializeAddProductForm(editProductData = null) {
     console.log(`[ProductForm] Editing product with key: ${editProductData.product_key}`);
   }
 
+  // ... بقية الكود بدون تغيير ...
   try {
     console.log('[ProductForm] Loading categories from ../shared/list.json');
     const response = await fetch("../shared/list.json");
@@ -137,6 +154,9 @@ async function productInitializeAddProductForm(editProductData = null) {
   // إذا كان في وضع التعديل، تعبئة البيانات
   if (isEditMode) {
     productPopulateEditForm(editProductData);
+  } else {
+    // ⭐⭐ الإصلاح: تنظيف الحقول في وضع الإضافة ⭐⭐
+    productResetFormFields();
   }
 
   // تحديث الحالة الموسعة بعد التهيئة
@@ -147,11 +167,77 @@ async function productInitializeAddProductForm(editProductData = null) {
 
   productSetupCharacterCounters();
   productSetupFormSubmit();
+  productSetupCloseButtonListener();
   
   console.log('%c[ProductForm] Form initialized successfully', 'color: green;');
-  // إعداد مستمع حدث لزر الإغلاق
-productSetupCloseButtonListener();
   return true;
+}
+
+// ⭐⭐ دالة جديدة لتنظيف الحقول في وضع الإضافة ⭐⭐
+function productResetFormFields() {
+  console.log('[ProductForm] Resetting form fields for add mode');
+  
+  const fieldsToReset = [
+    'product-name',
+    'product-description', 
+    'seller-message',
+    'product-notes',
+    'product-quantity',
+    'product-price',
+    'original-price'
+  ];
+  
+  fieldsToReset.forEach(fieldId => {
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.value = '';
+      productClearError(field);
+    }
+  });
+  
+  // إعادة تعيين الفئات
+  const mainCategorySelect = document.getElementById('main-category');
+  const subCategorySelect = document.getElementById('sub-category');
+  const subCategoryGroup = document.getElementById('sub-category-group');
+  
+  if (mainCategorySelect) {
+    mainCategorySelect.value = '';
+    productClearError(mainCategorySelect);
+  }
+  
+  if (subCategorySelect) {
+    subCategorySelect.value = '';
+    subCategorySelect.disabled = true;
+    productClearError(subCategorySelect);
+  }
+  
+  if (subCategoryGroup) {
+    subCategoryGroup.style.display = 'none';
+  }
+  
+  // إعادة تعيين نوع الخدمة
+  const serviceTypeOptions = document.getElementById('service-type-options');
+  const serviceTypeRadios = document.querySelectorAll('input[name="serviceType"]');
+  
+  if (serviceTypeOptions) {
+    serviceTypeOptions.style.display = 'none';
+  }
+  
+  serviceTypeRadios.forEach(radio => {
+    radio.checked = false;
+    radio.required = false;
+  });
+  
+  // إعادة تعيين الصور
+  if (window.productModule && window.productModule.images) {
+    window.productModule.images.length = 0;
+    window.productModule.originalImageNames = [];
+  }
+  
+  const previewsEl = document.getElementById('previews');
+  if (previewsEl) {
+    previewsEl.innerHTML = '';
+  }
 }
 
 /**
@@ -495,6 +581,13 @@ function productSetupNumberFields() {
 }
 
 
+/**
+ * @description تحديث لون خلفية النموذج بناءً على الوضع الموسع.
+ *   يتم تطبيق خلفية خاصة عندما يكون المنتج في فئة الخدمات.
+ * @function productUpdateModalBackground
+ * @param {string} extendedMode - الوضع الموسع الحالي (مثل 'addInServiceCategory').
+ * @returns {void}
+ */
 function productUpdateModalBackground(extendedMode) {
   console.group('%c[ProductForm] 🎨 Background Update - Targeting Correct Element', 'color: orange; font-weight: bold;');
   
@@ -553,7 +646,12 @@ function productUpdateModalBackground(extendedMode) {
 
 
 
-
+/**
+ * @description إعادة تعيين لون خلفية النموذج إلى حالته الأصلية.
+ *   يتم استدعاؤها عند إغلاق النموذج لضمان عدم تأثر الفتح التالي.
+ * @function productResetModalBackground
+ * @returns {void}
+ */
 function productResetModalBackground() {
   console.log('%c[ProductForm] 🎨 RESET Background - Targeting .add-product-modal only', 'color: red; font-weight: bold;');
   
@@ -645,6 +743,11 @@ function productSetupCloseButtonListener() {
 
 
 
+/**
+ * @description معالج حدث النقر على زر إغلاق النموذج.
+ *   يضمن إعادة تعيين خلفية النموذج إلى حالتها الأصلية.
+ * @function productHandleCloseButton
+ */
 function productHandleCloseButton() {
   console.log('%c[ProductForm] 🔒 Close button - RESETTING .add-product-modal ONLY', 'color: red; font-weight: bold;');
   
