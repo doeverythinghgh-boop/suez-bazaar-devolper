@@ -1,11 +1,15 @@
 /**
- * دوال مساعدة لوحدة المنتج
+ * @file js/productFormUtils.js
+ * @description يحتوي هذا الملف على مجموعة من الدوال المساعدة المستخدمة في نماذج المنتجات،
+ *   مثل تنسيق البيانات، توليد الأرقام التسلسلية، والتحقق من دعم المتصفح لميزات معينة.
  */
 
-
-
 /**
- * يحول البايت إلى صيغة قابلة للقراءة (KB, MB, ...).
+ * @description يحول عدد البايتات إلى صيغة قابلة للقراءة من قبل الإنسان (مثل KB, MB, GB).
+ * @function productFormatBytes
+ * @param {number} bytes - عدد البايتات المراد تحويله.
+ * @param {number} [decimals=2] - عدد الخانات العشرية في الناتج.
+ * @returns {string} - سلسلة نصية تمثل الحجم المنسق (مثال: "1.50 MB").
  */
 function productFormatBytes(bytes, decimals = 2) {
   if (!+bytes) return '0 Bytes';
@@ -17,7 +21,11 @@ function productFormatBytes(bytes, decimals = 2) {
 }
 
 /**
- * تحويل الأرقام الهندية/العربية إلى الإنجليزية
+ * @description تقوم بتحويل الأرقام العربية الشرقية (الهندية) والفارسية في سلسلة نصية إلى أرقام عربية غربية (إنجليزية).
+ *   تُستخدم لتوحيد الأرقام المدخلة من قبل المستخدم قبل معالجتها.
+ * @function productNormalizeDigits
+ * @param {string} str - السلسلة النصية التي قد تحتوي على أرقام هندية أو فارسية.
+ * @returns {string} - السلسلة النصية بعد تحويل جميع الأرقام إلى الصيغة الإنجليزية.
  */
 function productNormalizeDigits(str) {
   const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
@@ -36,7 +44,11 @@ function productNormalizeDigits(str) {
 }
 
 /**
- * تنقيح النص العربي من الألفاظ غير المرغوب فيها
+ * @description تقوم بتنقيح النص العربي عن طريق إزالة المسافات الزائدة من البداية والنهاية،
+ *   واستبدال أي تكرار للمسافات بمسافة واحدة فقط.
+ * @function productNormalizeArabicText
+ * @param {string} text - النص المراد تنقيحه.
+ * @returns {string} - النص المنقح.
  */
 function productNormalizeArabicText(text) {
   text = text.replace(/\s+/g, ' ').trim();
@@ -56,7 +68,11 @@ function productGenerateProductSerial() {
 }
 
 /**
- * فحص دعم WebP
+ * @description تتحقق بشكل غير متزامن مما إذا كان المتصفح الحالي يدعم تنسيق الصور WebP.
+ *   تقوم بذلك عن طريق محاولة فك تشفير صورة WebP صغيرة جدًا.
+ * @function productSupportsWebP
+ * @async
+ * @returns {Promise<boolean>} - وعد (Promise) يُرجع `true` إذا كان المتصفح يدعم WebP، و`false` بخلاف ذلك.
  */
 async function productSupportsWebP() {
   if (!self.createImageBitmap) return false;

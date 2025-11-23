@@ -1,25 +1,56 @@
 /**
- * الوحدة الرئيسية لإدارة صور المنتج والنموذج
+ * @file js/productModule.js
+ * @description وحدة لإدارة صور المنتج، بما في ذلك الرفع، الضغط، المعاينة، والحذف.
+ *   يتم تعريف هذه الوحدة كـ IIFE (Immediately Invoked Function Expression) لإنشاء نطاق خاص بها
+ *   وتصدير واجهة برمجة تطبيقات (API) عامة عبر `window.productModule`.
+ */
+
+/**
+ * @module productModule
+ * @description الوحدة الرئيسية لإدارة صور المنتج والنموذج.
+ * @property {Array<object>} images - مصفوفة لتخزين حالة جميع الصور (المرفوعة، قيد المعالجة، إلخ).
+ * @property {Array<string>} originalImageNames - مصفوفة لتخزين أسماء الصور الأصلية في وضع التعديل.
+ * @property {function(): boolean} init - دالة لتهيئة الوحدة وربط مستمعي الأحداث.
+ * @property {function(): void} cleanup - دالة لتنظيف الوحدة وإزالة مستمعي الأحداث.
+ * @property {function(object, string|null): void} createPreviewItem - دالة لإنشاء معاينة للصورة في الواجهة.
  */
 window.productModule = (function() {
-  // إعدادات ضغط الصور
+  /** @description أقصى عرض للصورة بعد الضغط. @type {number} @const */
   const IMAGE_MAX_WIDTH = 1600;
+  /** @description أقصى ارتفاع للصورة بعد الضغط. @type {number} @const */
   const IMAGE_MAX_HEIGHT = 1600;
+  /** @description جودة الصورة عند الضغط (0.0 إلى 1.0). @type {number} @const */
   const IMAGE_QUALITY = 0.75;
+  /** @description أقصى عدد من الملفات المسموح برفعها. @type {number} @const */
   const MAX_FILES = 6;
 
+  /** @private @type {HTMLInputElement|null} */
   let fileInput, pickFilesBtn, takePhotoBtn, clearAllBtn, previewsEl, uploaderEl;
+  /** @private @description مصفوفة لتخزين حالة جميع الصور. @type {Array<object>} */
   const images = [];
+  /** @private @description عداد لتوليد معرفات فريدة. @type {number} */
   let idCounter = 1;
+  /** @private @description وعد (Promise) يخزن نتيجة التحقق من دعم WebP. @type {Promise<boolean>} */
   let WEBP_SUPPORTED_PROMISE;
+  /** @private @description مصفوفة لتتبع مستمعي الأحداث لسهولة إزالتهم. @type {Array<object>} */
   let eventListeners = [];
 
-  // توليد معرف فريد
+  /**
+   * @private
+   * @function productGenId
+   * @description يولد معرفًا فريدًا لكل صورة.
+   * @returns {string} - معرف فريد.
+   */
   function productGenId() { 
     return 'img_' + (Date.now() + idCounter++); 
   }
 
-  // إزالة جميع مستمعي الأحداث
+  /**
+   * @private
+   * @function productRemoveEventListeners
+   * @description يزيل جميع مستمعي الأحداث الذين تم تتبعهم لمنع تسرب الذاكرة.
+   * @returns {void}
+   */
   function productRemoveEventListeners() {
     eventListeners.forEach(({ element, event, handler }) => {
       if (element && handler) {
@@ -29,7 +60,14 @@ window.productModule = (function() {
     eventListeners = [];
   }
 
-  // إضافة مستمع حدث مع التتبع
+  /**
+   * @private
+   * @function productAddEventListener
+   * @description يضيف مستمع حدث إلى عنصر ويتتبعه لإزالته لاحقًا.
+   * @param {HTMLElement} element - العنصر المراد ربط المستمع به.
+   * @param {string} event - اسم الحدث (مثل 'click').
+   * @param {Function} handler - الدالة التي سيتم استدعاؤها عند وقوع الحدث.
+   */
   function productAddEventListener(element, event, handler) {
     if (element && handler) {
       element.addEventListener(event, handler);
@@ -37,7 +75,14 @@ window.productModule = (function() {
     }
   }
 
-  // ضغط الصورة
+  /**
+   * @private
+   * @async
+   * @function productCompressImage
+   * @description يضغط صورة عن طريق تغيير حجمها وتحويلها إلى WebP (إذا كان مدعومًا).
+   * @param {File} file - ملف الصورة الأصلي.
+   * @returns {Promise<Blob>} - وعد (Promise) يحتوي على كائن Blob للصورة المضغوطة.
+   */
   async function productCompressImage(file) {
     const imgBitmap = await createImageBitmap(file);
     let { width, height } = imgBitmap;
@@ -66,7 +111,13 @@ window.productModule = (function() {
     return blob;
   }
 
-  // إنشاء معاينة الصورة
+  /**
+   * @public
+   * @function productCreatePreviewItem
+   * @description ينشئ عنصر معاينة للصورة في واجهة المستخدم.
+   * @param {object} state - كائن حالة الصورة.
+   * @param {string|null} [existingImageUrl=null] - عنوان URL لصورة موجودة مسبقًا (في وضع التعديل).
+   */
   function productCreatePreviewItem(state, existingImageUrl = null) {
     if (!previewsEl) {
       console.error('previewsEl not initialized');
@@ -115,7 +166,13 @@ window.productModule = (function() {
     state._metaEl = meta;
   }
 
-  // حذف صورة
+  /**
+   * @private
+   * @function productRemoveImage
+   * @description يعرض نافذة تأكيد ثم يزيل الصورة المحددة.
+   * @param {string} id - معرف الصورة المراد إزالتها.
+   * @returns {void}
+   */
   function productRemoveImage(id) {
     console.log(`[ImageUploader] Attempting to remove image with id: ${id}`);
     if (typeof Swal === 'undefined') {
@@ -141,6 +198,13 @@ window.productModule = (function() {
     });
   }
 
+  /**
+   * @private
+   * @function removeImageById
+   * @description يزيل الصورة من مصفوفة الحالة ومن واجهة المستخدم.
+   * @param {string} id - معرف الصورة المراد إزالتها.
+   * @returns {void}
+   */
   function removeImageById(id) {
     const idx = images.findIndex(i => i.id === id);
     if (idx > -1) {
@@ -151,7 +215,12 @@ window.productModule = (function() {
     }
   }
 
-  // مسح جميع الصور
+  /**
+   * @private
+   * @function productClearAll
+   * @description يعرض نافذة تأكيد ثم يمسح جميع الصور المضافة.
+   * @returns {void}
+   */
   function productClearAll() {
     console.log('[ImageUploader] Attempting to clear all images.');
     if (images.length === 0) return;
@@ -179,6 +248,12 @@ window.productModule = (function() {
     });
   }
 
+  /**
+   * @private
+   * @function clearAllImages
+   * @description يمسح جميع الصور من مصفوفة الحالة ومن واجهة المستخدم.
+   * @returns {void}
+   */
   function clearAllImages() {
     if (previewsEl) {
       previewsEl.innerHTML = '';
@@ -187,7 +262,13 @@ window.productModule = (function() {
     images.length = 0;
   }
 
-  // معالجة الملفات الجديدة
+  /**
+   * @private
+   * @async
+   * @function productHandleNewFiles
+   * @description يعالج الملفات الجديدة التي تم اختيارها أو سحبها، وينشئ معايناتها، ويبدأ عملية الضغط.
+   * @param {FileList} fileList - قائمة الملفات المراد معالجتها.
+   */
   async function productHandleNewFiles(fileList){
     console.log(`[ImageUploader] Handling ${fileList.length} new files.`);
     if (uploaderEl) {
@@ -225,7 +306,13 @@ window.productModule = (function() {
     }
   }
 
-  // فتح كاميرا سطح المكتب
+  /**
+   * @private
+   * @async
+   * @function productOpenDesktopCamera
+   * @description يفتح نافذة منبثقة مع بث مباشر من كاميرا الجهاز (لأجهزة سطح المكتب).
+   * @returns {Promise<void>}
+   */
   async function productOpenDesktopCamera() {
     const cameraModalContainer = document.getElementById('camera-modal-container');
     if (!cameraModalContainer) {
@@ -284,7 +371,12 @@ window.productModule = (function() {
     }
   }
 
-  // إعداد مستمعي الأحداث
+  /**
+   * @private
+   * @function productSetupEventListeners
+   * @description يربط جميع مستمعي الأحداث اللازمين للوحدة (الأزرار، السحب والإفلات، إلخ).
+   * @returns {boolean} - `true` إذا تم ربط المستمعين بنجاح.
+   */
   function productSetupEventListeners() {
     if (!pickFilesBtn || !clearAllBtn || !takePhotoBtn || !fileInput || !uploaderEl) {
       console.error('One or more DOM elements not found for event listeners');
@@ -335,7 +427,12 @@ window.productModule = (function() {
     return true;
   }
 
-  // تهيئة الوحدة
+  /**
+   * @public
+   * @function productInitModule
+   * @description الدالة الرئيسية لتهيئة الوحدة. تحصل على عناصر DOM وتربط مستمعي الأحداث.
+   * @returns {boolean} - `true` إذا تمت التهيئة بنجاح.
+   */
   function productInitModule() {
     console.log('[ProductModule] Initializing module...');
 
@@ -374,7 +471,12 @@ window.productModule = (function() {
     return true;
   }
 
-  // إعادة تعيين الوحدة
+  /**
+   * @public
+   * @function productResetModule
+   * @description يعيد تعيين حالة الوحدة إلى حالتها الأولية، ويمسح الصور ومستمعي الأحداث.
+   * @returns {void}
+   */
   function productResetModule() {
     console.log('[ProductModule] Resetting module...');
     
@@ -399,13 +501,20 @@ window.productModule = (function() {
     console.log('[ProductModule] Reset completed');
   }
 
-  // تنظيف الوحدة (للاستدعاء عند إغلاق الموديول)
+  /**
+   * @public
+   * @function productCleanupModule
+   * @description دالة لتنظيف الوحدة عند إغلاق النموذج، وهي اسم بديل لـ `productResetModule`.
+   * @returns {void}
+   */
   function productCleanupModule() {
     console.log('[ProductModule] Cleaning up module...');
     productResetModule();
   }
 
- 
+ /**
+  * @description الواجهة العامة للوحدة التي يتم تصديرها إلى `window.productModule`.
+  */
 return {
   init: productInitModule,
   reset: productResetModule,
@@ -415,7 +524,14 @@ return {
   genId: productGenId,
   createPreviewItem: productCreatePreviewItem,
   
-  // دوال جديدة لإدارة حالة الصور
+  /**
+   * @public
+   * @function updateImageStatus
+   * @description يحدث حالة صورة معينة في مصفوفة `images`.
+   * @param {string} imageId - معرف الصورة المراد تحديثها.
+   * @param {'pending'|'compressing'|'ready'|'uploading'|'uploaded'|'error'} newStatus - الحالة الجديدة للصورة.
+   * @param {string|null} [newFileName=null] - اسم الملف الجديد بعد الرفع.
+   */
   updateImageStatus: function(imageId, newStatus, newFileName = null) {
     const image = this.images.find(img => img.id === imageId);
     if (image) {
@@ -427,6 +543,13 @@ return {
     }
   },
   
+  /**
+   * @public
+   * @function getImageStatus
+   * @description يحصل على الحالة الحالية لصورة معينة.
+   * @param {string} imageId - معرف الصورة.
+   * @returns {string|null} - حالة الصورة أو `null` إذا لم يتم العثور عليها.
+   */
   getImageStatus: function(imageId) {
     const image = this.images.find(img => img.id === imageId);
     return image ? image.status : null;

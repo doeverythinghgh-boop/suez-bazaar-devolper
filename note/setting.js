@@ -1,0 +1,57 @@
+{
+    "workbench.sideBar.location": "right",
+    "git.enableSmartCommit": true,
+    "workbench.editor.pinnedTabsOnSeparateRow": true,
+    "workbench.editor.preferHistoryBasedLanguageDetection": true,
+    "git.confirmSync": false,
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "files.autoSave": "afterDelay",
+    "diffEditor.codeLens": true,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": true,
+        "scminput": false
+    },
+    "github.copilot.nextEditSuggestions.enabled": true,
+    "diffEditor.hideUnchangedRegions.enabled": true,
+    "explorer.confirmDragAndDrop": false,
+    "editor.wordWrap": "on",
+    "gemini-cli.debug.logging.enabled": true,
+    "geminicodeassist.agentDebugMode": true,
+    "geminicodeassist.agentYoloMode": true,
+    "geminicodeassist.codeGenerationPaneViewEnabled": true,
+    "geminicodeassist.verboseLogging": true,
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "workbench.settings.applyToAllProfiles": [
+        "geminicodeassist.agent.additionalTrustedCertificates",
+        "geminicodeassist.inlineSuggestions.nextEditPredictions",
+        "geminicodeassist.languages",
+        "geminicodeassist.rules",
+        "geminicodeassist.contextExclusionFile",
+        "geminicodeassist.customCommands"
+    ],
+    "geminicodeassist.inlineSuggestions.nextEditPredictions": true,
+    "geminicodeassist.languages": [
+        "*",
+        "javascript",
+        "json",
+        "html",
+        "css"
+    ],
+    "geminicodeassist.rules": "\nFollow these rules:\n\n1. Apply core software design principles: Maintainability, Readability, Modularity, Separation of Concerns (SoC), Single Responsibility Principle (SRP), KISS, and Open/Closed Principle (OCP).\n\n2. Write code that is easy to read, well-named, logically structured, and simple.\n\n3. Separate concerns strictly: HTML for structure, CSS for styling, JavaScript for logic.\n\n4. Ensure every function, module, and file has a single responsibility.\n\n5. Avoid unnecessary complexity; always choose the simplest solution that works.\n\n6. Extend functionality without modifying stable core logic, following OCP.\n\n7. Use ONLY Vanilla JavaScript, HTML, and CSS. Frameworks or large libraries are not allowed unless explicitly requested.\n\n8. Use standard DOM manipulation, Events, Fetch API, and ES modules for organization.\n\n9. Keep the code modular by splitting it into multiple small files when appropriate.\n\n\n\n",
+    "geminicodeassist.updateChannel": "Default",
+    "geminicodeassist.customCommands": {
+        "jsdoc": "Execute comprehensive and standardized JSDoc documentation for all functions, modules, and constants in this JavaScript file. Ensure documentation matches the actual code. Include:\\n\\n1. File-level @file and description.\\n2. @function and @description for every function.\\n3. @param {Type} name for all function inputs.\\n4. @returns {Type} for function outputs.\\n5. @throws {Error} for possible exceptions.\\n6. @see references for related files or functions.\\n7. @deprecated or @ignore for unused code.\\n8. @todo for repeated logic or incomplete functions.\\n9. Proper handling for async functions and Promises.\\n10. Validation to ensure documentation matches the actual code, inputs, outputs, and types.\\nEnsure 100% coverage and produce a dependency map of all documented items.",
+        "code": "Analyze this file and refactor it to follow best software engineering principles. Ensure the code adheres to:\\n\\n1. Maintainability: Write code that is easy to understand, modify, and debug.\\n2. Readability: Use clear formatting and meaningful names for functions and variables.\\n3. Modularity: Split the code into separate files or modules with specific responsibilities.\\n4. Separation of Concerns (SoC): Keep HTML, CSS, and JavaScript separate as much as possible.\\n5. Single Responsibility Principle (SRP): Ensure each function or module has only one responsibility.\\n6. Keep It Simple, Stupid (KISS): Use the simplest possible solutions.\\n7. Open/Closed Principle (OCP): Modules should be open for extension but closed for modification.\\n\\nEnvironment & Technologies:\\n- Use only Vanilla JavaScript, HTML, and CSS.\\n- Avoid frameworks or libraries unless explicitly required.\\n\\nRefactor the code accordingly, and provide a clear explanation of all applied changes and improvements.",
+        "code1": "Analyze this file and automatically refactor it to follow best software engineering principles, ensuring high maintainability, readability, and modularity. Perform the following actions:\\n\\n1. Split the code into separate files or modules if necessary to achieve Modularity.\\n2. Separate HTML, CSS, and JavaScript code where appropriate (Separation of Concerns).\\n3. Ensure each function or module follows the Single Responsibility Principle (SRP).\\n4. Simplify code according to KISS principle.\\n5. Apply the Open/Closed Principle (OCP) to allow future extension without modifying existing code.\\n6. Use meaningful names for functions, variables, and files.\\n7. Provide a summary of all changes and new file structure.\\n\\nEnvironment & Technologies:\\n- Use only Vanilla JavaScript, HTML, and CSS.\\n- Avoid any external frameworks or libraries.\\n\\nOutput:\\n- Refactored files saved separately if needed.\\n- Clear explanation of all applied refactoring steps and improvements.",
+        "coder": "Create a detailed Markdown (.md) file for the current file. The report should include:\\n\\n1. File Overview: Name, purpose, and description of the file.\\n2. Related Files: List all files in the project that interact with this file, with brief explanations of their relationships.\\n3. Related Functions & Variables: List all functions and important constants in this file, including their purpose and connections.\\n4. File Structure: Outline the internal structure, sections, or modules if any.\\n5. Code Readability Analysis: Highlight main points for maintainability, clarity, and modularity.\\n6. Usage Summary: How the file is used in the project, including dependencies and interactions.\\n7. Dependency Diagram: Provide a visual or textual representation of relationships with other files and functions.\\n\\nOutput:\\n- Generate a .md file named after the original file (e.g., originalFileName.md).\\n- Ensure the Markdown report is comprehensive, structured, and easy to read."
+    }
+}

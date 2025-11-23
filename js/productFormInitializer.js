@@ -1,8 +1,19 @@
 /**
- * دالة لتهيئة نموذج إضافة المنتج
+ * @file js/productFormInitializer.js
+ * @description يحتوي هذا الملف على المنطق الكامل لتهيئة نموذج إضافة/تعديل المنتج.
+ *   يشمل ذلك تهيئة الوحدات، تحميل الفئات، تعبئة النموذج في وضع التعديل، وإعداد مستمعي الأحداث.
  */
+
 /**
- * دالة لتهيئة نموذج إضافة المنتج
+ * @description الدالة الرئيسية لتهيئة نموذج إضافة/تعديل المنتج. تقوم بتنظيف الحالات السابقة،
+ *   وتهيئة الوحدات المطلوبة (مثل وحدة رفع الصور)، وتحميل الفئات، وإعداد مستمعي الأحداث،
+ *   وتعبئة النموذج بالبيانات الموجودة مسبقًا في حالة التعديل.
+ * @function productInitializeAddProductForm
+ * @async
+ * @param {object|null} [editProductData=null] - كائن يحتوي على بيانات المنتج للتعديل. إذا كان `null`، يتم تهيئة النموذج لإضافة منتج جديد.
+ * @returns {Promise<boolean>} - وعد (Promise) يُرجع `true` إذا تمت التهيئة بنجاح، و`false` بخلاف ذلك.
+ * @see productInitializeModules
+ * @see productPopulateEditForm
  */
 async function productInitializeAddProductForm(editProductData = null) {
   console.log('%c[ProductForm] Initializing form...', 'color: blue;');
@@ -80,7 +91,11 @@ async function productInitializeAddProductForm(editProductData = null) {
 }
 
 /**
- * تهيئة جميع الوحدات المطلوبة
+ * @description تقوم بتهيئة جميع وحدات JavaScript المطلوبة لنموذج المنتج،
+ *   وبشكل أساسي وحدة رفع الصور (`productModule`).
+ * @function productInitializeModules
+ * @returns {boolean} - `true` إذا تمت تهيئة جميع الوحدات بنجاح، و`false` بخلاف ذلك.
+ * @see window.productModule.init
  */
 function productInitializeModules() {
   console.log('[ProductForm] Initializing all modules...');
@@ -99,7 +114,13 @@ function productInitializeModules() {
   return true;
 }
 /**
- * معالجة تغيير الفئة الرئيسية
+ * @description دالة مصنعية (Factory Function) تُرجع معالج حدث لتغيير الفئة الرئيسية.
+ *   يقوم المعالج بتحديث قائمة الفئات الفرعية وإظهار/إخفاء حقول السعر والكمية ونوع الخدمة
+ *   بناءً على الفئة الرئيسية المحددة.
+ * @function productHandleMainCategoryChange
+ * @param {Array<object>} categories - مصفوفة من كائنات الفئات التي تم جلبها من `list.json`.
+ * @returns {function(Event): void} - دالة معالج الحدث `onchange` التي سيتم ربطها بقائمة الفئات الرئيسية.
+ * @see SERVICE_CATEGORY_NoPrice_ID
  */
 function productHandleMainCategoryChange(categories) {
   return (event) => {
@@ -161,7 +182,12 @@ function productHandleMainCategoryChange(categories) {
 }
 
 /**
- * تعبئة النموذج في وضع التعديل
+ * @description تقوم بتعبئة حقول النموذج ببيانات المنتج الموجودة عند فتح النموذج في وضع التعديل.
+ *   يشمل ذلك تحديث عنوان النموذج، تعبئة الحقول النصية، الأسعار، الفئات، والصور الحالية.
+ * @function productPopulateEditForm
+ * @param {object} editProductData - كائن يحتوي على بيانات المنتج المراد تعديله.
+ * @returns {void}
+ * @see window.productModule.createPreviewItem
  */
 function productPopulateEditForm(editProductData) {
   console.log('[ProductForm] Populating form with existing product data.');
@@ -251,7 +277,12 @@ function productPopulateEditForm(editProductData) {
 
 
 /**
- * إعداد عدادات الأحرف والتحقق في الوقت الفعلي
+ * @description تقوم بإعداد عدادات الأحرف للحقول النصية (مثل اسم المنتج والوصف)
+ *   وتربط مستمعي الأحداث (`input`, `blur`) لتوفير تحقق فوري من صحة البيانات (real-time validation)
+ *   أثناء إدخال المستخدم للبيانات.
+ * @function productSetupCharacterCounters
+ * @returns {void}
+ * @see productQuickValidateField
  */
 function productSetupCharacterCounters() {
   const fields = [
@@ -294,7 +325,13 @@ function productSetupCharacterCounters() {
 }
 
 /**
- * إعداد حقول الأرقام مع التحقق
+ * @description تقوم بإعداد مستمعي الأحداث لحقول الأرقام (الكمية والسعر) لضمان قبول الأرقام فقط،
+ *   وتطبيع الأرقام الهندية، وتوفير تحقق فوري من صحة البيانات.
+ *   كما أنها تتحقق من أن السعر الأصلي (قبل الخصم) أكبر من السعر الحالي.
+ * @function productSetupNumberFields
+ * @returns {void}
+ * @see productNormalizeDigits
+ * @see productQuickValidateField
  */
 function productSetupNumberFields() {
   const quantityInput = document.getElementById('product-quantity');

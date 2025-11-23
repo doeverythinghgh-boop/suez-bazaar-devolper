@@ -1,9 +1,16 @@
 /**
- * دوال التحقق من الصحة وعرض رسائل الخطأ
+ * @file js/productFormValidation.js
+ * @description يحتوي هذا الملف على دوال التحقق من صحة نموذج إضافة المنتج وعرض رسائل الخطأ المتعلقة به.
  */
 
 /**
- * يظهر رسالة خطأ أسفل العنصر المحدد.
+ * @description يظهر رسالة خطأ أسفل العنصر المحدد في نموذج إضافة المنتج.
+ *   يقوم بإنشاء عنصر `div` جديد يحتوي على رسالة الخطأ ويدرجه في DOM بعد العنصر المستهدف.
+ * @function productShowError
+ * @param {HTMLElement} element - عنصر DOM الذي ستظهر رسالة الخطأ أسفله.
+ * @param {string} message - رسالة الخطأ المراد عرضها.
+ * @returns {void}
+ * @see productClearError
  */
 function productShowError(element, message) {
   if (!element) {
@@ -25,7 +32,11 @@ function productShowError(element, message) {
 }
 
 /**
- * يمسح رسالة الخطأ من أسفل العنصر المحدد.
+ * @description يمسح أي رسالة خطأ موجودة أسفل العنصر المحدد.
+ *   يبحث عن عنصر رسالة الخطأ المرتبط بالعنصر المستهدف ويزيله من DOM.
+ * @function productClearError
+ * @param {HTMLElement} element - عنصر DOM الذي سيتم مسح رسالة الخطأ من أسفله.
+ * @returns {void}
  */
 function productClearError(element) {
   if (!element) return;
@@ -40,7 +51,13 @@ function productClearError(element) {
 }
 
 /**
- * التحقق من صحة النموذج قبل الإرسال
+ * @description يقوم بالتحقق الشامل من صحة جميع حقول نموذج إضافة/تعديل المنتج قبل إرساله.
+ *   يتحقق من الحقول المطلوبة مثل الصور، الفئات، اسم المنتج، الوصف، السعر، والكمية.
+ *   يعرض رسائل خطأ للمستخدم في حالة عدم الصحة ويقوم بالتمرير إلى أول خطأ.
+ * @function productValidateForm
+ * @returns {boolean} - `true` إذا كان النموذج صالحًا وجاهزًا للإرسال، وإلا `false`.
+ * @see productShowError
+ * @see productClearError
  */
 function productValidateForm() {
   console.log('[ProductForm] Starting validation...');
@@ -196,7 +213,13 @@ function productValidateForm() {
 }
 
 /**
- * التحقق السريع من الحقول المطلوبة (للاستخدام في الوقت الفعلي)
+ * @description يقوم بالتحقق السريع من صحة حقل واحد في النموذج، ويُستخدم عادةً في الوقت الفعلي (أثناء الإدخال أو عند فقدان التركيز).
+ *   يوفر تغذية راجعة فورية للمستخدم حول صحة البيانات التي يدخلها.
+ * @function productQuickValidateField
+ * @param {HTMLInputElement|HTMLTextAreaElement} field - عنصر حقل النموذج المراد التحقق منه.
+ * @returns {boolean} - `true` إذا كان الحقل صالحًا، وإلا `false`.
+ * @see productShowError
+ * @see productClearError
  */
 function productQuickValidateField(field) {
   if (!field) return true;

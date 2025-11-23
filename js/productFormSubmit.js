@@ -16,7 +16,13 @@ function productSetupFormSubmit() {
 }
 
 /**
- * معالجة إرسال النموذج
+ * @description المعالج الرئيسي لحدث إرسال النموذج. يمنع السلوك الافتراضي للنموذج،
+ *   ويقوم بالتحقق من صحة الحقول عبر `productValidateForm`، ثم يبدأ عملية الإرسال الفعلية.
+ * @function productHandleFormSubmit
+ * @async
+ * @param {Event} e - كائن حدث إرسال النموذج.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see productValidateForm
  */
 async function productHandleFormSubmit(e) {
   e.preventDefault();
@@ -33,7 +39,14 @@ async function productHandleFormSubmit(e) {
 }
 
 /**
- * معالجة عملية إرسال النموذج
+ * @description ينسق عملية إرسال النموذج الكاملة بعد اجتياز التحقق من الصحة.
+ *   يتضمن ذلك عرض رسالة تحميل، وحذف الصور القديمة (في وضع التعديل)، ورفع الصور الجديدة،
+ *   وتجهيز بيانات المنتج، وحفظها في قاعدة البيانات، وأخيرًا عرض رسالة نجاح.
+ * @function productProcessFormSubmission
+ * @async
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @throws {Error} - إذا فشلت أي خطوة حرجة في العملية (مثل رفع الصور أو الحفظ في قاعدة البيانات).
+ * @see Swal.fire
  */
 async function productProcessFormSubmission() {
   const form = document.getElementById('add-product-form');
@@ -87,7 +100,12 @@ async function productProcessFormSubmission() {
 }
 
 /**
- * معالجة حذف الصور القديمة
+ * @description في وضع تعديل المنتج، تحدد هذه الدالة الصور التي تمت إزالتها من قبل المستخدم
+ *   وتقوم بحذفها من التخزين السحابي (Cloudflare R2) قبل رفع الصور الجديدة.
+ * @function productHandleImageDeletion
+ * @async
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see deleteFile2cf
  */
 async function productHandleImageDeletion() {
   const originalImageNames = window.productModule.originalImageNames || [];
@@ -117,7 +135,14 @@ async function productHandleImageDeletion() {
 }
 
 /**
- * رفع الصور الجديدة
+ * @description تقوم برفع الصور الجديدة (التي حالتها 'ready') إلى التخزين السحابي.
+ *   تنشئ أسماء ملفات فريدة لكل صورة بناءً على الرقم التسلسلي للمنتج وتستخدم دالة `uploadFile2cf` للرفع الفعلي.
+ * @function productUploadImages
+ * @async
+ * @param {string} productSerial - الرقم التسلسلي الفريد للمنتج، يُستخدم في تسمية الملفات.
+ * @returns {Promise<string[]>} - وعد (Promise) يحتوي على مصفوفة من أسماء الملفات التي تم رفعها بنجاح.
+ * @throws {Error} - إذا كانت دالة `uploadFile2cf` غير متاحة.
+ * @see uploadFile2cf
  */
 async function productUploadImages(productSerial) {
   const uploadedImageFiles = [];
@@ -157,7 +182,15 @@ async function productUploadImages(productSerial) {
 }
 
 /**
- * تجهيز بيانات المنتج للإرسال
+ * @description تجمع كل البيانات من حقول النموذج، بما في ذلك أسماء الصور المرفوعة،
+ *   وتجهزها في كائن منظم لإرساله إلى الواجهة البرمجية (API).
+ *   تتعامل مع الحالات الخاصة مثل فئة الخدمات (حيث يتم تعيين السعر والكمية إلى 0).
+ * @function productPrepareProductData
+ * @param {string} productSerial - الرقم التسلسلي الفريد للمنتج.
+ * @param {string[]} uploadedImageFiles - مصفوفة بأسماء الصور التي تم رفعها حديثًا.
+ * @returns {object} - كائن يحتوي على جميع بيانات المنتج الجاهزة للحفظ.
+ * @throws {Error} - إذا لم يتم العثور على مفتاح المستخدم (user_key) في `localStorage`.
+ * @see productNormalizeArabicText
  */
 function productPrepareProductData(productSerial, uploadedImageFiles) {
   const user = JSON.parse(localStorage.getItem("loggedInUser"));
@@ -218,7 +251,14 @@ function productPrepareProductData(productSerial, uploadedImageFiles) {
 }
 
 /**
- * حفظ البيانات في قاعدة البيانات
+ * @description تقوم بحفظ بيانات المنتج في قاعدة البيانات عن طريق استدعاء `addProduct` (للإضافة)
+ *   أو `updateProduct` (للتعديل) بناءً على وضع النموذج الحالي.
+ * @function productSaveToDatabase
+ * @async
+ * @param {object} productData - كائن بيانات المنتج المراد حفظه.
+ * @param {'add' | 'edit'} mode - وضع النموذج الحالي ('add' أو 'edit').
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @throws {Error} - إذا فشلت عملية الحفظ في قاعدة البيانات أو إذا كانت دوال `addProduct`/`updateProduct` غير متاحة.
  */
 async function productSaveToDatabase(productData, mode) {
   let dbResult;
@@ -245,7 +285,13 @@ async function productSaveToDatabase(productData, mode) {
 }
 
 /**
- * عرض رسالة النجاح
+ * @description تعرض رسالة نجاح للمستخدم باستخدام SweetAlert2 بعد إتمام عملية إضافة أو تحديث المنتج بنجاح.
+ *   بعد عرض الرسالة، تقوم بإغلاق النافذة المنبثقة وتحديث قائمة "منتجاتي" لتعكس التغييرات.
+ * @function productShowSuccessMessage
+ * @async
+ * @param {'add' | 'edit'} mode - وضع النموذج لتحديد رسالة النجاح المناسبة.
+ * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @see Swal.fire
  */
 async function productShowSuccessMessage(mode) {
   const successMessage = mode === 'edit' ? 
