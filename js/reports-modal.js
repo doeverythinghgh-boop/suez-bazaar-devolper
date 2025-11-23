@@ -121,22 +121,30 @@ async function showSalesMovementModal(userKey) {
   await loadAndShowModal("sales-movement-modal-container", "pages/salesMovementModal.html", async (modal) => {
     const contentWrapper = modal.querySelector("#sales-movement-content-wrapper");
     contentWrapper.innerHTML = '<div class="loader" style="margin: 2rem auto;"></div>';
-    
-    // ✅ تحسين: جلب الطلبات ومستخدمي التوصيل بشكل متزامن لتحسين الأداء
-    const [orders, deliveryUsers] = await Promise.all([
-      getSalesMovement(userKey),
-      getDeliveryUsers()
-    ]);
 
     // جلب بيانات المستخدم الحالي للتحقق من الصلاحيات
     const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
     const isAdmin = loggedInUser && adminPhoneNumbers.includes(loggedInUser.phone);
 
+    let orders = [];
+    let deliveryUsers = [];
+
+    // ✅ تحسين: جلب بيانات مستخدمي التوصيل فقط إذا كان المستخدم مسؤولاً
+    if (isAdmin) {
+      // جلب الطلبات ومستخدمي التوصيل بشكل متزامن لتحسين الأداء
+      [orders, deliveryUsers] = await Promise.all([
+        getSalesMovement(userKey),
+        getDeliveryUsers()
+      ]);
+    } else {
+      // جلب الطلبات فقط إذا لم يكن المستخدم مسؤولاً
+      orders = await getSalesMovement(userKey);
+    }
+
     // ✅ تتبع للمطور: عرض البيانات التي تم جلبها
     console.log('%c[DEV-LOG] showSalesMovementModal: بيانات المستخدم المسجل دخوله:', 'color: purple;', loggedInUser);
     console.log(`%c[DEV-LOG] showSalesMovementModal: هل المستخدم مسؤول (isAdmin)؟ -> ${isAdmin}`, 'color: purple;');
     console.log('%c[DEV-LOG] showSalesMovementModal: الطلبات المستلمة:', 'color: blue; font-weight: bold;', orders);
-    console.log('%c[DEV-LOG] showSalesMovementModal: مستخدمو التوصيل:', 'color: darkcyan; font-weight: bold;', deliveryUsers);
 
     if (orders && orders.length > 0) {
       // تمرير قائمة مستخدمي التوصيل إلى دالة بناء الواجهة

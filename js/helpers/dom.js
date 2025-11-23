@@ -349,11 +349,13 @@ function generateSalesMovementItemHTML(order, loggedInUser, isAdmin, deliveryUse
         </div>
         <h4>المنتجات:</h4>
         ${itemsTable}
-        <!-- ✅ جديد: إضافة قسم مستخدمي التوصيل -->
-        <div class="delivery-assignment-section">
-          <h4><i class="fas fa-truck"></i> تعيين لخدمة التوصيل</h4>
-          ${generateDeliveryUsersTableHTML(deliveryUsers, order.order_key)}
-        </div>
+        <!-- ✅ تحسين: عرض قسم التعيين فقط إذا كان المستخدم مسؤولاً -->
+        ${isAdmin ? `
+          <div class="delivery-assignment-section">
+            <h4><i class="fas fa-truck"></i> تعيين لخدمة التوصيل</h4>
+            ${generateDeliveryUsersTableHTML(deliveryUsers, order.order_key)}
+          </div>
+        ` : ''}
       </div>
     </div>`;
 }

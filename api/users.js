@@ -135,11 +135,6 @@ export default async function handler(request) {
           });
         }
 
-        if (result.rows[0].Password) {
-          return new Response(JSON.stringify({ passwordRequired: true }), {
-            status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          });
-        }
         return new Response(JSON.stringify(result.rows[0]), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });

@@ -69,12 +69,11 @@ async function getUserByPhone(phone) {
     const data = await apiFetch(`/api/users?phone=${phone}`, {
       specialHandlers: {
         404: () => {
-          console.warn("[API] getUserByPhone: User not found (404).");
           return null;
         }
       }
     });
-    return data;
+    return data.error ? null : data;
   } catch (error) {
     console.error("%c[getUserByPhone] failed:", "color: red;", error);
     return null;
