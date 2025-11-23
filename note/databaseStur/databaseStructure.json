@@ -114,7 +114,7 @@
     "order_items": "CREATE TABLE order_items (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  order_key TEXT NOT NULL,\n  product_key TEXT NOT NULL,\n  quantity INTEGER NOT NULL,\n  seller_key TEXT,  -- البائع (نفس user_key من جدول المنتجات)\n\n  FOREIGN KEY (order_key) REFERENCES orders(order_key) ON DELETE CASCADE ON UPDATE CASCADE,\n  FOREIGN KEY (product_key) REFERENCES marketplace_products(product_key) ON DELETE CASCADE ON UPDATE CASCADE,\n  FOREIGN KEY (seller_key) REFERENCES users(user_key) ON DELETE CASCADE ON UPDATE CASCADE\n)",
     "user_tokens": "CREATE TABLE user_tokens (\n  id INTEGER PRIMARY KEY AUTOINCREMENT,\n  user_key TEXT NOT NULL,\n  fcm_token TEXT NOT NULL,\n  created_at DATETIME DEFAULT CURRENT_TIMESTAMP\n, platform TEXT)",
     "updates": "CREATE TABLE updates (\n    Id INTEGER PRIMARY KEY AUTOINCREMENT,\n    txt TEXT,\n    datetime DATETIME DEFAULT CURRENT_TIMESTAMP\n)",
-    "orders": "CREATE TABLE \"orders\" (\n\t`order_key` text NOT NULL UNIQUE,\n\t`user_key` text NOT NULL,\n\t`total_amount` real NOT NULL,\n\t`order_status` integer DEFAULT '0' NOT NULL,\n\t`created_at` numeric DEFAULT CURRENT_TIMESTAMP,\n\tFOREIGN KEY (`user_key`) REFERENCES `users`(`user_key`) ON UPDATE NO ACTION ON DELETE NO ACTION\n)"
+    "orders": "CREATE TABLE \"orders\" (\n\t`order_key` text NOT NULL UNIQUE,\n\t`user_key` text NOT NULL,\n\t`total_amount` real NOT NULL,\n\t`order_status` text,\n\t`created_at` numeric DEFAULT CURRENT_TIMESTAMP,\n\tFOREIGN KEY (`user_key`) REFERENCES `users`(`user_key`) ON UPDATE NO ACTION ON DELETE NO ACTION\n)"
   },
   "tablesInfo": {
     "users": [

@@ -1,4 +1,3 @@
-
 <style>
 /* تأكيد تغيير خلفية العنصر الصحيح */
 .add-product-modal.service-category-active {
@@ -155,26 +154,45 @@
 
 <!-- تحميل ملفات JavaScript -->
 <script>
-// عرض رسالة التحميل
-document.getElementById('product-loading-message').style.display = 'block';
+// دالة لإخفاء رسالة التحميل
+function productHideLoadingMessage() {
+  const loadingMessage = document.getElementById('product-loading-message');
+  if (loadingMessage) {
+    loadingMessage.style.display = 'none';
+    console.log('%c[Product] Loading message hidden', 'color: green;');
+  }
+}
 
-// إخفاء رسالة التحميل بعد تحميل جميع الملفات
+// دالة لإظهار رسالة التحميل
+function productShowLoadingMessage() {
+  const loadingMessage = document.getElementById('product-loading-message');
+  if (loadingMessage) {
+    loadingMessage.style.display = 'block';
+    loadingMessage.innerHTML = '<i class="fas fa-spinner fa-spin"></i> جاري تحميل وحدات المنتج...';
+  }
+}
+
+// إخفاء رسالة التحميل عند اكتمال تحميل الصفحة الرئيسية
 window.addEventListener('load', function() {
-  document.getElementById('product-loading-message').style.display = 'none';
-  console.log('%c[Product] All modules loaded successfully', 'color: green; font-weight: bold;');
+  console.log('%c[Product] Page loaded, checking for modal content', 'color: green;');
+  // إخفاء رسالة التحميل بعد تحميل الصفحة الرئيسية
+  setTimeout(productHideLoadingMessage, 100);
 });
 
 // معالجة أخطاء تحميل الملفات
 window.addEventListener('error', function(e) {
   console.error('%c[Product] Error loading module:', 'color: red;', e.error);
-  document.getElementById('product-loading-message').innerHTML = 
-    '<i class="fas fa-exclamation-triangle"></i> خطأ في تحميل بعض المكونات. يرجى تحديث الصفحة.';
+  const loadingMessage = document.getElementById('product-loading-message');
+  if (loadingMessage) {
+    loadingMessage.innerHTML = 
+      '<i class="fas fa-exclamation-triangle"></i> خطأ في تحميل بعض المكونات. يرجى تحديث الصفحة.';
+  }
 });
 
 // مستمع عالمي لأي زر إغلاق في الصفحة
 document.addEventListener('click', function(e) {
   if (e.target.closest('#add-product-modal-close-btn') || 
-      e.target.closest('.close-button') && e.target.closest('.add-product-modal')) {
+      (e.target.closest('.close-button') && e.target.closest('.add-product-modal'))) {
     console.log('%c[ProductForm] 🔒 Global close detection - resetting background', 'color: gray; font-weight: bold;');
     
     // تأخير بسيط للتأكد من إغلاق النموذج
@@ -182,65 +200,23 @@ document.addEventListener('click', function(e) {
       if (typeof productResetModalBackground === 'function') {
         productResetModalBackground();
       }
+      // إخفاء رسالة التحميل عند الإغلاق
+      productHideLoadingMessage();
     }, 100);
   }
 });
 
-// أيضًا نستمع لحدث إخفاء النموذج
+// إخفاء رسالة التحميل بعد فترة زمنية احتياطية (8 ثواني)
+setTimeout(() => {
+  console.log('%c[Product] Safety timeout - hiding loading message', 'color: orange;');
+  productHideLoadingMessage();
+}, 8000);
+
+// إخفاء رسالة التحميل عند اكتمال تحميل DOM
 document.addEventListener('DOMContentLoaded', function() {
-  const modal = document.querySelector('.add-product-modal');
-  if (modal) {
-    const observer = new MutationObserver(function(mutations) {
-      mutations.forEach(function(mutation) {
-        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-          const displayStyle = modal.style.display;
-          if (displayStyle === 'none' || displayStyle === '') {
-            console.log('%c[ProductForm] 🔒 Modal hidden - resetting background', 'color: gray;');
-            if (typeof productResetModalBackground === 'function') {
-              productResetModalBackground();
-            }
-          }
-        }
-      });
-    });
-    
-    observer.observe(modal, {
-      attributes: true,
-      attributeFilter: ['style']
-    });
-  }
-});
-</script>
-
-
-
-<script>
-// إخفاء رسالة التحميل بعد تحميل جميع الملفات
-window.addEventListener('load', function() {
-  document.getElementById('product-loading-message').style.display = 'none';
-  console.log('%c[Product] All modules loaded successfully', 'color: green; font-weight: bold;');
+  console.log('%c[Product] DOM Content Loaded - hiding loading message', 'color: green;');
+  setTimeout(productHideLoadingMessage, 500);
 });
 
-// معالجة أخطاء تحميل الملفات
-window.addEventListener('error', function(e) {
-  console.error('%c[Product] Error loading module:', 'color: red;', e.error);
-  document.getElementById('product-loading-message').innerHTML = 
-    '<i class="fas fa-exclamation-triangle"></i> خطأ في تحميل بعض المكونات. يرجى تحديث الصفحة.';
-});
-
-// مستمع عالمي لأي زر إغلاق في الصفحة
-document.addEventListener('click', function(e) {
-  if (e.target.closest('#add-product-modal-close-btn') || 
-      e.target.closest('.close-button') && e.target.closest('.add-product-modal')) {
-    console.log('%c[ProductForm] 🔒 Global close detection - resetting background', 'color: gray; font-weight: bold;');
-    
-    setTimeout(() => {
-      if (typeof productResetModalBackground === 'function') {
-        productResetModalBackground();
-      }
-    }, 100);
-  }
-});
-
-// لا حاجة لتعيين متغيرات CSS - سنعمل مباشرة عبر JavaScript
+console.log('%c[Product] Loading scripts initialized', 'color: blue;');
 </script>
