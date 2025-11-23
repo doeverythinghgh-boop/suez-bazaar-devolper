@@ -127,10 +127,12 @@ async function showSalesMovementModal(userKey) {
   if (orders && orders.length > 0) {
     // ✅ جديد: معالجة الطلبات لإضافة تفاصيل الحالة بناءً على النص
     const processedOrders = orders.map(order => {
-      const statusInfo = ORDER_STATUSES.find(s => s.state === order.order_status) || { state: order.order_status, description: "حالة غير معروفة" };
+      const { statusId, timestamp } = parseOrderStatus(order.order_status);
+      const statusInfo = ORDER_STATUSES.find(s => s.id === statusId) || { state: "غير معروف", description: "حالة غير معروفة" };
       return {
         ...order,
-        status_details: statusInfo
+        status_details: statusInfo,
+        status_timestamp: timestamp
       };
     });
 

@@ -46,3 +46,37 @@ function normalizeArabicText(text) {
 
   return text;
 }
+
+/**
+ * @description يدمج معرف الحالة (status ID) مع التاريخ والوقت الحاليين في سلسلة نصية واحدة.
+ *   التنسيق الناتج: "ID#TIMESTAMP" (مثال: "1#2023-10-27T10:00:00.000Z").
+ *   هذه الدالة تُستخدم قبل إرسال تحديثات الحالة إلى الخادم.
+ * @function composeOrderStatus
+ * @param {number} statusId - المعرف الرقمي للحالة الجديدة.
+ * @returns {string} - السلسلة النصية المدمجة.
+ */
+function composeOrderStatus(statusId) {
+  const timestamp = new Date().toISOString();
+  return `${statusId}#${timestamp}`;
+}
+
+/**
+ * @description يفكك السلسلة النصية لحالة الطلب (القادمة من قاعدة البيانات) إلى كائن منظم.
+ *   يتعامل مع الحالات التي تكون فيها القيمة غير صالحة أو قديمة (لا تحتوي على #).
+ * @function parseOrderStatus
+ * @param {string | null | undefined} statusValue - القيمة المخزنة في عمود `order_status`.
+ * @returns {{statusId: number, timestamp: string | null}} - كائن يحتوي على معرف الحالة والتاريخ.
+ */
+function parseOrderStatus(statusValue) {
+  if (!statusValue || typeof statusValue !== 'string') {
+    return { statusId: -1, timestamp: null }; // حالة غير معروفة أو قيمة فارغة
+  }
+
+  if (statusValue.includes('#')) {
+    const [idStr, timestamp] = statusValue.split('#');
+    return { statusId: parseInt(idStr, 10), timestamp: timestamp };
+  }
+
+  // للتعامل مع البيانات القديمة التي قد تكون مجرد رقم أو نص
+  return { statusId: -1, timestamp: null }; // افترض أنها حالة غير معروفة إذا لم تكن بالتنسيق الجديد
+}

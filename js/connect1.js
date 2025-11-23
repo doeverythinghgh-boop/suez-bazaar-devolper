@@ -52,13 +52,17 @@ async function getUserPurchases(userKey) {
     // ✅ تحسين: يتم هنا دمج بيانات حالة الطلب (مثل النص والوصف) مع كل عنصر في المشتريات.
     // هذا يسهل على الواجهة الأمامية عرض حالة الطلب دون الحاجة إلى منطق إضافي.
     const purchasesWithStatus = purchases.map((purchase) => {
+      // ✅ جديد: تفكيك قيمة `order_status` للحصول على ID والتاريخ
+      const { statusId, timestamp } = parseOrderStatus(purchase.order_status);
+
       // البحث عن كائن الحالة المطابق لـ `order_status` في مصفوفة `ORDER_STATUSES` المعرفة في `config.js`.
       const statusInfo = ORDER_STATUSES.find(
-        (s) => s.state === purchase.order_status // ✅ تغيير: المطابقة باستخدام اسم الحالة النصي
+        (s) => s.id === statusId
       ) || { state: "غير معروف", description: "حالة الطلب غير معروفة." };
       return {
         ...purchase,
         status_details: statusInfo, // إضافة كائن `status_details` الذي يحتوي على (id, state, description).
+        status_timestamp: timestamp, // ✅ جديد: إضافة تاريخ تحديث الحالة
       };
     });
 

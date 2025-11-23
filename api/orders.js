@@ -125,11 +125,15 @@ export default async function handler(request) {
        * @type {Array<Object>} statements - مصفوفة من الاستعلامات لتنفيذها في معاملة واحدة.
        */
       const statements = [];
+      
+      // ✅ جديد: إنشاء القيمة الافتراضية لحالة الطلب بالتنسيق الجديد
+      // الحالة الافتراضية هي "قيد المراجعة" (ID = 0)
+      const initialOrderStatus = `0#${new Date().toISOString()}`;
 
       // 1. إضافة الطلب الرئيسي إلى جدول `orders`
       statements.push({
-        sql: "INSERT INTO orders (order_key, user_key, total_amount) VALUES (?, ?, ?)",
-        args: [order_key, user_key, total_amount],
+        sql: "INSERT INTO orders (order_key, user_key, total_amount, order_status) VALUES (?, ?, ?, ?)",
+        args: [order_key, user_key, total_amount, initialOrderStatus],
       });
 
       // 2. إضافة كل عنصر من عناصر السلة إلى جدول `order_items`
