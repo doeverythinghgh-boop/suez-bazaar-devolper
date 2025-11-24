@@ -52,12 +52,25 @@ async function initializeUsersAdminLogic(modalContainer) {
     actionsContainer.style.display = 'none';
     if (users && users.length > 0) {
       let usersHTML = '<div class="user-cards-container">';
-      users.forEach(u => { 
-        // ✅ تعديل: تمرير قائمة جميع المستخدمين لتحديد الموزعين
-        usersHTML += generateUserCardHTML(u, allUsers); 
-      });
+      users.forEach(u => { usersHTML += generateUserCardHTML(u); });
       usersHTML += `</div>`;
       contentWrapper.innerHTML = usersHTML;
+
+      // ✅ جديد: بعد عرض البطاقات في DOM، قم بتحميل بيانات الموزعين لكل بائع
+      // هذا هو المنطق المفقود الذي يربط بين عرض البطاقة وتحميل البيانات.
+      users.forEach(user => {
+        // 1. التحقق من أن المستخدم بائع (type 1)
+        if (user.is_seller === 1) {
+          // 2. البحث عن الحاوية باستخدام المعرف الفريد الذي أنشأناه
+          const containerId = `deliveries-container-${user.user_key}`;
+          const container = modalContainer.querySelector(`#${containerId}`);
+
+          if (container) {
+            // 3. استدعاء دالة تحميل العلاقات وتمرير مفتاح البائع والحاوية
+            loadDeliveryRelations(user.user_key, container);
+          }
+        }
+      });
     } else {
       contentWrapper.innerHTML = "<p>لم يتم العثور على مستخدمين.</p>";
     }
@@ -249,6 +262,68 @@ async function initializeUsersAdminLogic(modalContainer) {
 }
 
 /**
+ * @description ينشئ كود HTML لبطاقة مستخدم واحد.
+ * @param {Object} user - كائن المستخدم الذي يحتوي على بياناته.
+ * @returns {string} - سلسلة HTML تمثل بطاقة المستخدم.
+ */
+function generateUserCardHTML(user) {
+  const roleOptions = [
+    { value: 0, text: 'مستخدم عادي' },
+    { value: 1, text: 'بائع' },
+    { value: 2, text: 'موزع' },
+    { value: 3, text: 'مسؤول' }
+  ];
+
+  const selectOptions = roleOptions.map(opt => 
+    `<option value="${opt.value}" ${user.is_seller === opt.value ? 'selected' : ''}>${opt.text}</option>`
+  ).join('');
+
+  // ✅ جديد: إضافة قسم الموزعين بشكل شرطي إذا كان المستخدم بائعًا
+  let deliveriesSection = '';
+  if (user.is_seller === 1) {
+    deliveriesSection = `
+      <div class="user-deliveries-section">
+        <h4>مُوزّعو هذا البائع</h4>
+        <div class="deliveries-table-container" id="deliveries-container-${user.user_key}">
+          <!-- سيتم تحميل الجدول هنا عبر JavaScript -->
+          <div class="loader loader-small"></div>
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="user-card" data-user-key="${user.user_key}">
+      <div class="user-card-header">
+        <i class="fas fa-user-circle user-avatar"></i>
+        <div class="user-info">
+          <span class="user-name">${user.username || 'مستخدم غير معروف'}</span>
+          <span class="user-phone">${user.phone}</span>
+        </div>
+      </div>
+      <div class="user-card-body">
+        <div class="user-card-field">
+          <label for="role-select-${user.user_key}">الدور</label>
+          <select id="role-select-${user.user_key}" class="user-role-select" data-phone="${user.phone}" data-original-state="${user.is_seller}">
+            ${selectOptions}
+          </select>
+        </div>
+        <div class="user-card-field">
+          <label>إرسال إشعار</label>
+          <div class="notification-sender">
+            <input type="text" id="notif-input-${user.user_key}" class="notification-input" placeholder="اكتب رسالتك هنا...">
+            <button class="send-notif-btn" data-user-key="${user.user_key}" data-token="${user.token || ''}" title="إرسال إشعار">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      ${deliveriesSection}
+    </div>
+  `;
+}
+
+/**
  * @description يعالج حدث تغيير حالة ارتباط الموزع بالبائع.
  * @param {HTMLInputElement} checkbox - مربع الاختيار الذي تم النقر عليه.
  */
@@ -260,7 +335,7 @@ async function handleDeliveryStatusToggle(checkbox) {
   checkbox.disabled = true; // تعطيل مربع الاختيار أثناء التحديث
 
   try {
-    const response = await fetchWithAuth('/api/suppliers-deliveries', {
+    const response = await apiFetch('/suppliers-deliveries', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sellerKey, deliveryKey, isActive }),
@@ -297,10 +372,11 @@ async function loadDeliveryRelations(sellerKey, container) {
   container.innerHTML = '<div class="loader loader-small"></div>';
 
   try {
-    const response = await fetchWithAuth(`/api/suppliers-deliveries?sellerKey=${sellerKey}`);
-    if (!response.ok) throw new Error('Failed to fetch delivery relations');
+    const relations = await apiFetch(`/suppliers-deliveries?sellerKey=${sellerKey}`);
+    if (relations.error) {
+      throw new Error(relations.error);
+    }
 
-    const relations = await response.json();
 
     if (relations.length === 0) {
       container.innerHTML = '<p>لا يوجد موزعين لعرضهم.</p>';

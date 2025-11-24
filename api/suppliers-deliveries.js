@@ -42,7 +42,7 @@ export default async function handler(request) {
       if (!sellerKey) {
         return new Response(JSON.stringify({ error: 'sellerKey is required' }), {
           status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
 
@@ -70,7 +70,7 @@ export default async function handler(request) {
 
       return new Response(JSON.stringify(result), {
         status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
@@ -80,7 +80,7 @@ export default async function handler(request) {
       if (!sellerKey || !deliveryKey || typeof isActive !== 'boolean') {
         return new Response(JSON.stringify({ error: 'sellerKey, deliveryKey, and isActive are required' }), {
           status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       }
 
@@ -99,21 +99,21 @@ export default async function handler(request) {
 
       return new Response(JSON.stringify({ success: true, message: 'Relation updated successfully.' }), {
         status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
       });
     }
 
     // إذا كان نوع الطلب غير مدعوم
     return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
       status: 405,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
 
   } catch (error) {
     console.error('[API: /api/suppliers-deliveries] Error:', error);
     return new Response(JSON.stringify({ error: 'Server error occurred.', details: error.message }), {
       status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders },
     });
   }
 }
