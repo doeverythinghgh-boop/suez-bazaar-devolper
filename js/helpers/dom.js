@@ -285,32 +285,7 @@ function generateSalesMovementItemHTML(order, loggedInUser, isAdmin, deliveryUse
   const isSellerOfThisOrder = userRole === 1 && order.items.some(item => item.seller_key === loggedInUser.user_key);
   const canEdit = isAdmin || isSellerOfThisOrder || userRole === 2;
 
-  /**
-   * @description دالة مساعدة داخلية لتوليد جدول HTML لمستخدمي التوصيل.
-   * @param {Array<Object>} users - مصفوفة من كائنات مستخدمي التوصيل.
-   * @param {string} orderKey - مفتاح الطلب الحالي لربطه بأزرار التعيين.
-   * @returns {string} - سلسلة HTML التي تمثل جدول مستخدمي التوصيل.
-   */
-  const generateDeliveryUsersTableHTML = (users, orderKey) => {
-    if (!users || users.length === 0) {
-      return '<p>لا يوجد مستخدمي توصيل متاحين.</p>';
-    }
-
-    const rows = users.map(user => `
-      <tr>
-        <td data-label="الاسم">${user.username}</td>
-        <td data-label="الهاتف">${user.phone}</td>
-        <td data-label="إجراء">
-          <button class="button assign-delivery-btn" data-order-key="${orderKey}" data-delivery-user-key="${user.user_key}">
-            <i class="fas fa-shipping-fast"></i> تعيين
-          </button>
-        </td>
-      </tr>
-    `).join('');
-
-    return `<table class="sales-movement-modal__table delivery-table"><thead><tr><th>الاسم</th><th>الهاتف</th><th>إجراء</th></tr></thead><tbody>${rows}</tbody></table>`;
-  };
-
+ 
   const isoDateTime = order.created_at.replace(' ', 'T') + 'Z';
   const orderDate = new Date(isoDateTime).toLocaleString('ar-EG', {
     year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Cairo'
@@ -349,13 +324,6 @@ function generateSalesMovementItemHTML(order, loggedInUser, isAdmin, deliveryUse
         </div>
         <h4>المنتجات:</h4>
         ${itemsTable}
-        <!-- ✅ تحسين: عرض قسم التعيين فقط إذا كان المستخدم مسؤولاً -->
-        ${isAdmin ? `
-          <div class="delivery-assignment-section">
-            <h4><i class="fas fa-truck"></i> تعيين لخدمة التوصيل</h4>
-            ${generateDeliveryUsersTableHTML(deliveryUsers, order.order_key)}
-          </div>
-        ` : ''}
       </div>
     </div>`;
 }
