@@ -29,12 +29,13 @@ const corsHeaders = {
  * @returns {Promise<Response>} - وعد يحتوي على كائن استجابة HTTP.
  */
 export default async function handler(request) {
-  // معالجة طلبات OPTIONS (preflight)
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders });
-  }
-
   try {
+    // ✅ تعديل: نقل معالجة OPTIONS إلى داخل كتلة try لضمان تطبيق CORS حتى في حالة حدوث خطأ غير متوقع.
+    // هذا يضمن أن أي استجابة تخرج من هذه الدالة ستحتوي على ترويسات CORS.
+    if (request.method === 'OPTIONS') {
+      return new Response(null, { status: 204, headers: corsHeaders });
+    }
+
     if (request.method === 'GET') {
       const url = new URL(request.url);
       const sellerKey = url.searchParams.get('sellerKey');
@@ -113,7 +114,7 @@ export default async function handler(request) {
     console.error('[API: /api/suppliers-deliveries] Error:', error);
     return new Response(JSON.stringify({ error: 'Server error occurred.', details: error.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      headers: { 'Content-Type': 'application/json', ...corsHeaders }, // التأكد من وجود الترويسات حتى في حالة الخطأ
     });
   }
 }
