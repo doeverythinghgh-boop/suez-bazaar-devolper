@@ -209,75 +209,62 @@ async function handleCheckout() {
     Swal.fire('حدث خطأ', `فشل إرسال الطلب: ${result.value.error}`, 'error');
   }
 }
+
+
+
 /**
  * @description تجلب توكنات إشعارات Firebase (FCM Tokens) لكل من المسؤولين والبائعين المعنيين بالطلب.
- *   تعتمد على نقطة النهاية `/api/tokens` التي تقبل قائمة المفاتيح عبر `userKeys` كـ Query Parameter.
+ * تعتمد على نقطة النهاية `/api/tokens` التي تقبل قائمة المفاتيح عبر `userKeys` كـ Query Parameter.
  * @function getNotificationTokensForOrder
  * @param {Array<string>} sellerKeys - قائمة بمفاتيح البائعين (`user_key`) الذين يملكون المنتجات في الطلب.
  * @returns {Promise<Array<string>>} - مصفوفة تحتوي على جميع توكنات الإشعارات الصالحة التي تم جلبها.
  * @throws {Error} - إذا فشل جلب التوكنات من الخادم.
- * @see baseURL
+ * @see apiFetch
  */
 async function getNotificationTokensForOrder(sellerKeys) {
-    console.log("[FCM] Preparing to fetch notification tokens.");
-    
     // 1. تحديد مفاتيح المسؤولين (Admin Keys)
-    const ADMIN_KEYS = [
-        'dl14v1k7', // المفتاح الأول
-        '682dri6b'  // المفتاح الثاني
-    ]; 
+    const ADMIN_KEYS = ['dl14v1k7', '682dri6b'];
     
     // 2. دمج مفاتيح البائعين مع مفاتيح المسؤولين وإزالة أي تكرارات
-    // يتم استخدام معامل النشر (...) داخل كائن Set لضمان تفرد كل مفتاح
     const uniqueUsersKeys = [...new Set([...sellerKeys, ...ADMIN_KEYS])];
 
     if (uniqueUsersKeys.length === 0) {
-        console.warn("[FCM] No users keys found to fetch tokens for.");
         return [];
     }
 
-    // 3. بناء استعلام URL آمن
-    // يتم تحويل المصفوفة إلى سلسلة نصية مفصولة بفواصل
+    // 3. بناء استعلام URL آمن (مسار API فقط)
     const userKeysQuery = uniqueUsersKeys.join(',');
-    
-    // نقطة النهاية المعدلة تستقبل userKeys كـ Query Parameter
-    const apiUrl = `${baseURL}/api/tokens?userKeys=${encodeURIComponent(userKeysQuery)}`;
+    const apiUrlPath = `/api/tokens?userKeys=${encodeURIComponent(userKeysQuery)}`;
 
     try {
-        const response = await fetch(apiUrl, { // ✅ إصلاح: استخدام baseURL
-            method: 'GET', // ✅ الآن تدعم GET لجلب التوكنات
-            headers: {
-                'Content-Type': 'application/json',
-                // إذا كانت نقطة النهاية محمية، يجب إضافة توكن المصادقة هنا
-                // 'Authorization': `Bearer ${getUserAuthToken()}`, 
-            },
-        });
+        // استخدام apiFetch (التي يفترض أنها تعالج baseURL وترويسات CORS و Status 4xx/5xx)
+        const result = await apiFetch(apiUrlPath);
 
-        if (!response.ok) {
-            console.error(`[FCM] API Error: Status ${response.status} for ${apiUrl}`);
-            // محاولة قراءة رسالة الخطأ من الاستجابة
-            const errorBody = await response.json();
-            throw new Error(errorBody.error || 'Failed to fetch notification tokens from the server.'); 
-        }
-
-        const result = await response.json();
-
-        // 4. التحقق من هيكل الاستجابة المتوقع وإعادة التوكنات
-        // الاستجابة المتوقعة: { success: true, tokens: ['fcm_token_1', 'fcm_token_2', ...] }
+        // 4. التحقق من هيكل الاستجابة المتوقع (الاستجابة الناجحة تحتوي على مصفوفة tokens)
         if (result && Array.isArray(result.tokens)) {
-            console.log(`[FCM] Successfully fetched ${result.tokens.length} notification tokens.`);
+            // console.log(`[FCM] Successfully fetched ${result.tokens.length} notification tokens.`);
             return result.tokens;
+        } 
+        
+        // التعامل مع حالة الاستجابة الفارغة أو الخطأ الذي يرجعه الخادم/apiFetch
+        if (result && result.error) {
+             console.error('[FCM] API returned an error:', result.error);
         } else {
-            console.warn('[FCM] API returned an invalid or empty token list:', result);
-            return [];
+             // console.warn('[FCM] API returned an invalid or empty token list:', result);
         }
+        return [];
 
     } catch (error) {
+        // معالجة أخطاء الشبكة أو الأخطاء التي لم يتم التعامل معها في apiFetch
         console.error('[FCM] Critical error during token fetch:', error);
-        // في حالة الفشل، نُعيد مصفوفة فارغة لمنع تعطل إرسال الإشعار
         return []; 
     }
 }
+
+
+
+
+
 /**
  * @description تستخلص المفاتيح الفريدة للبائعين (`seller_key`) من بنية بيانات الطلب (`orderData`).
  * @function getUniqueSellerKeys

@@ -185,6 +185,7 @@ async function showSalesMovementModal(userKey) {
       showLoaderOnConfirm: true,
       preConfirm: async () => {
         return await updateOrderStatus(orderKey, newStatusId);
+
       },
       allowOutsideClick: () => !Swal.isLoading()
     });
@@ -194,6 +195,77 @@ async function showSalesMovementModal(userKey) {
         Swal.fire('تم التحديث!', 'تم تحديث حالة الطلب بنجاح.', 'success');
         // إعادة تحميل النافذة لعرض التغييرات
         showSalesMovementModal(userKey);
+
+
+        
+
+
+
+
+
+try {
+    // 1. جلب توكنات خدمات التوصيل النشطة
+    const deliveryUsers = await getActiveDeliveryRelations(userKey);
+    const deliveryTokens = [];
+    
+    // استخراج التوكنات الصالحة (ليست null) باستخدام حلقة for...of
+    if (deliveryUsers) {
+        for (const user of deliveryUsers) {
+            // إضافة التوكن فقط إذا كان موجودًا (لمعالجة fcmToken: null)
+            if (user.fcmToken) { 
+                deliveryTokens.push(user.fcmToken);
+            }
+        }
+    }
+
+    // 2. جلب توكنات المسؤولين
+    const ADMIN_KEYS = ['dl14v1k7', '682dri6b'];
+    const adminKeysQuery = ADMIN_KEYS.join(',');
+    const tokensResponse = await apiFetch(`/api/tokens?userKeys=${encodeURIComponent(adminKeysQuery)}`);
+    
+    // استخدام Optional Chaining للتعامل مع الاستجابة المحتملة الفارغة
+    const adminTokens = tokensResponse?.tokens || []; 
+
+    // 3. دمج التوكنات وإزالة التكرار
+    const allTokens = [...new Set([...deliveryTokens, ...adminTokens])];
+
+    // 4. إرسال الإشعارات
+    if (allTokens.length > 0) {
+        const title = 'تحديث حالة طلب';
+        const body = `تم تحديث حالة الطلب رقم #${orderKey} إلى "${statusInfo.state}".`;
+        
+        const notificationPromises = [];
+        
+        // استخدام حلقة for...of لإنشاء وعود الإرسال
+        for (const token of allTokens) {
+             notificationPromises.push(sendNotification(token, title, body));
+        }
+        
+        await Promise.all(notificationPromises);
+    }
+} catch (error) {
+    // تسجيل الخطأ دون إيقاف العملية الرئيسية لتحديث الحالة
+    console.error('[Notifications] فشل في إرسال الإشعارات:', error);
+}
+ 
+
+     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
       } else {
         Swal.fire(
           'فشل التحديث',
