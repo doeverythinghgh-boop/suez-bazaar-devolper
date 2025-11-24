@@ -137,9 +137,10 @@ export default async function handler(request) {
  * ملاحظة هامة للمطور:
  * لضمان عمل منطق الـ UPSERT (INSERT ... ON CONFLICT) بشكل صحيح،
  * يجب التأكد من وجود فهرس فريد (UNIQUE INDEX) على العمودين `seller_key` و `delivery_key`
- * في جدول `suppliers_deliveries`. يمكنك تنفيذ الاستعلام التالي مرة واحدة على قاعدة بياناتك:
+ * في جدول `suppliers_deliveries`. إذا لم يكن موجودًا، يمكنك إضافته عن طريق تنفيذ
+ * الاستعلام التالي مرة واحدة على قاعدة بيانات Turso الخاصة بك:
  *
- * CREATE UNIQUE INDEX IF NOT EXISTS idx_seller_delivery ON suppliers_deliveries(seller_key, delivery_key);
+ * ALTER TABLE suppliers_deliveries ADD CONSTRAINT unique_seller_delivery UNIQUE (seller_key, delivery_key);
  *
  * هذا يمنع وجود صفوف مكررة لنفس البائع والموزع ويسمح بتحديث العلاقة القائمة بكفاءة.
  */

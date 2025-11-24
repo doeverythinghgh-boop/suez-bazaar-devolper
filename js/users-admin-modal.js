@@ -344,10 +344,10 @@ async function handleDeliveryStatusToggle(checkbox) {
   checkbox.disabled = true; // تعطيل مربع الاختيار أثناء التحديث
 
   try {
-    const response = await apiFetch('/suppliers-deliveries', {
+    const response = await apiFetch('/api/suppliers-deliveries', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ sellerKey, deliveryKey, isActive }),
+      body: { sellerKey, deliveryKey, isActive },
     });
 
     if (!response.ok) {
@@ -382,7 +382,7 @@ async function loadDeliveryRelations(sellerKey, container) {
   container.innerHTML = '<div class="loader loader-small"></div>';
 
   try {
-    const relations = await apiFetch(`/suppliers-deliveries?sellerKey=${sellerKey}`);
+    const relations = await apiFetch(`/api/suppliers-deliveries?sellerKey=${sellerKey}`);
     if (relations.error) {
       throw new Error(relations.error);
     }
