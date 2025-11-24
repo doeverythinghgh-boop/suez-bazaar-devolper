@@ -23,7 +23,12 @@
 function isUserEligibleForNotifications(user) {
   if (!user || user.is_guest) return false;
   // adminPhoneNumbers is defined globally in config.js
-  return user.is_seller === 1 || user.is_seller === 2 || (typeof adminPhoneNumbers !== 'undefined' && adminPhoneNumbers.includes(user.phone));
+  return (
+    user.is_seller === 1 ||
+    user.is_seller === 2 ||
+    (typeof adminPhoneNumbers !== "undefined" &&
+      adminPhoneNumbers.includes(user.phone))
+  );
 }
 
 /**
@@ -114,6 +119,64 @@ function updateViewForLoggedInUser(user) {
         .getElementById("view-my-products-btn")
         .addEventListener("click", () => showMyProducts(user.user_key));
     }
+
+
+
+ if (user.is_seller === 1){
+  // ✅ جديد: إظهار زر "خدمات التوصيل" للبائع وربط الحدث به
+    const manageDeliveryBtn = document.getElementById("manage-delivery-services-btn");
+    if (manageDeliveryBtn) {
+      manageDeliveryBtn.style.display = "inline-block";
+      // ✅ تعديل: ربط الحدث بدالة async لجلب وعرض الموزعين النشطين
+      manageDeliveryBtn.addEventListener("click", async () => {
+        // إظهار مؤشر تحميل
+        Swal.fire({
+          title: "جاري تحميل الموزعين النشطين...",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+          allowOutsideClick: false,
+        });
+
+        const activeDeliveries = await getActiveDeliveryRelations(user.user_key);
+
+        if (activeDeliveries && activeDeliveries.length > 0) {
+          // تنسيق النتائج كقائمة HTML
+          const deliveriesHTML = `
+            <ul style="text-align: right; list-style-type: none; padding: 0;">
+              ${activeDeliveries.map(delivery => `
+                <li style="border-bottom: 1px solid #eee; padding: 10px 5px; display: flex; justify-content: space-between; align-items: center;">
+                  <span><i class="fas fa-truck" style="margin-left: 8px; color: #555;"></i>${delivery.username}</span>
+                  <span style="direction: ltr; color: #888;">${delivery.phone}</span>
+                </li>
+              `).join('')}
+            </ul>
+          `;
+          Swal.fire({
+            title: "الموزعون النشطون",
+            html: deliveriesHTML,
+            icon: "success",
+            confirmButtonText: "إغلاق"
+          });
+        } else {
+          // في حالة عدم وجود موزعين نشطين أو حدوث خطأ
+          Swal.fire({
+            title: "لا يوجد نتائج",
+            text: "لا يوجد موزعين نشطين مرتبطين بحسابك حاليًا.",
+            icon: "info",
+            confirmButtonText: "موافق"
+          });
+        }
+      });
+    }
+ }
+
+
+
+
+
+
+
 
     // التحقق مما إذا كان المستخدم "خدمة توصيل"
     if (user.is_seller === 2) {
