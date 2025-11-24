@@ -41,6 +41,7 @@ export default async function handler(request) {
     if (request.method === 'GET') {
       const url = new URL(request.url);
       const sellerKey = url.searchParams.get('sellerKey');
+      const activeOnly = url.searchParams.get('activeOnly') === 'true'; // ✅ إضافة: التحقق من وجود معامل لجلب النشطين فقط
 
       if (!sellerKey) {
         console.warn('[API] Bad Request: sellerKey is missing from query parameters.');
@@ -50,31 +51,55 @@ export default async function handler(request) {
         });
       }
 
-      // 1. جلب جميع المستخدمين الذين هم موزعين (is_seller = 2)
-      console.log('[API] Step 1: Fetching all delivery users (is_seller = 2)...');
-      const deliveriesRes = await db.execute({
-        sql: "SELECT user_key, username, phone FROM users WHERE is_seller = 2",
-        args: [],
-      });
-      const allDeliveries = deliveriesRes.rows;
-      console.log(`[API] Found ${allDeliveries.length} delivery users.`);
+      // ✅ إضافة: منطق جديد لجلب الموزعين النشطين فقط بكفاءة
+      if (activeOnly) {
+        console.log(`%c[API] Fetching ACTIVE delivery users for sellerKey: ${sellerKey}...`, "color: #8A2BE2;");
+        const { rows } = await db.execute({
+          sql: `
+            SELECT
+              u.user_key,
+              u.username,
+              u.phone
+            FROM
+              users u
+            JOIN
+              suppliers_deliveries sd ON u.user_key = sd.delivery_key
+            WHERE
+              sd.seller_key = ? AND sd.is_active = 1 AND u.is_seller = 2;
+          `,
+          args: [sellerKey],
+        });
 
-      // 2. جلب العلاقات النشطة للبائع المحدد
-      console.log(`[API] Step 2: Fetching active relations for sellerKey: ${sellerKey}...`);
-      const relationsRes = await db.execute({
-        sql: "SELECT delivery_key, is_active FROM suppliers_deliveries WHERE seller_key = ?",
+        const result = rows.map(row => ({
+          deliveryKey: row.user_key,
+          username: row.username,
+          phone: row.phone,
+          isActive: true, // بما أننا جلبنا النشطين فقط، فستكون القيمة دائماً true
+        }));
+
+        console.log(`%c[API] Successfully fetched ${result.length} active delivery users.`, "color: green;");
+        return new Response(JSON.stringify(result), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      }
+
+      // --- المنطق الحالي لجلب جميع الموزعين مع حالتهم (يبقى كما هو) ---
+      console.log(`[API] Fetching ALL delivery users and their status for sellerKey: ${sellerKey}...`);
+      const { rows } = await db.execute({
+        sql: `
+          SELECT u.user_key, u.username, u.phone, CAST(COALESCE(sd.is_active, 0) AS BOOLEAN) as is_active
+          FROM users u
+          LEFT JOIN suppliers_deliveries sd ON u.user_key = sd.delivery_key AND sd.seller_key = ?
+          WHERE u.is_seller = 2;
+        `,
         args: [sellerKey],
       });
-      const activeRelations = new Map(relationsRes.rows.map(r => [r.delivery_key, r.is_active]));
-      console.log(`[API] Found ${activeRelations.size} active relations for this seller.`);
-
-      // 3. دمج البيانات: إضافة حالة 'isActive' لكل موزع
-      console.log('[API] Step 3: Merging delivery users with their relation status...');
-      const result = allDeliveries.map(delivery => ({
-        deliveryKey: delivery.user_key,
-        username: delivery.username,
-        phone: delivery.phone,
-        isActive: activeRelations.has(delivery.user_key) ? !!activeRelations.get(delivery.user_key) : false,
+      const result = rows.map(row => ({
+        deliveryKey: row.user_key,
+        username: row.username,
+        phone: row.phone,
+        isActive: !!row.is_active,
       }));
 
       console.log(`%c[API] Successfully processed GET request. Returning ${result.length} items.`, "color: green;");
