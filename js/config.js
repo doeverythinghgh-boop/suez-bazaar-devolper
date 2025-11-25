@@ -102,12 +102,17 @@ const USER_ROLES_MAP = {
 function roleToNumber(roleString) {
   return USER_ROLES_MAP[roleString.toUpperCase()] ?? USER_ROLES_MAP.CUSTOMER;
 }
-let currentUserIsGuest=false;
-let currentUserIsCUSTOMER=false;
-let currentUserIsSELLER=false;
-let currentUserIsDELIVERY=false;
-let currentUserIsADMIN=false;
-let currentUserKey="";
+
+// التحقق من وجود المتغيرات قبل تعريفها لمنع أخطاء إعادة التعريف
+if (typeof window.currentUserIsGuest === "undefined") {
+  window.currentUserIsGuest = false;
+  window.currentUserIsCUSTOMER = false;
+  window.currentUserIsSELLER = false;
+  window.currentUserIsDELIVERY = false;
+  window.currentUserIsADMIN = false;
+  window.currentUserKey = "";
+}
+
 /**
  * @description خريطة معكوسة لتسريع عملية تحويل المعرف الرقمي للدور إلى الاسم النصي.
  *   تُستخدم داخل دالة `numberToRole` للوصول المباشر (O(1)).
