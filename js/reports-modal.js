@@ -15,19 +15,25 @@
  * @returns {string} - كود HTML الذي يمثل شريط التقدم الزمني للحالة.
  * @see ORDER_STATUS_MAP
  */
-function createStatusTimelineHTML(orderKey, statusDetails, statusTimestamp, canEdit, userRole) {
+function createStatusTimelineHTML(
+  orderKey,
+  statusDetails,
+  statusTimestamp,
+  canEdit,
+  userRole
+) {
   const currentStatusId = statusDetails ? statusDetails.id : -1; // لا تغيير هنا، سنمرر statusDetails الصحيح
 
   const progressStates = [
     ORDER_STATUS_MAP.REVIEW,
     ORDER_STATUS_MAP.CONFIRMED,
     ORDER_STATUS_MAP.SHIPPED,
-    ORDER_STATUS_MAP.DELIVERED
+    ORDER_STATUS_MAP.DELIVERED,
   ];
 
   // إذا كانت تفاصيل الحالة غير موجودة، اعرض حالة غير معروفة
   if (!statusDetails) {
-    return `<p class="timeline-description" style="text-align: center;">حالة الطلب غير معروفة.</p>`;
+    return `<p class="timeline-description text-center">حالة الطلب غير معروفة.</p>`;
   }
 
   // ✅ جديد: تنسيق التاريخ لإضافته إلى الوصف
@@ -36,18 +42,27 @@ function createStatusTimelineHTML(orderKey, statusDetails, statusTimestamp, canE
     const date = new Date(statusTimestamp);
     // التحقق من أن التاريخ صالح قبل عرضه
     if (!isNaN(date.getTime())) {
-      const formattedDate = date.toLocaleString('ar-EG', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const formattedDate = date.toLocaleString("ar-EG", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
       descriptionText += ` <span class="status-date">(بتاريخ: ${formattedDate})</span>`;
     }
   }
 
-  if (!progressStates.some(p => p.id === currentStatusId)) {
+  if (!progressStates.some((p) => p.id === currentStatusId)) {
     const statusClass = `status-${currentStatusId}`;
-    let icon = 'fa-info-circle';
-    if (currentStatusId === ORDER_STATUS_MAP.CANCELLED.id || currentStatusId === ORDER_STATUS_MAP.REJECTED.id) {
-      icon = 'fa-times-circle';
+    let icon = "fa-info-circle";
+    if (
+      currentStatusId === ORDER_STATUS_MAP.CANCELLED.id ||
+      currentStatusId === ORDER_STATUS_MAP.REJECTED.id
+    ) {
+      icon = "fa-times-circle";
     } else if (currentStatusId === ORDER_STATUS_MAP.RETURNED.id) {
-      icon = 'fa-undo-alt';
+      icon = "fa-undo-alt";
     }
 
     return `
@@ -74,19 +89,22 @@ function createStatusTimelineHTML(orderKey, statusDetails, statusTimestamp, canE
     }
     // ✅ جديد: إذا كان المستخدم خدمة توصيل (2)، يمكنه فقط تعديل "تم الشحن" و "تم التسليم".
     if (userRole === 2) {
-      const allowedDeliveryStatuses = [ORDER_STATUS_MAP.SHIPPED.id, ORDER_STATUS_MAP.DELIVERED.id];
+      const allowedDeliveryStatuses = [
+        ORDER_STATUS_MAP.SHIPPED.id,
+        ORDER_STATUS_MAP.DELIVERED.id,
+      ];
       // اجعل الخطوة قابلة للتعديل فقط إذا كانت ضمن الحالات المسموح بها لخدمة التوصيل.
       isStepEditable = canEdit && allowedDeliveryStatuses.includes(state.id);
     }
 
-    const editableClass = isStepEditable ? 'editable-step' : '';
-    const stepClass = isActive ? 'active' : '';
-    const currentClass = isCurrent ? 'current' : '';
+    const editableClass = isStepEditable ? "editable-step" : "";
+    const stepClass = isActive ? "active" : "";
+    const currentClass = isCurrent ? "current" : "";
 
     // ✅ جديد: إضافة سمات البيانات لتخزين المعلومات اللازمة للتحديث
-    const dataAttributes = isStepEditable 
-      ? `data-order-key="${orderKey}" data-status-id="${state.id}"` 
-      : '';
+    const dataAttributes = isStepEditable
+      ? `data-order-key="${orderKey}" data-status-id="${state.id}"`
+      : "";
 
     timelineHTML += `
       <div class="timeline-step ${stepClass} ${currentClass} ${editableClass}" title="${state.description}" ${dataAttributes}>
@@ -98,11 +116,176 @@ function createStatusTimelineHTML(orderKey, statusDetails, statusTimestamp, canE
       timelineHTML += `<div class="timeline-line ${stepClass}"></div>`;
     }
   });
-  timelineHTML += '</div>';
+  timelineHTML += "</div>";
 
   const descriptionHTML = `<p class="timeline-description">${descriptionText}</p>`;
 
   return timelineHTML + descriptionHTML;
+}
+
+/**
+ * @description يعالج حدث النقر لتحديث حالة الطلب.
+ * @param {MouseEvent} event - كائن الحدث.
+ * @param {string} userKey - مفتاح المستخدم الحالي لإعادة تحميل النافذة.
+ */
+async function handleStatusUpdateClick(event, userKey) {
+  const stepElement = event.target.closest(".editable-step");
+  if (!stepElement) return;
+
+  // منع إعادة التفعيل إذا كانت الحالة نشطة بالفعل
+  if (stepElement.classList.contains("active")) {
+    return;
+  }
+
+  const orderKey = stepElement.dataset.orderKey;
+  const newStatusId = parseInt(stepElement.dataset.statusId, 10);
+  const statusInfo = ORDER_STATUSES.find((s) => s.id === newStatusId);
+
+  if (!orderKey || isNaN(newStatusId) || !statusInfo) {
+    console.error("بيانات تحديث الحالة غير مكتملة:", stepElement.dataset);
+    return;
+  }
+
+  const result = await Swal.fire({
+    title: "تأكيد التفعيل",
+    html: `هل أنت متأكد من تفعيل حالة الطلب رقم <strong>${orderKey}</strong> إلى <strong>"${statusInfo.state}"</strong>؟<br><small>ملاحظة: لا يمكن التراجع عن هذا الإجراء.</small>`,
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "نعم، قم بالتفعيل!",
+    cancelButtonText: "تجاهل",
+    showLoaderOnConfirm: true,
+    preConfirm: () => updateOrderStatus(orderKey, newStatusId),
+    allowOutsideClick: () => !Swal.isLoading(),
+  });
+
+  if (result.isConfirmed) {
+    if (result.value && !result.value.error) {
+      Swal.fire("تم التحديث!", "تم تحديث حالة الطلب بنجاح.", "success");
+      showSalesMovementModal(userKey); // إعادة تحميل النافذة
+      sendUpdateNotifications(orderKey, userKey, statusInfo.state); // إرسال الإشعارات
+    } else {
+      const errorMessage = result.value ? result.value.error : "خطأ غير معروف";
+      Swal.fire("فشل التحديث", `حدث خطأ: ${errorMessage}`, "error");
+    }
+  }
+}
+
+/**
+ * @description يرسل إشعارات بعد تحديث حالة الطلب.
+ * @param {string} orderKey - مفتاح الطلب المحدث.
+ * @param {string} userKey - مفتاح المستخدم (البائع).
+ * @param {string} newStatusState - اسم الحالة الجديدة.
+ */
+async function sendUpdateNotifications(orderKey, userKey, newStatusState) {
+  try {
+    // 1. جلب توكنات خدمات التوصيل النشطة والبائع
+    const deliveryUsers = await getActiveDeliveryRelations(userKey);
+    const deliveryTokens = deliveryUsers
+      ?.map((user) => user.fcmToken)
+      .filter(Boolean); // استخراج التوكنات الصالحة فقط
+
+    // 2. جلب توكنات المسؤولين
+    const ADMIN_KEYS = ["dl14v1k7", "682dri6b"];
+    const adminKeysQuery = ADMIN_KEYS.join(",");
+    const tokensResponse = await apiFetch(
+      `/api/tokens?userKeys=${encodeURIComponent(adminKeysQuery)}`
+    );
+    const adminTokens = tokensResponse?.tokens || [];
+
+    // 3. دمج التوكنات وإزالة التكرار
+    const allTokens = [...new Set([...(deliveryTokens || []), ...adminTokens])];
+
+    if (allTokens.length > 0) {
+      const title = "تحديث حالة طلب";
+      const body = `تم تحديث حالة الطلب رقم #${orderKey} إلى "${newStatusState}".`;
+
+      const notificationPromises = allTokens.map((token) =>
+        sendNotification(token, title, body)
+      );
+
+      await Promise.all(notificationPromises);
+      console.log("[Notifications] تم إرسال الإشعارات بنجاح.");
+    }
+  } catch (error) {
+    console.error("[Notifications] فشل في إرسال الإشعارات:", error);
+  }
+}
+
+/**
+ * @description يعالج حدث النقر لعرض تفاصيل المنتج.
+ * @param {MouseEvent} event - كائن الحدث.
+ */
+async function handleViewProductClick(event) {
+  const button = event.target.closest(".view-product-details-btn");
+  if (!button) return;
+
+  console.log(
+    '%c[DEV-LOG] تم النقر على زر "عرض تفاصيل المنتج".',
+    "color: purple; font-weight: bold;"
+  );
+  const productKey = button.dataset.productKey;
+  console.log(
+    `[DEV-LOG] المفتاح المقروء من data-product-key هو: "${productKey}"`
+  );
+
+  if (!productKey) {
+    Swal.fire("خطأ", "بيانات المنتج غير متوفرة لعرض التفاصيل.", "error");
+    return;
+  }
+
+  Swal.fire({
+    title: "جاري تحميل تفاصيل المنتج...",
+    allowOutsideClick: false,
+    didOpen: () => Swal.showLoading(),
+  });
+
+  try {
+    const productData = await getProductByKey(productKey);
+    Swal.close();
+
+    if (productData) {
+      const productDataForModal = {
+        ...productData,
+        pricePerItem: productData.product_price,
+        availableQuantity: productData.product_quantity,
+        sellerMessage: productData.user_message,
+        description: productData.product_description,
+        imageSrc: productData.ImageName
+          ? productData.ImageName.split(",").map(
+              (name) =>
+                `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`
+            )
+          : [],
+        MainCategory: productData.MainCategory,
+        SubCategory: productData.SubCategory,
+      };
+      window.showProductDetails(productDataForModal, null, {
+        showAddToCart: false,
+      });
+    } else {
+      Swal.fire(
+        "خطأ",
+        "فشل في جلب تفاصيل المنتج. قد يكون المنتج قد تم حذفه.",
+        "error"
+      );
+    }
+  } catch (error) {
+    Swal.close();
+    console.error("Error fetching product details:", error);
+    Swal.fire("خطأ", "حدث خطأ أثناء جلب تفاصيل المنتج.", "error");
+  }
+}
+
+/**
+ * @description يربط معالجات الأحداث اللازمة لنافذة حركة المبيعات.
+ * @param {HTMLElement} contentWrapper - العنصر الحاوي لمحتوى النافذة.
+ * @param {string} userKey - مفتاح المستخدم الحالي.
+ */
+function setupSalesMovementEventListeners(contentWrapper, userKey) {
+  contentWrapper.addEventListener("click", (event) => {
+    handleStatusUpdateClick(event, userKey);
+    handleViewProductClick(event);
+  });
 }
 
 /**
@@ -118,201 +301,68 @@ function createStatusTimelineHTML(orderKey, statusDetails, statusTimestamp, canE
  * @see getProductByKey
  */
 async function showSalesMovementModal(userKey) {
-  await loadAndShowModal("sales-movement-modal-container", "pages/salesMovementModal.html", async (modal) => {
-    const contentWrapper = modal.querySelector("#sales-movement-content-wrapper");
-    contentWrapper.innerHTML = '<div class="loader" style="margin: 2rem auto;"></div>';
+  await loadAndShowModal(
+    "sales-movement-modal-container",
+    "pages/salesMovementModal.html",
+    async (modal) => {
+      const contentWrapper = modal.querySelector(
+        "#sales-movement-content-wrapper"
+      );
+      contentWrapper.innerHTML =
+        '<div class="loader" style="margin: 2rem auto;"></div>';
 
-    // جلب بيانات المستخدم الحالي للتحقق من الصلاحيات
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-    const isAdmin = loggedInUser && adminPhoneNumbers.includes(loggedInUser.phone);
+      const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+      const isAdmin =
+        loggedInUser && adminPhoneNumbers.includes(loggedInUser.phone);
 
-    let orders = [];
-    let deliveryUsers = [];
+      let orders = [];
+      let deliveryUsers = [];
 
-    // ✅ تحسين: جلب بيانات مستخدمي التوصيل فقط إذا كان المستخدم مسؤولاً
-    if (isAdmin) {
-      // جلب الطلبات ومستخدمي التوصيل بشكل متزامن لتحسين الأداء
-      [orders, deliveryUsers] = await Promise.all([
-        getSalesMovement(userKey),
-        //getDeliveryUsers()
-      ]);
-    } else {
-      // جلب الطلبات فقط إذا لم يكن المستخدم مسؤولاً
-      orders = await getSalesMovement(userKey);
-    }
+      if (isAdmin) {
+        [orders, deliveryUsers] = await Promise.all([
+          getSalesMovement(userKey),
+          //getDeliveryUsers()
+        ]);
+      } else {
+        // جلب الطلبات فقط إذا لم يكن المستخدم مسؤولاً
+        orders = await getSalesMovement(userKey);
+      }
 
-    // ✅ تتبع للمطور: عرض البيانات التي تم جلبها
-    console.log('%c[DEV-LOG] showSalesMovementModal: بيانات المستخدم المسجل دخوله:', 'color: purple;', loggedInUser);
-    console.log(`%c[DEV-LOG] showSalesMovementModal: هل المستخدم مسؤول (isAdmin)؟ -> ${isAdmin}`, 'color: purple;');
-    console.log('%c[DEV-LOG] showSalesMovementModal: الطلبات المستلمة:', 'color: blue; font-weight: bold;', orders);
+      console.log(
+        "%c[DEV-LOG] showSalesMovementModal: بيانات المستخدم المسجل دخوله:",
+        "color: purple;",
+        loggedInUser
+      );
+      console.log(
+        `%c[DEV-LOG] showSalesMovementModal: هل المستخدم مسؤول (isAdmin)؟ -> ${isAdmin}`,
+        "color: purple;"
+      );
+      console.log(
+        "%c[DEV-LOG] showSalesMovementModal: الطلبات المستلمة:",
+        "color: blue; font-weight: bold;",
+        orders
+      );
 
-    if (orders && orders.length > 0) {
-      // تمرير قائمة مستخدمي التوصيل إلى دالة بناء الواجهة
-      contentWrapper.innerHTML = `<div id="sales-movement-list">
-          ${orders.map(order => generateSalesMovementItemHTML(order, loggedInUser, isAdmin, deliveryUsers)).join('')}
+      if (orders && orders.length > 0) {
+        contentWrapper.innerHTML = `<div id="sales-movement-list">
+          ${orders
+            .map((order) =>
+              generateSalesMovementItemHTML(
+                order,
+                loggedInUser,
+                isAdmin,
+                deliveryUsers
+              )
+            )
+            .join("")}
         </div>`;
-    } else {
-      contentWrapper.innerHTML = '<p style="text-align: center; padding: 2rem 0;">لا توجد طلبات لعرضها.</p>';
-    }
-
-  // ✅ جديد: إضافة مستمع حدث للنقر على خطوات الحالة القابلة للتعديل
-  contentWrapper.addEventListener('click', async (event) => {
-    const stepElement = event.target.closest('.editable-step');
-    if (!stepElement) return;
-
-    // ✅ جديد: التحقق مما إذا كانت الحالة المحددة نشطة بالفعل.
-    // إذا كانت كذلك، لا تفعل شيئًا لمنع إعادة التفعيل.
-    if (stepElement.classList.contains('active')) {
-      return; // إيقاف التنفيذ لأن الحالة نشطة بالفعل
-    }
-
-    const orderKey = stepElement.dataset.orderKey;
-    const newStatusId = parseInt(stepElement.dataset.statusId, 10);
-    const statusInfo = ORDER_STATUSES.find(s => s.id === newStatusId);
-
-    if (!orderKey || isNaN(newStatusId) || !statusInfo) {
-      console.error('بيانات تحديث الحالة غير مكتملة:', stepElement.dataset);
-      return;
-    }
-
-    const result = await Swal.fire({
-      title: 'تأكيد التفعيل',
-      html: `هل أنت متأكد من تفعيل حالة الطلب رقم <strong>${orderKey}</strong> إلى <strong>"${statusInfo.state}"</strong>؟<br><small>ملاحظة: لا يمكن التراجع عن هذا الإجراء.</small>`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'نعم، قم بالتفعيل!',
-      cancelButtonText: 'إلغاء',
-      showLoaderOnConfirm: true,
-      preConfirm: async () => {
-        return await updateOrderStatus(orderKey, newStatusId);
-
-      },
-      allowOutsideClick: () => !Swal.isLoading()
-    });
-
-    if (result.isConfirmed) {
-      if (result.value && !result.value.error) {
-        Swal.fire('تم التحديث!', 'تم تحديث حالة الطلب بنجاح.', 'success');
-        // إعادة تحميل النافذة لعرض التغييرات
-        showSalesMovementModal(userKey);
-
-
-        
-
-
-
-
-
-try {
-    // 1. جلب توكنات خدمات التوصيل النشطة
-    const deliveryUsers = await getActiveDeliveryRelations(userKey);
-    const deliveryTokens = [];
-    
-    // استخراج التوكنات الصالحة (ليست null) باستخدام حلقة for...of
-    if (deliveryUsers) {
-        for (const user of deliveryUsers) {
-            // إضافة التوكن فقط إذا كان موجودًا (لمعالجة fcmToken: null)
-            if (user.fcmToken) { 
-                deliveryTokens.push(user.fcmToken);
-            }
-        }
-    }
-
-    // 2. جلب توكنات المسؤولين
-    const ADMIN_KEYS = ['dl14v1k7', '682dri6b'];
-    const adminKeysQuery = ADMIN_KEYS.join(',');
-    const tokensResponse = await apiFetch(`/api/tokens?userKeys=${encodeURIComponent(adminKeysQuery)}`);
-    
-    // استخدام Optional Chaining للتعامل مع الاستجابة المحتملة الفارغة
-    const adminTokens = tokensResponse?.tokens || []; 
-
-    // 3. دمج التوكنات وإزالة التكرار
-    const allTokens = [...new Set([...deliveryTokens, ...adminTokens])];
-
-    // 4. إرسال الإشعارات
-    if (allTokens.length > 0) {
-        const title = 'تحديث حالة طلب';
-        const body = `تم تحديث حالة الطلب رقم #${orderKey} إلى "${statusInfo.state}".`;
-        
-        const notificationPromises = [];
-        
-        // استخدام حلقة for...of لإنشاء وعود الإرسال
-        for (const token of allTokens) {
-             notificationPromises.push(sendNotification(token, title, body));
-        }
-        
-        await Promise.all(notificationPromises);
-    }
-} catch (error) {
-    // تسجيل الخطأ دون إيقاف العملية الرئيسية لتحديث الحالة
-    console.error('[Notifications] فشل في إرسال الإشعارات:', error);
-}
- 
-
-     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       } else {
-        Swal.fire(
-          'فشل التحديث',
-          `حدث خطأ: ${result.value ? result.value.error : 'غير معروف'}`,
-          'error'
-        );
+        contentWrapper.innerHTML =
+          '<p style="text-align: center; padding: 2rem 0;">لا توجد طلبات لعرضها.</p>';
       }
+
+      // ربط معالجات الأحداث للمحتوى الذي تم إنشاؤه
+      setupSalesMovementEventListeners(contentWrapper, userKey);
     }
-  });
-
-  // ✅ جديد: ربط حدث النقر بأزرار "عرض المنتج"
-  contentWrapper.querySelectorAll('.view-product-details-btn').forEach(button => {
-    button.addEventListener('click', async (event) => {
-      // ✅ تتبع: تسجيل الحدث عند النقر على الزر
-      console.log('%c[DEV-LOG] تم النقر على زر "عرض تفاصيل المنتج".', 'color: purple; font-weight: bold;');
-      const productKey = event.currentTarget.dataset.productKey;
-      // ✅ تتبع: تسجيل المفتاح الذي تم قراءته من الزر
-      console.log(`[DEV-LOG] المفتاح المقروء من data-product-key هو: "${productKey}"`);
-
-      if (!productKey) {
-        Swal.fire('خطأ', 'بيانات المنتج غير متوفرة لعرض التفاصيل.', 'error');
-        return;
-      }
-
-      // ✅ إصلاح: جلب بيانات المنتج الكاملة من الواجهة الخلفية باستخدام مفتاح المنتج
-      Swal.fire({ title: 'جاري تحميل تفاصيل المنتج...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-      const productData = await getProductByKey(productKey); // افتراض وجود هذه الدالة في connect1.js
-      Swal.close();
-
-      if (productData) {
-        // تحويل البيانات لتتناسب مع ما تتوقعه دالة showProductDetails
-        const productDataForModal = {
-          ...productData,
-          pricePerItem: productData.product_price,
-          availableQuantity: productData.product_quantity,
-          sellerMessage: productData.user_message,
-          description: productData.product_description,
-          imageSrc: productData.ImageName ? productData.ImageName.split(',').map(name => `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`) : [],
-          MainCategory: productData.MainCategory, // ✅ إضافة: تمرير ID الفئة الرئيسية
-          SubCategory: productData.SubCategory    // ✅ إضافة: تمرير ID الفئة الفرعية
-        };
-        // ✅ تعديل: تمرير خيار لإخفاء زر "إضافة إلى السلة"
-        window.showProductDetails(productDataForModal, null, { showAddToCart: false });
-      } else {
-        Swal.fire('خطأ', 'فشل في جلب تفاصيل المنتج. قد يكون المنتج قد تم حذفه.', 'error');
-      }
-    });
-  });
-  });
+  );
 }

@@ -13,7 +13,7 @@
  * @see generateCartItemHTML
  * @see removeFromCart
  * @see clearCart
- * @see handleCheckout
+ * @see sendOrder2Excution
  */
 async function showCartModal() {
   await loadAndShowModal("cart-modal-container", "pages/cartModal.html", (modal) => {
@@ -79,7 +79,7 @@ async function showCartModal() {
         });
       });
 
-      cartFooter.querySelector("#checkout-btn").addEventListener("click", handleCheckout);
+      cartFooter.querySelector("#checkout-btn").addEventListener("click", sendOrder2Excution);
     } else {
       itemsListContainer.innerHTML = '<p style="text-align: center; padding: 2rem 0;">سلة المشتريات فارغة.</p>';
       cartFooter.innerHTML = "";
@@ -110,7 +110,7 @@ function generateOrderKey() {
  * @description تعالج عملية إتمام الشراء، بما في ذلك التحقق من صلاحية المستخدم،
  *   حساب إجمالي المبلغ، إنشاء الطلب، إرسال إشعارات للبائعين والمسؤولين،
  *   ثم مسح سلة المشتريات وتحديث واجهة المستخدم.
- * @function handleCheckout
+ * @function sendOrder2Excution
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، يعالج عمليات الشراء غير المتزامنة.
  * @see getCurrentUser
  * @see getCart
@@ -122,7 +122,7 @@ function generateOrderKey() {
  * @see clearCart
  * @see showCartModal
  */
-async function handleCheckout() {
+async function sendOrder2Excution() {
   // 1. جلب البيانات
   const loggedInUser = getCurrentUser();
   const cart = getCart();
