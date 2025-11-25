@@ -137,11 +137,9 @@ async function handleStatusUpdateClick(event, userKey) {
   if (stepElement.classList.contains("active")) {
     return;
   }
-  
-const statusIdValue = stepElement.dataset.statusId; 
 
-// 3. مثال على استخدامها:
-console.log(`الحالة الجديدة المراد التعديل إليها هي: ${statusIdValue}`);
+  const statusIdValue = stepElement.dataset.statusId;
+  console.log(`الحالة الجديدة المراد التعديل إليها هي: ${statusIdValue}`);
 
   const orderKey = stepElement.dataset.orderKey;
   const newStatusId = parseInt(stepElement.dataset.statusId, 10);
@@ -154,10 +152,10 @@ console.log(`الحالة الجديدة المراد التعديل إليها 
 
   const result = await Swal.fire({
     title: "تأكيد التفعيل",
-    html: `هل أنت متأكد من تفعيل حالة الطلب رقم <strong>${orderKey}</strong> إلى <strong>"${statusInfo.state}"</strong>؟<br><small>ملاحظة: لا يمكن التراجع عن هذا الإجراء.</small>`,
+    html: `هل أنت متأكد من تفعيل حالة الطلب رقم <strong>${orderKey}</strong> إلى <strong>"${statusInfo.state}"</strong>؟<br><small style="color: red;">ملاحظة: لا يمكن التراجع عن هذا الإجراء.</small>`,
     icon: "warning",
     showCancelButton: true,
-    showDenyButton: statusIdValue==1, // 👈 الزر الثالث: الرفض
+    showDenyButton: statusIdValue == 1, // 👈 الزر الثالث: الرفض
     confirmButtonText: "نعم، قم بالتفعيل!",
     cancelButtonText: "تجاهل",
     // إعدادات زر الرفض (Deny)
@@ -172,11 +170,34 @@ console.log(`الحالة الجديدة المراد التعديل إليها 
     if (result.value && !result.value.error) {
       Swal.fire("تم التحديث!", "تم تحديث حالة الطلب بنجاح.", "success");
       showSalesMovementModal(userKey); // إعادة تحميل النافذة
-      sendUpdateNotifications(orderKey, userKey, statusInfo.state); // إرسال الإشعارات
+      // إرسال الإشعارات
+      if(statusIdValue == 1){
+      sendUpdateNotifications(orderKey, userKey, statusInfo.state, true); 
+      }else if(statusIdValue > 1){
+  sendUpdateNotifications(orderKey, userKey, statusInfo.state, false); 
+      }
     } else {
       const errorMessage = result.value ? result.value.error : "خطأ غير معروف";
-      Swal.fire("فشل التحديث", `حدث خطأ: ${errorMessage}`, "error");
     }
+  } else if (result.isDenied) {
+    const resultIsDenied = await Swal.fire({
+      title: " هل انت متأكد من رفض الطلب رقم " + orderKey + " ؟",
+      html: `<small style="color: red;">ملاحظة: لا يمكن التراجع عن هذا الإجراء.</small>`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "نعم، اريد رفض الطلب!",
+      cancelButtonText: "إلغاء",
+      showLoaderOnConfirm: true,
+      preConfirm: async () => {
+        const response = await updateOrderStatus(orderKey, 32); // 32 يشير إلى الرفض 
+        statusInfo = ORDER_STATUSES.find((s) => s.id === 32);
+        Swal.fire("تم التحديث!", "تم تحديث حالة الطلب .", "success");
+        showSalesMovementModal(userKey); // إعادة تحميل النافذة
+        sendUpdateNotifications(orderKey, userKey, statusInfo.state, false); // إرسال الإشعارات
+        return response;
+      },
+      allowOutsideClick: () => !Swal.isLoading(),
+    });
   }
 }
 
@@ -186,10 +207,18 @@ console.log(`الحالة الجديدة المراد التعديل إليها 
  * @param {string} userKey - مفتاح المستخدم (البائع).
  * @param {string} newStatusState - اسم الحالة الجديدة.
  */
-async function sendUpdateNotifications(orderKey, userKey, newStatusState) {
+async function sendUpdateNotifications(
+  orderKey,
+  userKey,
+  newStatusState,
+  withDelivery = true
+) {
   try {
-    // 1. جلب توكنات خدمات التوصيل النشطة للبائع
-    const deliveryTokens = await getTokensForActiveDelivery(userKey); // استخراج التوكنات الصالحة فقط
+    let deliveryTokens = [];
+    if (withDelivery) {
+      // 1. جلب توكنات خدمات التوصيل النشطة للبائع
+      deliveryTokens = await getTokensForActiveDelivery(userKey); // استخراج التوكنات الصالحة فقط
+    }
 
     // 2. جلب توكنات المسؤولين (الدالة معرفة في js/helpers/network.js)
     const adminTokens = await getAdminTokens();
@@ -202,8 +231,6 @@ async function sendUpdateNotifications(orderKey, userKey, newStatusState) {
   } catch (error) {
     console.error("[Notifications] فشل في إرسال الإشعارات:", error);
   }
-
- 
 }
 
 /**
