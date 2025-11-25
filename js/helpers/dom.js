@@ -225,8 +225,9 @@ function generateCartItemHTML(item) {
         <strong>${item.productName}</strong>
         <p>${item.price} جنيه × ${item.quantity}</p>
       </div>
-      <div><strong>${itemTotal} جنيه</strong></div>
-      <button class="btn-ghost remove-from-cart-btn" title="إزالة من السلة">&times;</button>
+      <div class="purchase-item__meta">
+         <button class="button icon-btn remove-from-cart-btn" title="إزالة من السلة"><i class="fas fa-trash-alt"></i></button>
+      </div>
     </div>`;
 }
 

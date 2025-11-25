@@ -96,7 +96,19 @@ function addToCart(product, quantity) {
     icon: 'success',
     title: `تمت إضافة "${product.productName}" إلى السلة`,
     text: 'يمكنك متابعة التسوق.',
-    confirmButtonText: 'موافق'
+    confirmButtonText: 'موافق',
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // إغلاق نافذة تفاصيل المنتج بعد الإضافة
+      const productModal = document.getElementById('product-details-modal');
+      if (productModal && productModal.style.display !== 'none') {
+        // ✅ إصلاح: البحث عن الزر باستخدام ID بدلاً من class
+        const closeButton = document.getElementById('product-modal-close-btn');
+        if (closeButton) {
+          closeButton.click();
+        }
+      }
+    }
   });
 }
 

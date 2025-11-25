@@ -170,42 +170,46 @@ async function handleStatusUpdateClick(event, userKey) {
     if (result.value && !result.value.error) {
       Swal.fire("تم التحديث!", "تم تحديث حالة الطلب بنجاح.", "success");
       showSalesMovementModal(userKey); // إعادة تحميل النافذة
-
-      //في حاله تاكيد الطلب
-      //والمستخدم بائع او مسؤول
-      if (statusIdValue == 1 && (currentUserIsSELLER || currentUserIsADMIN)) {
-        sendUpdateNotifications(
-          orderKey,
-          currentUserKey,
-          statusInfo.state,
-          true
-        );
-      }
-      //في حاله تم الشحن
-      //المستخدم بائع او خدمة توصيل او مسؤول
-      else if (
-        statusIdValue == 2 &&
-        (currentUserIsSELLER || currentUserIsDELIVERY || currentUserIsADMIN)
-      ) {
-        sendUpdateNotifications(
-          orderKey,
-          currentUserKey,
-          statusInfo.state,
-          false
-        );
-      }
-      //في حاله تم التوصيل
-      //المستخدم خدمة توصيل او مسؤول
-      else if (
-        statusIdValue == 3 &&
-        (currentUserIsDELIVERY || currentUserIsADMIN)
-      ) {
-        sendUpdateNotifications(
-          orderKey,
-          currentUserKey,
-          statusInfo.state,
-          false
-        );
+      console.log("[Notifications] بدء إرسال الإشعارات بعد تحديث الحالة.");
+      try {
+        //في حاله تاكيد الطلب
+        //والمستخدم بائع او مسؤول
+        if (statusIdValue == 1 && (currentUserIsSELLER || currentUserIsADMIN)) {
+          sendUpdateNotifications(
+            orderKey,
+            currentUserKey,
+            statusInfo.state,
+            true
+          );
+        }
+        //في حاله تم الشحن
+        //المستخدم بائع او خدمة توصيل او مسؤول
+        else if (
+          statusIdValue == 2 &&
+          (currentUserIsSELLER || currentUserIsDELIVERY || currentUserIsADMIN)
+        ) {
+          sendUpdateNotifications(
+            orderKey,
+            currentUserKey,
+            statusInfo.state,
+            false
+          );
+        }
+        //في حاله تم التوصيل
+        //المستخدم خدمة توصيل او مسؤول
+        else if (
+          statusIdValue == 3 &&
+          (currentUserIsDELIVERY || currentUserIsADMIN)
+        ) {
+          sendUpdateNotifications(
+            orderKey,
+            currentUserKey,
+            statusInfo.state,
+            false
+          );
+        }
+      } catch (error) {
+        console.error("[Notifications] فشل في إرسال الإشعارات:", error);
       }
     } else {
       const errorMessage = result.value ? result.value.error : "خطأ غير معروف";
@@ -220,15 +224,26 @@ async function handleStatusUpdateClick(event, userKey) {
       cancelButtonText: "إلغاء",
       showLoaderOnConfirm: true,
       preConfirm: async () => {
-        const response = await updateOrderStatus(orderKey, 32); // 32 يشير إلى الرفض
-        statusInfo = ORDER_STATUSES.find((s) => s.id === 32);
-        Swal.fire("تم التحديث!", "تم تحديث حالة الطلب .", "success");
+        if (currentUserIsADMIN || currentUserIsSELLER) {
+          const response = await updateOrderStatus(orderKey, 32); // 32 يشير إلى الرفض
+          statusInfo = ORDER_STATUSES.find((s) => s.id === 32);
+          Swal.fire("تم التحديث!", "تم تحديث حالة الطلب .", "success");
+        }
+        
         showSalesMovementModal(userKey); // إعادة تحميل النافذة
-        sendUpdateNotifications(orderKey, userKey, statusInfo.state, false); // إرسال الإشعارات
+
         return response;
       },
       allowOutsideClick: () => !Swal.isLoading(),
     });
+    if (resultIsDenied.isConfirmed) {
+      console.log("[Notifications] بدء إرسال الإشعارات بعد تحديث الحالة.");
+      try {
+          sendUpdateNotifications(orderKey, userKey, statusInfo.state, false); // إرسال الإشعارات
+        } catch (error) {
+          console.error("[Notifications] فشل في إرسال الإشعارات:", error);
+        }
+    }
   }
 }
 
@@ -251,13 +266,15 @@ async function sendUpdateNotifications(
       // 1. جلب توكنات خدمات التوصيل النشطة للبائع
       deliveryTokens = await getTokensForActiveDelivery2Seller(sellerKey); // استخراج التوكنات الصالحة فقط
     }
-if (!currentUserIsADMIN) {
-    // 2. جلب توكنات المسؤولين (الدالة معرفة في js/helpers/network.js)
-    const adminTokens = await getAdminTokens();
-}
+    if (!currentUserIsADMIN) {
+      // 2. جلب توكنات المسؤولين (الدالة معرفة في js/helpers/network.js)
+      const adminTokens = await getAdminTokens();
+    }
 
     // 3. دمج جميع التوكنات (خدمات التوصيل والمسؤولين) وإزالة التكرار
-    const allTokens = [...new Set([...(deliveryTokens || []), ...(adminTokens || [])])];
+    const allTokens = [
+      ...new Set([...(deliveryTokens || []), ...(adminTokens || [])]),
+    ];
     const title = "تحديث حالة طلب";
     const body = `تم تحديث حالة الطلب رقم #${orderKey} إلى "${newStatusState}".`;
     await sendNotificationsToTokens(allTokens, title, body);
@@ -307,9 +324,9 @@ async function handleViewProductClick(event) {
         description: productData.product_description,
         imageSrc: productData.ImageName
           ? productData.ImageName.split(",").map(
-              (name) =>
-                `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`
-            )
+            (name) =>
+              `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`
+          )
           : [],
         MainCategory: productData.MainCategory,
         SubCategory: productData.SubCategory,
