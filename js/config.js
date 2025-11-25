@@ -127,7 +127,7 @@ function numberToRole(roleNumber) {
 }
 function setUserType(typeUser, key) {
   window.currentUserKey = key;
-
+   console.log("0000000000000000000000000000000000000");
   // Reset all roles first
   Object.assign(window, {
     currentUserIsGuest: false,
