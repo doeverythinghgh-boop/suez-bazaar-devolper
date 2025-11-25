@@ -143,7 +143,7 @@ async function handleStatusUpdateClick(event, userKey) {
 
   const orderKey = stepElement.dataset.orderKey;
   const newStatusId = parseInt(stepElement.dataset.statusId, 10);
-  const statusInfo = ORDER_STATUSES.find((s) => s.id === newStatusId);
+  let statusInfo = ORDER_STATUSES.find((s) => s.id === newStatusId);
 
   if (!orderKey || isNaN(newStatusId) || !statusInfo) {
     console.error("بيانات تحديث الحالة غير مكتملة:", stepElement.dataset);
