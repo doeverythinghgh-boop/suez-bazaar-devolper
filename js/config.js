@@ -104,7 +104,7 @@ function roleToNumber(roleString) {
 }
 
 // التحقق من وجود المتغيرات قبل تعريفها لمنع أخطاء إعادة التعريف
-if (typeof window.window.currentUserIsGuest === "undefined") {
+if (typeof window.currentUserIsGuest === "undefined") {
   window.currentUserIsGuest = false;
 window.currentUserIsCUSTOMER = false;
   window.currentUserIsSELLER = false;
