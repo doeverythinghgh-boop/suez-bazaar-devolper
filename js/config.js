@@ -126,41 +126,42 @@ function numberToRole(roleNumber) {
   return ROLE_NUMBER_TO_STRING_MAP.get(roleNumber) || "GUEST";
 }
 function setUserType(typeUser, key) {
-  window.currentUserKey = key;
-   console.log("0000000000000000000000000000000000000");
-  // Reset all roles first
-  Object.assign(window, {
-    currentUserIsGuest: false,
-    currentUserIsCUSTOMER: false,
-    currentUserIsSELLER: false,
-    currentUserIsDELIVERY: false,
-    currentUserIsADMIN: false
-  });
+  console.log("Setting user type with TRUE/FALSE:", typeUser, key);
 
-  // Activate one role
+  // حفظ المفتاح
+  sessionStorage.setItem("userKey", key);
+
+  // إعادة ضبط جميع الأدوار
+  sessionStorage.setItem("isGUEST", false);
+  sessionStorage.setItem("isCUSTOMER", false);
+  sessionStorage.setItem("isSELLER", false);
+  sessionStorage.setItem("isDELIVERY", false);
+  sessionStorage.setItem("isADMIN", false);
+
+  // تفعيل الدور المطلوب
   switch (typeUser) {
     case -1:
-      window.currentUserIsGuest = true;
+      sessionStorage.setItem("isGUEST", true);
       console.log("user type is GUEST", key);
       break;
 
     case 0:
-      window.currentUserIsCUSTOMER = true;
+      sessionStorage.setItem("isCUSTOMER", true);
       console.log("user type is CUSTOMER", key);
       break;
 
     case 1:
-      window.currentUserIsSELLER = true;
+      sessionStorage.setItem("isSELLER", true);
       console.log("user type is SELLER", key);
       break;
 
     case 2:
-      window.currentUserIsDELIVERY = true;
+      sessionStorage.setItem("isDELIVERY", true);
       console.log("user type is DELIVERY", key);
       break;
 
     case 3:
-      window.currentUserIsADMIN = true;
+      sessionStorage.setItem("isADMIN", true);
       console.log("user type is ADMIN", key);
       break;
 
@@ -168,4 +169,5 @@ function setUserType(typeUser, key) {
       console.warn("Unknown user type:", typeUser, key);
   }
 }
+
 

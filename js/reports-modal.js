@@ -174,7 +174,7 @@ async function handleStatusUpdateClick(event, userKey) {
       try {
         //في حاله تاكيد الطلب
         //والمستخدم بائع او مسؤول
-        if (statusIdValue == 1 && (window.currentUserIsSELLER || window.currentUserIsADMIN)) {
+        if (statusIdValue == 1 && (sessionStorage.getItem("isSELLER") || sessionStorage.getItem("isADMIN"))) {
           sendUpdateNotifications(
             orderKey,
             currentUserKey,
@@ -186,7 +186,7 @@ async function handleStatusUpdateClick(event, userKey) {
         //المستخدم بائع او خدمة توصيل او مسؤول
         else if (
           statusIdValue == 2 &&
-          (window.currentUserIsSELLER || window.currentUserIsDELIVERY || window.currentUserIsADMIN)
+          (sessionStorage.getItem("isSELLER") || sessionStorage.getItem("isDELIVERY") || sessionStorage.getItem("isADMIN"))
         ) {
           sendUpdateNotifications(
             orderKey,
@@ -199,7 +199,7 @@ async function handleStatusUpdateClick(event, userKey) {
         //المستخدم خدمة توصيل او مسؤول
         else if (
           statusIdValue == 3 &&
-          (window.currentUserIsDELIVERY || window.currentUserIsADMIN)
+          (sessionStorage.getItem("isDELIVERY") || sessionStorage.getItem("isADMIN"))
         ) {
           sendUpdateNotifications(
             orderKey,
@@ -226,8 +226,8 @@ async function handleStatusUpdateClick(event, userKey) {
       preConfirm: async () => {
         try {
           let response; // ✅ إصلاح: تعريف المتغير في النطاق الصحيح
-          console.log("تحيدث الحاله في قاعدة البيانات",window.currentUserIsSELLER,window.currentUserIsADMIN)
-          if (window.currentUserIsADMIN || window.currentUserIsSELLER) {
+          console.log("تحيدث الحاله في قاعدة البيانات",sessionStorage.getItem("isSELLER"),sessionStorage.getItem("isADMIN"))
+          if (sessionStorage.getItem("isADMIN") || sessionStorage.getItem("isSELLER")) {
           console.log("تحيدث الحاله في قاعدة البيانات");
             response = await updateOrderStatus(orderKey, 32); // 32 يشير إلى الرفض
               statusInfo = ORDER_STATUSES.find((s) => s.id === 32);
@@ -269,11 +269,11 @@ async function sendUpdateNotifications(
   try {
     let deliveryTokens = [];
     //  جلب توكنات خدمات التوصيل إذا كان من اطلق الحدث بائع
-    if (withDelivery && window.currentUserIsSELLER) {
+    if (withDelivery && sessionStorage.getItem("isSELLER")) {
       // 1. جلب توكنات خدمات التوصيل النشطة للبائع
       deliveryTokens = await getTokensForActiveDelivery2Seller(sellerKey); // استخراج التوكنات الصالحة فقط
     }
-    if (!window.currentUserIsADMIN) {
+    if (!sessionStorage.getItem("isADMIN")) {
       // 2. جلب توكنات المسؤولين (الدالة معرفة في js/helpers/network.js)
       const adminTokens = await getAdminTokens();
     }
