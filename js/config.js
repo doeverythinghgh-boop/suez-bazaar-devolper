@@ -104,13 +104,17 @@ function roleToNumber(roleString) {
 }
 
 // التحقق من وجود المتغيرات قبل تعريفها لمنع أخطاء إعادة التعريف
-if (typeof window.currentUserIsGuest === "undefined") {
-  window.currentUserIsGuest = false;
-window.currentUserIsCUSTOMER = false;
-  window.currentUserIsSELLER = false;
-  window.currentUserIsDELIVERY = false;
-  window.currentUserIsADMIN = false;
-  window.currentUserKey = "";
+if (!("currentUserIsGuest" in window) ||
+    typeof window.currentUserIsGuest !== "boolean") {
+
+  Object.assign(window, {
+    currentUserIsGuest: false,
+    currentUserIsCUSTOMER: false,
+    currentUserIsSELLER: false,
+    currentUserIsDELIVERY: false,
+    currentUserIsADMIN: false,
+    currentUserKey: ""
+  });
 }
 
 /**
@@ -134,48 +138,46 @@ function numberToRole(roleNumber) {
   return ROLE_NUMBER_TO_STRING_MAP.get(roleNumber) || "GUEST";
 }
 function setUserType(typeUser, key) {
-  currentUserKey = key;
-  console.log("1111111111", typeUser);
+  window.currentUserKey = key;
+
+  // Reset all roles first
+  Object.assign(window, {
+    currentUserIsGuest: false,
+    currentUserIsCUSTOMER: false,
+    currentUserIsSELLER: false,
+    currentUserIsDELIVERY: false,
+    currentUserIsADMIN: false
+  });
+
+  // Activate one role
   switch (typeUser) {
     case -1:
       window.currentUserIsGuest = true;
-      window.currentUserIsCUSTOMER = false;
-      window.currentUserIsSELLER = false;
-      window.currentUserIsDELIVERY = false;
-      window.currentUserIsADMIN = false;
-      console.log("user type is", "GUEST ", key);
-      return;
+      console.log("user type is GUEST", key);
+      break;
+
     case 0:
       window.currentUserIsCUSTOMER = true;
-      window.currentUserIsSELLER = false;
-      window.currentUserIsDELIVERY = false;
-      window.currentUserIsADMIN = false;
-      window.currentUserIsGuest = false;
-      console.log("user type is", "CUSTOMER ", key);
-      return;
+      console.log("user type is CUSTOMER", key);
+      break;
+
     case 1:
       window.currentUserIsSELLER = true;
-      window.currentUserIsDELIVERY = false;
-      window.currentUserIsADMIN = false;
-      window.currentUserIsCUSTOMER = false;
-      window.currentUserIsGuest = false;
-      console.log("user type is", "SELLER ", key);
-      return;
+      console.log("user type is SELLER", key);
+      break;
+
     case 2:
       window.currentUserIsDELIVERY = true;
-      window.currentUserIsADMIN = false;
-      window.currentUserIsCUSTOMER = false;
-      window.currentUserIsSELLER = false;
-      window.currentUserIsGuest = false;
-      console.log("user type is", "DELIVERY ", key);
-      return;
+      console.log("user type is DELIVERY", key);
+      break;
+
     case 3:
       window.currentUserIsADMIN = true;
-      window.currentUserIsDELIVERY = false;
-      window.currentUserIsCUSTOMER = false;
-      window.currentUserIsSELLER = false;
-      window.currentUserIsGuest = false;
-      console.log("user type is", "ADMIN ", key);
-      return;
+      console.log("user type is ADMIN", key);
+      break;
+
+    default:
+      console.warn("Unknown user type:", typeUser, key);
   }
 }
+
