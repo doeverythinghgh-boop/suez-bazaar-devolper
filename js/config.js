@@ -12,7 +12,7 @@ const allowedHosts = [
   "127.0.0.1",
   "localhost",
   "bazaar-bk1.pages.dev",
-  "appassets.androidplatform.net"
+  "appassets.androidplatform.net",
 ];
 
 // ✅ تحسين: تبسيط منطق تحديد baseURL باستخدام مصفوفة.
@@ -131,33 +131,51 @@ const ROLE_NUMBER_TO_STRING_MAP = new Map(
  */
 function numberToRole(roleNumber) {
   // ✅ تحسين: استخدام Map للوصول المباشر O(1) بدلاً من البحث الخطي O(n).
-  return ROLE_NUMBER_TO_STRING_MAP.get(roleNumber) || 'GUEST';
+  return ROLE_NUMBER_TO_STRING_MAP.get(roleNumber) || "GUEST";
 }
-function setUserType(typeUser,key){
-  currentUserKey=key;
-  console.log("1111111111",typeUser);
- switch (typeUser) {
-            case -1:
-              currentUserIsGuest = true;
-              console.log("user type is","GUEST ",key);
-              return
-            case 0:
-              currentUserIsCUSTOMER = true;
-              console.log("user type is","CUSTOMER ",key);
-              return
-            case 1:
-              currentUserIsSELLER = true;
-              console.log("user type is","SELLER ",key);
-              return
-            case 2:
-              currentUserIsDELIVERY = true;
-               console.log("user type is","DELIVERY ",key);
-              return
-            case 3:
-              currentUserIsADMIN = true;
-              console.log("user type is","ADMIN ",key);
-              return
-
-          }
-          
+function setUserType(typeUser, key) {
+  currentUserKey = key;
+  console.log("1111111111", typeUser);
+  switch (typeUser) {
+    case -1:
+      currentUserIsGuest = true;
+      currentUserIsCUSTOMER = false;
+      currentUserIsSELLER = false;
+      currentUserIsDELIVERY = false;
+      currentUserIsADMIN = false;
+      console.log("user type is", "GUEST ", key);
+      return;
+    case 0:
+      currentUserIsCUSTOMER = true;
+      currentUserIsSELLER = false;
+      currentUserIsDELIVERY = false;
+      currentUserIsADMIN = false;
+      currentUserIsGuest = false;
+      console.log("user type is", "CUSTOMER ", key);
+      return;
+    case 1:
+      currentUserIsSELLER = true;
+      currentUserIsDELIVERY = false;
+      currentUserIsADMIN = false;
+      currentUserIsCUSTOMER = false;
+      currentUserIsGuest = false;
+      console.log("user type is", "SELLER ", key);
+      return;
+    case 2:
+      currentUserIsDELIVERY = true;
+      currentUserIsADMIN = false;
+      currentUserIsCUSTOMER = false;
+      currentUserIsSELLER = false;
+      currentUserIsGuest = false;
+      console.log("user type is", "DELIVERY ", key);
+      return;
+    case 3:
+      currentUserIsADMIN = true;
+      currentUserIsDELIVERY = false;
+      currentUserIsCUSTOMER = false;
+      currentUserIsSELLER = false;
+      currentUserIsGuest = false;
+      console.log("user type is", "ADMIN ", key);
+      return;
+  }
 }
