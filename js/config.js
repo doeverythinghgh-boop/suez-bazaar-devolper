@@ -103,19 +103,7 @@ function roleToNumber(roleString) {
   return USER_ROLES_MAP[roleString.toUpperCase()] ?? USER_ROLES_MAP.CUSTOMER;
 }
 
-// التحقق من وجود المتغيرات قبل تعريفها لمنع أخطاء إعادة التعريف
-if (!("currentUserIsGuest" in window) ||
-    typeof window.currentUserIsGuest !== "boolean") {
 
-  Object.assign(window, {
-    currentUserIsGuest: false,
-    currentUserIsCUSTOMER: false,
-    currentUserIsSELLER: false,
-    currentUserIsDELIVERY: false,
-    currentUserIsADMIN: false,
-    currentUserKey: ""
-  });
-}
 
 /**
  * @description خريطة معكوسة لتسريع عملية تحويل المعرف الرقمي للدور إلى الاسم النصي.
