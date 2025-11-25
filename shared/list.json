@@ -391,6 +391,18 @@
           "id": 4,
           "title": "تصميم جرافيك وتصوير",
           "icon": "fas fa-drafting-compass"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "سوق المركبات",
+      "icon": "fas fa-car",
+      "subcategories": [
+        {
+          "id": 1,
+          "title": "السيارات",
+          "icon": "fas fa-car-side"
         },
         {
           "id": 3,
@@ -406,18 +418,6 @@
           "id": 6,
           "title": "خدمات تأجير المركبات",
           "icon": "fas fa-key"
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "title": "سوق المركبات",
-      "icon": "fas fa-car",
-      "subcategories": [
-        {
-          "id": 1,
-          "title": "السيارات",
-          "icon": "fas fa-car-side"
         },
         {
           "id": 2,
