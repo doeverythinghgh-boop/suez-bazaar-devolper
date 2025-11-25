@@ -299,12 +299,12 @@ async function sendNotificationsToTokens(allTokens, title, body) {
  */
 async function getUsersTokens(usersKeys) {
     // إذا لم يكن هناك بائعون، لا تقم بأي طلب
-    if (!sellerKeys || sellerKeys.length === 0) {
+    if (!usersKeys || usersKeys.length === 0) {
         return [];
     }
 
     // بناء استعلام URL آمن (مسار API فقط) لجلب توكنات البائعين
-    const userKeysQuery = sellerKeys.join(',');
+    const userKeysQuery = usersKeys.join(',');
     const apiUrlPath = `/api/tokens?userKeys=${encodeURIComponent(userKeysQuery)}`;
 
     try {

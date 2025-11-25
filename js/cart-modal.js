@@ -193,7 +193,7 @@ async function sendOrder2Excution() {
     const adminTokens = await getAdminTokens();
 
     // 3. دمج جميع التوكنات وإزالة التكرار
-    const allTokens = [...new Set([...sellerTokens, ...adminTokens])];
+    const allTokens = [...new Set([...(sellerTokens||[]), ...(adminTokens||[])])];
 
     // 4. إرسال الإشعارات باستخدام الدالة العامة
     const title = 'طلب شراء جديد';
