@@ -341,10 +341,7 @@ async function showSalesMovementModal(userKey) {
       let deliveryUsers = [];
 
       if (isAdmin) {
-        [orders, deliveryUsers] = await Promise.all([
-          getSalesMovement(userKey),
-          //getDeliveryUsers()
-        ]);
+        [orders, deliveryUsers] = await Promise.all([getSalesMovement(userKey)]);
       } else {
         // جلب الطلبات فقط إذا لم يكن المستخدم مسؤولاً
         orders = await getSalesMovement(userKey);

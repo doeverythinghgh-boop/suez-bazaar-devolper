@@ -235,6 +235,8 @@ async function showEditProfileModal(currentUser) {
         if (updatedData.password) currentUser.Password = true; // أو أي قيمة تشير إلى وجودها
 
         localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+         
+        localStorage.setItem("userType", ROLE_NUMBER_TO_STRING_MAP.get(currentUser.is_seller));
         document.getElementById("welcome-message").textContent = `أهلاً بك، ${currentUser.username}`;
 
         Swal.fire({

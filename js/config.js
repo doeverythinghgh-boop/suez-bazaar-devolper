@@ -86,6 +86,7 @@ const ORDER_STATUSES = Object.values(ORDER_STATUS_MAP);
  * @const
  */
 const USER_ROLES_MAP = {
+  GUEST: -1, // زائر
   CUSTOMER: 0, // عميل
   SELLER: 1, // بائع
   DELIVERY: 2, // خدمة توصيل
@@ -101,7 +102,12 @@ const USER_ROLES_MAP = {
 function roleToNumber(roleString) {
   return USER_ROLES_MAP[roleString.toUpperCase()] ?? USER_ROLES_MAP.CUSTOMER;
 }
-
+let currentUserIsGuest=false;
+let currentUserIsCUSTOMER=false;
+let currentUserIsSELLER=false;
+let currentUserIsDELIVERY=false;
+let currentUserIsADMIN=false;
+let currentUserKey="";
 /**
  * @description خريطة معكوسة لتسريع عملية تحويل المعرف الرقمي للدور إلى الاسم النصي.
  *   تُستخدم داخل دالة `numberToRole` للوصول المباشر (O(1)).
@@ -120,5 +126,32 @@ const ROLE_NUMBER_TO_STRING_MAP = new Map(
  */
 function numberToRole(roleNumber) {
   // ✅ تحسين: استخدام Map للوصول المباشر O(1) بدلاً من البحث الخطي O(n).
-  return ROLE_NUMBER_TO_STRING_MAP.get(roleNumber) || 'CUSTOMER';
+  return ROLE_NUMBER_TO_STRING_MAP.get(roleNumber) || 'GUEST';
+}
+function setUserType(typeUser,key){
+  currentUserKey=key;
+ switch (typeUser) {
+            case "GUEST":
+              currentUserIsGuest = true;
+              console.log("user type is","GUEST ",key);
+              return
+            case "CUSTOMER":
+              currentUserIsCUSTOMER = true;
+              console.log("user type is","CUSTOMER ",key);
+              return
+            case "SELLER":
+              currentUserIsSELLER = true;
+              console.log("user type is","SELLER ",key);
+              return
+            case "DELIVERY":
+              currentUserIsDELIVERY = true;
+               console.log("user type is","DELIVERY ",key);
+              return
+            case "ADMIN":
+              currentUserIsADMIN = true;
+              console.log("user type is","ADMIN ",key);
+              return
+
+          }
+          
 }
