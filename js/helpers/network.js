@@ -229,12 +229,12 @@ async function getAdminTokens() {
 /**
  * @description يجلب توكنات الإشعارات (FCM tokens) لجميع خدمات التوصيل النشطة المرتبطة ببائع معين.
  * @async
- * @function getTokensForActiveDelivery
+ * @function getTokensForActiveDelivery2Seller
  * @param {string} sellerKey - المفتاح الفريد للبائع (`user_key`).
  * @returns {Promise<string[]|undefined>} - وعد (Promise) يحتوي على مصفوفة من توكنات الإشعارات، أو `undefined` في حالة عدم وجود علاقات.
  * @see getActiveDeliveryRelations - الدالة التي تجلب علاقات التوصيل النشطة.
  */
- async function getTokensForActiveDelivery(sellerKey) {
+ async function getTokensForActiveDelivery2Seller(sellerKey) {
     const deliveryUsers = await getActiveDeliveryRelations(sellerKey);
     const deliveryTokens = deliveryUsers
       ?.map((user) => user.fcmToken)

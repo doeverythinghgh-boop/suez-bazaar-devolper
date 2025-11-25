@@ -170,11 +170,42 @@ async function handleStatusUpdateClick(event, userKey) {
     if (result.value && !result.value.error) {
       Swal.fire("تم التحديث!", "تم تحديث حالة الطلب بنجاح.", "success");
       showSalesMovementModal(userKey); // إعادة تحميل النافذة
-      // إرسال الإشعارات
-      if(statusIdValue == 1){
-      sendUpdateNotifications(orderKey, userKey, statusInfo.state, true); 
-      }else if(statusIdValue > 1){
-  sendUpdateNotifications(orderKey, userKey, statusInfo.state, false); 
+
+      //في حاله تاكيد الطلب
+      //والمستخدم بائع او مسؤول
+      if (statusIdValue == 1 && (currentUserIsSELLER || currentUserIsADMIN)) {
+        sendUpdateNotifications(
+          orderKey,
+          currentUserKey,
+          statusInfo.state,
+          true
+        );
+      }
+      //في حاله تم الشحن
+      //المستخدم بائع او خدمة توصيل او مسؤول
+      else if (
+        statusIdValue == 2 &&
+        (currentUserIsSELLER || currentUserIsDELIVERY || currentUserIsADMIN)
+      ) {
+        sendUpdateNotifications(
+          orderKey,
+          currentUserKey,
+          statusInfo.state,
+          false
+        );
+      }
+      //في حاله تم التوصيل
+      //المستخدم خدمة توصيل او مسؤول
+      else if (
+        statusIdValue == 3 &&
+        (currentUserIsDELIVERY || currentUserIsADMIN)
+      ) {
+        sendUpdateNotifications(
+          orderKey,
+          currentUserKey,
+          statusInfo.state,
+          false
+        );
       }
     } else {
       const errorMessage = result.value ? result.value.error : "خطأ غير معروف";
@@ -189,7 +220,7 @@ async function handleStatusUpdateClick(event, userKey) {
       cancelButtonText: "إلغاء",
       showLoaderOnConfirm: true,
       preConfirm: async () => {
-        const response = await updateOrderStatus(orderKey, 32); // 32 يشير إلى الرفض 
+        const response = await updateOrderStatus(orderKey, 32); // 32 يشير إلى الرفض
         statusInfo = ORDER_STATUSES.find((s) => s.id === 32);
         Swal.fire("تم التحديث!", "تم تحديث حالة الطلب .", "success");
         showSalesMovementModal(userKey); // إعادة تحميل النافذة
@@ -204,27 +235,29 @@ async function handleStatusUpdateClick(event, userKey) {
 /**
  * @description يرسل إشعارات بعد تحديث حالة الطلب.
  * @param {string} orderKey - مفتاح الطلب المحدث.
- * @param {string} userKey - مفتاح المستخدم (البائع).
+ * @param {string} sellerKey - مفتاح المستخدم (البائع).
  * @param {string} newStatusState - اسم الحالة الجديدة.
  */
 async function sendUpdateNotifications(
   orderKey,
-  userKey,
+  sellerKey,
   newStatusState,
   withDelivery = true
 ) {
   try {
     let deliveryTokens = [];
-    if (withDelivery) {
+    //  جلب توكنات خدمات التوصيل إذا كان من اطلق الحدث بائع
+    if (withDelivery && currentUserIsSELLER) {
       // 1. جلب توكنات خدمات التوصيل النشطة للبائع
-      deliveryTokens = await getTokensForActiveDelivery(userKey); // استخراج التوكنات الصالحة فقط
+      deliveryTokens = await getTokensForActiveDelivery2Seller(sellerKey); // استخراج التوكنات الصالحة فقط
     }
-
+if (!currentUserIsADMIN) {
     // 2. جلب توكنات المسؤولين (الدالة معرفة في js/helpers/network.js)
     const adminTokens = await getAdminTokens();
+}
 
     // 3. دمج جميع التوكنات (خدمات التوصيل والمسؤولين) وإزالة التكرار
-    const allTokens = [...new Set([...(deliveryTokens || []), ...adminTokens])];
+    const allTokens = [...new Set([...(deliveryTokens || []), ...(adminTokens || [])])];
     const title = "تحديث حالة طلب";
     const body = `تم تحديث حالة الطلب رقم #${orderKey} إلى "${newStatusState}".`;
     await sendNotificationsToTokens(allTokens, title, body);
@@ -341,7 +374,9 @@ async function showSalesMovementModal(userKey) {
       let deliveryUsers = [];
 
       if (isAdmin) {
-        [orders, deliveryUsers] = await Promise.all([getSalesMovement(userKey)]);
+        [orders, deliveryUsers] = await Promise.all([
+          getSalesMovement(userKey),
+        ]);
       } else {
         // جلب الطلبات فقط إذا لم يكن المستخدم مسؤولاً
         orders = await getSalesMovement(userKey);
