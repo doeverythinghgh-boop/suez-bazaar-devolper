@@ -1,43 +1,31 @@
 {
-    "workbench.sideBar.location": "right",
-    "git.enableSmartCommit": true,
-    "workbench.editor.pinnedTabsOnSeparateRow": true,
-    "workbench.editor.preferHistoryBasedLanguageDetection": true,
-    "git.confirmSync": false,
+    "typescript.autoClosingTags": false,
+    "typescript.check.npmIsInstalled": false,
+    "typescript.format.enable": false,
+    "typescript.format.indentSwitchCase": false,
+    "typescript.format.insertSpaceAfterCommaDelimiter": false,
+    "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+    "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": false,
+    "typescript.tsserver.useSyntaxServer": "never",
+    "typescript.tsserver.web.projectWideIntellisense.enabled": false,
+    "typescript.tsserver.web.typeAcquisition.enabled": false,
     "[html]": {
-        "editor.defaultFormatter": "vscode.html-language-features"
-    },
-    "files.autoSave": "afterDelay",
-    "diffEditor.codeLens": true,
-    "github.copilot.enable": {
-        "*": true,
-        "plaintext": false,
-        "markdown": true,
-        "scminput": false
-    },
-    "github.copilot.nextEditSuggestions.enabled": true,
-    "diffEditor.hideUnchangedRegions.enabled": true,
-    "explorer.confirmDragAndDrop": false,
-    "editor.wordWrap": "on",
-    "gemini-cli.debug.logging.enabled": true,
-    "geminicodeassist.agentDebugMode": true,
-    "geminicodeassist.agentYoloMode": true,
-    "geminicodeassist.codeGenerationPaneViewEnabled": true,
-    "geminicodeassist.verboseLogging": true,
-    "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
-    "[json]": {
-        "editor.defaultFormatter": "vscode.json-language-features"
-    },
-    "workbench.settings.applyToAllProfiles": [
-        "geminicodeassist.agent.additionalTrustedCertificates",
-        "geminicodeassist.inlineSuggestions.nextEditPredictions",
-        "geminicodeassist.languages",
-        "geminicodeassist.rules",
-        "geminicodeassist.contextExclusionFile",
-        "geminicodeassist.customCommands"
-    ],
+    "editor.allowVariableFontsInAccessibilityMode": true,
+    "files.autoSave": "afterDelay",
+    "files.autoSaveWhenNoErrors": true,
+    "editor.tabFocusMode": true,
+    "workbench.editor.tabActionLocation": "left",
+    "workbench.editor.pinnedTabsOnSeparateRow": true,
+    "workbench.editor.highlightModifiedTabs": true,
+    "workbench.editor.scrollToSwitchTabs": true,
+    "workbench.editor.showTabIndex": true,
+    "workbench.editor.wrapTabs": true,
+    "geminicodeassist.codeGenerationPaneViewEnabled": true,
+    "editor.stickyTabStops": true,
+    "editor.tabCompletion": "on",
+    "diffEditor.codeLens": true,
     "geminicodeassist.inlineSuggestions.nextEditPredictions": true,
     "geminicodeassist.languages": [
         "*",
