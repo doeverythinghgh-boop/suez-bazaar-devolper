@@ -21,6 +21,31 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
+
+/**
+ * @description تحقق من وجود user_key في جدول suppliers_deliveries
+ * @param {string} userKey - مفتاح المستخدم للتحقق
+ * @returns {Promise<boolean>} true إذا كان موجوداً في أي من العمودين
+ */
+export async function checkUserInSuppliersDeliveries(userKey) {
+    if (!userKey) return false;
+    
+    const db = createClient({
+        url: process.env.DATABASE_URL,
+        authToken: process.env.TURSO_AUTH_TOKEN
+    });
+    
+    const { rows } = await db.execute({
+        sql: `SELECT EXISTS(SELECT 1 FROM suppliers_deliveries WHERE seller_key = ? OR delivery_key = ?) as exists`,
+        args: [userKey, userKey]
+    });
+    
+    return rows[0].exists === 1;
+}
+
+
+
+
 /**
  * @description نقطة نهاية API لإدارة علاقات الموردين والموزعين.
  * - GET: لجلب قائمة الموزعين وحالة ارتباطهم ببائع معين.
