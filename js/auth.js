@@ -193,6 +193,7 @@ async function setupFCM() {
     console.log("[FCM Setup] جاري طلب إذن عرض الإشعارات من المستخدم...");
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
+      
       console.log(
         "%c[FCM] تم الحصول على إذن إرسال الإشعارات.",
         "color: #28a745"

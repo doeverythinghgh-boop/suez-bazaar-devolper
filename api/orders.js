@@ -30,12 +30,12 @@ export const config = {
  * @see createClient
  */
 export default async function handler(request) {
-/**
- * @const {object} corsHeaders - ترويسات CORS للسماح بالطلبات من أي مصدر.
- * @property {string} Access-Control-Allow-Origin - يسمح بالوصول من أي مصدر.
- * @property {string} Access-Control-Allow-Methods - طرق HTTP المسموح بها.
- * @property {string} Access-Control-Allow-Headers - ترويسات الطلب المسموح بها.
- */
+  /**
+   * @const {object} corsHeaders - ترويسات CORS للسماح بالطلبات من أي مصدر.
+   * @property {string} Access-Control-Allow-Origin - يسمح بالوصول من أي مصدر.
+   * @property {string} Access-Control-Allow-Methods - طرق HTTP المسموح بها.
+   * @property {string} Access-Control-Allow-Headers - ترويسات الطلب المسموح بها.
+   */
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, PUT, OPTIONS',
@@ -125,7 +125,7 @@ export default async function handler(request) {
        * @type {Array<Object>} statements - مصفوفة من الاستعلامات لتنفيذها في معاملة واحدة.
        */
       const statements = [];
-      
+
       // ✅ جديد: إنشاء القيمة الافتراضية لحالة الطلب بالتنسيق الجديد
       // الحالة الافتراضية هي "قيد المراجعة" (ID = 0)
       const initialOrderStatus = `0#${new Date().toISOString()}`;
@@ -139,8 +139,8 @@ export default async function handler(request) {
       // 2. إضافة كل عنصر من عناصر السلة إلى جدول `order_items`
       for (const item of items) {
         statements.push({
-          sql: "INSERT INTO order_items (order_key, product_key, quantity, seller_key) VALUES (?, ?, ?, ?)",
-          args: [order_key, item.product_key, item.quantity, item.seller_key],
+          sql: "INSERT INTO order_items (order_key, product_key, quantity, seller_key, note) VALUES (?, ?, ?, ?, ?)",
+          args: [order_key, item.product_key, item.quantity, item.seller_key, item.note],
         });
       }
 
