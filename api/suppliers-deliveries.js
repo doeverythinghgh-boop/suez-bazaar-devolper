@@ -76,8 +76,61 @@ export default async function handler(request) {
     if (request.method === 'GET') {
       const url = new URL(request.url);
       const sellerKey = url.searchParams.get('sellerKey');
-      const activeOnly = url.searchParams.get('activeOnly') === 'true'; // ✅ إضافة: التحقق من وجود معامل لجلب النشطين فقط
+      const relatedTo = url.searchParams.get('relatedTo'); // ✅ معلمة جديدة لجلب العلاقات في الاتجاهين
+      const activeOnly = url.searchParams.get('activeOnly') === 'true';
 
+      // --- السيناريو الجديد: جلب كل العلاقات (بائع وموزع) لمستخدم معين ---
+      if (relatedTo) {
+        console.log(`[API] Fetching ALL relations for user: ${relatedTo}...`);
+
+        // 1. جلب الموزعين إذا كان هذا المستخدم بائعاً
+        const { rows: asSellerRows } = await db.execute({
+          sql: `
+               SELECT u.user_key, u.username, u.phone, ut.fcm_token, sd.is_active
+               FROM users u
+               JOIN suppliers_deliveries sd ON u.user_key = sd.delivery_key
+               LEFT JOIN user_tokens ut ON u.user_key = ut.user_key
+               WHERE sd.seller_key = ?
+            `,
+          args: [relatedTo]
+        });
+
+        // 2. جلب البائعين إذا كان هذا المستخدم موزعاً
+        const { rows: asDeliveryRows } = await db.execute({
+          sql: `
+               SELECT u.user_key, u.username, u.phone, ut.fcm_token, sd.is_active
+               FROM users u
+               JOIN suppliers_deliveries sd ON u.user_key = sd.seller_key
+               LEFT JOIN user_tokens ut ON u.user_key = ut.user_key
+               WHERE sd.delivery_key = ?
+            `,
+          args: [relatedTo]
+        });
+
+        const responseData = {
+          asSeller: asSellerRows.map(row => ({
+            userKey: row.user_key,
+            username: row.username,
+            phone: row.phone,
+            isActive: !!row.is_active,
+            role: 'delivery' // هذا الشخص هو موزع بالنسبة للمستخدم الحالي
+          })),
+          asDelivery: asDeliveryRows.map(row => ({
+            userKey: row.user_key,
+            username: row.username,
+            phone: row.phone,
+            isActive: !!row.is_active,
+            role: 'seller' // هذا الشخص هو بائع بالنسبة للمستخدم الحالي
+          }))
+        };
+
+        return new Response(JSON.stringify(responseData), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      }
+
+      // --- السيناريو القديم: (متوافق مع الكود السابق) ---
       if (!sellerKey) {
         console.warn('[API] Bad Request: sellerKey is missing from query parameters.');
         return new Response(JSON.stringify({ error: 'sellerKey is required' }), {
