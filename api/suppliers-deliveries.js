@@ -17,30 +17,33 @@ const db = createClient({
  */
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
- 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
 
 /**
- * @description تحقق من وجود user_key في جدول suppliers_deliveries
- * @param {string} userKey - مفتاح المستخدم للتحقق
- * @returns {Promise<boolean>} true إذا كان موجوداً في أي من العمودين
+ * @description تحقق من وجود مجموعة user_keys في جدول suppliers_deliveries
+ * @param {string[]} userKeys - مصفوفة مفاتيح المستخدمين للتحقق
+ * @returns {Promise<boolean[]>} مصفوفة boolean بنفس ترتيب المدخلات
  */
-export async function checkUserInSuppliersDeliveries(userKey) {
-    if (!userKey) return false;
-    
-    const db = createClient({
-        url: process.env.DATABASE_URL,
-        authToken: process.env.TURSO_AUTH_TOKEN
-    });
-    
-    const { rows } = await db.execute({
-        sql: `SELECT EXISTS(SELECT 1 FROM suppliers_deliveries WHERE seller_key = ? OR delivery_key = ?) as exists`,
-        args: [userKey, userKey]
-    });
-    
-    return rows[0].exists === 1;
+export async function checkUserInSuppliersDeliveries(userKeys) {
+  if (!Array.isArray(userKeys) || userKeys.length === 0) return [];
+
+  const placeholders = userKeys.map(() => '?').join(',');
+
+  const { rows } = await db.execute({
+    sql: `SELECT seller_key, delivery_key FROM suppliers_deliveries WHERE seller_key IN (${placeholders}) OR delivery_key IN (${placeholders})`,
+    args: [...userKeys, ...userKeys]
+  });
+
+  const foundKeys = new Set();
+  rows.forEach(row => {
+    if (row.seller_key) foundKeys.add(row.seller_key);
+    if (row.delivery_key) foundKeys.add(row.delivery_key);
+  });
+
+  return userKeys.map(key => foundKeys.has(key));
 }
 
 
