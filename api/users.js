@@ -158,7 +158,7 @@ export default async function handler(request) {
       // ✅ إصلاح: استخدام LEFT JOIN لجلب fcm_token مع كل مستخدم إن وجد.
       const result = await db.execute(`
         SELECT 
-          u.id, u.username, u.phone, u.is_seller, u.user_key, u.Address,
+          u.id, u.username, u.phone, u.is_seller, u.user_key, u.Address, u.Password,
           ut.fcm_token
         FROM users u
         LEFT JOIN user_tokens ut ON u.user_key = ut.user_key
