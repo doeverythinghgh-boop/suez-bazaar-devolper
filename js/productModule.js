@@ -23,7 +23,7 @@ window.productModule = (function() {
   const IMAGE_QUALITY = 0.75;
   /** @description أقصى عدد من الملفات المسموح برفعها. @type {number} @const */
   const MAX_FILES = 6;
-
+  
   /** @private @type {HTMLInputElement|null} */
   let fileInput, pickFilesBtn, takePhotoBtn, clearAllBtn, previewsEl, uploaderEl;
   /** @private @description مصفوفة لتخزين حالة جميع الصور. @type {Array<object>} */
