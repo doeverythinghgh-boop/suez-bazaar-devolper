@@ -108,7 +108,9 @@ export default async function handler(request) {
       console.log('[API: /api/orders] البيانات المستلمة:', { order_key, user_key, total_amount, items_count: items.length });
 
       // التحقق من وجود البيانات الأساسية
-      if (!order_key || !user_key || !total_amount || !items || items.length === 0) {
+      // التحقق من وجود البيانات الأساسية
+      // Fixed: Checked total_amount against undefined/null allowing 0
+      if (!order_key || !user_key || total_amount === undefined || total_amount === null || !items || items.length === 0) {
         console.error('[API: /api/orders] خطأ: بيانات الطلب غير مكتملة.');
         return new Response(JSON.stringify({ error: 'بيانات الطلب غير مكتملة.' }), {
           status: 400,
