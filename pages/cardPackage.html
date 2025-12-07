@@ -521,15 +521,15 @@
                 </div>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowSubtotal">
                     <span>المجموع الجزئي:</span>
-                    <span class="cartPage_summary-value" id="cartPage_subtotal">0.00 ر.س</span>
+                    <span class="cartPage_summary-value" id="cartPage_subtotal">0.00 ج.م</span>
                 </div>
                 <div class="cartPage_summary-row savings" id="cartPage_summaryRowSavings">
                     <span>التوفير:</span>
-                    <span class="cartPage_summary-value" id="cartPage_savings">0.00 ر.س</span>
+                    <span class="cartPage_summary-value" id="cartPage_savings">0.00 ج.م</span>
                 </div>
                 <div class="cartPage_summary-row total" id="cartPage_summaryRowTotal">
                     <span>المجموع الكلي:</span>
-                    <span class="cartPage_summary-value" id="cartPage_total">0.00 ر.س</span>
+                    <span class="cartPage_summary-value" id="cartPage_total">0.00 ج.م</span>
                 </div>
 
                 <button class="cartPage_checkout-btn" id="cartPage_checkoutBtn">
@@ -656,9 +656,9 @@
                                         <div class="cartPage_cart-item-info">
                                             <h3 class="cartPage_cart-item-title" id="cartPage_cartItemTitle-${cartPage_item.product_key}">${cartPage_item.productName}</h3>
                                             <div class="cartPage_cart-item-price" id="cartPage_cartItemPriceContainer-${cartPage_item.product_key}">
-                                                <span class="cartPage_current-price" id="cartPage_currentPrice-${cartPage_item.product_key}">${cartPage_item.price.toFixed(2)} ر.س</span>
+                                                <span class="cartPage_current-price" id="cartPage_currentPrice-${cartPage_item.product_key}">${cartPage_item.price.toFixed(2)} ج.م</span>
                                                 ${cartPage_item.original_price && cartPage_item.original_price > cartPage_item.price ?
-                            `<span class="cartPage_original-price" id="cartPage_originalPrice-${cartPage_item.product_key}">${cartPage_item.original_price.toFixed(2)} ر.س</span>` : ''}
+                            `<span class="cartPage_original-price" id="cartPage_originalPrice-${cartPage_item.product_key}">${cartPage_item.original_price.toFixed(2)} ج.م</span>` : ''}
                                                 ${cartPage_discount > 0 ?
                             `<span class="cartPage_discount-badge" id="cartPage_discountBadge-${cartPage_item.product_key}">توفير ${cartPage_discount}%</span>` : ''}
                                             </div>
@@ -718,9 +718,9 @@
                 const cartPage_total = cartPage_subtotal;
 
                 document.getElementById('cartPage_itemCount').textContent = cartPage_itemCount;
-                document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ر.س';
-                document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ر.س';
-                document.getElementById('cartPage_total').textContent = cartPage_total.toFixed(2) + ' ر.س';
+                document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ج.م';
+                document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ج.م';
+                document.getElementById('cartPage_total').textContent = cartPage_total.toFixed(2) + ' ج.م';
             } catch (error) {
                 console.error('حدث خطأ أثناء تحديث ملخص السلة:', error);
             }
