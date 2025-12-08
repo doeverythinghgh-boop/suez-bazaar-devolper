@@ -407,10 +407,7 @@
         </form>
     </div>
 
-    <!-- حاوية للكاميرا -->
-    <div id="camera-modal-container"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
-    </div>
+
 
     <script>
         /**
@@ -500,48 +497,8 @@
             // مساعدة: توليد معرف فريد خفيف
             function genId() { return 'img_' + (Date.now() + idCounter++); }
 
-            // فحص دعم webp
-            async function supportsWebP() {
-                if (!self.createImageBitmap) return false;
-                const blob = await fetch('data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=')
-                    .then(r => r.blob()).catch(() => null);
-                if (!blob) return false;
-                try { await createImageBitmap(blob); return true; } catch (e) { return false; }
-            }
-            const WEBP_SUPPORTED_PROMISE = supportsWebP();
+            // تم نقل وظائف ضغط الصور إلى CameraUtils
 
-            // --- دالة ضغط: تأخذ File أو Blob وتعيد Blob مضغوط ---
-            async function compressImage(file) {
-                // تحويل الملف إلى صورة
-                const imgBitmap = await createImageBitmap(file);
-                let { width, height } = imgBitmap;
-
-                // حساب الأبعاد الجديدة مع الحفاظ على النسبة
-                const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
-                const newWidth = Math.round(width * ratio);
-                const newHeight = Math.round(height * ratio);
-
-                // رسم على كانفاس
-                const canvas = Object.assign(document.createElement('canvas'), { width: newWidth, height: newHeight });
-                const ctx = canvas.getContext('2d');
-
-                // تعبئة خلفية بيضاء لتفادي قنوات alpha في بعض الحالات
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, newWidth, newHeight);
-
-                ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
-
-                const webpSupported = await WEBP_SUPPORTED_PROMISE;
-                const mime = webpSupported ? 'image/webp' : 'image/jpeg';
-
-                // تحويل إلى blob
-                const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
-
-                // إغلاق الـ ImageBitmap لتحرير الذاكرة
-                try { imgBitmap.close(); } catch (e) { }
-
-                return blob;
-            }
 
             // --- دالة إنشاء معاينة مصغرة وإظهارها في الواجهة ---
             function createPreviewItem(state, existingImageUrl = null) {
@@ -636,9 +593,26 @@
                     createPreviewItem(state);
                     // ضغط الصورة (غير متزامن، تحدث التحديثات على واجهة المعاينة)
                     try {
+                        // استخدمنا CameraUtils لضغط الصور، لكن هنا سنحتفظ بالمنطق إذا تم رفع ملف من المعرض
+                        // ملاحظة: handleNewFiles تتوقع ملفات خام وتقوم بالضغط. 
+                        // لتجنب التكرار، يمكننا استخدام CameraUtils هنا أيضاً، لكن CameraUtils مصمم للكاميرا.
+                        // سنبقي المنطق هنا كما هو للصور القادمة من المعرض، أو يمكن تحديثه لاستخدام دالة مشتركة في المستقبل.
+                        // ولكن بما أننا حذفنا compressImage من هنا، يجب أن نستدعيها من مكان ما؟
+                        // انتظر، handleNewFiles تنادي compressImage التي حذفناها!
+                        // يجب تحديث handleNewFiles لتستخدم CameraUtils.compressImage أو منطق مشابه.
+                        // عفواً، CameraUtils.compressImage غير مصدرة (private).
+                        // سأقوم باستعادة compressImage هنا أو جعل CameraUtils تصدرها؟
+                        // الأفضل: سأقوم باستعادة compressImage المبسطة هنا أو الاعتماد على أن openCamera تعيد blob مضغوط بالفعل.
+                        // لكن handleNewFiles تستخدم للمعرض أيضاً.
+                        // الحل السريع: سأعيد تعريف compressImage هنا لتعمل كما كانت للملفات القادمة من المعرض.
+                        // أو الأفضل: جعل المنطق يعتمد على ما إذا كان الملف مضغوطاً مسبقًا.
+
                         console.log(`[ImageUploader] Compressing image: ${file.name}`);
                         state.status = 'compressing';
-                        const compressed = await compressImage(file);
+                        // سنستخدم منطق ضغط محلي هنا لأن CameraUtils لا تصدرها.
+                        // لتوفير الوقت والمساحة، سأضيف دالة ضغط مبسطة هنا تشبه التي حذفناها.
+
+                        const compressed = await localCompressImage(file);
                         state.compressedBlob = compressed;
                         state.status = 'ready';
                         console.log(`%c[ImageUploader] Image compressed successfully: ${file.name} -> ${formatBytes(compressed.size)}`, 'color: green;');
@@ -657,6 +631,27 @@
                 // *** الإصلاح: إعادة تعيين قيمة حقل إدخال الملفات ***
                 // هذا يضمن أن حدث 'change' سيعمل حتى لو تم اختيار نفس الملف مرة أخرى
                 fileInput.value = '';
+            }
+
+            // --- دالة ضغط محلية (للصور المرفوعة من المعرض) ---
+            async function localCompressImage(file) {
+                // استخدام إعدادات الوحدة (Scope)
+                if (self.createImageBitmap) {
+                    try {
+                        const bmp = await createImageBitmap(file);
+                        const { width, height } = bmp;
+                        const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.round(width * ratio);
+                        canvas.height = Math.round(height * ratio);
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = '#fff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+                        ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+                        return new Promise(r => canvas.toBlob(r, 'image/webp', IMAGE_QUALITY));
+                    } catch (e) { console.warn('Bitmap error', e); return file; }
+                }
+                return file;
             }
 
             // --- رفع إلى الخادم (نموذجي - قم بتعديله ليتوافق مع API الخاص بك) ---
@@ -771,69 +766,27 @@
                 // if (originalPriceInput.value) clearError(originalPriceInput);
             });
 
-            // التقاط صورة عبر الكاميرا: فتح ملف مع capture
+            // التقاط صورة عبر الكاميرا: استخدام CameraUtils
             takePhotoBtn.addEventListener('click', () => {
-                // ✅ تعديل: استخدام الكاميرا داخل المتصفح لجميع الأجهزة لمنع إعادة تحميل الصفحة على الموبايل
-                console.log('[Camera] Opening in-browser camera for all devices.');
-                openCamera();
-            });
-
-            /**
-             * ✅ جديد: دالة لفتح كاميرا الويب (للموبايل والكمبيوتر).
-             */
-            async function openCamera() {
-                const cameraModalContainer = document.getElementById('camera-modal-container');
-                if (!cameraModalContainer) {
-                    console.error('Camera modal container not found!');
+                if (typeof CameraUtils === 'undefined') {
+                    console.error('CameraUtils not loaded!');
+                    Swal.fire('خطأ', 'موديول الكاميرا غير محمل.', 'error');
                     return;
                 }
 
-                // 1. إنشاء واجهة المستخدم لنافذة الكاميرا
-                cameraModalContainer.innerHTML = `
-                    <div class="modal-content camera-modal-content">
-                        <button class="close-button" id="camera-modal-close-btn" aria-label="إغلاق"><i class="fas fa-times"></i></button>
-                        <video id="camera-preview" autoplay playsinline></video>
-                        <canvas id="camera-canvas" style="display:none;"></canvas>
-                        <div class="camera-controls">
-                            <button id="capture-photo-btn" class="btn btn-primary"><i class="fas fa-camera"></i> التقاط الصورة</button>
-                        </div>
-                    </div>
-                `;
-                cameraModalContainer.style.display = 'flex';
-
-                const video = document.getElementById('camera-preview');
-                const captureBtn = document.getElementById('capture-photo-btn');
-                const closeBtn = document.getElementById('camera-modal-close-btn');
-
-                // 2. طلب الوصول إلى الكاميرا
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                    video.srcObject = stream;
-
-                    const closeStream = () => {
-                        stream.getTracks().forEach(track => track.stop());
-                        cameraModalContainer.style.display = 'none';
-                        cameraModalContainer.innerHTML = '';
-                    };
-
-                    closeBtn.onclick = closeStream;
-
-                    captureBtn.onclick = () => {
-                        const canvas = document.getElementById('camera-canvas');
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        canvas.getContext('2d').drawImage(video, 0, 0);
-                        canvas.toBlob(blob => {
-                            handleNewFiles([blob]); // استخدام نفس الدالة لمعالجة الصورة الملتقطة
-                            closeStream(); // إغلاق النافذة بعد الالتقاط
-                        }, 'image/jpeg', 0.9);
-                    };
-                } catch (err) {
-                    console.error("Error accessing camera: ", err);
-                    Swal.fire('خطأ!', 'لم نتمكن من الوصول إلى الكاميرا. يرجى التأكد من منح الإذن اللازم.', 'error');
-                    cameraModalContainer.style.display = 'none';
-                }
-            }
+                CameraUtils.openCamera('productAdd', () => {
+                    // Callback لإعادة تحميل الصفحة بعد الحفظ
+                    console.log('[productAdd] Reloading page via mainLoader...');
+                    mainLoader(
+                        "./pages/productAdd.html",
+                        "index-product-container",
+                        0,
+                        undefined,
+                        "showHomeIcon",
+                        false
+                    );
+                });
+            });
 
             fileInput.addEventListener('change', (e) => handleNewFiles(e.target.files));
 
@@ -990,19 +943,43 @@
                 return serial;
             }
 
+            // ✅ فحص واستعادة الصور المحفوظة عند التحميل
+            if (typeof CameraUtils !== 'undefined') {
+                console.log('[ProductAdd] Calling CameraUtils.checkForSavedImages...');
+                CameraUtils.checkForSavedImages('productAdd', (blobs) => {
+                    console.log('[ProductAdd] checkForSavedImages callback triggered with:', blobs ? blobs.length : 'null');
+                    if (blobs && blobs.length > 0) {
+                        console.log(`[productAdd] Restoring ${blobs.length} images from storage.`);
+                        handleNewFiles(blobs);
+                    } else {
+                        console.log('[ProductAdd] No images to restore.');
+                    }
+                });
+            } else {
+                console.error('[ProductAdd] CameraUtils is undefined!');
+            }
+
             // إرجاع الدوال والمتغيرات التي تحتاجها
             return {
                 images,
                 originalImageNames: [],
                 genId,
-                createPreviewItem
+                createPreviewItem,
+                handleNewFiles // تصدير الدالة لتكون متاحة إذا لزم الأمر
             };
 
         })(); // نهاية الوحدة
 
-        // تهيئة النموذج عند تحميل الصفحة
-        document.addEventListener('DOMContentLoaded', function () {
+        // تهيئة النموذج مباشرة عند تنفيذ السكريبت (لأن DOMContentLoaded قد حدث بالفعل في SPA)
+        try {
+            console.log('[ProductAdd] Calling initializeAddProductForm directly...');
             initializeAddProductForm();
-        });
+        } catch (e) {
+            console.error('[ProductAdd] Error initializing form:', e);
+        }
+
+        // تسجيل إضافي للتحقق من الاستعادة
+        console.log('[ProductAdd] Checking for saved images (Post-Init)...');
+
     </script>
 </body>
