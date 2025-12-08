@@ -1,0 +1,572 @@
+
+<style>
+        
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        header {
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #fdbb2d;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #fdbb2d;
+        }
+
+        .camera-container {
+            position: relative;
+            width: 100%;
+            height: 60vh;
+            min-height: 400px;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        #camera-feed {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .camera-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        .camera-status {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 10px 15px;
+            border-radius: 30px;
+            align-self: center;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .camera-status i {
+            color: #4CAF50;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px 0;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .control-btn {
+            background-color: #1a2a6c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .control-btn:hover {
+            background-color: #2a3c9c;
+            transform: translateY(-5px);
+        }
+
+        .control-btn:active {
+            transform: translateY(0);
+        }
+
+        .control-btn.capture {
+            background-color: #e53935;
+            width: 80px;
+            height: 80px;
+            font-size: 1.8rem;
+        }
+
+        .control-btn.capture:hover {
+            background-color: #f44336;
+        }
+
+        .captured-images {
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.6);
+            border-top: 2px solid #1a2a6c;
+        }
+
+        .captured-images h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #fdbb2d;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .images-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+            min-height: 120px;
+        }
+
+        .image-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .image-item:hover {
+            transform: scale(1.05);
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-item .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-section {
+            padding: 20px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.8);
+            border-top: 2px solid #b21f1f;
+        }
+
+        .close-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-btn:hover {
+            background-color: #45a049;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .close-btn:active {
+            transform: translateY(0);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #aaa;
+            font-style: italic;
+        }
+
+        .counter {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .camera-container {
+                height: 50vh;
+                min-height: 300px;
+            }
+            
+            .control-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.3rem;
+            }
+            
+            .control-btn.capture {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .image-item {
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .controls {
+                gap: 20px;
+            }
+            
+            .control-btn {
+                width: 55px;
+                height: 55px;
+            }
+            
+            .control-btn.capture {
+                width: 65px;
+                height: 65px;
+            }
+            
+            .images-container {
+                gap: 10px;
+            }
+            
+            .image-item {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-camera"></i> كاميرا التقاط الصور</h1>
+            <p>التقط الصور باستخدام الكاميرا الأمامية أو الخلفية</p>
+        </header>
+        
+        <div class="camera-container">
+            <video id="camera-feed" autoplay playsinline></video>
+            <div class="camera-overlay">
+                <div class="camera-status">
+                    <i class="fas fa-circle"></i>
+                    <span id="camera-type">كاميرا خلفية</span>
+                </div>
+                <div class="counter" id="photo-counter">0 صورة</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" id="switch-camera" title="تبديل الكاميرا">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <button class="control-btn capture" id="capture-btn" title="التقاط صورة">
+                <i class="fas fa-camera"></i>
+            </button>
+        </div>
+        
+        <div class="captured-images">
+            <h2><i class="fas fa-images"></i> الصور الملتقطة</h2>
+            <div class="images-container" id="images-container">
+                <div class="empty-state" id="empty-state">لم يتم التقاط أي صور بعد</div>
+            </div>
+        </div>
+        
+        <div class="close-section">
+            <button class="close-btn" id="close-btn">
+                <i class="fas fa-check-circle"></i> إغلاق وتحميل الصور
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // متغيرات عامة
+        let currentStream = null;
+        let facingMode = 'environment'; // 'environment' للخلفية، 'user' للأمامية
+        let capturedImages = []; // مصفوفة لتخزين الصور الملتقطة
+        let windowCapturedImages = window.capturedImages || []; // المتغير العام للمشروع
+
+        // عناصر DOM
+        const cameraFeed = document.getElementById('camera-feed');
+        const switchCameraBtn = document.getElementById('switch-camera');
+        const captureBtn = document.getElementById('capture-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const imagesContainer = document.getElementById('images-container');
+        const emptyState = document.getElementById('empty-state');
+        const cameraTypeText = document.getElementById('camera-type');
+        const photoCounter = document.getElementById('photo-counter');
+
+        // بدء تشغيل الكاميرا
+        async function startCamera() {
+            // إيقاف الكاميرا الحالية إذا كانت تعمل
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+
+            // قيود الكاميرا
+            const constraints = {
+                video: { 
+                    facingMode: facingMode,
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 }
+                },
+                audio: false
+            };
+
+            try {
+                // الحصول على مدخل الكاميرا
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                cameraFeed.srcObject = currentStream;
+                
+                // تحديث نص نوع الكاميرا
+                cameraTypeText.textContent = facingMode === 'environment' ? 'كاميرا خلفية' : 'كاميرا أمامية';
+                
+                console.log('الكاميرا بدأت بنجاح');
+            } catch (err) {
+                console.error('خطأ في تشغيل الكاميرا:', err);
+                alert('تعذر الوصول إلى الكاميرا. يرجى التأكد من منح الإذن اللازم.');
+            }
+        }
+
+        // تبديل الكاميرا بين الأمامية والخلفية
+        function switchCamera() {
+            facingMode = facingMode === 'environment' ? 'user' : 'environment';
+            startCamera();
+        }
+
+        // التقاط صورة من الفيديو
+        function captureImage() {
+            if (!currentStream) {
+                alert('الكاميرا غير جاهزة بعد. انتظر قليلاً ثم حاول مرة أخرى.');
+                return;
+            }
+
+            // إنشاء عنصر canvas لرسم الصورة
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraFeed.videoWidth;
+            canvas.height = cameraFeed.videoHeight;
+            
+            // رسم الفيديو على canvas
+            const context = canvas.getContext('2d');
+            context.drawImage(cameraFeed, 0, 0, canvas.width, canvas.height);
+            
+            // تحويل canvas إلى صورة
+            canvas.toBlob(blob => {
+                if (blob) {
+                    // إنشاء رابط URL للصورة
+                    const imageUrl = URL.createObjectURL(blob);
+                    
+                    // حفظ الصورة في المصفوفة
+                    const imageData = {
+                        id: Date.now(),
+                        url: imageUrl,
+                        blob: blob,
+                        timestamp: new Date().toLocaleTimeString('ar-EG'),
+                        cameraType: facingMode === 'environment' ? 'خلفية' : 'أمامية'
+                    };
+                    
+                    capturedImages.push(imageData);
+                    
+                    // تحديث واجهة الصور
+                    updateImagesDisplay();
+                    
+                    // إظهار رسالة نجاح
+                    showNotification('تم التقاط الصورة بنجاح!');
+                }
+            }, 'image/jpeg', 0.9);
+        }
+
+        // تحديث عرض الصور الملتقطة
+        function updateImagesDisplay() {
+            // إخفاء حالة عدم وجود صور
+            emptyState.style.display = capturedImages.length > 0 ? 'none' : 'block';
+            
+            // تحديث العداد
+            photoCounter.textContent = `${capturedImages.length} صورة`;
+            
+            // مسح المحتوى الحالي
+            imagesContainer.innerHTML = '';
+            
+            // إضافة جميع الصور
+            capturedImages.forEach((image, index) => {
+                const imageItem = document.createElement('div');
+                imageItem.className = 'image-item';
+                imageItem.innerHTML = `
+                    <img src="${image.url}" alt="صورة ${index + 1}">
+                    <button class="remove-btn" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                imagesContainer.appendChild(imageItem);
+            });
+            
+            // إضافة أحداث لحذف الصور
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const index = parseInt(this.getAttribute('data-index'));
+                    removeImage(index);
+                });
+            });
+        }
+
+        // حذف صورة
+        function removeImage(index) {
+            if (index >= 0 && index < capturedImages.length) {
+                // تحرير رابط URL
+                URL.revokeObjectURL(capturedImages[index].url);
+                
+                // إزالة الصورة من المصفوفة
+                capturedImages.splice(index, 1);
+                
+                // تحديث العرض
+                updateImagesDisplay();
+                
+                showNotification('تم حذف الصورة');
+            }
+        }
+
+        // إغلاق الصفحة وحفظ الصور في المتغير العام
+        function closeAndSave() {
+            if (capturedImages.length === 0) {
+                if (!confirm('لم يتم التقاط أي صور. هل تريد المتابعة دون حفظ؟')) {
+                    return;
+                }
+            }
+            
+            // حفظ الصور في المتغير العام (window.capturedImages)
+            window.capturedImages = capturedImages;
+            
+            // إظهار رسالة تأكيد
+            showNotification(`تم حفظ ${capturedImages.length} صورة في المتغير العام`);
+            
+            // إيقاف الكاميرا
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // عرض رسالة في وحدة التحكم للمطورين
+            console.log('الصور المحفوظة في window.capturedImages:');
+            console.log(window.capturedImages);
+            
+            // رسالة للمستخدم
+            alert(`تم حفظ ${capturedImages.length} صورة بنجاح. يمكنك الآن استخدامها في المشروع.`);
+            
+            // في بيئة حقيقية، قد نغلق النافذة أو نعود للصفحة السابقة
+            // window.close(); // إلغاء التعليق إذا كنت تريد إغلاق النافذة
+        }
+
+        // إظهار إشعار مؤقت
+        function showNotification(message) {
+            // إنصراف عنصر الإشعار إذا كان موجودًا
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // إنشاء عنصر الإشعار
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: #4CAF50;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 30px;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                z-index: 1000;
+                font-weight: bold;
+                animation: fadeInOut 3s ease;
+            `;
+            
+            // إضافة أنيميشن
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% { opacity: 0; top: 0; }
+                    10% { opacity: 1; top: 20px; }
+                    90% { opacity: 1; top: 20px; }
+                    100% { opacity: 0; top: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // إزالة الإشعار بعد 3 ثوان
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
+                }
+            }, 3000);
+        }
+
+        // إضافة أحداث للأزرار
+        switchCameraBtn.addEventListener('click', switchCamera);
+        captureBtn.addEventListener('click', captureImage);
+        closeBtn.addEventListener('click', closeAndSave);
+
+        // بدء تشغيل الكاميرا عند تحميل الصفحة
+        window.addEventListener('load', startCamera);
+
+        // تنظيف الموارد عند إغلاق الصفحة
+        window.addEventListener('beforeunload', () => {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // تحرير جميع روابط URL للصور
+            capturedImages.forEach(image => {
+                URL.revokeObjectURL(image.url);
+            });
+        });
+    </script>
+</body>

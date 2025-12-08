@@ -109,7 +109,7 @@ function updateViewForLoggedInUser(user) {
       .addEventListener("click", () => showEditProfileModal(user));
 
     // ✅ تعديل: التحقق مما إذا كان المستخدم بائعًا (1) أو مسؤولاً (adminPhoneNumbers)
-    if (user.is_seller === 1 || adminPhoneNumbers.includes(user.phone)) {
+  /*  if (user.is_seller === 1 || adminPhoneNumbers.includes(user.phone)) {
       const sellerActions = document.getElementById("seller-actions");
       sellerActions.style.display = "block";
       document
@@ -118,7 +118,7 @@ function updateViewForLoggedInUser(user) {
       document
         .getElementById("view-my-products-btn")
         .addEventListener("click", () => showMyProducts(user.user_key));
-    }
+    }*/
 
 
 
