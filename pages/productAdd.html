@@ -1,314 +1,312 @@
+<style>
+    /* أنماط CSS من الكود الأصلي */
 
 
-    <style>
-        /* أنماط CSS من الكود الأصلي */
-        
-    
+
+    .add-product-modal {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 800px;
+        padding: 30px;
+        position: relative;
+    }
+
+    .add-product-modal__title {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 28px;
+        border-bottom: 2px solid #f8f9fa;
+        padding-bottom: 15px;
+    }
+
+    .add-product-modal__title i {
+        color: #3498db;
+        margin-left: 10px;
+    }
+
+    .add-product-modal__form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .add-product-modal__form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .add-product-modal__label {
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #34495e;
+        font-size: 16px;
+    }
+
+    .add-product-modal__label i {
+        color: #3498db;
+        margin-left: 8px;
+        width: 20px;
+        text-align: center;
+    }
+
+    .add-product-modal__input,
+    .add-product-modal__textarea,
+    .add-product-modal__select {
+        padding: 12px 15px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+    }
+
+    .add-product-modal__input:focus,
+    .add-product-modal__textarea:focus,
+    .add-product-modal__select:focus {
+        outline: none;
+        border-color: #3498db;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    .add-product-modal__textarea {
+        resize: vertical;
+        min-height: 120px;
+        font-family: inherit;
+    }
+
+    .add-product-modal__char-counter {
+        text-align: left;
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 5px;
+    }
+
+    .add-product-modal__form-row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .add-product-modal__form-row .add-product-modal__form-group {
+        flex: 1;
+    }
+
+    /* أنماط رفع الصور */
+    .add-product-modal__image-uploader {
+        border: 2px dashed #bdc3c7;
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .add-product-modal__image-uploader:hover {
+        border-color: #3498db;
+        background-color: #f1f8ff;
+    }
+
+    .add-product-modal__uploader-actions {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 10px 15px;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background-color: #3498db;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+        background-color: transparent;
+        border: 1px solid #bdc3c7;
+        color: #34495e;
+    }
+
+    .btn-ghost:hover {
+        background-color: #ecf0f1;
+        border-color: #3498db;
+        color: #3498db;
+    }
+
+    .btn-icon {
+        padding: 8px 12px;
+    }
+
+    .add-product-modal__hint {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin-bottom: 15px;
+    }
+
+    .add-product-modal__previews {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 15px;
+    }
+
+    .add-product-modal__preview {
+        position: relative;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        aspect-ratio: 1;
+    }
+
+    .add-product-modal__preview:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .add-product-modal__preview--selected {
+        border: 3px solid #3498db;
+    }
+
+    .add-product-modal__preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .add-product-modal__preview-remove {
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: rgba(231, 76, 60, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .add-product-modal__preview:hover .add-product-modal__preview-remove {
+        opacity: 1;
+    }
+
+    .add-product-modal__preview-meta {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 5px;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .add-product-modal__submit-container {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .add-product-modal__submit-container .btn {
+        padding: 12px 30px;
+        font-size: 18px;
+        border-radius: 30px;
+    }
+
+    .add-product-modal__error-message {
+        color: #e74c3c;
+        font-size: 14px;
+        margin-top: 5px;
+        text-align: right;
+    }
+
+    .add-product-modal__hidden-file {
+        display: none;
+    }
+
+    /* كاميرا سطح المكتب */
+    .camera-modal-content {
+        position: relative;
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .camera-modal-content video {
+        width: 100%;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+
+    .camera-controls {
+        text-align: center;
+    }
+
+    .close-button {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #7f8c8d;
+        cursor: pointer;
+        z-index: 10;
+    }
+
+    .close-button:hover {
+        color: #e74c3c;
+    }
+
+    /* التجاوب مع الأجهزة المختلفة */
+    @media (max-width: 768px) {
+        .add-product-modal__form-row {
+            flex-direction: column;
+            gap: 15px;
+        }
 
         .add-product-modal {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 800px;
-            padding: 30px;
-            position: relative;
+            padding: 20px;
         }
 
         .add-product-modal__title {
-            color: #2c3e50;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 28px;
-            border-bottom: 2px solid #f8f9fa;
-            padding-bottom: 15px;
+            font-size: 24px;
         }
+    }
 
-        .add-product-modal__title i {
-            color: #3498db;
-            margin-left: 10px;
-        }
-
-        .add-product-modal__form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .add-product-modal__form-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .add-product-modal__label {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #34495e;
-            font-size: 16px;
-        }
-
-        .add-product-modal__label i {
-            color: #3498db;
-            margin-left: 8px;
-            width: 20px;
-            text-align: center;
-        }
-
-        .add-product-modal__input,
-        .add-product-modal__textarea,
-        .add-product-modal__select {
-            padding: 12px 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-        }
-
-        .add-product-modal__input:focus,
-        .add-product-modal__textarea:focus,
-        .add-product-modal__select:focus {
-            outline: none;
-            border-color: #3498db;
-            background-color: white;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-
-        .add-product-modal__textarea {
-            resize: vertical;
-            min-height: 120px;
-            font-family: inherit;
-        }
-
-        .add-product-modal__char-counter {
-            text-align: left;
-            font-size: 12px;
-            color: #7f8c8d;
-            margin-top: 5px;
-        }
-
-        .add-product-modal__form-row {
-            display: flex;
-            gap: 15px;
-        }
-
-        .add-product-modal__form-row .add-product-modal__form-group {
-            flex: 1;
-        }
-
-        /* أنماط رفع الصور */
-        .add-product-modal__image-uploader {
-            border: 2px dashed #bdc3c7;
-            border-radius: 10px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            transition: all 0.3s ease;
-        }
-
-        .add-product-modal__image-uploader:hover {
-            border-color: #3498db;
-            background-color: #f1f8ff;
-        }
-
+    @media (max-width: 480px) {
         .add-product-modal__uploader-actions {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background-color: #3498db;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-
-        .btn-ghost {
-            background-color: transparent;
-            border: 1px solid #bdc3c7;
-            color: #34495e;
-        }
-
-        .btn-ghost:hover {
-            background-color: #ecf0f1;
-            border-color: #3498db;
-            color: #3498db;
-        }
-
-        .btn-icon {
-            padding: 8px 12px;
-        }
-
-        .add-product-modal__hint {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-bottom: 15px;
+            justify-content: center;
         }
 
         .add-product-modal__previews {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
         }
-
-        .add-product-modal__preview {
-            position: relative;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            aspect-ratio: 1;
-        }
-
-        .add-product-modal__preview:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .add-product-modal__preview--selected {
-            border: 3px solid #3498db;
-        }
-
-        .add-product-modal__preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .add-product-modal__preview-remove {
-            position: absolute;
-            top: 5px;
-            left: 5px;
-            background: rgba(231, 76, 60, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .add-product-modal__preview:hover .add-product-modal__preview-remove {
-            opacity: 1;
-        }
-
-        .add-product-modal__preview-meta {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 5px;
-            font-size: 12px;
-            text-align: center;
-        }
-
-        .add-product-modal__submit-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .add-product-modal__submit-container .btn {
-            padding: 12px 30px;
-            font-size: 18px;
-            border-radius: 30px;
-        }
-
-        .add-product-modal__error-message {
-            color: #e74c3c;
-            font-size: 14px;
-            margin-top: 5px;
-            text-align: right;
-        }
-
-        .add-product-modal__hidden-file {
-            display: none;
-        }
-
-        /* كاميرا سطح المكتب */
-        .camera-modal-content {
-            position: relative;
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            max-width: 500px;
-            width: 90%;
-        }
-
-        .camera-modal-content video {
-            width: 100%;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .camera-controls {
-            text-align: center;
-        }
-
-        .close-button {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: none;
-            border: none;
-            font-size: 20px;
-            color: #7f8c8d;
-            cursor: pointer;
-            z-index: 10;
-        }
-
-        .close-button:hover {
-            color: #e74c3c;
-        }
-
-        /* التجاوب مع الأجهزة المختلفة */
-        @media (max-width: 768px) {
-            .add-product-modal__form-row {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .add-product-modal {
-                padding: 20px;
-            }
-            
-            .add-product-modal__title {
-                font-size: 24px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .add-product-modal__uploader-actions {
-                justify-content: center;
-            }
-            
-            .add-product-modal__previews {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-            }
-        }
-    </style>
+    }
+</style>
 
 <body>
     <div class="add-product-modal" role="dialog" aria-modal="true" aria-labelledby="addProductTitle">
@@ -317,17 +315,22 @@
         <form class="add-product-modal__form" id="add-product-form" novalidate>
             <!-- موديول رفع الصور -->
             <section class="add-product-modal__form-group" aria-labelledby="imagesHeading">
-                <label id="imagesHeading" class="add-product-modal__label"><i class="fas fa-images"></i> صور المنتج</label>
+                <label id="imagesHeading" class="add-product-modal__label"><i class="fas fa-images"></i> صور
+                    المنتج</label>
 
-                <div class="add-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group" aria-label="منطقة رفع الصور">
+                <div class="add-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group"
+                    aria-label="منطقة رفع الصور">
                     <div class="add-product-modal__uploader-actions">
                         <!-- input مع capture لتفعيل الكاميرا على الأجهزة المحمولة -->
-                        <input class="add-product-modal__hidden-file" id="fileInput00" type="file" accept="image/*" multiple aria-hidden="true">
+                        <input class="add-product-modal__hidden-file" id="fileInput00" type="file" accept="image/*"
+                            multiple aria-hidden="true">
 
                         <!-- تم تغيير btn-primary إلى btn-ghost لتوحيد التصميم -->
-                        <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i class="fas fa-folder-open"></i></button>
-                        <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn" title="التقاط من الكاميرا"><i class="fas fa-camera"></i></button>
-                        
+                        <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i
+                                class="fas fa-folder-open"></i></button>
+                        <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn"
+                            title="التقاط من الكاميرا"><i class="fas fa-camera"></i></button>
+
                     </div>
 
                     <div class="add-product-modal__hint">المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp. </div>
@@ -338,29 +341,37 @@
 
             <!-- جديد: حقل اسم المنتج -->
             <div class="add-product-modal__form-group">
-                <label for="product-name" class="add-product-modal__label"><i class="fas fa-signature"></i> اسم المنتج</label>
-                <input type="text" id="product-name" name="product-name" class="add-product-modal__input" maxlength="100" placeholder="اكتب اسمًا واضحًا للمنتج..." required>
+                <label for="product-name" class="add-product-modal__label"><i class="fas fa-signature"></i> اسم
+                    المنتج</label>
+                <input type="text" id="product-name" name="product-name" class="add-product-modal__input"
+                    maxlength="100" placeholder="اكتب اسمًا واضحًا للمنتج..." required>
                 <div id="product-name-char-counter" class="add-product-modal__char-counter">0 / 100</div>
             </div>
 
             <!-- حقل وصف المنتج -->
             <div class="add-product-modal__form-group">
-                <label for="product-description" class="add-product-modal__label"><i class="fas fa-file-alt"></i> الوصف</label>
-                <textarea id="product-description" name="product-description" class="add-product-modal__textarea" rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
+                <label for="product-description" class="add-product-modal__label"><i class="fas fa-file-alt"></i>
+                    الوصف</label>
+                <textarea id="product-description" name="product-description" class="add-product-modal__textarea"
+                    rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
                 <div id="description-char-counter" class="add-product-modal__char-counter">0 / 400</div>
             </div>
 
             <!-- حقل رسالة من البائع -->
             <div class="add-product-modal__form-group">
-                <label for="seller-message" class="add-product-modal__label"><i class="fas fa-comment-dots"></i> رسالة من البائع</label>
-                <input type="text" id="seller-message" name="seller-message" class="add-product-modal__input" maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للمشتري...">
+                <label for="seller-message" class="add-product-modal__label"><i class="fas fa-comment-dots"></i> رسالة
+                    من البائع</label>
+                <input type="text" id="seller-message" name="seller-message" class="add-product-modal__input"
+                    maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للمشتري...">
                 <div id="seller-message-char-counter" class="add-product-modal__char-counter">0 / 100</div>
             </div>
 
             <!-- حقل ملاحظات -->
             <div class="add-product-modal__form-group">
-                <label for="product-notes" class="add-product-modal__label"><i class="fas fa-sticky-note"></i> ملاحظات</label>
-                <input type="text" id="product-notes" name="product-notes" class="add-product-modal__input" maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
+                <label for="product-notes" class="add-product-modal__label"><i class="fas fa-sticky-note"></i>
+                    ملاحظات</label>
+                <input type="text" id="product-notes" name="product-notes" class="add-product-modal__input"
+                    maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
                 <div id="notes-char-counter" class="add-product-modal__char-counter">0 / 100</div>
             </div>
 
@@ -368,18 +379,24 @@
             <div class="add-product-modal__form-row" id="price-quantity-row">
                 <!-- حقل الكمية -->
                 <div class="add-product-modal__form-group">
-                    <label for="product-quantity" class="add-product-modal__label"><i class="fas fa-boxes-stacked"></i> الكمية المتاحة</label>
-                    <input type="number" id="product-quantity" name="product-quantity" class="add-product-modal__input" placeholder="مثال: 50" required min="1">
+                    <label for="product-quantity" class="add-product-modal__label"><i class="fas fa-boxes-stacked"></i>
+                        الكمية المتاحة</label>
+                    <input type="number" id="product-quantity" name="product-quantity" class="add-product-modal__input"
+                        placeholder="مثال: 50" required min="1">
                 </div>
                 <!-- حقل السعر -->
                 <div class="add-product-modal__form-group">
-                    <label for="product-price" class="add-product-modal__label"><i class="fas fa-dollar-sign"></i>سعر القطعة</label>
-                    <input type="text" inputmode="decimal" id="product-price" name="product-price" class="add-product-modal__input" placeholder="بالجنيه" required>
+                    <label for="product-price" class="add-product-modal__label"><i class="fas fa-dollar-sign"></i>سعر
+                        القطعة</label>
+                    <input type="text" inputmode="decimal" id="product-price" name="product-price"
+                        class="add-product-modal__input" placeholder="بالجنيه" required>
                 </div>
                 <!-- جديد: حقل السعر قبل الخصم -->
                 <div class="add-product-modal__form-group">
-                    <label for="original-price" class="add-product-modal__label"><i class="fas fa-tag"></i>السعر قبل الخصم</label>
-                    <input type="text" inputmode="decimal" id="original-price" name="original-price" class="add-product-modal__input" placeholder="اختياري">
+                    <label for="original-price" class="add-product-modal__label"><i class="fas fa-tag"></i>السعر قبل
+                        الخصم</label>
+                    <input type="text" inputmode="decimal" id="original-price" name="original-price"
+                        class="add-product-modal__input" placeholder="اختياري">
                 </div>
             </div>
 
@@ -391,7 +408,9 @@
     </div>
 
     <!-- حاوية للكاميرا -->
-    <div id="camera-modal-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;"></div>
+    <div id="camera-modal-container"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+    </div>
 
     <script>
         /**
@@ -400,7 +419,7 @@
         function initializeAddProductForm() {
             console.log('%c[ProductForm] Initializing simplified form...', 'color: blue;');
             const form = document.getElementById('add-product-form');
-            
+
             // الوصول إلى مصفوفة الصور وحالة الموديول من النطاق الخارجي
             const images = window.productModule.images;
             images.length = 0; // إفراغ مصفوفة الصور عند كل تهيئة
@@ -414,7 +433,7 @@
         }
 
         // جعل الدوال والمتغيرات متاحة عالميًا ضمن نطاق النافذة
-        window.productModule = (function() {
+        window.productModule = (function () {
             // --- إعدادات ضغط افتراضية ---
             const IMAGE_MAX_WIDTH = 1600; // أقصى عرض بعد الضغط
             const IMAGE_MAX_HEIGHT = 1600; // أقصى ارتفاع بعد الضغط
@@ -488,9 +507,9 @@
             async function supportsWebP() {
                 if (!self.createImageBitmap) return false;
                 const blob = await fetch('data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=')
-                    .then(r => r.blob()).catch(()=>null);
+                    .then(r => r.blob()).catch(() => null);
                 if (!blob) return false;
-                try { await createImageBitmap(blob); return true; } catch(e) { return false; }
+                try { await createImageBitmap(blob); return true; } catch (e) { return false; }
             }
             const WEBP_SUPPORTED_PROMISE = supportsWebP();
 
@@ -511,7 +530,7 @@
 
                 // تعبئة خلفية بيضاء لتفادي قنوات alpha في بعض الحالات
                 ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0,0,newWidth,newHeight);
+                ctx.fillRect(0, 0, newWidth, newHeight);
 
                 ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
 
@@ -522,7 +541,7 @@
                 const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
 
                 // إغلاق الـ ImageBitmap لتحرير الذاكرة
-                try { imgBitmap.close(); } catch(e){}
+                try { imgBitmap.close(); } catch (e) { }
 
                 return blob;
             }
@@ -604,22 +623,22 @@
                 });
             }
 
-        
+
             // --- معالجة ملفات عند اختيارها أو إفلاتها ---
-            async function handleNewFiles(fileList){
+            async function handleNewFiles(fileList) {
                 // إخفاء رسالة الخطأ الخاصة بالصور بمجرد محاولة إضافة صور جديدة
                 console.log(`[ImageUploader] Handling ${fileList.length} new files.`);
                 clearError(uploaderEl);
 
                 const filesArr = Array.from(fileList).slice(0, MAX_FILES - images.length);
-                for(const file of filesArr){
-                    if(!file.type.startsWith('image/')) continue;
+                for (const file of filesArr) {
+                    if (!file.type.startsWith('image/')) continue;
                     const id = genId();
-                    const state = { id, file, compressedBlob: null, status:'pending' };
+                    const state = { id, file, compressedBlob: null, status: 'pending' };
                     images.push(state); // إضافة الصورة الجديدة إلى مصفوفة الحالة
                     createPreviewItem(state);
                     // ضغط الصورة (غير متزامن، تحدث التحديثات على واجهة المعاينة)
-                    try{
+                    try {
                         console.log(`[ImageUploader] Compressing image: ${file.name}`);
                         state.status = 'compressing';
                         const compressed = await compressImage(file);
@@ -630,7 +649,7 @@
                         if (state._metaEl) {
                             state._metaEl.textContent = formatBytes(compressed.size);
                         }
-                    }catch(err){
+                    } catch (err) {
                         console.error('%c[ImageUploader] Error compressing image:', 'color: red;', err);
                         state.status = 'error';
                         if (state._metaEl) {
@@ -644,11 +663,11 @@
             }
 
             // --- رفع إلى الخادم (نموذجي - قم بتعديله ليتوافق مع API الخاص بك) ---
-            async function uploadAll(progressCallback){
+            async function uploadAll(progressCallback) {
                 // تقمص سلوك رفع متسلسل: لكل صورة طلب منفصل
                 const uploaded = [];
-                for(const state of images){
-                    if(state.status !== 'ready' || !state.compressedBlob) continue;
+                for (const state of images) {
+                    if (state.status !== 'ready' || !state.compressedBlob) continue;
                     // مثال: استخدام FormData
                     const fd = new FormData();
                     // اسم الحقل: images[] لإرسال مصفوفة
@@ -657,16 +676,16 @@
                     const endpoint = '/api/upload-image';
 
                     // دمج progress بصري بسيط (محاكاة لأنه لا يمكن تتبع toBlob مباشرة بدون XHR)
-                    try{
+                    try {
                         state.status = 'uploading';
 
                         // استخدم fetch - ملاحظة: fetch لا يدعم progress للـ request body في المتصفحات حالياً
-                        const res = await fetch(endpoint, { method:'POST', body:fd });
-                        if(!res.ok) throw new Error('Upload failed ' + res.status);
+                        const res = await fetch(endpoint, { method: 'POST', body: fd });
+                        if (!res.ok) throw new Error('Upload failed ' + res.status);
 
                         state.status = 'uploaded';
                         uploaded.push(await res.json());
-                    }catch(err){
+                    } catch (err) {
                         console.error('Upload error', err);
                         state.status = 'error';
                     }
@@ -686,7 +705,7 @@
                 const currentLength = productNameInput.value.length;
                 const maxLength = productNameInput.maxLength;
                 document.getElementById('product-name-char-counter').textContent = `${currentLength} / ${maxLength}`;
-                
+
                 // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
                 if (currentLength > 0) clearError(productNameInput);
             });
@@ -696,7 +715,7 @@
                 const currentLength = descriptionTextarea.value.length;
                 const maxLength = descriptionTextarea.maxLength;
                 document.getElementById('description-char-counter').textContent = `${currentLength} / ${maxLength}`;
-                
+
                 // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
                 if (currentLength > 0) clearError(descriptionTextarea);
             });
@@ -706,7 +725,7 @@
                 const currentLength = sellerMessageTextarea.value.length;
                 const maxLength = sellerMessageTextarea.maxLength;
                 document.getElementById('seller-message-char-counter').textContent = `${currentLength} / ${maxLength}`;
-                
+
                 // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
                 if (currentLength > 0) clearError(sellerMessageTextarea);
             });
@@ -740,7 +759,7 @@
                 priceInput.value = value;
                 if (priceInput.value) clearError(priceInput);
             });
-            
+
             // جديد: التحقق من حقل السعر قبل الخصم
             originalPriceInput.addEventListener('input', () => {
                 // ✅ تحسين: تحويل الأرقام الهندية
@@ -757,8 +776,12 @@
 
             // التقاط صورة عبر الكاميرا: فتح ملف مع capture
             takePhotoBtn.addEventListener('click', () => {
+                // ✅ تفريغ fileInput0 من أي بيانات سابقة قبل البدء
+                // إزالة خاصية capture أولاً لتجنب أي تعارض
+                fileInput0.removeAttribute('capture');
                 fileInput0.value = '';
-                // ✅ جديد: منطق مشروط للكاميرا
+
+                // ✅ منطق مشروط للكاميرا
                 // 1. التحقق إذا كان الجهاز محمولاً
                 const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
@@ -767,12 +790,15 @@
                     console.log('[Camera] Mobile device detected. Using capture attribute.');
                     fileInput0.setAttribute('capture', 'environment');
                     fileInput0.click();
+                    // ✅ تفريغ مرة أخرى بعد فتح الكاميرا لضمان الحالة النظيفة
+                    setTimeout(() => {
+                        fileInput0.value = '';
+                    }, 100);
                 } else {
                     // السلوك الجديد لأجهزة سطح المكتب: استخدام getUserMedia
                     console.log('[Camera] Desktop device detected. Using getUserMedia API.');
                     openDesktopCamera();
                 }
-                fileInput0.value = '';
             });
 
             /**
@@ -832,15 +858,15 @@
                 }
             }
 
-            fileInput0.addEventListener('change', (e)=> handleNewFiles(e.target.files));
+            fileInput0.addEventListener('change', (e) => handleNewFiles(e.target.files));
 
             // سحب وإفلات
-            uploaderEl.addEventListener('dragover', (e)=>{ e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
-            uploaderEl.addEventListener('dragleave', (e)=>{ uploaderEl.style.borderColor = ''; });
-            uploaderEl.addEventListener('drop', (e)=>{ e.preventDefault(); uploaderEl.style.borderColor = ''; handleNewFiles(e.dataTransfer.files); });
+            uploaderEl.addEventListener('dragover', (e) => { e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
+            uploaderEl.addEventListener('dragleave', (e) => { uploaderEl.style.borderColor = ''; });
+            uploaderEl.addEventListener('drop', (e) => { e.preventDefault(); uploaderEl.style.borderColor = ''; handleNewFiles(e.dataTransfer.files); });
 
             // إرسال النموذج: مثال يضغط الملفات ويقوم بالرفع
-            form.addEventListener('submit', async (e)=>{
+            form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 console.log('%c[ProductForm] Submit event triggered.', 'color: blue;');
                 let isValid = true;
@@ -909,7 +935,7 @@
                 try {
                     // توليد سريال فريد للمنتج
                     const productSerial = generateProductSerial();
-                    
+
                     // 1. رفع الصور بالتسلسل
                     const uploadedImageUrls = [];
                     console.log(`[ProductForm] Uploading ${images.filter(s => s.status === 'ready').length} new images...`);
@@ -960,7 +986,7 @@
                         form.reset();
                         previewsEl.innerHTML = '';
                         images.length = 0;
-                        
+
                         // إعادة تعيين عدادات الأحرف
                         document.getElementById('product-name-char-counter').textContent = '0 / 100';
                         document.getElementById('description-char-counter').textContent = '0 / 400';
@@ -998,8 +1024,8 @@
         })(); // نهاية الوحدة
 
         // تهيئة النموذج عند تحميل الصفحة
-    
-            initializeAddProductForm();
-    
+
+        initializeAddProductForm();
+
     </script>
 </body>
