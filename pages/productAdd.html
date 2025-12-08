@@ -430,15 +430,18 @@
             window.productModule.originalImageNames = []; // إعادة تعيين
 
             // تهيئة CameraModule
+            window.cameraModuleReady = null;
             if (window.CameraModule) {
-                CameraModule.init({
+                window.cameraModuleReady = CameraModule.init({
                     dbName: 'suzeBazaarIMAGES',
                     storeName: 'productAddImages',
                     enableBarcodeScanning: false
                 }).then(() => {
                     console.log('%c[CameraModule] Initialized successfully', 'color: green;');
+                    return true;
                 }).catch(err => {
                     console.error('[CameraModule] Initialization failed:', err);
+                    return false;
                 });
             } else {
                 console.warn('[CameraModule] Not loaded. Camera functionality may not work.');
@@ -791,38 +794,70 @@
                 console.log('[Camera] Opening CameraModule...');
 
                 try {
+                    // التحقق من تهيئة CameraModule
+                    if (!window.cameraModuleReady) {
+                        throw new Error('CameraModule not initialized');
+                    }
+
+                    // انتظار اكتمال التهيئة
+                    const isReady = await window.cameraModuleReady;
+                    if (!isReady) {
+                        throw new Error('CameraModule initialization failed');
+                    }
+
                     // فتح نافذة الكاميرا من CameraModule
                     await CameraModule.open();
 
-                    // الاستماع لحدث إغلاق الكاميرا للحصول على الصور الملتقطة
-                    const checkForImages = setInterval(() => {
-                        const capturedImages = CameraModule.getCapturedImages();
+                    // ملاحظة: المستخدم سيلتقط الصور ويضغط على "حفظ الكل" في واجهة الكاميرا
+                    // عند إغلاق نافذة الكاميرا، نقوم بجلب الصور المحفوظة من IndexedDB
 
-                        // التحقق من وجود صور جديدة
-                        if (capturedImages.length > 0) {
-                            console.log(`[Camera] Found ${capturedImages.length} captured images`);
+                    // الاستماع لحدث إغلاق نافذة الكاميرا
+                    const cameraPopup = document.getElementById('camera-popup');
+                    if (cameraPopup) {
+                        // إنشاء observer لمراقبة إغلاق النافذة
+                        const observer = new MutationObserver(async (mutations) => {
+                            for (const mutation of mutations) {
+                                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                                    const isActive = cameraPopup.classList.contains('active');
 
-                            // معالجة كل صورة ملتقطة
-                            capturedImages.forEach(imgData => {
-                                // إنشاء ملف Blob من البيانات
-                                const file = new File([imgData.blob], `camera_${Date.now()}.png`, {
-                                    type: imgData.mimeType || 'image/png'
-                                });
+                                    // إذا تم إغلاق النافذة (لم تعد active)
+                                    if (!isActive) {
+                                        console.log('[Camera] Camera popup closed, fetching saved images...');
+                                        observer.disconnect();
 
-                                // إضافة الصورة إلى قائمة الصور
-                                handleNewFiles([file]);
-                            });
+                                        try {
+                                            // جلب الصور المحفوظة من IndexedDB
+                                            const savedImages = await CameraModule.getImages('productAddImages');
 
-                            // مسح الصور من CameraModule بعد المعالجة
-                            CameraModule.clearCapturedImages();
-                            clearInterval(checkForImages);
-                        }
-                    }, 500);
+                                            if (savedImages && savedImages.length > 0) {
+                                                console.log(`[Camera] Found ${savedImages.length} saved images`);
 
-                    // إيقاف التحقق بعد 30 ثانية (timeout)
-                    setTimeout(() => {
-                        clearInterval(checkForImages);
-                    }, 30000);
+                                                // معالجة كل صورة محفوظة
+                                                for (const imgData of savedImages) {
+                                                    // إنشاء ملف File من البيانات
+                                                    const file = new File([imgData.blob], `camera_${imgData.timestamp}.png`, {
+                                                        type: imgData.mimeType || 'image/png'
+                                                    });
+
+                                                    // إضافة الصورة إلى قائمة الصور
+                                                    await handleNewFiles([file]);
+                                                }
+
+                                                // مسح الصور من IndexedDB بعد المعالجة
+                                                await CameraModule.clearStore('productAddImages');
+                                                console.log('[Camera] Images processed and cleared from IndexedDB');
+                                            }
+                                        } catch (err) {
+                                            console.error('[Camera] Error fetching saved images:', err);
+                                        }
+                                    }
+                                }
+                            }
+                        });
+
+                        // بدء المراقبة
+                        observer.observe(cameraPopup, { attributes: true });
+                    }
 
                 } catch (err) {
                     console.error('[Camera] Error opening CameraModule:', err);
