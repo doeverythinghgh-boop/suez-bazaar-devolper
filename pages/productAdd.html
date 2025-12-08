@@ -493,36 +493,79 @@
         const WEBP_SUPPORTED_PROMISE = supportsWebP();
 
         // --- دالة ضغط: تأخذ File أو Blob وتعيد Blob مضغوط ---
+        // --- دالة ضغط: تأخذ File أو Blob وتعيد Blob مضغوط ---
         async function compressImage(file) {
-            // تحويل الملف إلى صورة
-            const imgBitmap = await createImageBitmap(file);
-            let { width, height } = imgBitmap;
+            let imgBitmap = null;
+            let canvas = null;
+            let ctx = null;
 
-            // حساب الأبعاد الجديدة مع الحفاظ على النسبة
-            const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
-            const newWidth = Math.round(width * ratio);
-            const newHeight = Math.round(height * ratio);
+            try {
+                // الكشف عن الأجهزة المحمولة لتقليل الدقة بشكل أكبر لتوفير الذاكرة
+                const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+                // تقليل الدقة للموبايل لتجنب استهلاك الذاكرة
+                const targetMaxWidth = isMobile ? 1280 : IMAGE_MAX_WIDTH;
+                const targetMaxHeight = isMobile ? 1280 : IMAGE_MAX_HEIGHT;
 
-            // رسم على كانفاس
-            const canvas = Object.assign(document.createElement('canvas'), { width: newWidth, height: newHeight });
-            const ctx = canvas.getContext('2d');
+                // استخدام خيارات تغيير الحجم المدمجة لتوفير الذاكرة
+                // resizeWidth/Height يسمح للمتصفح بفك التشفير للحجم المطلوب مباشرة
+                try {
+                    imgBitmap = await createImageBitmap(file, {
+                        resizeWidth: targetMaxWidth,
+                        resizeHeight: targetMaxHeight,
+                        resizeQuality: 'high'
+                    });
+                } catch (e) {
+                    console.warn('createImageBitmap with options failed, falling back to default:', e);
+                    imgBitmap = await createImageBitmap(file);
+                }
 
-            // تعبئة خلفية بيضاء لتفادي قنوات alpha في بعض الحالات
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, newWidth, newHeight);
+                // بما أننا قمنا بتغيير الحجم مسبقًا، الأبعاد الحالية هي الأبعاد المطلوبة (أو أصغر إذا حافظنا على النسبة)
+                // لكن createImageBitmap مع بعد واحد يحافظ على النسبة، ومع بعدين قد يغيرها إذا لم نكن دقيقين.
+                // الخيار الآمن هو التحقق من الأبعاد الحالية للbitmap
+                let { width, height } = imgBitmap;
 
-            ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
+                // إذا فشل الـ resize في الخيارات أو لم يكن مدعوماً، نقوم بالحساب اليدوي
+                // (أو لضمان عدم تجاوز الحد الأقصى في كل الحالات)
+                const ratio = Math.min(1, targetMaxWidth / width, targetMaxHeight / height);
+                const newWidth = Math.round(width * ratio);
+                const newHeight = Math.round(height * ratio);
 
-            const webpSupported = await WEBP_SUPPORTED_PROMISE;
-            const mime = webpSupported ? 'image/webp' : 'image/jpeg';
+                // رسم على كانفاس
+                canvas = document.createElement('canvas');
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+                ctx = canvas.getContext('2d');
 
-            // تحويل إلى blob
-            const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
+                // تعبئة خلفية بيضاء لتفادي قنوات alpha في بعض الحالات
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, newWidth, newHeight);
 
-            // إغلاق الـ ImageBitmap لتحرير الذاكرة
-            try { imgBitmap.close(); } catch (e) { }
+                ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
 
-            return blob;
+                const webpSupported = await WEBP_SUPPORTED_PROMISE;
+                const mime = webpSupported ? 'image/webp' : 'image/jpeg';
+
+                // تحويل إلى blob
+                const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
+
+                return blob;
+
+            } catch (err) {
+                console.error('Memory optimized compression failed:', err);
+                throw err;
+            } finally {
+                // تنظيف الذاكرة بشكل صريح ومكثف
+                if (imgBitmap) {
+                    try { imgBitmap.close(); } catch (e) { }
+                    imgBitmap = null;
+                }
+                if (ctx) ctx = null;
+                if (canvas) {
+                    canvas.width = 1; // تفريغ بفر الكانفاس
+                    canvas.height = 1;
+                    canvas = null;
+                }
+            }
         }
 
         // --- دالة إنشاء معاينة مصغرة وإظهارها في الواجهة ---
