@@ -640,7 +640,7 @@
                 }
                 // *** الإصلاح: إعادة تعيين قيمة حقل إدخال الملفات ***
                 // هذا يضمن أن حدث 'change' سيعمل حتى لو تم اختيار نفس الملف مرة أخرى
-                fileInput.value = '';
+                fileInput0.value = '';
             }
 
             // --- رفع إلى الخادم (نموذجي - قم بتعديله ليتوافق مع API الخاص بك) ---
@@ -677,8 +677,8 @@
             // --- أحداث واجهة المستخدم ---
             pickFilesBtn.addEventListener('click', () => {
                 // التأكد من إزالة خاصية الكاميرا لفتح معرض الملفات
-                fileInput.removeAttribute('capture');
-                fileInput.click();
+                fileInput0.removeAttribute('capture');
+                fileInput0.click();
             });
 
             // جديد: عداد الحروف وإخفاء الخطأ لاسم المنتج
@@ -764,8 +764,8 @@
                 if (isMobile) {
                     // السلوك الحالي للهواتف: استخدام capture لفتح تطبيق الكاميرا الأصلي
                     console.log('[Camera] Mobile device detected. Using capture attribute.');
-                    fileInput.setAttribute('capture', 'environment');
-                    fileInput.click();
+                    fileInput0.setAttribute('capture', 'environment');
+                    fileInput0.click();
                 } else {
                     // السلوك الجديد لأجهزة سطح المكتب: استخدام getUserMedia
                     console.log('[Camera] Desktop device detected. Using getUserMedia API.');
@@ -830,7 +830,7 @@
                 }
             }
 
-            fileInput.addEventListener('change', (e)=> handleNewFiles(e.target.files));
+            fileInput0.addEventListener('change', (e)=> handleNewFiles(e.target.files));
 
             // سحب وإفلات
             uploaderEl.addEventListener('dragover', (e)=>{ e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
