@@ -1,111 +1,131 @@
-
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>اختبار الكاميرا + IndexedDB - Suze Bazaar</title>
   <style>
     body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans',Arial;direction:rtl;padding:18px}
     .wrap{max-width:720px;margin:0 auto}
-    button{padding:10px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}
-    img.preview{display:block;max-width:100%;height:auto;margin-top:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
-    pre{white-space:pre-wrap;background:#f7f7f7;border-radius:8px;padding:12px;overflow:auto}
-    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    button{padding:8px 12px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}
+    img.thumb{width:140px;height:auto;border-radius:8px;display:block}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:12px}
+    .card{padding:8px;border-radius:8px;border:1px solid #eee;background:#fafafa}
   </style>
-
+</head>
 <body>
   <div class="wrap">
-    <h1>اختبار التقاط الصورة (Camera)</h1>
-    <p>زر أدناه يفتح الكاميرا أو نافذة اختيار ملف. بعد التقاط الصورة ستُعرض هنا وتخزن في المتغير العام <code>window.suzeBazaarCapturedImage</code>.</p>
+    <h1>اختبار التقاط الصورة وحفظها في IndexedDB</h1>
+    <p>زر "فتح الكاميرا" يفتح الكاميرا/المعرض. يتم حفظ الصورة في مخزن باسم <code>myStore</code>.</p>
 
     <div class="row">
-      <button id="openBtn">فتح الكاميرا / اختيار صورة</button>
-      <button id="showVarBtn">إظهار محتوى المتغير العام</button>
-      <button id="downloadBtn" disabled>تحميل الصورة</button>
+      <button id="captureBtn">فتح الكاميرا / اختيار صورة</button>
+      <button id="refreshBtn">عرض صور myStore</button>
+      <button id="clearBtn">مسح myStore</button>
     </div>
 
-    <div id="previewArea">
-      <p id="status">لم تُلتقط صورة بعد.</p>
-    </div>
+    <div id="status" style="margin-top:12px;color:#333">حالة: جاهز</div>
 
-    <h3>معاينة الصورة</h3>
-    <img id="previewImg" class="preview" alt="معاينة الصورة" src="" style="display:none">
-
-    <h3>محتوى المتغير العام (مُلخّص)</h3>
-    <pre id="dataSummary">-</pre>
-
-    <p style="margin-top:18px;color:#666;font-size:14px">ملاحظة: احتفظ بملف <code>cameraCapture.js</code> في نفس المجلد أو عدّل مسار الاستيراد أدناه.</p>
+    <div class="grid" id="imagesGrid"></div>
   </div>
 
-  <!-- استدعاء ملف الكاميرا (يفترض أنه في نفس المجلد) -->
   <script src="/js/cameraCapture.js"></script>
   <script>
-    // عناصر DOM
-    const openBtn = document.getElementById('openBtn');
-    const showVarBtn = document.getElementById('showVarBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const previewImg = document.getElementById('previewImg');
+    const captureBtn = document.getElementById('captureBtn');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const clearBtn = document.getElementById('clearBtn');
     const status = document.getElementById('status');
-    const dataSummary = document.getElementById('dataSummary');
+    const imagesGrid = document.getElementById('imagesGrid');
+    const STORE = 'myStore'; // اسم المخزن الديناميكي كما طلبت
 
-    function updateUIWithDataUrl(dataUrl) {
-      if (!dataUrl) {
-        status.textContent = 'المستخدم ألغى أو حدث خطأ.';
-        previewImg.style.display = 'none';
-        dataSummary.textContent = '-';
-        downloadBtn.disabled = true;
-        return;
-      }
+    function setStatus(t) { status.textContent = 'حالة: ' + t; }
 
-      status.textContent = 'تم التقاط الصورة وحفظها في window.suzeBazaarCapturedImage';
-      previewImg.src = dataUrl;
-      previewImg.style.display = '';
-
-      // ملخّص: نوع الصورة وطول السلسلة (لا نعرض كامل الـ DataURL لكونه طويل)
-      const head = dataUrl.substring(0, 80);
-      dataSummary.textContent = `${head}...\n(طول السلسلة: ${dataUrl.length} رمز)`;
-
-      downloadBtn.disabled = false;
-    }
-
-    // زر فتح الكاميرا
-    openBtn.addEventListener('click', function () {
-      // استخدم الدالة العامة المُعرّفة في cameraCapture.js
-      if (typeof openCameraAndCapture !== 'function') {
-        alert('cameraCapture.js غير محمّل أو الدالة openCameraAndCapture غير معرفة. تأكد من مسار الملف.');
-        return;
-      }
-
-      openCameraAndCapture().then(function (dataUrl) {
-        // سيتم حفظها أيضاً في window.suzeBazaarCapturedImage بحسب ملف الكاميرا
-        updateUIWithDataUrl(dataUrl);
+    captureBtn.addEventListener('click', function () {
+      setStatus('فتح الكاميرا...');
+      window.suzeBazaarCamera.openCameraAndCapture().then(function (res) {
+        if (!res) {
+          setStatus('ألغيت العملية أو حدث خطأ.');
+          return;
+        }
+        setStatus('حفظ الصورة في IndexedDB...');
+        return window.suzeBazaarCamera.saveImage(STORE, res.blob).then(function (id) {
+          setStatus('تم الحفظ (id=' + id + '). تحديث العرض...');
+          refreshImages();
+        }).catch(function (err) {
+          console.error(err);
+          setStatus('فشل الحفظ: ' + (err && err.message));
+        });
+      }).catch(function (err) {
+        console.error(err);
+        setStatus('خطأ أثناء التقاط الصورة.');
       });
     });
 
-    // زر إظهار محتوى المتغير العام
-    showVarBtn.addEventListener('click', function () {
-      const val = window.suzeBazaarCapturedImage || null;
-      if (!val) {
-        alert('المتغير window.suzeBazaarCapturedImage فارغ. التقط صورة أولاً.');
-        return;
-      }
-      updateUIWithDataUrl(val);
+    refreshBtn.addEventListener('click', refreshImages);
+    clearBtn.addEventListener('click', function () {
+      if (!confirm('هل تريد حذف كل الصور في myStore؟')) return;
+      setStatus('مسح myStore...');
+      window.suzeBazaarCamera.clearStore(STORE).then(function () {
+        setStatus('تم المسح.');
+        refreshImages();
+      }).catch(function (err) {
+        console.error(err);
+        setStatus('فشل المسح: ' + (err && err.message));
+      });
     });
 
-    // زر تحميل الصورة
-    downloadBtn.addEventListener('click', function () {
-      const dataUrl = window.suzeBazaarCapturedImage;
-      if (!dataUrl) return;
+    function refreshImages() {
+      setStatus('تحميل صور myStore...');
+      imagesGrid.innerHTML = '';
+      window.suzeBazaarCamera.getImages(STORE).then(function (list) {
+        if (!list || list.length === 0) {
+          setStatus('لا توجد صور في myStore.');
+          return;
+        }
+        setStatus('عرض ' + list.length + ' صورة.');
+        list.forEach(function (rec) {
+          var div = document.createElement('div');
+          div.className = 'card';
+          var img = document.createElement('img');
+          img.className = 'thumb';
+          img.src = rec.url;
+          img.alt = 'صورة ' + rec.id;
+          // عند النقر نحفظ نسخة ونسجل الحذف لاحقاً
+          var info = document.createElement('div');
+          info.style.fontSize = '12px';
+          info.style.marginTop = '6px';
+          info.textContent = 'id: ' + rec.id + ' — ' + Math.round(rec.size/1024) + ' KB';
+          var del = document.createElement('button');
+          del.textContent = 'حذف';
+          del.style.marginTop = '6px';
+          del.addEventListener('click', function () {
+            if (!confirm('حذف الصورة id=' + rec.id + '?')) return;
+            window.suzeBazaarCamera.deleteImage(rec.id).then(function () {
+              // نفك URL ونحدّفه من الDOM
+              URL.revokeObjectURL(rec.url);
+              div.remove();
+              setStatus('حُذفت الصورة ' + rec.id);
+            }).catch(function (err) {
+              console.error(err);
+              setStatus('فشل الحذف');
+            });
+          });
+          div.appendChild(img);
+          div.appendChild(info);
+          div.appendChild(del);
+          imagesGrid.appendChild(div);
+        });
+      }).catch(function (err) {
+        console.error(err);
+        setStatus('فشل التحميل: ' + (err && err.message));
+      });
+    }
 
-      // تحويل DataURL إلى رابط تحميل
-      const a = document.createElement('a');
-      a.href = dataUrl;
-      a.download = 'suze-image.jpg';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
+    // عرض تلقائي عند تحميل الصفحة إن وُجد شيء
+    window.addEventListener('load', function () {
+      refreshImages();
     });
-
-    // عند تحميل الصفحة لو كان المتغير معبأ مسبقاً
-    
-      if (window.suzeBazaarCapturedImage) {
-        updateUIWithDataUrl(window.suzeBazaarCapturedImage);
-      }
-
   </script>
 </body>
+</html>

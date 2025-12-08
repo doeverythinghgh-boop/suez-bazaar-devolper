@@ -1,177 +1,271 @@
 /* cameraCapture.js
-   دالة لفتح الكاميرا/اختيار صورة وتخزينها في متغير عام.
-   الاستخدام:
-     openCameraAndCapture() // يستخدم المتغير العام window.suzeBazaarCapturedImage
-     openCameraAndCapture({ globalVarName: 'myImageVar' }).then(dataUrl => ...)
+   - لا يستخدم modules/import
+   - يحول الصورة إلى Blob فقط (لا DataURL)
+   - يعرضها عبر URL.createObjectURL()
+   - يخزنها في IndexedDB داخل object store موحد 'images'
+   - الحقول: { id(auto), store, blob, type, size, createdAt }
+   - دوال متاحة عالمياً:
+       openCameraAndCapture(options) -> Promise<{ blob, type, size, url }>
+       saveImage(storeName, blob) -> Promise<id>
+       getImages(storeName) -> Promise<[ { id, store, blob, type, size, createdAt, url } ]>
+       deleteImage(id) -> Promise<void>
+       clearStore(storeName) -> Promise<void>
+       setDBName(name) -> void (اختياري)
 */
 
 (function () {
   'use strict';
 
-  /**
-   * فتح الكاميرا/نافذة اختيار صورة، وتحويلها إلى Data URL،
-   * وتخزينها في متغير عام على window باسم محدد (افتراضياً suzeBazaarCapturedImage).
-   *
-   * @param {Object|string} options أو اسم المتغير العام كـ string.
-   *   options = {
-   *     globalVarName: 'suzeBazaarCapturedImage', // اسم المتغير العام على window
-   *     maxWidth: 1600,    // اختياري: أقصى عرض لإعادة القياس (px). إذا null => لا تغيير الحجم.
-   *     quality: 0.9       // اختياري: جودة الصورة عند ضغط JPEG (0..1)
-   *   }
-   * @returns {Promise<string|null>} Promise التي تحل إلى Data URL الصورة أو null إذا ألغى المستخدم.
-   */
+  // إعدادات DB الافتراضية
+  var DB_NAME = 'suzeBazaarImagesDB';
+  var DB_VERSION = 1; // سنستخدم object store واحد اسمه 'images'
+  var IMAGES_STORE = 'images';
+  var dbPromise = null;
+
+  // تهيئة IndexedDB (singleton)
+  function openDb() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise(function (resolve, reject) {
+      var req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(IMAGES_STORE)) {
+          // keyPath auto-increment id
+          var os = db.createObjectStore(IMAGES_STORE, { keyPath: 'id', autoIncrement: true });
+          // فهرس بحسب اسم المخزن لسهولة البحث
+          os.createIndex('store_idx', 'store', { unique: false });
+          os.createIndex('createdAt_idx', 'createdAt', { unique: false });
+        }
+      };
+      req.onsuccess = function (e) {
+        resolve(e.target.result);
+      };
+      req.onerror = function (e) {
+        reject(e.target.error || new Error('Failed to open IndexedDB'));
+      };
+    });
+    return dbPromise;
+  }
+
+  // تسمية DB (اختياري إذا أردت تغيير اسم القاعدة)
+  function setDBName(name) {
+    if (typeof name === 'string' && name.trim()) {
+      DB_NAME = name;
+      // اعادة تهيئة ال promise في حال تم التغيير
+      dbPromise = null;
+    }
+  }
+
+  // فتح الكاميرا / اختيار ملف، وإرجاع Blob (لا DataURL)
+  // options: { accept: 'image/*', capture: 'environment' }
   function openCameraAndCapture(options) {
     var opts = {
-      globalVarName: 'suzeBazaarCapturedImage',
-      maxWidth: 1600,
-      quality: 0.9
+      accept: 'image/*',
+      capture: 'environment'
     };
-
-    // إذا مرر المستخدم اسم متغير كسلسلة، اعتبره globalVarName
-    if (typeof options === 'string') {
-      opts.globalVarName = options;
-    } else if (typeof options === 'object' && options !== null) {
-      if (options.globalVarName) opts.globalVarName = options.globalVarName;
-      if (typeof options.maxWidth === 'number') opts.maxWidth = options.maxWidth;
-      if (typeof options.quality === 'number') opts.quality = options.quality;
+    if (options && typeof options === 'object') {
+      if (options.accept) opts.accept = options.accept;
+      if (options.capture) opts.capture = options.capture;
     }
 
     return new Promise(function (resolve) {
-      // إنشاء عنصر input مخفي لالتقاط الصورة
       var input = document.createElement('input');
       input.type = 'file';
-      input.accept = 'image/*';
-      input.capture = 'environment'; // يطلب الكاميرا الخلفية على الأجهزة الداعمة
+      input.accept = opts.accept;
+      input.capture = opts.capture;
       input.style.display = 'none';
       input.setAttribute('aria-hidden', 'true');
 
-      // عندما يختار المستخدم ملفاً أو يلتقط صورة
-      input.addEventListener('change', function onFileChange(e) {
+      function cleanup() {
+        input.removeEventListener('change', onChange);
+        if (input.parentNode) input.parentNode.removeChild(input);
+      }
+
+      function onChange() {
         var file = input.files && input.files[0];
         cleanup();
 
         if (!file) {
-          // المستخدم ألغى
           resolve(null);
           return;
         }
 
-        // قراءة الملف كـ DataURL
-        var reader = new FileReader();
-        reader.onerror = function () {
-          console.error('Failed to read file');
-          resolve(null);
-        };
-        reader.onload = function () {
-          var dataUrl = reader.result;
+        // إذا احتجنا لتقليل الأبعاد سنقوم بذلك عبر canvas لكن نحاول المحافظة على Blob
+        // لتحميل أسرع واستهلاك ذاكرة أقل، سنفعل إعادة القياس فقط إذا حجم البلوك كبير جداً (اختياري)
+        // هنا نتحقق: إذا عرض الصورة > 1600px نقوم بإعادة القياس إلى 1600
+        // لكن لا نحولها إلى DataURL: نستخدم canvas.toBlob
+        try {
+          // نحتاج قراءة البلوك كـ Object URL لتحميل الصورة كـ Image
+          var imgUrl = URL.createObjectURL(file);
+          var img = new Image();
+          img.onload = function () {
+            var maxWidth = 1600;
+            if (img.width > maxWidth) {
+              var ratio = maxWidth / img.width;
+              var newW = Math.round(img.width * ratio);
+              var newH = Math.round(img.height * ratio);
+              var canvas = document.createElement('canvas');
+              canvas.width = newW;
+              canvas.height = newH;
+              var ctx = canvas.getContext('2d');
+              ctx.imageSmoothingEnabled = true;
+              ctx.imageSmoothingQuality = 'high';
+              ctx.drawImage(img, 0, 0, newW, newH);
+              // إلىBlob بجودة 0.85 افتراضياً
+              canvas.toBlob(function (blob) {
+                URL.revokeObjectURL(imgUrl);
+                if (!blob) {
+                  // فشل تحويل، نستخدم الملف الأصلي ك fallback
+                  resolve({ blob: file, type: file.type, size: file.size, url: URL.createObjectURL(file) });
+                } else {
+                  resolve({ blob: blob, type: blob.type || 'image/jpeg', size: blob.size, url: URL.createObjectURL(blob) });
+                }
+              }, 'image/jpeg', 0.85);
+            } else {
+              // لا حاجة للقياس: استخدم الملف الأصلي
+              URL.revokeObjectURL(imgUrl);
+              resolve({ blob: file, type: file.type, size: file.size, url: URL.createObjectURL(file) });
+            }
+          };
+          img.onerror = function () {
+            // فشل تحميل الصورة كـ Image -> استخدم الملف الأصلي
+            URL.revokeObjectURL(imgUrl);
+            resolve({ blob: file, type: file.type, size: file.size, url: URL.createObjectURL(file) });
+          };
+          img.src = imgUrl;
+        } catch (err) {
+          console.error('capture/processing error', err);
+          resolve({ blob: file, type: file.type, size: file.size, url: URL.createObjectURL(file) });
+        }
+      }
 
-          // إذا لم نرغب في تغيير الحجم، نعيد مباشرة
-          if (!opts.maxWidth) {
-            setGlobalAndResolve(dataUrl);
-            return;
-          }
-
-          // إعادة قياس الصورة عبر canvas للحجم والجودة المطلوبة
-          resizeImageDataUrl(dataUrl, opts.maxWidth, opts.quality, function (resizedDataUrl) {
-            setGlobalAndResolve(resizedDataUrl);
-          });
-        };
-        reader.readAsDataURL(file);
-      });
-
-      // إضافة العنصر إلى DOM ثم فتحه
+      input.addEventListener('change', onChange);
       document.body.appendChild(input);
 
-      // نستخدم setTimeout للتأكد من أن العنصر مضاف قبل النداء
+      // نضغط على العنصر لفتح واجهة الاختيار (أو الكاميرا)
       setTimeout(function () {
         try {
           input.click();
         } catch (err) {
-          // بعض بيئات WebView قد تمنع click()، عرض رسالة بالموجِّه للمستخدم
-          console.error('Could not open camera via programmatic click:', err);
-          // في هذه الحالة نُظهر العنصر مرئياً ليختار المستخدم يدوياً
+          console.error('Could not programmatically click input', err);
           input.style.display = '';
         }
       }, 50);
-
-      // تنظيف العنصر من DOM
-      function cleanup() {
-        try {
-          input.removeEventListener('change', onFileChange);
-        } catch (e) {}
-        if (input.parentNode) input.parentNode.removeChild(input);
-      }
-
-      // تعيين المتغير العام ثم حل الـ Promise
-      function setGlobalAndResolve(dataUrl) {
-        try {
-          window[opts.globalVarName] = dataUrl;
-        } catch (e) {
-          console.warn('Could not set global variable on window:', e);
-        }
-        resolve(dataUrl);
-      }
     });
   }
 
-  /**
-   * يعيد قياس DataURL لصورة باستخدام canvas بحيث لا يتجاوز العرض maxWidth.
-   * يستدعي callback(dataUrl).
-   */
-  function resizeImageDataUrl(dataUrl, maxWidth, quality, callback) {
-    var img = new Image();
-    img.onload = function () {
-      var width = img.width;
-      var height = img.height;
-
-      if (width <= maxWidth || !maxWidth) {
-        // لا حاجة للقياس
-        callback(dataUrl);
-        return;
-      }
-
-      var ratio = maxWidth / width;
-      var newW = Math.round(width * ratio);
-      var newH = Math.round(height * ratio);
-
-      var canvas = document.createElement('canvas');
-      canvas.width = newW;
-      canvas.height = newH;
-      var ctx = canvas.getContext('2d');
-
-      // رسم مع تحسين الحدة (حسب دعم المتصفح)
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      ctx.drawImage(img, 0, 0, newW, newH);
-
-      // الحصول على DataURL بجودة محددة (JPEG)
-      var outDataUrl;
-      try {
-        outDataUrl = canvas.toDataURL('image/jpeg', quality);
-      } catch (e) {
-        // في حالة فشل (بعض المتصفحات قد ترمي)، نستخدم PNG كاحتياط
-        try {
-          outDataUrl = canvas.toDataURL();
-        } catch (err) {
-          console.error('Could not convert canvas to DataURL', err);
-          outDataUrl = dataUrl;
-        }
-      }
-      callback(outDataUrl);
-    };
-    img.onerror = function (err) {
-      console.error('Image load error during resize', err);
-      callback(dataUrl); // fallback
-    };
-    img.src = dataUrl;
+  // حفظ البلوبي في IndexedDB مع الحقل storeName (ديناميكي)
+  function saveImage(storeName, blob) {
+    if (!storeName || !blob) return Promise.reject(new Error('storeName and blob are required'));
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(IMAGES_STORE, 'readwrite');
+        var os = tx.objectStore(IMAGES_STORE);
+        var record = {
+          store: storeName,
+          blob: blob,
+          type: blob.type || 'image/jpeg',
+          size: blob.size || 0,
+          createdAt: Date.now()
+        };
+        var req = os.add(record);
+        req.onsuccess = function (e) {
+          resolve(e.target.result); // id
+        };
+        req.onerror = function (e) {
+          reject(e.target.error || new Error('Failed to save image'));
+        };
+      });
+    });
   }
 
-  // عرض الدالة على window للاستخدام العام
-  window.openCameraAndCapture = openCameraAndCapture;
-
-  // أيضاً نُعرّف اسم المتغير العام الافتراضي حتى يكون متاحاً دوماً (قد يكون null بالبداية)
-  if (typeof window.suzeBazaarCapturedImage === 'undefined') {
-    window.suzeBazaarCapturedImage = null;
+  // جلب كل الصور لمخزن معين (ترجع مصفوفة من السجلات مع url لكل blob)
+  function getImages(storeName) {
+    if (!storeName) return Promise.reject(new Error('storeName is required'));
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(IMAGES_STORE, 'readonly');
+        var os = tx.objectStore(IMAGES_STORE);
+        var idx = os.index('store_idx');
+        var range = IDBKeyRange.only(storeName);
+        var req = idx.openCursor(range);
+        var out = [];
+        req.onsuccess = function (e) {
+          var cursor = e.target.result;
+          if (!cursor) {
+            // اكتمال التصفح
+            resolve(out);
+            return;
+          }
+          var rec = cursor.value;
+          // أنشئ URL مؤقت للعرض (المستخدم مسؤول عن revoke بعد العرض إن لزم)
+          var url = URL.createObjectURL(rec.blob);
+          out.push({
+            id: rec.id,
+            store: rec.store,
+            type: rec.type,
+            size: rec.size,
+            createdAt: rec.createdAt,
+            blob: rec.blob,
+            url: url
+          });
+          cursor.continue();
+        };
+        req.onerror = function (e) {
+          reject(e.target.error || new Error('Failed to fetch images'));
+        };
+      });
+    });
   }
+
+  // حذف صورة عبر id
+  function deleteImage(id) {
+    if (typeof id === 'undefined' || id === null) return Promise.reject(new Error('id is required'));
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(IMAGES_STORE, 'readwrite');
+        var os = tx.objectStore(IMAGES_STORE);
+        var req = os.delete(id);
+        req.onsuccess = function () { resolve(); };
+        req.onerror = function (e) { reject(e.target.error || new Error('Failed to delete image')); };
+      });
+    });
+  }
+
+  // مسح كل الصور لمخزن معين
+  function clearStore(storeName) {
+    if (!storeName) return Promise.reject(new Error('storeName is required'));
+    return openDb().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(IMAGES_STORE, 'readwrite');
+        var os = tx.objectStore(IMAGES_STORE);
+        var idx = os.index('store_idx');
+        var range = IDBKeyRange.only(storeName);
+        var req = idx.openCursor(range);
+        req.onsuccess = function (e) {
+          var cursor = e.target.result;
+          if (!cursor) {
+            resolve();
+            return;
+          }
+          cursor.delete();
+          cursor.continue();
+        };
+        req.onerror = function (e) {
+          reject(e.target.error || new Error('Failed to clear store'));
+        };
+      });
+    });
+  }
+
+  // تصدير دوال عالمية
+  window.suzeBazaarCamera = {
+    openCameraAndCapture: openCameraAndCapture,
+    saveImage: saveImage,
+    getImages: getImages,
+    deleteImage: deleteImage,
+    clearStore: clearStore,
+    setDBName: setDBName
+  };
 
 })();
