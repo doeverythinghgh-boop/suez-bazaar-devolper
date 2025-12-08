@@ -757,6 +757,7 @@
 
             // التقاط صورة عبر الكاميرا: فتح ملف مع capture
             takePhotoBtn.addEventListener('click', () => {
+                fileInput0.value = '';
                 // ✅ جديد: منطق مشروط للكاميرا
                 // 1. التحقق إذا كان الجهاز محمولاً
                 const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
