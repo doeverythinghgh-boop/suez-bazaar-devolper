@@ -1,961 +1,111 @@
 
-    <style>
-        /* Reset وتعريفات عامة */
-    
-        /* هيكل الصفحة */
-        .app-container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-    
-        /* منطقة الكاميرا */
-        .camera-section {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            background: #000;
-        }
-        
-        #camera-view {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transform: scaleX(-1); /* لقلب الصورة */
-        }
-        
-        .camera-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 20px;
-            pointer-events: none;
-        }
-        
-        /* منطقة التحكم */
-        .controls-section {
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .controls-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 40px;
-            margin-bottom: 15px;
-        }
-        
-        .control-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            width: 60px;
-            height: 60px;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            pointer-events: auto;
-        }
-        
-        .control-btn:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .capture-btn {
-            width: 80px;
-            height: 80px;
-            background: #f44336;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 0 20px rgba(244, 67, 54, 0.5);
-        }
-        
-        .capture-btn:active {
-            background: #d32f2f;
-            transform: scale(0.9);
-        }
-        
-        /* منطقة الصور الملتقطة */
-        .gallery-section {
-            background: rgba(0, 0, 0, 0.95);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding: 15px;
-            max-height: 150px;
-            overflow-y: hidden;
-        }
-        
-        .gallery-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .gallery-title {
-            font-size: 1rem;
-            color: #fff;
-        }
-        
-        .image-count {
-            background: #2196F3;
-            color: white;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.9rem;
-        }
-        
-        .images-container {
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 5px 0;
-            scrollbar-width: thin;
-            scrollbar-color: #2196F3 #000;
-        }
-        
-        .images-container::-webkit-scrollbar {
-            height: 6px;
-        }
-        
-        .images-container::-webkit-scrollbar-track {
-            background: #000;
-        }
-        
-        .images-container::-webkit-scrollbar-thumb {
-            background: #2196F3;
-            border-radius: 3px;
-        }
-        
-        .image-item {
-            flex: 0 0 auto;
-            width: 80px;
-            height: 80px;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid transparent;
-            transition: border-color 0.2s ease;
-        }
-        
-        .image-item.selected {
-            border-color: #4CAF50;
-        }
-        
-        .image-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .image-item .remove-btn {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(244, 67, 54, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.2s ease;
-            pointer-events: auto;
-        }
-        
-        .image-item:hover .remove-btn {
-            opacity: 1;
-        }
-        
-        /* منطقة الإجراءات */
-        .actions-section {
-            background: rgba(0, 0, 0, 0.95);
-            padding: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .action-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        
-        .action-btn {
-            flex: 1;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .action-btn:active {
-            transform: scale(0.98);
-        }
-        
-        .cancel-btn {
-            background: #757575;
-            color: white;
-        }
-        
-        .cancel-btn:active {
-            background: #616161;
-        }
-        
-        .save-btn {
-            background: #4CAF50;
-            color: white;
-        }
-        
-        .save-btn:active {
-            background: #388E3C;
-        }
-        
-        /* حالة فارغة */
-        .empty-state {
-            text-align: center;
-            padding: 30px 20px;
-            color: rgba(255,255,255,0.5);
-            font-style: italic;
-        }
-        
-        /* مؤشرات الكاميرا */
-        .camera-indicators {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 8px 15px;
-            border-radius: 20px;
-            margin: 0 auto;
-            width: fit-content;
-            pointer-events: auto;
-        }
-        
-        .camera-type {
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .camera-type .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #4CAF50;
-        }
-        
-        .photo-count {
-            font-size: 0.9rem;
-            color: #fff;
-        }
-        
-        /* رسائل الحالة */
-        .status-message {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1rem;
-            text-align: center;
-            z-index: 1000;
-            display: none;
-            max-width: 80%;
-        }
-        
-        /* أحجام الشاشات المختلفة */
-        @media (max-width: 480px) {
-            .control-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.3rem;
-            }
-            
-            .capture-btn {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .image-item {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .action-btn {
-                padding: 12px;
-                font-size: 0.9rem;
-            }
-        }
-        
-        @media (min-width: 768px) {
-            .controls-row {
-                gap: 60px;
-            }
-            
-            .control-btn {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .capture-btn {
-                width: 90px;
-                height: 90px;
-            }
-        }
-    </style>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans',Arial;direction:rtl;padding:18px}
+    .wrap{max-width:720px;margin:0 auto}
+    button{padding:10px 14px;border-radius:8px;border:1px solid #ccc;background:#fff;cursor:pointer}
+    img.preview{display:block;max-width:100%;height:auto;margin-top:12px;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,0.06)}
+    pre{white-space:pre-wrap;background:#f7f7f7;border-radius:8px;padding:12px;overflow:auto}
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  </style>
 
 <body>
-    <div class="app-container">
-        <!-- شريط العنوان -->
-        <div class="header">
-            <h1>كاميرا التطبيق</h1>
-            <div class="subtitle">التقط الصور واضغط حفظ لإضافتها</div>
-        </div>
-        
-        <!-- منطقة الكاميرا -->
-        <div class="camera-section">
-            <video id="camera-view" autoplay playsinline></video>
-            
-            <div class="camera-overlay">
-                <div class="camera-indicators" id="camera-indicators">
-                    <div class="camera-type">
-                        <span class="dot"></span>
-                        <span id="camera-type-text">كاميرا خلفية</span>
-                    </div>
-                    <div class="photo-count" id="photo-count">0 صور</div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- منطقة التحكم -->
-        <div class="controls-section">
-            <div class="controls-row">
-                <button class="control-btn" id="switch-camera-btn" title="تبديل الكاميرا">
-                    🔄
-                </button>
-                <button class="control-btn capture-btn" id="capture-btn" title="التقاط صورة">
-                    📸
-                </button>
-                <button class="control-btn" id="flash-btn" title="فلاش">
-                    ⚡
-                </button>
-            </div>
-        </div>
-        
-        <!-- معرض الصور الملتقطة -->
-        <div class="gallery-section">
-            <div class="gallery-header">
-                <div class="gallery-title">الصور الملتقطة</div>
-                <div class="image-count" id="image-count">0</div>
-            </div>
-            
-            <div class="images-container" id="images-container">
-                <div class="empty-state" id="empty-state">لم يتم التقاط أي صور بعد</div>
-            </div>
-        </div>
-        
-        <!-- أزرار الإجراءات -->
-        <div class="actions-section">
-            <div class="action-buttons">
-                <button class="action-btn cancel-btn" id="cancel-btn">
-                    <span>✕</span> إلغاء
-                </button>
-                <button class="action-btn save-btn" id="save-btn">
-                    <span>💾</span> حفظ الصور
-                </button>
-            </div>
-        </div>
-        
-        <!-- رسالة الحالة -->
-        <div class="status-message" id="status-message"></div>
+  <div class="wrap">
+    <h1>اختبار التقاط الصورة (Camera)</h1>
+    <p>زر أدناه يفتح الكاميرا أو نافذة اختيار ملف. بعد التقاط الصورة ستُعرض هنا وتخزن في المتغير العام <code>window.suzeBazaarCapturedImage</code>.</p>
+
+    <div class="row">
+      <button id="openBtn">فتح الكاميرا / اختيار صورة</button>
+      <button id="showVarBtn">إظهار محتوى المتغير العام</button>
+      <button id="downloadBtn" disabled>تحميل الصورة</button>
     </div>
 
-    <script>
-        // ============================================
-        // متغيرات التطبيق
-        // ============================================
-        var App = {
-            // حالة التطبيق
-            state: {
-                currentStream: null,
-                facingMode: 'environment', // 'environment' للخلفية, 'user' للأمامية
-                capturedImages: [], // [{id, url, blob, dataUrl, timestamp}]
-                isProcessing: false,
-                flashMode: 'off' // 'off', 'on', 'auto'
-            },
-            
-            // عناصر DOM
-            elements: {
-                cameraView: document.getElementById('camera-view'),
-                switchCameraBtn: document.getElementById('switch-camera-btn'),
-                captureBtn: document.getElementById('capture-btn'),
-                flashBtn: document.getElementById('flash-btn'),
-                cancelBtn: document.getElementById('cancel-btn'),
-                saveBtn: document.getElementById('save-btn'),
-                imagesContainer: document.getElementById('images-container'),
-                emptyState: document.getElementById('empty-state'),
-                cameraTypeText: document.getElementById('camera-type-text'),
-                photoCount: document.getElementById('photo-count'),
-                imageCount: document.getElementById('image-count'),
-                statusMessage: document.getElementById('status-message'),
-                cameraIndicators: document.getElementById('camera-indicators')
-            },
-            
-            // تهيئة التطبيق
-            init() {
-                console.log('جاري تهيئة تطبيق الكاميرا...');
-                
-                // ربط الأحداث
-                this.bindEvents();
-                
-                // بدء الكاميرا
-                this.startCamera();
-                
-                // اختبار اتصال WebView
-                this.testWebViewConnection();
-            },
-            
-            // ربط أحداث الأزرار
-            bindEvents() {
-                // تبديل الكاميرا
-                this.elements.switchCameraBtn.addEventListener('click', () => {
-                    this.switchCamera();
-                });
-                
-                // التقاط صورة
-                this.elements.captureBtn.addEventListener('click', () => {
-                    this.captureImage();
-                });
-                
-                // تبديل الفلاش
-                this.elements.flashBtn.addEventListener('click', () => {
-                    this.toggleFlash();
-                });
-                
-                // إلغاء
-                this.elements.cancelBtn.addEventListener('click', () => {
-                    this.cancelOperation();
-                });
-                
-                // حفظ الصور
-                this.elements.saveBtn.addEventListener('click', () => {
-                    this.saveImages();
-                });
-                
-                // حدث عند إغلاق/تحديث الصفحة
-                window.addEventListener('beforeunload', () => {
-                    this.cleanup();
-                });
-                
-                // حدث عند توقف الصفحة (لـ WebView)
-                document.addEventListener('visibilitychange', () => {
-                    if (document.hidden) {
-                        this.pauseCamera();
-                    } else {
-                        this.resumeCamera();
-                    }
-                });
-            },
-            
-            // اختبار اتصال WebView
-            testWebViewConnection() {
-                // محاولة الاتصال بـ Android WebView Interface
-                setTimeout(() => {
-                    if (window.Android && typeof window.Android.appLoaded === 'function') {
-                        console.log('تم اكتشاف Android WebView Interface');
-                        window.Android.appLoaded('كاميرا التطبيق جاهزة');
-                    } else {
-                        console.log('تعمل في وضع المتصفح العادي');
-                        this.showStatus('وضع المتصفح العادي', 2000);
-                    }
-                }, 1000);
-            },
-            
-            // بدء تشغيل الكاميرا
-            async startCamera() {
-                if (this.state.isProcessing) return;
-                
-                this.state.isProcessing = true;
-                this.showStatus('جاري تشغيل الكاميرا...', 2000);
-                
-                // إيقاف الكاميرا الحالية إن وجدت
-                if (this.state.currentStream) {
-                    this.stopCamera();
-                }
-                
-                // قيود الكاميرا
-                const constraints = {
-                    video: {
-                        facingMode: this.state.facingMode,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    },
-                    audio: false
-                };
-                
-                try {
-                    // التحقق من دعم API
-                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                        throw new Error('واجهة الكاميرا غير مدعومة في هذا المتصفح');
-                    }
-                    
-                    // طلب إذن الكاميرا
-                    const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                    
-                    // تعيين الكاميرا
-                    this.state.currentStream = stream;
-                    this.elements.cameraView.srcObject = stream;
-                    
-                    // تحديث واجهة المستخدم
-                    this.updateCameraUI();
-                    
-                    console.log('الكاميرا بدأت بنجاح');
-                    this.showStatus('الكاميرا جاهزة', 1500);
-                    
-                } catch (error) {
-                    console.error('خطأ في تشغيل الكاميرا:', error);
-                    
-                    let errorMessage = 'تعذر الوصول إلى الكاميرا';
-                    
-                    if (error.name === 'NotAllowedError') {
-                        errorMessage = 'تم رفض إذن الكاميرا. الرجاء تفعيله في إعدادات التطبيق';
-                    } else if (error.name === 'NotFoundError') {
-                        errorMessage = 'لم يتم العثور على كاميرا في هذا الجهاز';
-                    } else if (error.name === 'NotSupportedError') {
-                        errorMessage = 'المتصفح لا يدعم الكاميرا';
-                    } else if (error.name === 'NotReadableError') {
-                        errorMessage = 'الكاميرا قيد الاستخدام من قبل تطبيق آخر';
-                    }
-                    
-                    this.showStatus(errorMessage, 4000, true);
-                    
-                    // إعلام WebView بالخطأ
-                    if (window.Android && typeof window.Android.onCameraError === 'function') {
-                        window.Android.onCameraError(errorMessage);
-                    }
-                } finally {
-                    this.state.isProcessing = false;
-                }
-            },
-            
-            // إيقاف الكاميرا
-            stopCamera() {
-                if (this.state.currentStream) {
-                    this.state.currentStream.getTracks().forEach(track => {
-                        track.stop();
-                    });
-                    this.state.currentStream = null;
-                    this.elements.cameraView.srcObject = null;
-                }
-            },
-            
-            // إيقاف مؤقت للكاميرا
-            pauseCamera() {
-                if (this.state.currentStream) {
-                    this.state.currentStream.getTracks().forEach(track => {
-                        track.enabled = false;
-                    });
-                }
-            },
-            
-            // استئناف الكاميرا
-            resumeCamera() {
-                if (this.state.currentStream) {
-                    this.state.currentStream.getTracks().forEach(track => {
-                        track.enabled = true;
-                    });
-                }
-            },
-            
-            // تبديل الكاميرا
-            switchCamera() {
-                if (this.state.isProcessing) return;
-                
-                this.state.facingMode = this.state.facingMode === 'environment' ? 'user' : 'environment';
-                this.startCamera();
-            },
-            
-            // تبديل الفلاش
-            toggleFlash() {
-                const modes = ['off', 'on', 'auto'];
-                const currentIndex = modes.indexOf(this.state.flashMode);
-                this.state.flashMode = modes[(currentIndex + 1) % modes.length];
-                
-                // تحديث زر الفلاش
-                const icons = ['⚡', '🔦', '🔄'];
-                this.elements.flashBtn.textContent = icons[(currentIndex + 1) % modes.length];
-                
-                this.showStatus(`الفلاش: ${this.state.flashMode === 'on' ? 'تشغيل' : 
-                    this.state.flashMode === 'off' ? 'إيقاف' : 'تلقائي'}`, 1500);
-            },
-            
-            // التقاط صورة
-            captureImage() {
-                if (this.state.isProcessing || !this.state.currentStream) {
-                    this.showStatus('الكاميرا غير جاهزة', 1500, true);
-                    return;
-                }
-                
-                this.state.isProcessing = true;
-                
-                // إنشاء عنصر canvas مؤقت
-                const canvas = document.createElement('canvas');
-                const video = this.elements.cameraView;
-                
-                // ضبط أبعاد Canvas بناءً على أبعاد الفيديو الفعلية
-                canvas.width = video.videoWidth || 1280;
-                canvas.height = video.videoHeight || 720;
-                
-                // الرسم على Canvas
-                const context = canvas.getContext('2d');
-                
-                // قلب الصورة إذا كانت الكاميرا أمامية
-                if (this.state.facingMode === 'user') {
-                    context.translate(canvas.width, 0);
-                    context.scale(-1, 1);
-                }
-                
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                // تحويل إلى Data URL
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                
-                // إنشاء Blob
-                canvas.toBlob((blob) => {
-                    const imageData = {
-                        id: Date.now() + Math.random(),
-                        url: URL.createObjectURL(blob),
-                        dataUrl: dataUrl,
-                        blob: blob,
-                        timestamp: new Date().toLocaleTimeString('ar-EG'),
-                        cameraType: this.state.facingMode === 'environment' ? 'خلفية' : 'أمامية'
-                    };
-                    
-                    // إضافة الصورة
-                    this.state.capturedImages.push(imageData);
-                    
-                    // تحديث الواجهة
-                    this.updateGallery();
-                    
-                    // إظهار رسالة نجاح
-                    this.showStatus('تم التقاط الصورة!', 1500);
-                    
-                    // إعادة تعيين
-                    this.state.isProcessing = false;
-                    
-                    // تحرير الذاكرة
-                    canvas.width = 0;
-                    canvas.height = 0;
-                    
-                }, 'image/jpeg', 0.85);
-            },
-            
-            // تحديث المعرض
-            updateGallery() {
-                const images = this.state.capturedImages;
-                
-                // تحديث العداد
-                this.elements.photoCount.textContent = `${images.length} صور`;
-                this.elements.imageCount.textContent = images.length;
-                
-                // إخفاء/إظهار حالة عدم وجود صور
-                this.elements.emptyState.style.display = images.length > 0 ? 'none' : 'block';
-                
-                // مسح المحتوى الحالي
-                this.elements.imagesContainer.innerHTML = '';
-                
-                // إضافة الصور
-                images.forEach((image, index) => {
-                    const imageItem = this.createImageElement(image, index);
-                    this.elements.imagesContainer.appendChild(imageItem);
-                });
-                
-                // التمرير لآخر صورة
-                if (images.length > 0) {
-                    this.elements.imagesContainer.scrollLeft = this.elements.imagesContainer.scrollWidth;
-                }
-            },
-            
-            // إنشاء عنصر صورة
-            createImageElement(image, index) {
-                const div = document.createElement('div');
-                div.className = 'image-item';
-                div.dataset.id = image.id;
-                
-                div.innerHTML = `
-                    <img src="${image.url}" alt="صورة ${index + 1}">
-                    <button class="remove-btn" data-index="${index}">×</button>
-                `;
-                
-                // حدث النقر على الصورة
-                div.addEventListener('click', (e) => {
-                    if (!e.target.classList.contains('remove-btn')) {
-                        div.classList.toggle('selected');
-                    }
-                });
-                
-                // حدث حذف الصورة
-                const removeBtn = div.querySelector('.remove-btn');
-                removeBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    this.removeImage(index);
-                });
-                
-                return div;
-            },
-            
-            // حذف صورة
-            removeImage(index) {
-                if (index >= 0 && index < this.state.capturedImages.length) {
-                    const image = this.state.capturedImages[index];
-                    
-                    // تحرير الذاكرة
-                    URL.revokeObjectURL(image.url);
-                    
-                    // الحذف من المصفوفة
-                    this.state.capturedImages.splice(index, 1);
-                    
-                    // تحديث الواجهة
-                    this.updateGallery();
-                    
-                    this.showStatus('تم حذف الصورة', 1500);
-                }
-            },
-            
-            // تحديث واجهة الكاميرا
-            updateCameraUI() {
-                // نص نوع الكاميرا
-                this.elements.cameraTypeText.textContent = 
-                    this.state.facingMode === 'environment' ? 'كاميرا خلفية' : 'كاميرا أمامية';
-                
-                // لون المؤشر
-                const dot = this.elements.cameraIndicators.querySelector('.dot');
-                dot.style.background = this.state.facingMode === 'environment' ? '#4CAF50' : '#2196F3';
-            },
-            
-            // إلغاء العملية
-            cancelOperation() {
-                if (this.state.capturedImages.length > 0) {
-                    if (confirm('هل تريد إلغاء العملية وحذف جميع الصور الملتقطة؟')) {
-                        this.clearImages();
-                        this.closeApp();
-                    }
-                } else {
-                    this.closeApp();
-                }
-            },
-            
-            // حذف جميع الصور
-            clearImages() {
-                // تحرير جميع روابط الصور
-                this.state.capturedImages.forEach(image => {
-                    URL.revokeObjectURL(image.url);
-                });
-                
-                // تفريغ المصفوفة
-                this.state.capturedImages = [];
-                
-                // تحديث الواجهة
-                this.updateGallery();
-            },
-            
-            // حفظ الصور
-            saveImages() {
-                if (this.state.capturedImages.length === 0) {
-                    this.showStatus('لم يتم التقاط أي صور للحفظ', 2000, true);
-                    return;
-                }
-                
-                this.showStatus('جاري حفظ الصور...', 3000);
-                
-                // تحضير البيانات للإرسال
-                const imagesData = this.state.capturedImages.map(img => ({
-                    id: img.id,
-                    dataUrl: img.dataUrl,
-                    timestamp: img.timestamp,
-                    cameraType: img.cameraType
-                }));
-                
-                // 1. محاولة الاتصال بـ WebView أولاً
-                if (window.Android && typeof window.Android.onImagesCaptured === 'function') {
-                    console.log('إرسال الصور إلى Android WebView...');
-                    
-                    // إرسال كمستند JSON
-                    const jsonData = JSON.stringify({
-                        count: imagesData.length,
-                        images: imagesData,
-                        timestamp: new Date().toISOString()
-                    });
-                    
-                    window.Android.onImagesCaptured(jsonData);
-                    
-                    // إظهار رسالة نجاح
-                    this.showStatus(`تم إرسال ${imagesData.length} صورة`, 2000);
-                    
-                    // تنظيف وانتظار قبل الإغلاق
-                    setTimeout(() => {
-                        this.clearImages();
-                        this.closeApp();
-                    }, 2000);
-                    
-                } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.ios) {
-                    // 2. iOS WebView
-                    console.log('إرسال الصور إلى iOS WebView...');
-                    window.webkit.messageHandlers.ios.postMessage({
-                        action: 'imagesCaptured',
-                        data: imagesData
-                    });
-                    
-                    this.showStatus(`تم إرسال ${imagesData.length} صورة إلى iOS`, 2000);
-                    
-                    setTimeout(() => {
-                        this.clearImages();
-                        this.closeApp();
-                    }, 2000);
-                    
-                } else {
-                    // 3. وضع المتصفح العادي - حفظ في localStorage
-                    console.log('حفظ الصور في localStorage...');
-                    
-                    try {
-                        localStorage.setItem('app_captured_images', JSON.stringify(imagesData));
-                        this.showStatus(`تم حفظ ${imagesData.length} صورة في localStorage`, 2000);
-                        
-                        // يمكن للمستخدم نسخ البيانات
-                        alert(`تم حفظ ${imagesData.length} صورة.\nيمكنك الوصول للبيانات من وحدة التحكم.`);
-                        
-                        this.clearImages();
-                        
-                    } catch (e) {
-                        console.error('خطأ في حفظ الصور:', e);
-                        this.showStatus('خطأ في حفظ الصور', 2000, true);
-                    }
-                }
-            },
-            
-            // إغلاق التطبيق
-            closeApp() {
-                // تنظيف الموارد
-                this.cleanup();
-                
-                // إغلاق النافذة (إذا كانت في WebView)
-                if (window.Android && typeof window.Android.closeApp === 'function') {
-                    window.Android.closeApp();
-                } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.ios) {
-                    window.webkit.messageHandlers.ios.postMessage({action: 'closeApp'});
-                } else {
-                    // في المتصفح العادي
-                    this.showStatus('يمكنك إغلاق النافذة الآن', 2000);
-                }
-            },
-            
-            // تنظيف الموارد
-            cleanup() {
-                // إيقاف الكاميرا
-                this.stopCamera();
-                
-                // تحرير روابط الصور
-                this.clearImages();
-            },
-            
-            // إظهار رسالة حالة
-            showStatus(message, duration = 2000, isError = false) {
-                const statusEl = this.elements.statusMessage;
-                
-                // تعيين النص واللون
-                statusEl.textContent = message;
-                statusEl.style.background = isError ? 
-                    'rgba(244, 67, 54, 0.9)' : 'rgba(33, 150, 243, 0.9)';
-                
-                // إظهار الرسالة
-                statusEl.style.display = 'block';
-                
-                // إخفاء الرسالة بعد المدة المحددة
-                setTimeout(() => {
-                    statusEl.style.display = 'none';
-                }, duration);
-                
-                // تسجيل في الكونسول
-                console.log(`[Status] ${message}`);
-            }
-        };
-        
-        // ============================================
-        // تهيئة التطبيق عند تحميل الصفحة
-        // ============================================
-        
-            App.init();
-    
-        
-        // ============================================
-        // دوال عامة للاتصال بـ WebView
-        // ============================================
-        
-        // دالة يمكن لـ WebView استدعاؤها
-        window.receiveImages = function(imagesJson) {
-            console.log('Received images from WebView');
-            // يمكن معالجة الصور هنا إذا أرسلها WebView
-        };
-        
-        // دالة لاستقبال أوامر من WebView
-        window.appCommand = function(command, data) {
-            console.log(`WebView command: ${command}`, data);
-            
-            switch(command) {
-                case 'startCamera':
-                    App.startCamera();
-                    break;
-                case 'stopCamera':
-                    App.stopCamera();
-                    break;
-                case 'captureImage':
-                    App.captureImage();
-                    break;
-                case 'getImages':
-                    const imagesData = App.state.capturedImages.map(img => ({
-                        id: img.id,
-                        dataUrl: img.dataUrl
-                    }));
-                    return JSON.stringify(imagesData);
-                case 'clearImages':
-                    App.clearImages();
-                    break;
-                default:
-                    console.warn(`Unknown command: ${command}`);
-            }
-        };
-        
-        // جعل App متاحة عالمياً
-        window.CameraApp = App;
-        
-        console.log('تطبيق الكاميرا جاهز للاستخدام في WebView');
-    </script>
+    <div id="previewArea">
+      <p id="status">لم تُلتقط صورة بعد.</p>
+    </div>
+
+    <h3>معاينة الصورة</h3>
+    <img id="previewImg" class="preview" alt="معاينة الصورة" src="" style="display:none">
+
+    <h3>محتوى المتغير العام (مُلخّص)</h3>
+    <pre id="dataSummary">-</pre>
+
+    <p style="margin-top:18px;color:#666;font-size:14px">ملاحظة: احتفظ بملف <code>cameraCapture.js</code> في نفس المجلد أو عدّل مسار الاستيراد أدناه.</p>
+  </div>
+
+  <!-- استدعاء ملف الكاميرا (يفترض أنه في نفس المجلد) -->
+  <script src="/js/cameraCapture.js"></script>
+  <script>
+    // عناصر DOM
+    const openBtn = document.getElementById('openBtn');
+    const showVarBtn = document.getElementById('showVarBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const previewImg = document.getElementById('previewImg');
+    const status = document.getElementById('status');
+    const dataSummary = document.getElementById('dataSummary');
+
+    function updateUIWithDataUrl(dataUrl) {
+      if (!dataUrl) {
+        status.textContent = 'المستخدم ألغى أو حدث خطأ.';
+        previewImg.style.display = 'none';
+        dataSummary.textContent = '-';
+        downloadBtn.disabled = true;
+        return;
+      }
+
+      status.textContent = 'تم التقاط الصورة وحفظها في window.suzeBazaarCapturedImage';
+      previewImg.src = dataUrl;
+      previewImg.style.display = '';
+
+      // ملخّص: نوع الصورة وطول السلسلة (لا نعرض كامل الـ DataURL لكونه طويل)
+      const head = dataUrl.substring(0, 80);
+      dataSummary.textContent = `${head}...\n(طول السلسلة: ${dataUrl.length} رمز)`;
+
+      downloadBtn.disabled = false;
+    }
+
+    // زر فتح الكاميرا
+    openBtn.addEventListener('click', function () {
+      // استخدم الدالة العامة المُعرّفة في cameraCapture.js
+      if (typeof openCameraAndCapture !== 'function') {
+        alert('cameraCapture.js غير محمّل أو الدالة openCameraAndCapture غير معرفة. تأكد من مسار الملف.');
+        return;
+      }
+
+      openCameraAndCapture().then(function (dataUrl) {
+        // سيتم حفظها أيضاً في window.suzeBazaarCapturedImage بحسب ملف الكاميرا
+        updateUIWithDataUrl(dataUrl);
+      });
+    });
+
+    // زر إظهار محتوى المتغير العام
+    showVarBtn.addEventListener('click', function () {
+      const val = window.suzeBazaarCapturedImage || null;
+      if (!val) {
+        alert('المتغير window.suzeBazaarCapturedImage فارغ. التقط صورة أولاً.');
+        return;
+      }
+      updateUIWithDataUrl(val);
+    });
+
+    // زر تحميل الصورة
+    downloadBtn.addEventListener('click', function () {
+      const dataUrl = window.suzeBazaarCapturedImage;
+      if (!dataUrl) return;
+
+      // تحويل DataURL إلى رابط تحميل
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'suze-image.jpg';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    });
+
+    // عند تحميل الصفحة لو كان المتغير معبأ مسبقاً
+    window.addEventListener('load', function () {
+      if (window.suzeBazaarCapturedImage) {
+        updateUIWithDataUrl(window.suzeBazaarCapturedImage);
+      }
+    });
+  </script>
 </body>
