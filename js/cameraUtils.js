@@ -1,54 +1,118 @@
 /**
  * @file js/cameraUtils.js
  * @description موديول (Module) مشترك للتعامل مع الكاميرا، ضغط الصور، وحفظها مؤقتًا في LocalStorage.
- * يهدف هذا الموديول بشكل رئيسي إلى حل مشكلة إعادة تحميل الصفحة التي تحدث عند فتح الكاميرا
- * في متصفحات الأجهزة المحمولة (خاصة Android) بسبب قيود الذاكرة.
+ * التعديلات المدرجة:
+ *  - تحسين أسلوب إدارة الـ Canvas وتنظيف الذاكرة بعد الاستخدام.
+ *  - إضافة fallback لاستخدام الكاميرا الأمامية إذا لم يتم التقاط صورة من الكاميرا الخلفية.
+ *  - عدم إزالة عنصر input فورًا (إزالته بعد اكتمال المعالجة) لتفادي مشاكل في بعض الأجهزة.
+ *  - تنظيف المتغيرات الكبيرة (Base64, Blob, ImageBitmap, canvas, ctx) بعد كل عملية.
  */
 
 window.CameraUtils = (function () {
     // --- إعدادات ضغط الصور الموحدة ---
-    // هذه الإعدادات تضمن توازنًا بين جودة الصورة وحجم الملف لتناسب التخزين في LocalStorage
-    const IMAGE_MAX_WIDTH = 1600;  // أقصى عرض للصورة
-    const IMAGE_MAX_HEIGHT = 1600; // أقصى ارتفاع للصورة
-    const IMAGE_QUALITY = 0.75;    // جودة الضغط (0.0 - 1.0)
+    const IMAGE_MAX_WIDTH = 1600;
+    const IMAGE_MAX_HEIGHT = 1600;
+    const IMAGE_QUALITY = 0.75;
+
+    // علم لحظر محاولات متزامنة لفتح الكاميرا/معالجة صورة واحدة في آنٍ واحد
+    let isProcessing = false;
 
     /**
      * @function openCamera
-     * @description الوظيفة الرئيسية لفتح الكاميرا والتقاط الصورة.
-     * تقوم بالخطوات التالية:
-     * 1. إنشاء عنصر input type="file" ديناميكيًا.
-     * 2. تفعيل خاصية capture="environment" لفتح الكاميرا الخلفية مباشرة.
-     * 3. عند التقاط الصورة:
-     *    أ. يتم ضغط الصورة لتقليل حجمها.
-     *    ب. يتم تحويلها إلى نص (Base64).
-     *    ج. يتم حفظها في LocalStorage.
-     *    د. يتم استدعاء دالة إعادة التحميل (mainLoader) لضمان عودة الصفحة لحالتها الصحيحة.
-     *
-     * @param {string} pageId - معرف فريد للصفحة (مثل 'productAdd') يُستخدم كمفتاح في LocalStorage.
-     * @param {Function} [reloadCallback] - دالة اختيارية لإعادة التحميل في حال لم يتم التعرف على الصفحة.
+     * @param {string} pageId
      */
     async function openCamera(pageId) {
-        // [Fix] تنظيف أي عناصر input سابقة قد تكون بقيت معلقة (مثلاً إذا ألغى المستخدم التصوير)
-        // هذا يمنع تراكم العناصر المخفية الذي قد يسبب مشاكل في الذاكرة أو الكاميرا
-        const existingInput = document.getElementById('temp-camera-input');
-        if (existingInput) existingInput.remove();
+        if (isProcessing) {
+            console.warn('[CameraUtils] openCamera called while another operation is in progress.');
+            return;
+        }
 
-        // إنشاء عنصر input مخفي لمحاكاة النقر
-        const input = document.createElement('input');
-        input.id = 'temp-camera-input'; // تعيين ID للتحكم به
-        input.type = 'file';
-        input.accept = 'image/*';
-        // 'environment' تجبر المتصفح على استخدام الكاميرا الخلفية
-        input.setAttribute('capture', 'environment');
-        input.style.display = 'none';
-        document.body.appendChild(input);
+        isProcessing = true;
 
-        // الاستماع لحدث اختيار الملف (التقاط الصورة)
-        input.addEventListener('change', async (e) => {
-            // إزالة العنصر فوراً لتجنب التكرار، سنعالجه الآن
-            input.remove();
+        // نحاول أولًا فتح الكاميرا الخلفية (environment).
+        // إذا لم يُنتج عن ذلك صورة (أو فشل) سنحاول مرة واحدة الكاميرا الأمامية (user).
+        let triedEnv = false;
+        let triedUser = false;
 
-            if (e.target.files && e.target.files.length > 0) {
+        // دالة داخلية لفتح input مع نوع capture معين
+        const launchInput = (captureMode) => {
+            // تنظيف أي عنصر سابق
+            const prev = document.getElementById('temp-camera-input');
+            if (prev) prev.remove();
+
+            const input = document.createElement('input');
+            input.id = 'temp-camera-input';
+            input.type = 'file';
+            input.accept = 'image/*';
+            if (captureMode) {
+                try {
+                    input.setAttribute('capture', captureMode);
+                } catch (e) {
+                    // مرور بهدوء إذا لم يقبل المتصفح السمة
+                }
+            }
+            input.style.display = 'none';
+            document.body.appendChild(input);
+            return input;
+        };
+
+        // نستخدم حلقة تحقق بسيطة: نحاول environment ثم user مرة واحدة كحد أقصى
+        try {
+            let continueLoop = true;
+            while (continueLoop) {
+                let captureMode = null;
+                if (!triedEnv) {
+                    captureMode = 'environment';
+                    triedEnv = true;
+                } else if (!triedUser) {
+                    captureMode = 'user';
+                    triedUser = true;
+                } else {
+                    // تم التجريب مرتين؛ نخرج
+                    break;
+                }
+
+                const input = launchInput(captureMode);
+
+                // الاستماع لحدث التغيير
+                const filesPromise = new Promise((resolve) => {
+                    const onChange = (e) => {
+                        // لا نزيل العنصر فورًا — سنزيله بعد إتمام المعالجة لتفادي مشاكل الأجهزة.
+                        input.removeEventListener('change', onChange);
+                        resolve({ e, input });
+                    };
+                    input.addEventListener('change', onChange, { once: true });
+                });
+
+                // محاكاة النقر لفتح الكاميرا/المعرض
+                try {
+                    input.click();
+                } catch (err) {
+                    // بعض البيئات قد تمنع click() على عنصر مخفي، في هذه الحالة نعرض تحذير (لكن لا نكسر)
+                    console.warn('[CameraUtils] input.click() failed:', err);
+                }
+
+                // ننتظر اختيار الملف أو إلغاء العملية
+                const { e, input: usedInput } = await filesPromise;
+
+                // إذا لم يختَر المستخدم ملفًا (ألغى)، نعيد المحاولة مع وضع fallback (user) مرة واحدة فقط
+                if (!e.target.files || e.target.files.length === 0) {
+                    console.log(`[CameraUtils] No file chosen with capture="${captureMode}".`);
+                    // نزيل الـ input الحالي لأنه لم يعد مطلوبًا
+                    if (usedInput && usedInput.parentNode) usedInput.remove();
+
+                    // إذا جربنا environment ولم نجرّب user بعد، نفعل المحاولة التالية تلقائيًا
+                    if (captureMode === 'environment' && !triedUser) {
+                        // تابع الحلقة وحاول مرة أخرى مع user
+                        continue;
+                    } else {
+                        // لا توجد ملفات ولم يتبق لدينا محاولة fallback -> نخرج
+                        continueLoop = false;
+                        break;
+                    }
+                }
+
+                // حصلنا على ملف فعلي؛ الآن نقوم بالمعالجة
                 const file = e.target.files[0];
 
                 // عرض تنبيه للمستخدم بأن العملية جارية
@@ -69,53 +133,78 @@ window.CameraUtils = (function () {
                     // 3. حفظ النص في LocalStorage
                     saveimageToStorage(pageId, base64);
 
-                    // 4. منطق إعادة تحميل الصفحة
+                    // 4. منطق إعادة تحميل الصفحة لصفحة معينة
                     if (pageId === 'productAdd') {
                         console.log(`[CameraUtils] Reloading ${pageId} via mainLoader...`);
-
                         if (typeof mainLoader === 'function') {
-                            // تم استخدام undefined في الوسيط الرابع لأنه يمثل rules CSS (ويأخذ الافتراضي)
-                            // الوسيط الخامس هو اسم الـ callback ("showHomeIcon")
-                            await mainLoader(
-                                "./pages/productAdd.html", // صفحة
-                                "index-product-container",   // حاوية
-                                300,                           // انتظار
-                                undefined,                   // cssRules (الافتراضي)
-                                ["showHomeIcon", "checkSavedImagesCallback"],              // callbackName
-                                false                        // reload force
-                            );
-
-
-
-                            Swal.close();
+                            try {
+                                await mainLoader(
+                                    "./pages/productAdd.html",
+                                    "index-product-container",
+                                    300,
+                                    undefined,
+                                    ["showHomeIcon", "checkSavedImagesCallback"],
+                                    false
+                                );
+                            } catch (loaderErr) {
+                                console.error('[CameraUtils] mainLoader error:', loaderErr);
+                            }
                         } else {
                             console.error('[CameraUtils] mainLoader is not defined!');
-
                         }
                     }
 
-                } catch (error) {
-                    console.error('[CameraUtils] Error processing image:', error);
+                    // بعد الحفظ - نغلق الـ Swal وننظف المتغيرات الثقيلة
+                    Swal.close();
+
+                    // تنظيف متغيرات الذاكرة الكبيرة فوراً
+                    // ملاحظة: المتغيرات المحلية مثل compressedBlob و base64 سيتم تحررها عند الخروج من النطاق،
+                    // لكن نساعد الـ GC بإعادة تعيين ما يمكن هنا.
+                    try {
+                        // إذا كان لدينا كائن URL مؤقت (لم نستخدمه هنا لكن نتحقق فقط)
+                        if (typeof compressedBlob === 'object' && typeof URL !== 'undefined' && compressedBlob._objectURL) {
+                            try { URL.revokeObjectURL(compressedBlob._objectURL); } catch (e) { /* ignore */ }
+                        }
+                    } catch (e) { /* ignore */ }
+
+                    // إزالة الـ input المستخدم الآن بعد اكتمال المعالجة
+                    if (usedInput && usedInput.parentNode) usedInput.remove();
+
+                    // عملية ناجحة - نوقف الحلقة (لا نعيد فتح الكاميرا تلقائيًا)
+                    continueLoop = false;
+                    break;
+                } catch (processError) {
+                    console.error('[CameraUtils] Error processing image:', processError);
                     let msg = 'حدث خطأ أثناء معالجة الصورة.';
-                    if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
+                    if (processError && (processError.name === 'QuotaExceededError' || (processError.message && processError.message.includes('quota')))) {
                         msg = 'مساحة التخزين المؤقت ممتلئة. يرجى إتمام العملية الحالية أو تقليل عدد الصور.';
                     }
-                    Swal.fire('خطأ', msg, 'error');
-                }
-            }
-        });
+                    try { Swal.fire('خطأ', msg, 'error'); } catch (e) { /* ignore */ }
 
-        // محاكاة النقر لفتح الكاميرا
-        input.click();
+                    // تنظيف الـ input بعد الخطأ
+                    if (usedInput && usedInput.parentNode) usedInput.remove();
+
+                    // إذا فشل أثناء محاولة environment، نجرب user مرة واحدة
+                    if (captureMode === 'environment' && !triedUser) {
+                        continue;
+                    } else {
+                        continueLoop = false;
+                        break;
+                    }
+                } finally {
+                    // في أي حال، نضمن تحرير العلم والمعالجات عند الخروج من هذه الدورة
+                }
+            } // end while
+        } finally {
+            // تأكد من إعادة العلم للحالة العادية بعد انتهاء الحلقة
+            isProcessing = false;
+        }
     }
 
     /**
      * @function checkForSavedImages
-     * @description دالة تُستدعى عند تحميل الصفحة للتحقق مما إذا كانت هناك صور محفوظة مسبقًا.
-     * إذا وجدت صورًا، تقوم بتحويلها من Base64 إلى كائنات File وتعيدها للصفحة.
-     *
-     * @param {string} pageId - معرف الصفحة للبحث عن الصور الخاصة بها.
-     * @param {Function} onImagesRestored - دالة راجعة (Callback) تستقبل مصفوفة الصور المستعادة.
+     * @param {string} pageId
+     * @param {Function} onImagesRestored
      */
     async function checkForSavedImages(pageId, onImagesRestored) {
         const key = `camera_temp_${pageId}`;
@@ -128,20 +217,22 @@ window.CameraUtils = (function () {
                     console.log(`[CameraUtils] Found ${imagesBase64.length} saved images for ${pageId}. Restoring...`);
 
                     const blobs = [];
-                    // تحويل كل صورة محفوظة من نص إلى ملف
                     for (let i = 0; i < imagesBase64.length; i++) {
                         const blob = await base64ToBlob(imagesBase64[i]);
-                        // إنشاء كائن File جديد من الـ Blob
                         const file = new File([blob], `restored_image_${i}.jpg`, { type: 'image/jpeg' });
                         blobs.push(file);
+
+                        // مسح المرجع الكبير بعد الاستخدام قدر الإمكان
+                        try {
+                            // لا توجد طريقة مباشرة لمسح Blob في JS، لكن بعد انتهاء الدورة ونقص المراجع، سيجمعه الـ GC.
+                        } catch (e) { /* ignore */ }
                     }
 
-                    // تمرير الصور المستعادة إلى دالة الصفحة
                     if (typeof onImagesRestored === 'function') {
                         onImagesRestored(blobs);
                     }
 
-                    // تنظيف LocalStorage: مسح الصور بعد استعادتها لتوفير المساحة وتجنب التكرار
+                    // تنظيف LocalStorage بعد الاستعادة
                     localStorage.removeItem(key);
                 }
             } catch (e) {
@@ -150,14 +241,8 @@ window.CameraUtils = (function () {
         }
     }
 
-    // --- دوال مساعدة داخلية (Private Helper Functions) ---
+    // --- دوال مساعدة داخلية ---
 
-    /**
-     * @function saveimageToStorage
-     * @description تحفظ نص الصورة (Base64) في LocalStorage ضمن مصفوفة.
-     * @param {string} pageId 
-     * @param {string} base64 
-     */
     function saveimageToStorage(pageId, base64) {
         const key = `camera_temp_${pageId}`;
         let currentImages = [];
@@ -169,88 +254,128 @@ window.CameraUtils = (function () {
             } catch (e) { currentImages = []; }
         }
         currentImages.push(base64);
-        localStorage.setItem(key, JSON.stringify(currentImages));
+        try {
+            localStorage.setItem(key, JSON.stringify(currentImages));
+        } catch (e) {
+            // قد يحدث QuotaExceededError هنا
+            console.error('[CameraUtils] Failed to save image to LocalStorage:', e);
+            throw e;
+        } finally {
+            // محاولة لتخفيف الذاكرة: إعادة تعيين مرجع Base64 في المكان الذي استدعيت منه هذه الدالة
+            // ملاحظة: لا يمكننا تعديل متغير المالك هنا، لكن ننصح المتصل بتحرير مرجع الـ base64 بعد النداء.
+        }
     }
 
     /**
      * @function compressImage
      * @description تضغط الصورة باستخدام Canvas و createImageBitmap.
-     * @param {File} file 
+     * يقوم بتحرير جميع الموارد (ImageBitmap، canvas، ctx) فور الانتهاء.
+     * @param {File} file
      * @returns {Promise<Blob>}
      */
     async function compressImage(file) {
-        // التحقق من دعم المتصفح لـ createImageBitmap
-        let imgBitmap;
-        if (self.createImageBitmap) {
-            imgBitmap = await createImageBitmap(file);
-        } else {
-            return file; // إعادة الملف الأصلي في حال عدم الدعم (نادر في المتصفحات الحديثة)
+        let imgBitmap = null;
+        try {
+            if (self.createImageBitmap) {
+                imgBitmap = await createImageBitmap(file);
+            } else {
+                // إذا لم يدعم المتصفح createImageBitmap، نجرب استخدام Image() كحل بديل (بسيط)
+                // لكن لتفادي تعقيد إضافي هنا، نُعيد الملف كما هو.
+                return file;
+            }
+
+            const { width, height } = imgBitmap;
+            const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
+            const newWidth = Math.round(width * ratio);
+            const newHeight = Math.round(height * ratio);
+
+            // إنشاء canvas محلي داخل هذا النطاق فقط
+            let canvas = document.createElement('canvas');
+            try {
+                canvas.width = newWidth;
+                canvas.height = newHeight;
+                const ctx = canvas.getContext('2d');
+
+                // خلفية بيضاء للتعامل مع الشفافية
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, newWidth, newHeight);
+
+                // رسم الصورة
+                ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
+
+                // إغلاق ImageBitmap فورًا بعد الرسم لتحرير الذاكرة
+                if (imgBitmap && typeof imgBitmap.close === 'function') {
+                    try { imgBitmap.close(); } catch (e) { /* ignore */ }
+                }
+                imgBitmap = null;
+
+                // تحويل الـ canvas إلى Blob بصيغة JPEG
+                const blob = await new Promise((resolve) => {
+                    // toBlob قد تأخذ بعض الوقت؛ لكن بعد الإنهاء سننظف الـ canvas
+                    canvas.toBlob((b) => resolve(b), 'image/jpeg', IMAGE_QUALITY);
+                });
+
+                // تنظيف الـ canvas والمتغيرات الكبيرة لإعلام الـ GC
+                try {
+                    // إعادة تعيين الأبعاد قبل الحذف للتقليل من استهلاك الذاكرة
+                    canvas.width = 0;
+                    canvas.height = 0;
+                } catch (e) { /* ignore */ }
+
+                // إزالة العنصر من DOM إذا دخل DOM (هو في الذاكرة فقط هنا)
+                canvas = null;
+
+                return blob;
+            } finally {
+                // محاولة إضافية لتحرير أي مراجع داخل finally
+                // (لا يوجد ctx مرجعي هنا بعد الخروج)
+            }
+        } catch (err) {
+            // إذا حدثت أي مشكلة أثناء createImageBitmap أو الرسم، نحرص على إغلاق imgBitmap إن وُجد
+            if (imgBitmap && typeof imgBitmap.close === 'function') {
+                try { imgBitmap.close(); } catch (e) { /* ignore */ }
+            }
+            imgBitmap = null;
+            throw err;
         }
-
-        const { width, height } = imgBitmap;
-        // حساب نسبة التصغير للحفاظ على الأبعاد ضمن الحد المسموح
-        const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
-        const newWidth = Math.round(width * ratio);
-        const newHeight = Math.round(height * ratio);
-
-        // الرسم على Canvas
-        let canvas = document.createElement('canvas');
-        canvas.width = newWidth;
-        canvas.height = newHeight;
-        let ctx = canvas.getContext('2d');
-
-        // خلفية بيضاء (للصور الشفافة مثل PNG عند تحويلها لـ JPEG)
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, newWidth, newHeight);
-        ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
-
-        // [Optimization] إغلاق الصورة الأصلية فوراً بعد الرسم لتحرير الذاكرة
-        if (imgBitmap && typeof imgBitmap.close === 'function') {
-            imgBitmap.close();
-        }
-        imgBitmap = null;
-
-        // التحويل إلى Blob بصيغة JPEG
-        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', IMAGE_QUALITY));
-
-        // [Optimization] تنظيف الـ Canvas والمتغيرات الكبيرة
-        if (canvas) {
-            canvas.width = 0;
-            canvas.height = 0;
-            canvas = null;
-        }
-        ctx = null;
-
-        return blob;
     }
 
     /**
      * @function blobToBase64
      * @description تحويل Blob إلى نص Base64.
-     * @param {Blob} blob 
+     * @param {Blob} blob
      * @returns {Promise<string>}
      */
     function blobToBase64(blob) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.onerror = reject;
+            reader.onloadend = () => {
+                resolve(reader.result);
+                // بعد الإنهاء نزيل مرجع الـ reader للمساعدة في جمع القمامة
+                try { reader.onloadend = null; } catch (e) { /* ignore */ }
+            };
+            reader.onerror = (err) => {
+                reject(err);
+                try { reader.onerror = null; } catch (e) { /* ignore */ }
+            };
             reader.readAsDataURL(blob);
         });
     }
 
     /**
      * @function base64ToBlob
-     * @description تحويل نص Base64 إلى Blob.
-     * @param {string} base64 
+     * @description تحويل نص Base64 إلى Blob عن طريق fetch (بسيط وموثوق).
+     * @param {string} base64
      * @returns {Promise<Blob>}
      */
     async function base64ToBlob(base64) {
+        // استخدام fetch على data URL يعطي Blob مباشرة. بعد استخدام الـ blob سيتم تحريره بواسطة GC.
         const res = await fetch(base64);
-        return await res.blob();
+        const blob = await res.blob();
+        return blob;
     }
 
-    // تصدير الدوال التي يمكن استخدامها من الخارج
+    // تصدير الدوال
     return {
         openCamera,
         checkForSavedImages
