@@ -323,7 +323,7 @@
                     <div class="add-product-modal__uploader-actions">
                         <!-- input مع capture لتفعيل الكاميرا على الأجهزة المحمولة -->
                         <input class="add-product-modal__hidden-file" id="fileInput0" type="file" accept="image/*" multiple aria-hidden="true">
-555
+
                         <!-- تم تغيير btn-primary إلى btn-ghost لتوحيد التصميم -->
                         <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i class="fas fa-folder-open"></i></button>
                         <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn" title="التقاط من الكاميرا"><i class="fas fa-camera"></i></button>
@@ -422,7 +422,10 @@
             const MAX_FILES = 6; // حد معقول من الصور
 
             // عناصر DOM
-            const fileInput = document.getElementById('fileInput0');
+            const fileInput0 = document.getElementById('fileInput0');
+            document.getElementById('fileInput0').addEventListener('change', (e) => {
+    console.log('Files selected:', e.target.files);
+});
             const pickFilesBtn = document.getElementById('pick-files-btn');
             const takePhotoBtn = document.getElementById('take-photo-btn');
             const previewsEl = document.getElementById('previews');
