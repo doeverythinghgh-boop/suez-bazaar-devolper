@@ -322,7 +322,7 @@
                 <div class="add-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group" aria-label="منطقة رفع الصور">
                     <div class="add-product-modal__uploader-actions">
                         <!-- input مع capture لتفعيل الكاميرا على الأجهزة المحمولة -->
-                        <input class="add-product-modal__hidden-file" id="fileInput0" type="file" accept="image/*" multiple aria-hidden="true">
+                        <input class="add-product-modal__hidden-file" id="fileInput00" type="file" accept="image/*" multiple aria-hidden="true">
 
                         <!-- تم تغيير btn-primary إلى btn-ghost لتوحيد التصميم -->
                         <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i class="fas fa-folder-open"></i></button>
@@ -422,7 +422,7 @@
             const MAX_FILES = 6; // حد معقول من الصور
 
             // عناصر DOM
-            const fileInput0 = document.getElementById('fileInput0');
+            const fileInput0 = document.getElementById('fileInput00');
             //document.getElementById('fileInput0').addEventListener('change', (e) => {
             //console.log('Files selected:', e.target.files);
             //});
@@ -771,6 +771,7 @@
                     console.log('[Camera] Desktop device detected. Using getUserMedia API.');
                     openDesktopCamera();
                 }
+                fileInput0.value = '';
             });
 
             /**
