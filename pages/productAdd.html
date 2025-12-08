@@ -414,387 +414,388 @@
 
     <script>
         // ✅ استخدام IIFE بسيط بدون تعيينه لـ window
-    
-            console.log('%c[ProductForm] Initializing product add form...', 'color: blue;');
-            // --- إعدادات ضغط افتراضية ---
-            const IMAGE_MAX_WIDTH = 1600; // أقصى عرض بعد الضغط
-            const IMAGE_MAX_HEIGHT = 1600; // أقصى ارتفاع بعد الضغط
-            const IMAGE_QUALITY = 0.75; // جودة ضغط 0..1
-            const MAX_FILES = 6; // حد معقول من الصور
 
-            // عناصر DOM
-            const fileInput0 = document.getElementById('fileInput00');
-            const pickFilesBtn = document.getElementById('pick-files-btn');
-            const takePhotoBtn = document.getElementById('take-photo-btn');
-            const previewsEl = document.getElementById('previews');
-            const uploaderEl = document.getElementById('image-uploader');
-            const form = document.getElementById('add-product-form');
-            const descriptionTextarea = document.getElementById('product-description');
-            const productNameInput = document.getElementById('product-name');
-            const sellerMessageTextarea = document.getElementById('seller-message');
-            const notesInput = document.getElementById('product-notes');
-            const quantityInput = document.getElementById('product-quantity');
-            const priceInput = document.getElementById('product-price');
-            const originalPriceInput = document.getElementById('original-price');
+        console.log('%c[ProductForm] Initializing product add form...', 'color: blue;');
+        // --- إعدادات ضغط افتراضية ---
+        const IMAGE_MAX_WIDTH = 1600; // أقصى عرض بعد الضغط
+        const IMAGE_MAX_HEIGHT = 1600; // أقصى ارتفاع بعد الضغط
+        const IMAGE_QUALITY = 0.75; // جودة ضغط 0..1
+        const MAX_FILES = 6; // حد معقول من الصور
 
-            // --- دوال مساعدة لإظهار وإخفاء رسائل الخطأ ---
-            /**
-             * يظهر رسالة خطأ أسفل العنصر المحدد.
-             * @param {HTMLElement} element - العنصر الذي حدث فيه الخطأ.
-             * @param {string} message - رسالة الخطأ المراد إظهارها.
-             */
-            function showError(element, message) {
-                clearError(element); // مسح أي خطأ قديم أولاً
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'add-product-modal__error-message';
-                errorDiv.textContent = message;
-                // إدراج رسالة الخطأ بعد العنصر مباشرة أو بعد حاويته
-                element.parentElement.appendChild(errorDiv);
+        // عناصر DOM
+        const fileInput0 = document.getElementById('fileInput00');
+        const pickFilesBtn = document.getElementById('pick-files-btn');
+        const takePhotoBtn = document.getElementById('take-photo-btn');
+        const previewsEl = document.getElementById('previews');
+        const uploaderEl = document.getElementById('image-uploader');
+        const form = document.getElementById('add-product-form');
+        const descriptionTextarea = document.getElementById('product-description');
+        const productNameInput = document.getElementById('product-name');
+        const sellerMessageTextarea = document.getElementById('seller-message');
+        const notesInput = document.getElementById('product-notes');
+        const quantityInput = document.getElementById('product-quantity');
+        const priceInput = document.getElementById('product-price');
+        const originalPriceInput = document.getElementById('original-price');
+
+        // --- دوال مساعدة لإظهار وإخفاء رسائل الخطأ ---
+        /**
+         * يظهر رسالة خطأ أسفل العنصر المحدد.
+         * @param {HTMLElement} element - العنصر الذي حدث فيه الخطأ.
+         * @param {string} message - رسالة الخطأ المراد إظهارها.
+         */
+        function showError(element, message) {
+            clearError(element); // مسح أي خطأ قديم أولاً
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'add-product-modal__error-message';
+            errorDiv.textContent = message;
+            // إدراج رسالة الخطأ بعد العنصر مباشرة أو بعد حاويته
+            element.parentElement.appendChild(errorDiv);
+        }
+
+        /**
+         * يمسح رسالة الخطأ من أسفل العنصر المحدد.
+         * @param {HTMLElement} element - العنصر المراد مسح الخطأ من أسفله.
+         */
+        function clearError(element) {
+            const errorDiv = element.parentElement.querySelector('.add-product-modal__error-message');
+            if (errorDiv) errorDiv.remove();
+        }
+
+        /**
+         * يحول البايت إلى صيغة قابلة للقراءة (KB, MB, ...).
+         * @param {number} bytes - الحجم بالبايت.
+         * @param {number} decimals - عدد الخانات العشرية.
+         * @returns {string}
+         */
+        function formatBytes(bytes, decimals = 2) {
+            if (!+bytes) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['بايت', 'كيلوبايت', 'ميجابايت', 'جيجابايت'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+        }
+
+        const images = [];
+        let idCounter = 1;
+
+        // مساعدة: توليد معرف فريد خفيف
+        function genId() { return 'img_' + (Date.now() + idCounter++); }
+
+        // فحص دعم webp
+        async function supportsWebP() {
+            if (!self.createImageBitmap) return false;
+            const blob = await fetch('data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=')
+                .then(r => r.blob()).catch(() => null);
+            if (!blob) return false;
+            try { await createImageBitmap(blob); return true; } catch (e) { return false; }
+        }
+        const WEBP_SUPPORTED_PROMISE = supportsWebP();
+
+        // --- دالة ضغط: تأخذ File أو Blob وتعيد Blob مضغوط ---
+        async function compressImage(file) {
+            // تحويل الملف إلى صورة
+            const imgBitmap = await createImageBitmap(file);
+            let { width, height } = imgBitmap;
+
+            // حساب الأبعاد الجديدة مع الحفاظ على النسبة
+            const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
+            const newWidth = Math.round(width * ratio);
+            const newHeight = Math.round(height * ratio);
+
+            // رسم على كانفاس
+            const canvas = Object.assign(document.createElement('canvas'), { width: newWidth, height: newHeight });
+            const ctx = canvas.getContext('2d');
+
+            // تعبئة خلفية بيضاء لتفادي قنوات alpha في بعض الحالات
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, newWidth, newHeight);
+
+            ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
+
+            const webpSupported = await WEBP_SUPPORTED_PROMISE;
+            const mime = webpSupported ? 'image/webp' : 'image/jpeg';
+
+            // تحويل إلى blob
+            const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
+
+            // إغلاق الـ ImageBitmap لتحرير الذاكرة
+            try { imgBitmap.close(); } catch (e) { }
+
+            return blob;
+        }
+
+        // --- دالة إنشاء معاينة مصغرة وإظهارها في الواجهة ---
+        function createPreviewItem(state, existingImageUrl = null) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'add-product-modal__preview';
+            wrapper.setAttribute('data-id', state.id);
+
+            // عند النقر على الصورة، يتم تحديدها وإظهار زر الحذف
+            wrapper.addEventListener('click', (e) => {
+                // لا تقم بأي شيء إذا كان النقر على زر الحذف أو أيقونته الداخلية
+                if (e.target.closest('.add-product-modal__preview-remove')) return;
+
+                // إزالة التحديد من كل الصور الأخرى
+                document.querySelectorAll('.add-product-modal__preview--selected').forEach(p => p.classList.remove('add-product-modal__preview--selected'));
+                // إضافة التحديد للصورة الحالية
+                wrapper.classList.add('add-product-modal__preview--selected');
+            });
+            const removeBtn = document.createElement('button');
+            removeBtn.type = "button"; // ✅ إصلاح: منع الزر من إرسال النموذج
+            removeBtn.className = 'add-product-modal__preview-remove';
+            removeBtn.setAttribute('title', 'إزالة الصورة');
+            removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>'; // تغيير الأيقونة إلى سلة محذوفات
+            removeBtn.addEventListener('click', () => removeImage(state.id));
+
+            const img = document.createElement('img'); // تم إزالة alt لأنه لا يوجد اسم الآن
+
+            const meta = document.createElement('div');
+            meta.className = 'add-product-modal__preview-meta';
+            meta.textContent = 'جاري الحساب...'; // نص مؤقت
+
+            wrapper.appendChild(removeBtn);
+            wrapper.appendChild(img);
+            wrapper.appendChild(meta);
+
+            if (existingImageUrl) {
+                img.src = existingImageUrl;
+                meta.textContent = 'صورة حالية';
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => { img.src = e.target.result; };
+                reader.readAsDataURL(state.file);
             }
 
-            /**
-             * يمسح رسالة الخطأ من أسفل العنصر المحدد.
-             * @param {HTMLElement} element - العنصر المراد مسح الخطأ من أسفله.
-             */
-            function clearError(element) {
-                const errorDiv = element.parentElement.querySelector('.add-product-modal__error-message');
-                if (errorDiv) errorDiv.remove();
-            }
+            previewsEl.appendChild(wrapper);
+            state._el = wrapper;
+            state._metaEl = meta; // تخزين مرجع لعنصر الميتا لتحديثه لاحقًا
+        }
 
-            /**
-             * يحول البايت إلى صيغة قابلة للقراءة (KB, MB, ...).
-             * @param {number} bytes - الحجم بالبايت.
-             * @param {number} decimals - عدد الخانات العشرية.
-             * @returns {string}
-             */
-            function formatBytes(bytes, decimals = 2) {
-                if (!+bytes) return '0 Bytes';
-                const k = 1024;
-                const dm = decimals < 0 ? 0 : decimals;
-                const sizes = ['بايت', 'كيلوبايت', 'ميجابايت', 'جيجابايت'];
-                const i = Math.floor(Math.log(bytes) / Math.log(k));
-                return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
-            }
-
-            const images = [];
-            let idCounter = 1;
-
-            // مساعدة: توليد معرف فريد خفيف
-            function genId() { return 'img_' + (Date.now() + idCounter++); }
-
-            // فحص دعم webp
-            async function supportsWebP() {
-                if (!self.createImageBitmap) return false;
-                const blob = await fetch('data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=')
-                    .then(r => r.blob()).catch(() => null);
-                if (!blob) return false;
-                try { await createImageBitmap(blob); return true; } catch (e) { return false; }
-            }
-            const WEBP_SUPPORTED_PROMISE = supportsWebP();
-
-            // --- دالة ضغط: تأخذ File أو Blob وتعيد Blob مضغوط ---
-            async function compressImage(file) {
-                // تحويل الملف إلى صورة
-                const imgBitmap = await createImageBitmap(file);
-                let { width, height } = imgBitmap;
-
-                // حساب الأبعاد الجديدة مع الحفاظ على النسبة
-                const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
-                const newWidth = Math.round(width * ratio);
-                const newHeight = Math.round(height * ratio);
-
-                // رسم على كانفاس
-                const canvas = Object.assign(document.createElement('canvas'), { width: newWidth, height: newHeight });
-                const ctx = canvas.getContext('2d');
-
-                // تعبئة خلفية بيضاء لتفادي قنوات alpha في بعض الحالات
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, newWidth, newHeight);
-
-                ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
-
-                const webpSupported = await WEBP_SUPPORTED_PROMISE;
-                const mime = webpSupported ? 'image/webp' : 'image/jpeg';
-
-                // تحويل إلى blob
-                const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
-
-                // إغلاق الـ ImageBitmap لتحرير الذاكرة
-                try { imgBitmap.close(); } catch (e) { }
-
-                return blob;
-            }
-
-            // --- دالة إنشاء معاينة مصغرة وإظهارها في الواجهة ---
-            function createPreviewItem(state, existingImageUrl = null) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'add-product-modal__preview';
-                wrapper.setAttribute('data-id', state.id);
-
-                // عند النقر على الصورة، يتم تحديدها وإظهار زر الحذف
-                wrapper.addEventListener('click', (e) => {
-                    // لا تقم بأي شيء إذا كان النقر على زر الحذف أو أيقونته الداخلية
-                    if (e.target.closest('.add-product-modal__preview-remove')) return;
-
-                    // إزالة التحديد من كل الصور الأخرى
-                    document.querySelectorAll('.add-product-modal__preview--selected').forEach(p => p.classList.remove('add-product-modal__preview--selected'));
-                    // إضافة التحديد للصورة الحالية
-                    wrapper.classList.add('add-product-modal__preview--selected');
-                });
-                const removeBtn = document.createElement('button');
-                removeBtn.type = "button"; // ✅ إصلاح: منع الزر من إرسال النموذج
-                removeBtn.className = 'add-product-modal__preview-remove';
-                removeBtn.setAttribute('title', 'إزالة الصورة');
-                removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>'; // تغيير الأيقونة إلى سلة محذوفات
-                removeBtn.addEventListener('click', () => removeImage(state.id));
-
-                const img = document.createElement('img'); // تم إزالة alt لأنه لا يوجد اسم الآن
-
-                const meta = document.createElement('div');
-                meta.className = 'add-product-modal__preview-meta';
-                meta.textContent = 'جاري الحساب...'; // نص مؤقت
-
-                wrapper.appendChild(removeBtn);
-                wrapper.appendChild(img);
-                wrapper.appendChild(meta);
-
-                if (existingImageUrl) {
-                    img.src = existingImageUrl;
-                    meta.textContent = 'صورة حالية';
-                } else {
-                    const reader = new FileReader();
-                    reader.onload = (e) => { img.src = e.target.result; };
-                    reader.readAsDataURL(state.file);
-                }
-
-                previewsEl.appendChild(wrapper);
-                state._el = wrapper;
-                state._metaEl = meta; // تخزين مرجع لعنصر الميتا لتحديثه لاحقًا
-            }
-
-            // --- حذف صورة ---
-            function removeImage(id) {
-                console.log(`[ImageUploader] Attempting to remove image with id: ${id}`);
-                Swal.fire({
-                    title: 'هل أنت متأكد؟',
-                    text: "هل تريد بالتأكيد حذف هذه الصورة؟",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'نعم، احذفها!',
-                    cancelButtonText: 'إلغاء'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // 1. ابحث عن فهرس الصورة في مصفوفة الحالة
-                        const idx = images.findIndex(i => i.id === id);
-                        if (idx > -1) {
-                            const state = images[idx];
-                            // 2. قم بإزالة عنصر الصورة من واجهة المستخدم (DOM)
-                            if (state._el) state._el.remove();
-                            console.log(`[ImageUploader] Image ${id} (${state.fileName || 'new file'}) removed from view.`);
-                            // 3. قم بإزالة الصورة من مصفوفة الحالة
-                            images.splice(idx, 1);
-                            // ملاحظة: لا يتم استدعاء أي دالة حذف من السحابة هنا.
-                            // سيتم التعامل مع الحذف الفعلي عند إرسال النموذج.
-                        }
-                    }
-                });
-            }
-
-let stop =0;
-            // --- معالجة ملفات عند اختيارها أو إفلاتها ---
-            async function handleNewFiles(fileList) {
-                stop++;
-                if(stop>1){
-                    return;
-                }
-                // إخفاء رسالة الخطأ الخاصة بالصور بمجرد محاولة إضافة صور جديدة
-                console.log(`[ImageUploader] Handling ${fileList.length} new files.`);
-                clearError(uploaderEl);
-
-                const filesArr = Array.from(fileList).slice(0, MAX_FILES - images.length);
-                for (const file of filesArr) {
-                    if (!file.type.startsWith('image/')) continue;
-                    const id = genId();
-                    const state = { id, file, compressedBlob: null, status: 'pending' };
-                    images.push(state); // إضافة الصورة الجديدة إلى مصفوفة الحالة
-                    createPreviewItem(state);
-                    // ضغط الصورة (غير متزامن، تحدث التحديثات على واجهة المعاينة)
-                    try {
-                        console.log(`[ImageUploader] Compressing image: ${file.name}`);
-                        state.status = 'compressing';
-                        const compressed = await compressImage(file);
-                        state.compressedBlob = compressed;
-                        state.status = 'ready';
-                        console.log(`%c[ImageUploader] Image compressed successfully: ${file.name} -> ${formatBytes(compressed.size)}`, 'color: green;');
-                        // تحديث واجهة المستخدم بحجم الصورة بعد الضغط
-                        if (state._metaEl) {
-                            state._metaEl.textContent = formatBytes(compressed.size);
-                        }
-                    } catch (err) {
-                        console.error('%c[ImageUploader] Error compressing image:', 'color: red;', err);
-                        state.status = 'error';
-                        if (state._metaEl) {
-                            state._metaEl.textContent = 'خطأ';
-                        }
+        // --- حذف صورة ---
+        function removeImage(id) {
+            console.log(`[ImageUploader] Attempting to remove image with id: ${id}`);
+            Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "هل تريد بالتأكيد حذف هذه الصورة؟",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، احذفها!',
+                cancelButtonText: 'إلغاء'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // 1. ابحث عن فهرس الصورة في مصفوفة الحالة
+                    const idx = images.findIndex(i => i.id === id);
+                    if (idx > -1) {
+                        const state = images[idx];
+                        // 2. قم بإزالة عنصر الصورة من واجهة المستخدم (DOM)
+                        if (state._el) state._el.remove();
+                        console.log(`[ImageUploader] Image ${id} (${state.fileName || 'new file'}) removed from view.`);
+                        // 3. قم بإزالة الصورة من مصفوفة الحالة
+                        images.splice(idx, 1);
+                        // ملاحظة: لا يتم استدعاء أي دالة حذف من السحابة هنا.
+                        // سيتم التعامل مع الحذف الفعلي عند إرسال النموذج.
                     }
                 }
-                // *** الإصلاح: إعادة تعيين قيمة حقل إدخال الملفات ***
-                // هذا يضمن أن حدث 'change' سيعمل حتى لو تم اختيار نفس الملف مرة أخرى
-                fileInput0.value = '';
-                stop=0;
+            });
+        }
+
+        let stop = 0;
+        // --- معالجة ملفات عند اختيارها أو إفلاتها ---
+        async function handleNewFiles(fileList) {
+            stop++;
+            if (stop > 1) {
+                return;
             }
+            // إخفاء رسالة الخطأ الخاصة بالصور بمجرد محاولة إضافة صور جديدة
+            console.log(`[ImageUploader] Handling ${fileList.length} new files.`);
+            clearError(uploaderEl);
 
-            // --- رفع إلى الخادم (نموذجي - قم بتعديله ليتوافق مع API الخاص بك) ---
-            async function uploadAll(progressCallback) {
-                // تقمص سلوك رفع متسلسل: لكل صورة طلب منفصل
-                const uploaded = [];
-                for (const state of images) {
-                    if (state.status !== 'ready' || !state.compressedBlob) continue;
-                    // مثال: استخدام FormData
-                    const fd = new FormData();
-                    // اسم الحقل: images[] لإرسال مصفوفة
-                    fd.append('images[]', state.compressedBlob, state.file.name);
-                    // هنا استبدل URL بواجهتك
-                    const endpoint = '/api/upload-image';
-
-                    // دمج progress بصري بسيط (محاكاة لأنه لا يمكن تتبع toBlob مباشرة بدون XHR)
-                    try {
-                        state.status = 'uploading';
-
-                        // استخدم fetch - ملاحظة: fetch لا يدعم progress للـ request body في المتصفحات حالياً
-                        const res = await fetch(endpoint, { method: 'POST', body: fd });
-                        if (!res.ok) throw new Error('Upload failed ' + res.status);
-
-                        state.status = 'uploaded';
-                        uploaded.push(await res.json());
-                    } catch (err) {
-                        console.error('Upload error', err);
-                        state.status = 'error';
+            const filesArr = Array.from(fileList).slice(0, MAX_FILES - images.length);
+            for (const file of filesArr) {
+                if (!file.type.startsWith('image/')) continue;
+                const id = genId();
+                const state = { id, file, compressedBlob: null, status: 'pending' };
+                images.push(state); // إضافة الصورة الجديدة إلى مصفوفة الحالة
+                createPreviewItem(state);
+                // ضغط الصورة (غير متزامن، تحدث التحديثات على واجهة المعاينة)
+                try {
+                    console.log(`[ImageUploader] Compressing image: ${file.name}`);
+                    state.status = 'compressing';
+                    const compressed = await compressImage(file);
+                    state.compressedBlob = compressed;
+                    state.status = 'ready';
+                    console.log(`%c[ImageUploader] Image compressed successfully: ${file.name} -> ${formatBytes(compressed.size)}`, 'color: green;');
+                    // تحديث واجهة المستخدم بحجم الصورة بعد الضغط
+                    if (state._metaEl) {
+                        state._metaEl.textContent = formatBytes(compressed.size);
+                    }
+                } catch (err) {
+                    console.error('%c[ImageUploader] Error compressing image:', 'color: red;', err);
+                    state.status = 'error';
+                    if (state._metaEl) {
+                        state._metaEl.textContent = 'خطأ';
                     }
                 }
-                return uploaded;
             }
+            // *** الإصلاح: إعادة تعيين قيمة حقل إدخال الملفات ***
+            // هذا يضمن أن حدث 'change' سيعمل حتى لو تم اختيار نفس الملف مرة أخرى
+            fileInput0.value = '';
+            stop = 0;
+        }
 
-            // --- أحداث واجهة المستخدم ---
-            pickFilesBtn.addEventListener('click', () => {
-                // التأكد من إزالة خاصية الكاميرا لفتح معرض الملفات
-                fileInput0.removeAttribute('capture');
+        // --- رفع إلى الخادم (نموذجي - قم بتعديله ليتوافق مع API الخاص بك) ---
+        async function uploadAll(progressCallback) {
+            // تقمص سلوك رفع متسلسل: لكل صورة طلب منفصل
+            const uploaded = [];
+            for (const state of images) {
+                if (state.status !== 'ready' || !state.compressedBlob) continue;
+                // مثال: استخدام FormData
+                const fd = new FormData();
+                // اسم الحقل: images[] لإرسال مصفوفة
+                fd.append('images[]', state.compressedBlob, state.file.name);
+                // هنا استبدل URL بواجهتك
+                const endpoint = '/api/upload-image';
+
+                // دمج progress بصري بسيط (محاكاة لأنه لا يمكن تتبع toBlob مباشرة بدون XHR)
+                try {
+                    state.status = 'uploading';
+
+                    // استخدم fetch - ملاحظة: fetch لا يدعم progress للـ request body في المتصفحات حالياً
+                    const res = await fetch(endpoint, { method: 'POST', body: fd });
+                    if (!res.ok) throw new Error('Upload failed ' + res.status);
+
+                    state.status = 'uploaded';
+                    uploaded.push(await res.json());
+                } catch (err) {
+                    console.error('Upload error', err);
+                    state.status = 'error';
+                }
+            }
+            return uploaded;
+        }
+
+        // --- أحداث واجهة المستخدم ---
+        pickFilesBtn.addEventListener('click', () => {
+            // التأكد من إزالة خاصية الكاميرا لفتح معرض الملفات
+            fileInput0.removeAttribute('capture');
+            fileInput0.click();
+        });
+
+        // جديد: عداد الحروف وإخفاء الخطأ لاسم المنتج
+        productNameInput.addEventListener('input', () => {
+            const currentLength = productNameInput.value.length;
+            const maxLength = productNameInput.maxLength;
+            document.getElementById('product-name-char-counter').textContent = `${currentLength} / ${maxLength}`;
+
+            // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+            if (currentLength > 0) clearError(productNameInput);
+        });
+
+        // عداد الحروف وإخفاء الخطأ لوصف المنتج
+        descriptionTextarea.addEventListener('input', () => {
+            const currentLength = descriptionTextarea.value.length;
+            const maxLength = descriptionTextarea.maxLength;
+            document.getElementById('description-char-counter').textContent = `${currentLength} / ${maxLength}`;
+
+            // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+            if (currentLength > 0) clearError(descriptionTextarea);
+        });
+
+        // عداد الحروف وإخفاء الخطأ لرسالة البائع
+        sellerMessageTextarea.addEventListener('input', () => {
+            const currentLength = sellerMessageTextarea.value.length;
+            const maxLength = sellerMessageTextarea.maxLength;
+            document.getElementById('seller-message-char-counter').textContent = `${currentLength} / ${maxLength}`;
+
+            // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+            if (currentLength > 0) clearError(sellerMessageTextarea);
+        });
+
+        // جديد: عداد الحروف لحقل الملاحظات
+        notesInput.addEventListener('input', () => {
+            const currentLength = notesInput.value.length;
+            const maxLength = notesInput.maxLength;
+            document.getElementById('notes-char-counter').textContent = `${currentLength} / ${maxLength}`;
+            // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+            if (currentLength > 0) clearError(notesInput);
+        });
+
+        // إخفاء رسائل الخطأ عند التفاعل مع حقول الكمية والسعر
+        quantityInput.addEventListener('input', () => {
+            // ✅ تحسين: تحويل الأرقام الهندية والسماح بالأرقام الإنجليزية فقط
+            let value = normalizeDigits(quantityInput.value);
+            quantityInput.value = value.replace(/[^0-9]/g, '');
+            if (quantityInput.value) clearError(quantityInput);
+        });
+
+        priceInput.addEventListener('input', () => {
+            // ✅ تحسين: تحويل الأرقام الهندية والسماح بالأرقام والنقاط فقط
+            let value = normalizeDigits(priceInput.value);
+            value = value.replace(/[^0-9.]/g, '');
+            // التأكد من وجود نقطة عشرية واحدة فقط
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            priceInput.value = value;
+            if (priceInput.value) clearError(priceInput);
+        });
+
+        // جديد: التحقق من حقل السعر قبل الخصم
+        originalPriceInput.addEventListener('input', () => {
+            // ✅ تحسين: تحويل الأرقام الهندية
+            let value = normalizeDigits(originalPriceInput.value);
+            value = value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            originalPriceInput.value = value;
+            // لا يوجد خطأ هنا لأنه حقل اختياري
+            // if (originalPriceInput.value) clearError(originalPriceInput);
+        });
+
+        // التقاط صورة عبر الكاميرا: فتح ملف مع capture
+        takePhotoBtn.addEventListener('click', () => {
+            // ✅ تفريغ fileInput0 من أي بيانات سابقة قبل البدء
+            // إزالة خاصية capture أولاً لتجنب أي تعارض
+            // fileInput0.files = null; // ❌ خطأ: files خاصية للقراءة فقط
+            fileInput0.value = ''; // ✅ الصحيح: تصفير القيمة
+            fileInput0.removeAttribute('capture');
+
+            console.log('CLEAR 0000000000000000');
+            // ✅ منطق مشروط للكاميرا
+            // 1. التحقق إذا كان الجهاز محمولاً
+            const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+            console.log('isMobile', isMobile);
+            if (isMobile) {
+                // السلوك الحالي للهواتف: استخدام capture لفتح تطبيق الكاميرا الأصلي
+                console.log('[Camera] Mobile device detected. Using capture attribute.');
+                fileInput0.setAttribute('capture', 'environment');
                 fileInput0.click();
-            });
+                console.log('fileInput0 FINSH CAMERA 000000000000000');
+            } else {
+                // السلوك الجديد لأجهزة سطح المكتب: استخدام getUserMedia
+                console.log('[Camera] Desktop device detected. Using getUserMedia API.');
+                openDesktopCamera();
+            }
+        });
 
-            // جديد: عداد الحروف وإخفاء الخطأ لاسم المنتج
-            productNameInput.addEventListener('input', () => {
-                const currentLength = productNameInput.value.length;
-                const maxLength = productNameInput.maxLength;
-                document.getElementById('product-name-char-counter').textContent = `${currentLength} / ${maxLength}`;
+        /**
+         * ✅ جديد: دالة لفتح كاميرا الويب على أجهزة سطح المكتب.
+         */
+        async function openDesktopCamera() {
+            const cameraModalContainer = document.getElementById('camera-modal-container');
+            if (!cameraModalContainer) {
+                console.error('Camera modal container not found!');
+                return;
+            }
 
-                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
-                if (currentLength > 0) clearError(productNameInput);
-            });
-
-            // عداد الحروف وإخفاء الخطأ لوصف المنتج
-            descriptionTextarea.addEventListener('input', () => {
-                const currentLength = descriptionTextarea.value.length;
-                const maxLength = descriptionTextarea.maxLength;
-                document.getElementById('description-char-counter').textContent = `${currentLength} / ${maxLength}`;
-
-                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
-                if (currentLength > 0) clearError(descriptionTextarea);
-            });
-
-            // عداد الحروف وإخفاء الخطأ لرسالة البائع
-            sellerMessageTextarea.addEventListener('input', () => {
-                const currentLength = sellerMessageTextarea.value.length;
-                const maxLength = sellerMessageTextarea.maxLength;
-                document.getElementById('seller-message-char-counter').textContent = `${currentLength} / ${maxLength}`;
-
-                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
-                if (currentLength > 0) clearError(sellerMessageTextarea);
-            });
-
-            // جديد: عداد الحروف لحقل الملاحظات
-            notesInput.addEventListener('input', () => {
-                const currentLength = notesInput.value.length;
-                const maxLength = notesInput.maxLength;
-                document.getElementById('notes-char-counter').textContent = `${currentLength} / ${maxLength}`;
-                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
-                if (currentLength > 0) clearError(notesInput);
-            });
-
-            // إخفاء رسائل الخطأ عند التفاعل مع حقول الكمية والسعر
-            quantityInput.addEventListener('input', () => {
-                // ✅ تحسين: تحويل الأرقام الهندية والسماح بالأرقام الإنجليزية فقط
-                let value = normalizeDigits(quantityInput.value);
-                quantityInput.value = value.replace(/[^0-9]/g, '');
-                if (quantityInput.value) clearError(quantityInput);
-            });
-
-            priceInput.addEventListener('input', () => {
-                // ✅ تحسين: تحويل الأرقام الهندية والسماح بالأرقام والنقاط فقط
-                let value = normalizeDigits(priceInput.value);
-                value = value.replace(/[^0-9.]/g, '');
-                // التأكد من وجود نقطة عشرية واحدة فقط
-                const parts = value.split('.');
-                if (parts.length > 2) {
-                    value = parts[0] + '.' + parts.slice(1).join('');
-                }
-                priceInput.value = value;
-                if (priceInput.value) clearError(priceInput);
-            });
-
-            // جديد: التحقق من حقل السعر قبل الخصم
-            originalPriceInput.addEventListener('input', () => {
-                // ✅ تحسين: تحويل الأرقام الهندية
-                let value = normalizeDigits(originalPriceInput.value);
-                value = value.replace(/[^0-9.]/g, '');
-                const parts = value.split('.');
-                if (parts.length > 2) {
-                    value = parts[0] + '.' + parts.slice(1).join('');
-                }
-                originalPriceInput.value = value;
-                // لا يوجد خطأ هنا لأنه حقل اختياري
-                // if (originalPriceInput.value) clearError(originalPriceInput);
-            });
-
-            // التقاط صورة عبر الكاميرا: فتح ملف مع capture
-            takePhotoBtn.addEventListener('click', () => {
-                // ✅ تفريغ fileInput0 من أي بيانات سابقة قبل البدء
-                // إزالة خاصية capture أولاً لتجنب أي تعارض
-                fileInput0.files = null;
-                fileInput0.removeAttribute('capture');
-                fileInput0.value = '';
-                console.log('CLEAR 0000000000000000');
-                // ✅ منطق مشروط للكاميرا
-                // 1. التحقق إذا كان الجهاز محمولاً
-                const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-                console.log('isMobile', isMobile);
-                if (isMobile) {
-                    // السلوك الحالي للهواتف: استخدام capture لفتح تطبيق الكاميرا الأصلي
-                    console.log('[Camera] Mobile device detected. Using capture attribute.');
-                    fileInput0.setAttribute('capture', 'environment');
-                    fileInput0.click();
-                    console.log('fileInput0 FINSH CAMERA 000000000000000');
-                } else {
-                    // السلوك الجديد لأجهزة سطح المكتب: استخدام getUserMedia
-                    console.log('[Camera] Desktop device detected. Using getUserMedia API.');
-                    openDesktopCamera();
-                }
-            });
-
-            /**
-             * ✅ جديد: دالة لفتح كاميرا الويب على أجهزة سطح المكتب.
-             */
-            async function openDesktopCamera() {
-                const cameraModalContainer = document.getElementById('camera-modal-container');
-                if (!cameraModalContainer) {
-                    console.error('Camera modal container not found!');
-                    return;
-                }
-
-                // 1. إنشاء واجهة المستخدم لنافذة الكاميرا
-                cameraModalContainer.innerHTML = `
+            // 1. إنشاء واجهة المستخدم لنافذة الكاميرا
+            cameraModalContainer.innerHTML = `
                     <div class="modal-content camera-modal-content">
                         <button class="close-button" id="camera-modal-close-btn" aria-label="إغلاق"><i class="fas fa-times"></i></button>
                         <video id="camera-preview" autoplay playsinline></video>
@@ -804,198 +805,200 @@ let stop =0;
                         </div>
                     </div>
                 `;
-                cameraModalContainer.style.display = 'flex';
+            cameraModalContainer.style.display = 'flex';
 
-                const video = document.getElementById('camera-preview');
-                const captureBtn = document.getElementById('capture-photo-btn');
-                const closeBtn = document.getElementById('camera-modal-close-btn');
+            const video = document.getElementById('camera-preview');
+            const captureBtn = document.getElementById('capture-photo-btn');
+            const closeBtn = document.getElementById('camera-modal-close-btn');
 
-                // 2. طلب الوصول إلى الكاميرا
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                    video.srcObject = stream;
+            // 2. طلب الوصول إلى الكاميرا
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                video.srcObject = stream;
 
-                    const closeStream = () => {
-                        stream.getTracks().forEach(track => track.stop());
-                        cameraModalContainer.style.display = 'none';
-                        cameraModalContainer.innerHTML = '';
-                    };
-
-                    closeBtn.onclick = closeStream;
-
-                    captureBtn.onclick = () => {
-                        const canvas = document.getElementById('camera-canvas');
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        canvas.getContext('2d').drawImage(video, 0, 0);
-                        canvas.toBlob(blob => {
-                            handleNewFiles([blob]); // استخدام نفس الدالة لمعالجة الصورة الملتقطة
-                            closeStream(); // إغلاق النافذة بعد الالتقاط
-                        }, 'image/jpeg', 0.9);
-                    };
-                } catch (err) {
-                    console.error("Error accessing camera: ", err);
-                    Swal.fire('خطأ!', 'لم نتمكن من الوصول إلى الكاميرا. يرجى التأكد من منح الإذن اللازم.', 'error');
+                const closeStream = () => {
+                    stream.getTracks().forEach(track => track.stop());
                     cameraModalContainer.style.display = 'none';
-                }
+                    cameraModalContainer.innerHTML = '';
+                };
+
+                closeBtn.onclick = closeStream;
+
+                captureBtn.onclick = () => {
+                    const canvas = document.getElementById('camera-canvas');
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    canvas.toBlob(blob => {
+                        // تحويل Blob إلى File لإعطائه اسماً (يساعد في السجلات والتعامل)
+                        const file = new File([blob], `camera_${Date.now()}.jpg`, { type: "image/jpeg" });
+                        handleNewFiles([file]);
+                        closeStream(); // إغلاق النافذة بعد الالتقاط
+                    }, 'image/jpeg', 0.9);
+                };
+            } catch (err) {
+                console.error("Error accessing camera: ", err);
+                Swal.fire('خطأ!', 'لم نتمكن من الوصول إلى الكاميرا. يرجى التأكد من منح الإذن اللازم.', 'error');
+                cameraModalContainer.style.display = 'none';
+            }
+        }
+
+        fileInput0.addEventListener('change', async (e) => await handleNewFiles(e.target.files));
+
+        // سحب وإفلات
+        //    uploaderEl.addEventListener('dragover', (e) => { e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
+        //    uploaderEl.addEventListener('dragleave', (e) => { uploaderEl.style.borderColor = ''; });
+        //    uploaderEl.addEventListener('drop', (e) => { e.preventDefault(); uploaderEl.style.borderColor = ''; handleNewFiles(e.dataTransfer.files); });
+
+        // إرسال النموذج: مثال يضغط الملفات ويقوم بالرفع
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            console.log('%c[ProductForm] Submit event triggered.', 'color: blue;');
+            let isValid = true;
+
+            // --- التحقق من صحة المدخلات ---
+            console.log('[ProductForm] Starting validation...');
+
+            // 1. التحقق من وجود صورة واحدة على الأقل
+            clearError(uploaderEl);
+            if (images.length === 0) {
+                showError(uploaderEl, 'يجب إضافة صورة واحدة على الأقل للمنتج.');
+                isValid = false;
             }
 
-            fileInput0.addEventListener('change', async (e) => await handleNewFiles(e.target.files));
+            // 2. التحقق من وجود اسم للمنتج
+            clearError(productNameInput);
+            if (!productNameInput.value.trim()) {
+                showError(productNameInput, 'اسم المنتج مطلوب.');
+                isValid = false;
+            }
 
-            // سحب وإفلات
-            //    uploaderEl.addEventListener('dragover', (e) => { e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
-            //    uploaderEl.addEventListener('dragleave', (e) => { uploaderEl.style.borderColor = ''; });
-            //    uploaderEl.addEventListener('drop', (e) => { e.preventDefault(); uploaderEl.style.borderColor = ''; handleNewFiles(e.dataTransfer.files); });
+            // 3. التحقق من وجود وصف للمنتج
+            clearError(descriptionTextarea);
+            if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
+                showError(descriptionTextarea, 'وصف المنتج مطلوب (10 أحرف على الأقل).');
+                isValid = false;
+            }
 
-            // إرسال النموذج: مثال يضغط الملفات ويقوم بالرفع
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                console.log('%c[ProductForm] Submit event triggered.', 'color: blue;');
-                let isValid = true;
+            // 4. التحقق من وجود رسالة من البائع
+            clearError(sellerMessageTextarea);
+            if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
+                showError(sellerMessageTextarea, 'رسالة البائع مطلوبة (10 أحرف على الأقل).');
+                isValid = false;
+            }
 
-                // --- التحقق من صحة المدخلات ---
-                console.log('[ProductForm] Starting validation...');
+            // 5. التحقق من الكمية
+            clearError(quantityInput);
+            if (!quantityInput.value || parseFloat(quantityInput.value) < 1) {
+                showError(quantityInput, 'يجب إدخال كمية متاحة صالحة (1 على الأقل).');
+                isValid = false;
+            }
 
-                // 1. التحقق من وجود صورة واحدة على الأقل
-                clearError(uploaderEl);
-                if (images.length === 0) {
-                    showError(uploaderEl, 'يجب إضافة صورة واحدة على الأقل للمنتج.');
-                    isValid = false;
-                }
+            // 6. التحقق من السعر
+            clearError(priceInput);
+            if (priceInput.value === '' || parseFloat(priceInput.value) < 0) {
+                showError(priceInput, 'يجب إدخال سعر صالح للمنتج.');
+                isValid = false;
+            }
 
-                // 2. التحقق من وجود اسم للمنتج
-                clearError(productNameInput);
-                if (!productNameInput.value.trim()) {
-                    showError(productNameInput, 'اسم المنتج مطلوب.');
-                    isValid = false;
-                }
+            if (!isValid) {
+                console.warn('[ProductForm] Validation failed. Submission aborted.');
+                return; // إيقاف التنفيذ إذا كانت البيانات غير صالحة
+            }
 
-                // 3. التحقق من وجود وصف للمنتج
-                clearError(descriptionTextarea);
-                if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
-                    showError(descriptionTextarea, 'وصف المنتج مطلوب (10 أحرف على الأقل).');
-                    isValid = false;
-                }
-
-                // 4. التحقق من وجود رسالة من البائع
-                clearError(sellerMessageTextarea);
-                if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
-                    showError(sellerMessageTextarea, 'رسالة البائع مطلوبة (10 أحرف على الأقل).');
-                    isValid = false;
-                }
-
-                // 5. التحقق من الكمية
-                clearError(quantityInput);
-                if (!quantityInput.value || parseFloat(quantityInput.value) < 1) {
-                    showError(quantityInput, 'يجب إدخال كمية متاحة صالحة (1 على الأقل).');
-                    isValid = false;
-                }
-
-                // 6. التحقق من السعر
-                clearError(priceInput);
-                if (priceInput.value === '' || parseFloat(priceInput.value) < 0) {
-                    showError(priceInput, 'يجب إدخال سعر صالح للمنتج.');
-                    isValid = false;
-                }
-
-                if (!isValid) {
-                    console.warn('[ProductForm] Validation failed. Submission aborted.');
-                    return; // إيقاف التنفيذ إذا كانت البيانات غير صالحة
-                }
-
-                // إذا كانت جميع البيانات صالحة، استمر في عملية الرفع
-                console.log('%c[ProductForm] Validation passed. Starting submission process.', 'color: green;');
-                Swal.fire({
-                    title: 'جاري إضافة المنتج...',
-                    text: 'الرجاء الانتظار قليلاً بينما يتم رفع الصور.',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
-
-                try {
-                    // توليد سريال فريد للمنتج
-                    const productSerial = generateProductSerial();
-
-                    // 1. رفع الصور بالتسلسل
-                    const uploadedImageUrls = [];
-                    console.log(`[ProductForm] Uploading ${images.filter(s => s.status === 'ready').length} new images...`);
-                    for (let i = 0; i < images.length; i++) {
-                        const state = images[i];
-                        if (state.status !== 'ready' || !state.compressedBlob) continue;
-
-                        // تكوين اسم الصورة الجديد
-                        const fileName = `${i + 1}_${productSerial}.webp`;
-
-                        // استدعاء دالة الرفع من cloudFileManager.js
-                        const result = await uploadFile2cf(state.compressedBlob, fileName, (msg) => console.log('[CloudflareUpload]', msg));
-                        console.log(`[ProductForm] Image uploaded: ${result.file}`);
-                        uploadedImageUrls.push(result.file);
-                    }
-
-                    console.log('[ProductForm] Assembling final product data for API.');
-                    // 2. تجميع بيانات المنتج لإرسالها إلى قاعدة البيانات
-                    const productData = {
-                        productName: normalizeArabicText(document.getElementById('product-name').value.trim()),
-                        user_key: userSession.user_key, // قيمة ثابتة كما طلبت
-                        product_key: productSerial,
-                        product_description: normalizeArabicText(document.getElementById('product-description').value.trim()),
-                        product_price: parseFloat(document.getElementById('product-price').value) || 0,
-                        product_quantity: parseInt(document.getElementById('product-quantity').value, 10) || 0,
-                        original_price: parseFloat(document.getElementById('original-price').value) || null,
-                        user_message: normalizeArabicText(document.getElementById('seller-message').value.trim()),
-                        user_note: normalizeArabicText(document.getElementById('product-notes').value.trim()),
-                        ImageName: uploadedImageUrls.join(','),
-                        MainCategory: mainCategorySelectToAdd, // قيمة ثابتة
-                        SubCategory: subCategorySelectToAdd,  // قيمة ثابتة
-                        ImageIndex: uploadedImageUrls.length,
-                        serviceType: productTypeToAdd // غير مستخدم في هذه الصفحة
-                    };
-
-                    // 3. إرسال طلب إضافة المنتج
-                    console.log('[ProductForm] Sending ADD request to backend...');
-                    const dbResult = await addProduct(productData);
-
-                    if (dbResult && dbResult.error) {
-                        throw new Error(`فشل حفظ بيانات المنتج: ${dbResult.error}`);
-                    }
-
-                    console.log('%c[ProductForm] Product saved to DB successfully.', 'color: green; font-weight: bold;');
-                    // 4. عرض رسالة النجاح
-                    Swal.fire('تم بنجاح!', 'تم إضافة المنتج بنجاح.', 'success').then(() => {
-                        // إعادة تعيين النموذج
-                        form.reset();
-                        previewsEl.innerHTML = '';
-                        images.length = 0;
-
-                        // إعادة تعيين عدادات الأحرف
-                        document.getElementById('product-name-char-counter').textContent = '0 / 100';
-                        document.getElementById('description-char-counter').textContent = '0 / 400';
-                        document.getElementById('seller-message-char-counter').textContent = '0 / 100';
-                        document.getElementById('notes-char-counter').textContent = '0 / 100';
-                    });
-
-                } catch (error) {
-                    console.error('%c[ProductForm] Submission failed with critical error:', 'color: red; font-weight: bold;', error);
-                    Swal.fire('خطأ!', `فشل في حفظ المنتج: ${error.message}`, 'error');
-                }
+            // إذا كانت جميع البيانات صالحة، استمر في عملية الرفع
+            console.log('%c[ProductForm] Validation passed. Starting submission process.', 'color: green;');
+            Swal.fire({
+                title: 'جاري إضافة المنتج...',
+                text: 'الرجاء الانتظار قليلاً بينما يتم رفع الصور.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
             });
 
-            /**
-             * يقوم بإنشاء سريال فريد للمنتج مكون من 6 أحرف وأرقام عشوائية.
-             * @returns {string} سريال المنتج.
-             */
-            function generateProductSerial() {
-                const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-                let serial = "";
-                for (let i = 0; i < 6; i++) {
-                    serial += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                return serial;
-            }
+            try {
+                // توليد سريال فريد للمنتج
+                const productSerial = generateProductSerial();
 
-        
+                // 1. رفع الصور بالتسلسل
+                const uploadedImageUrls = [];
+                console.log(`[ProductForm] Uploading ${images.filter(s => s.status === 'ready').length} new images...`);
+                for (let i = 0; i < images.length; i++) {
+                    const state = images[i];
+                    if (state.status !== 'ready' || !state.compressedBlob) continue;
+
+                    // تكوين اسم الصورة الجديد
+                    const fileName = `${i + 1}_${productSerial}.webp`;
+
+                    // استدعاء دالة الرفع من cloudFileManager.js
+                    const result = await uploadFile2cf(state.compressedBlob, fileName, (msg) => console.log('[CloudflareUpload]', msg));
+                    console.log(`[ProductForm] Image uploaded: ${result.file}`);
+                    uploadedImageUrls.push(result.file);
+                }
+
+                console.log('[ProductForm] Assembling final product data for API.');
+                // 2. تجميع بيانات المنتج لإرسالها إلى قاعدة البيانات
+                const productData = {
+                    productName: normalizeArabicText(document.getElementById('product-name').value.trim()),
+                    user_key: userSession.user_key, // قيمة ثابتة كما طلبت
+                    product_key: productSerial,
+                    product_description: normalizeArabicText(document.getElementById('product-description').value.trim()),
+                    product_price: parseFloat(document.getElementById('product-price').value) || 0,
+                    product_quantity: parseInt(document.getElementById('product-quantity').value, 10) || 0,
+                    original_price: parseFloat(document.getElementById('original-price').value) || null,
+                    user_message: normalizeArabicText(document.getElementById('seller-message').value.trim()),
+                    user_note: normalizeArabicText(document.getElementById('product-notes').value.trim()),
+                    ImageName: uploadedImageUrls.join(','),
+                    MainCategory: mainCategorySelectToAdd, // قيمة ثابتة
+                    SubCategory: subCategorySelectToAdd,  // قيمة ثابتة
+                    ImageIndex: uploadedImageUrls.length,
+                    serviceType: productTypeToAdd // غير مستخدم في هذه الصفحة
+                };
+
+                // 3. إرسال طلب إضافة المنتج
+                console.log('[ProductForm] Sending ADD request to backend...');
+                const dbResult = await addProduct(productData);
+
+                if (dbResult && dbResult.error) {
+                    throw new Error(`فشل حفظ بيانات المنتج: ${dbResult.error}`);
+                }
+
+                console.log('%c[ProductForm] Product saved to DB successfully.', 'color: green; font-weight: bold;');
+                // 4. عرض رسالة النجاح
+                Swal.fire('تم بنجاح!', 'تم إضافة المنتج بنجاح.', 'success').then(() => {
+                    // إعادة تعيين النموذج
+                    form.reset();
+                    previewsEl.innerHTML = '';
+                    images.length = 0;
+
+                    // إعادة تعيين عدادات الأحرف
+                    document.getElementById('product-name-char-counter').textContent = '0 / 100';
+                    document.getElementById('description-char-counter').textContent = '0 / 400';
+                    document.getElementById('seller-message-char-counter').textContent = '0 / 100';
+                    document.getElementById('notes-char-counter').textContent = '0 / 100';
+                });
+
+            } catch (error) {
+                console.error('%c[ProductForm] Submission failed with critical error:', 'color: red; font-weight: bold;', error);
+                Swal.fire('خطأ!', `فشل في حفظ المنتج: ${error.message}`, 'error');
+            }
+        });
+
+        /**
+         * يقوم بإنشاء سريال فريد للمنتج مكون من 6 أحرف وأرقام عشوائية.
+         * @returns {string} سريال المنتج.
+         */
+        function generateProductSerial() {
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let serial = "";
+            for (let i = 0; i < 6; i++) {
+                serial += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return serial;
+        }
+
+
 
     </script>
 </body>
