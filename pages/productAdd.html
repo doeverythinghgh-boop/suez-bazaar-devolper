@@ -1,312 +1,314 @@
-<style>
-    /* أنماط CSS من الكود الأصلي */
 
 
-
-    .add-product-modal {
-        background: white;
-        border-radius: 15px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        width: 100%;
-        max-width: 800px;
-        padding: 30px;
-        position: relative;
-    }
-
-    .add-product-modal__title {
-        color: #2c3e50;
-        text-align: center;
-        margin-bottom: 30px;
-        font-size: 28px;
-        border-bottom: 2px solid #f8f9fa;
-        padding-bottom: 15px;
-    }
-
-    .add-product-modal__title i {
-        color: #3498db;
-        margin-left: 10px;
-    }
-
-    .add-product-modal__form {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .add-product-modal__form-group {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .add-product-modal__label {
-        font-weight: 600;
-        margin-bottom: 8px;
-        color: #34495e;
-        font-size: 16px;
-    }
-
-    .add-product-modal__label i {
-        color: #3498db;
-        margin-left: 8px;
-        width: 20px;
-        text-align: center;
-    }
-
-    .add-product-modal__input,
-    .add-product-modal__textarea,
-    .add-product-modal__select {
-        padding: 12px 15px;
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        font-size: 16px;
-        transition: all 0.3s ease;
-        background-color: #f8f9fa;
-    }
-
-    .add-product-modal__input:focus,
-    .add-product-modal__textarea:focus,
-    .add-product-modal__select:focus {
-        outline: none;
-        border-color: #3498db;
-        background-color: white;
-        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-    }
-
-    .add-product-modal__textarea {
-        resize: vertical;
-        min-height: 120px;
-        font-family: inherit;
-    }
-
-    .add-product-modal__char-counter {
-        text-align: left;
-        font-size: 12px;
-        color: #7f8c8d;
-        margin-top: 5px;
-    }
-
-    .add-product-modal__form-row {
-        display: flex;
-        gap: 15px;
-    }
-
-    .add-product-modal__form-row .add-product-modal__form-group {
-        flex: 1;
-    }
-
-    /* أنماط رفع الصور */
-    .add-product-modal__image-uploader {
-        border: 2px dashed #bdc3c7;
-        border-radius: 10px;
-        padding: 20px;
-        background-color: #f8f9fa;
-        transition: all 0.3s ease;
-    }
-
-    .add-product-modal__image-uploader:hover {
-        border-color: #3498db;
-        background-color: #f1f8ff;
-    }
-
-    .add-product-modal__uploader-actions {
-        display: flex;
-        gap: 10px;
-        margin-bottom: 15px;
-        flex-wrap: wrap;
-    }
-
-    .btn {
-        padding: 10px 15px;
-        border: none;
-        border-radius: 6px;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn-primary {
-        background-color: #3498db;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background-color: #2980b9;
-        transform: translateY(-2px);
-    }
-
-    .btn-ghost {
-        background-color: transparent;
-        border: 1px solid #bdc3c7;
-        color: #34495e;
-    }
-
-    .btn-ghost:hover {
-        background-color: #ecf0f1;
-        border-color: #3498db;
-        color: #3498db;
-    }
-
-    .btn-icon {
-        padding: 8px 12px;
-    }
-
-    .add-product-modal__hint {
-        font-size: 14px;
-        color: #7f8c8d;
-        margin-bottom: 15px;
-    }
-
-    .add-product-modal__previews {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 15px;
-    }
-
-    .add-product-modal__preview {
-        position: relative;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        aspect-ratio: 1;
-    }
-
-    .add-product-modal__preview:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-    }
-
-    .add-product-modal__preview--selected {
-        border: 3px solid #3498db;
-    }
-
-    .add-product-modal__preview img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
-    .add-product-modal__preview-remove {
-        position: absolute;
-        top: 5px;
-        left: 5px;
-        background: rgba(231, 76, 60, 0.9);
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .add-product-modal__preview:hover .add-product-modal__preview-remove {
-        opacity: 1;
-    }
-
-    .add-product-modal__preview-meta {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 5px;
-        font-size: 12px;
-        text-align: center;
-    }
-
-    .add-product-modal__submit-container {
-        text-align: center;
-        margin-top: 20px;
-    }
-
-    .add-product-modal__submit-container .btn {
-        padding: 12px 30px;
-        font-size: 18px;
-        border-radius: 30px;
-    }
-
-    .add-product-modal__error-message {
-        color: #e74c3c;
-        font-size: 14px;
-        margin-top: 5px;
-        text-align: right;
-    }
-
-    .add-product-modal__hidden-file {
-        display: none;
-    }
-
-    /* كاميرا سطح المكتب */
-    .camera-modal-content {
-        position: relative;
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        max-width: 500px;
-        width: 90%;
-    }
-
-    .camera-modal-content video {
-        width: 100%;
-        border-radius: 8px;
-        margin-bottom: 15px;
-    }
-
-    .camera-controls {
-        text-align: center;
-    }
-
-    .close-button {
-        position: absolute;
-        top: 15px;
-        left: 15px;
-        background: none;
-        border: none;
-        font-size: 20px;
-        color: #7f8c8d;
-        cursor: pointer;
-        z-index: 10;
-    }
-
-    .close-button:hover {
-        color: #e74c3c;
-    }
-
-    /* التجاوب مع الأجهزة المختلفة */
-    @media (max-width: 768px) {
-        .add-product-modal__form-row {
-            flex-direction: column;
-            gap: 15px;
-        }
+    <style>
+        /* أنماط CSS من الكود الأصلي */
+        
+    
 
         .add-product-modal {
-            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            position: relative;
         }
 
         .add-product-modal__title {
-            font-size: 24px;
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            border-bottom: 2px solid #f8f9fa;
+            padding-bottom: 15px;
         }
-    }
 
-    @media (max-width: 480px) {
+        .add-product-modal__title i {
+            color: #3498db;
+            margin-left: 10px;
+        }
+
+        .add-product-modal__form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .add-product-modal__form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .add-product-modal__label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #34495e;
+            font-size: 16px;
+        }
+
+        .add-product-modal__label i {
+            color: #3498db;
+            margin-left: 8px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .add-product-modal__input,
+        .add-product-modal__textarea,
+        .add-product-modal__select {
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .add-product-modal__input:focus,
+        .add-product-modal__textarea:focus,
+        .add-product-modal__select:focus {
+            outline: none;
+            border-color: #3498db;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .add-product-modal__textarea {
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+
+        .add-product-modal__char-counter {
+            text-align: left;
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .add-product-modal__form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .add-product-modal__form-row .add-product-modal__form-group {
+            flex: 1;
+        }
+
+        /* أنماط رفع الصور */
+        .add-product-modal__image-uploader {
+            border: 2px dashed #bdc3c7;
+            border-radius: 10px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .add-product-modal__image-uploader:hover {
+            border-color: #3498db;
+            background-color: #f1f8ff;
+        }
+
         .add-product-modal__uploader-actions {
-            justify-content: center;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-ghost {
+            background-color: transparent;
+            border: 1px solid #bdc3c7;
+            color: #34495e;
+        }
+
+        .btn-ghost:hover {
+            background-color: #ecf0f1;
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .btn-icon {
+            padding: 8px 12px;
+        }
+
+        .add-product-modal__hint {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 15px;
         }
 
         .add-product-modal__previews {
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
         }
-    }
-</style>
+
+        .add-product-modal__preview {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            aspect-ratio: 1;
+        }
+
+        .add-product-modal__preview:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .add-product-modal__preview--selected {
+            border: 3px solid #3498db;
+        }
+
+        .add-product-modal__preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .add-product-modal__preview-remove {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .add-product-modal__preview:hover .add-product-modal__preview-remove {
+            opacity: 1;
+        }
+
+        .add-product-modal__preview-meta {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .add-product-modal__submit-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .add-product-modal__submit-container .btn {
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+        }
+
+        .add-product-modal__error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .add-product-modal__hidden-file {
+            display: none;
+        }
+
+        /* كاميرا سطح المكتب */
+        .camera-modal-content {
+            position: relative;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .camera-modal-content video {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .camera-controls {
+            text-align: center;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: #7f8c8d;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .close-button:hover {
+            color: #e74c3c;
+        }
+
+        /* التجاوب مع الأجهزة المختلفة */
+        @media (max-width: 768px) {
+            .add-product-modal__form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .add-product-modal {
+                padding: 20px;
+            }
+            
+            .add-product-modal__title {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .add-product-modal__uploader-actions {
+                justify-content: center;
+            }
+            
+            .add-product-modal__previews {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
+    </style>
 
 <body>
     <div class="add-product-modal" role="dialog" aria-modal="true" aria-labelledby="addProductTitle">
@@ -315,22 +317,17 @@
         <form class="add-product-modal__form" id="add-product-form" novalidate>
             <!-- موديول رفع الصور -->
             <section class="add-product-modal__form-group" aria-labelledby="imagesHeading">
-                <label id="imagesHeading" class="add-product-modal__label"><i class="fas fa-images"></i> صور
-                    المنتج</label>
+                <label id="imagesHeading" class="add-product-modal__label"><i class="fas fa-images"></i> صور المنتج</label>
 
-                <div class="add-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group"
-                    aria-label="منطقة رفع الصور">
+                <div class="add-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group" aria-label="منطقة رفع الصور">
                     <div class="add-product-modal__uploader-actions">
                         <!-- input مع capture لتفعيل الكاميرا على الأجهزة المحمولة -->
-                        <input class="add-product-modal__hidden-file" id="file-input" type="file" accept="image/*"
-                            multiple aria-hidden="true">
+                        <input class="add-product-modal__hidden-file" id="file-input" type="file" accept="image/*" multiple aria-hidden="true">
 
                         <!-- تم تغيير btn-primary إلى btn-ghost لتوحيد التصميم -->
-                        <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i
-                                class="fas fa-folder-open"></i></button>
-                        <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn"
-                            title="التقاط من الكاميرا"><i class="fas fa-camera"></i></button>
-
+                        <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i class="fas fa-folder-open"></i></button>
+                        <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn" title="التقاط من الكاميرا"><i class="fas fa-camera"></i></button>
+                        
                     </div>
 
                     <div class="add-product-modal__hint">المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp. </div>
@@ -341,37 +338,29 @@
 
             <!-- جديد: حقل اسم المنتج -->
             <div class="add-product-modal__form-group">
-                <label for="product-name" class="add-product-modal__label"><i class="fas fa-signature"></i> اسم
-                    المنتج</label>
-                <input type="text" id="product-name" name="product-name" class="add-product-modal__input"
-                    maxlength="100" placeholder="اكتب اسمًا واضحًا للمنتج..." required>
+                <label for="product-name" class="add-product-modal__label"><i class="fas fa-signature"></i> اسم المنتج</label>
+                <input type="text" id="product-name" name="product-name" class="add-product-modal__input" maxlength="100" placeholder="اكتب اسمًا واضحًا للمنتج..." required>
                 <div id="product-name-char-counter" class="add-product-modal__char-counter">0 / 100</div>
             </div>
 
             <!-- حقل وصف المنتج -->
             <div class="add-product-modal__form-group">
-                <label for="product-description" class="add-product-modal__label"><i class="fas fa-file-alt"></i>
-                    الوصف</label>
-                <textarea id="product-description" name="product-description" class="add-product-modal__textarea"
-                    rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
+                <label for="product-description" class="add-product-modal__label"><i class="fas fa-file-alt"></i> الوصف</label>
+                <textarea id="product-description" name="product-description" class="add-product-modal__textarea" rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
                 <div id="description-char-counter" class="add-product-modal__char-counter">0 / 400</div>
             </div>
 
             <!-- حقل رسالة من البائع -->
             <div class="add-product-modal__form-group">
-                <label for="seller-message" class="add-product-modal__label"><i class="fas fa-comment-dots"></i> رسالة
-                    من البائع</label>
-                <input type="text" id="seller-message" name="seller-message" class="add-product-modal__input"
-                    maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للمشتري...">
+                <label for="seller-message" class="add-product-modal__label"><i class="fas fa-comment-dots"></i> رسالة من البائع</label>
+                <input type="text" id="seller-message" name="seller-message" class="add-product-modal__input" maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للمشتري...">
                 <div id="seller-message-char-counter" class="add-product-modal__char-counter">0 / 100</div>
             </div>
 
             <!-- حقل ملاحظات -->
             <div class="add-product-modal__form-group">
-                <label for="product-notes" class="add-product-modal__label"><i class="fas fa-sticky-note"></i>
-                    ملاحظات</label>
-                <input type="text" id="product-notes" name="product-notes" class="add-product-modal__input"
-                    maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
+                <label for="product-notes" class="add-product-modal__label"><i class="fas fa-sticky-note"></i> ملاحظات</label>
+                <input type="text" id="product-notes" name="product-notes" class="add-product-modal__input" maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
                 <div id="notes-char-counter" class="add-product-modal__char-counter">0 / 100</div>
             </div>
 
@@ -379,24 +368,18 @@
             <div class="add-product-modal__form-row" id="price-quantity-row">
                 <!-- حقل الكمية -->
                 <div class="add-product-modal__form-group">
-                    <label for="product-quantity" class="add-product-modal__label"><i class="fas fa-boxes-stacked"></i>
-                        الكمية المتاحة</label>
-                    <input type="number" id="product-quantity" name="product-quantity" class="add-product-modal__input"
-                        placeholder="مثال: 50" required min="1">
+                    <label for="product-quantity" class="add-product-modal__label"><i class="fas fa-boxes-stacked"></i> الكمية المتاحة</label>
+                    <input type="number" id="product-quantity" name="product-quantity" class="add-product-modal__input" placeholder="مثال: 50" required min="1">
                 </div>
                 <!-- حقل السعر -->
                 <div class="add-product-modal__form-group">
-                    <label for="product-price" class="add-product-modal__label"><i class="fas fa-dollar-sign"></i>سعر
-                        القطعة</label>
-                    <input type="text" inputmode="decimal" id="product-price" name="product-price"
-                        class="add-product-modal__input" placeholder="بالجنيه" required>
+                    <label for="product-price" class="add-product-modal__label"><i class="fas fa-dollar-sign"></i>سعر القطعة</label>
+                    <input type="text" inputmode="decimal" id="product-price" name="product-price" class="add-product-modal__input" placeholder="بالجنيه" required>
                 </div>
                 <!-- جديد: حقل السعر قبل الخصم -->
                 <div class="add-product-modal__form-group">
-                    <label for="original-price" class="add-product-modal__label"><i class="fas fa-tag"></i>السعر قبل
-                        الخصم</label>
-                    <input type="text" inputmode="decimal" id="original-price" name="original-price"
-                        class="add-product-modal__input" placeholder="اختياري">
+                    <label for="original-price" class="add-product-modal__label"><i class="fas fa-tag"></i>السعر قبل الخصم</label>
+                    <input type="text" inputmode="decimal" id="original-price" name="original-price" class="add-product-modal__input" placeholder="اختياري">
                 </div>
             </div>
 
@@ -407,57 +390,38 @@
         </form>
     </div>
 
-
+    <!-- حاوية للكاميرا -->
+    <div id="camera-modal-container" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;"></div>
 
     <script>
         /**
-         * @file pages/productAdd.html
-         * @description سكربت صفحة إضافة منتج جديد.
-         * يقوم هذا السكربت بإدارة نموذج إضافة المنتج، بما في ذلك:
-         * - رفع الصور (من الملفات أو الكاميرا).
-         * - التحقق من صحة المدخلات.
-         * - ضغط الصور قبل الرفع.
-         * - التعامل مع إعادة تحميل الصفحة لاستعادة الصور الملتقطة بالكاميرا.
-         */
-
-        /**
-         * @function initializeAddProductForm
-         * @description دالة لتهيئة نموذج إضافة المنتج المبسط.
-         * تُستدعى عند تحميل الصفحة لإعداد الحالة الأولية (تفريغ الصور، تعيين الوضع).
+         * دالة لتهيئة نموذج إضافة المنتج المبسط
          */
         function initializeAddProductForm() {
             console.log('%c[ProductForm] Initializing simplified form...', 'color: blue;');
             const form = document.getElementById('add-product-form');
+            
+            // الوصول إلى مصفوفة الصور وحالة الموديول من النطاق الخارجي
+            const images = window.productModule.images;
+            images.length = 0; // إفراغ مصفوفة الصور عند كل تهيئة
 
-            // الوصول إلى مصفوفة الصور وحالة الموديول من النطاق الخارجي (productModule00)
-            const images = window.productModule00.images;
-            images.length = 0; // إفراغ مصفوفة الصور عند كل تهيئة لضمان عدم تداخل البيانات
-
-            // تعيين وضع النموذج إلى 'add' (إضافة)
+            // تعيين وضع الإضافة فقط
             form.dataset.mode = 'add';
             console.log(`[ProductForm] Mode: ${form.dataset.mode}`);
-
-            // إعادة تعيين أسماء الصور الأصلية
-            window.productModule00.originalImageNames = [];
+            window.productModule.originalImageNames = []; // إعادة تعيين
 
             console.log('%c[ProductForm] Simplified form initialized successfully.', 'color: green;');
         }
 
-        /**
-         * @module productModule00
-         * @description الموديول الرئيسي الذي يحتوي على منطق الصفحة.
-         * تم استخدام IIFE (Immediately Invoked Function Expression) لعزل المتغيرات
-         * وتجنب تلويث النطاق العام (Global Scope).
-         * يتم تصدير الدوال والمتغيرات اللازمة عبر window.productModule00.
-         */
-        window.productModule00 = (function () {
-            // --- إعدادات ضغط ومعالجة الصور ---
-            const IMAGE_MAX_WIDTH = 1600; // أقصى عرض للصورة بعد الضغط
-            const IMAGE_MAX_HEIGHT = 1600; // أقصى ارتفاع للصورة بعد الضغط
-            const IMAGE_QUALITY = 0.75; // جودة ملفات JPEG/WebP الناتجة (0.0 - 1.0)
-            const MAX_FILES = 6; // الحد الأقصى لعدد الصور المسموح بها للمنتج الواحد
+        // جعل الدوال والمتغيرات متاحة عالميًا ضمن نطاق النافذة
+        window.productModule = (function() {
+            // --- إعدادات ضغط افتراضية ---
+            const IMAGE_MAX_WIDTH = 1600; // أقصى عرض بعد الضغط
+            const IMAGE_MAX_HEIGHT = 1600; // أقصى ارتفاع بعد الضغط
+            const IMAGE_QUALITY = 0.75; // جودة ضغط 0..1
+            const MAX_FILES = 6; // حد معقول من الصور
 
-            // --- مراجع عناصر DOM (HTML Elements) ---
+            // عناصر DOM
             const fileInput = document.getElementById('file-input');
             const pickFilesBtn = document.getElementById('pick-files-btn');
             const takePhotoBtn = document.getElementById('take-photo-btn');
@@ -472,27 +436,24 @@
             const priceInput = document.getElementById('product-price');
             const originalPriceInput = document.getElementById('original-price');
 
-            // --- دوال مساعدة لإدارة واجهة المستخدم (UI Helpers) ---
-
+            // --- دوال مساعدة لإظهار وإخفاء رسائل الخطأ ---
             /**
-             * @function showError
-             * @description يظهر رسالة خطأ باللون الأحمر أسفل العنصر المحدد.
-             * @param {HTMLElement} element - عنصر الإدخال الذي يحتوي على خطأ.
-             * @param {string} message - نص رسالة الخطأ.
+             * يظهر رسالة خطأ أسفل العنصر المحدد.
+             * @param {HTMLElement} element - العنصر الذي حدث فيه الخطأ.
+             * @param {string} message - رسالة الخطأ المراد إظهارها.
              */
             function showError(element, message) {
-                clearError(element); // التأكد من عدم وجود رسالة خطأ سابقة
+                clearError(element); // مسح أي خطأ قديم أولاً
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'add-product-modal__error-message';
                 errorDiv.textContent = message;
-                // إدراج الرسالة في DOM
+                // إدراج رسالة الخطأ بعد العنصر مباشرة أو بعد حاويته
                 element.parentElement.appendChild(errorDiv);
             }
 
             /**
-             * @function clearError
-             * @description يزيل رسالة الخطأ من عنصر معين إن وجدت.
-             * @param {HTMLElement} element - العنصر المراد تنظيف الخطأ منه.
+             * يمسح رسالة الخطأ من أسفل العنصر المحدد.
+             * @param {HTMLElement} element - العنصر المراد مسح الخطأ من أسفله.
              */
             function clearError(element) {
                 const errorDiv = element.parentElement.querySelector('.add-product-modal__error-message');
@@ -500,11 +461,10 @@
             }
 
             /**
-             * @function formatBytes
-             * @description يحول حجم الملف من بايت إلى صيغة مقروءة (KB, MB).
+             * يحول البايت إلى صيغة قابلة للقراءة (KB, MB, ...).
              * @param {number} bytes - الحجم بالبايت.
-             * @param {number} decimals - دقة الأرقام العشرية.
-             * @returns {string} - الحجم المنسق نصياً.
+             * @param {number} decimals - عدد الخانات العشرية.
+             * @returns {string}
              */
             function formatBytes(bytes, decimals = 2) {
                 if (!+bytes) return '0 Bytes';
@@ -515,82 +475,103 @@
                 return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
             }
 
-            // --- حالة التطبيق (State) ---
-            const images = []; // مصفوفة لتخزين كائنات الصور الحالية (المعالجة والجاهزة للرفع)
-            let idCounter = 1; // عداد لإنشاء معرفات فريدة للصور
+            const images = [];
+            let idCounter = 1;
 
-            /**
-             * @function genId
-             * @description يولد معرف نصي فريد لكل صورة.
-             * @returns {string} ID فريد.
-             */
+            // مساعدة: توليد معرف فريد خفيف
             function genId() { return 'img_' + (Date.now() + idCounter++); }
 
+            // فحص دعم webp
+            async function supportsWebP() {
+                if (!self.createImageBitmap) return false;
+                const blob = await fetch('data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=')
+                    .then(r => r.blob()).catch(()=>null);
+                if (!blob) return false;
+                try { await createImageBitmap(blob); return true; } catch(e) { return false; }
+            }
+            const WEBP_SUPPORTED_PROMISE = supportsWebP();
 
-            // --- إدارة معاينة الصور (Previews) ---
+            // --- دالة ضغط: تأخذ File أو Blob وتعيد Blob مضغوط ---
+            async function compressImage(file) {
+                // تحويل الملف إلى صورة
+                const imgBitmap = await createImageBitmap(file);
+                let { width, height } = imgBitmap;
 
-            /**
-             * @function createPreviewItem
-             * @description ينشئ عنصر HTML لعرض معاينة للصورة المرفوعة.
-             * يتضمن الصورة المصغرة، زر الحذف، وحالة الرفع/الضغط.
-             * 
-             * @param {Object} state - كائن يمثل حالة الصورة (الملف، المعرف، الحالة).
-             * @param {string} [existingImageUrl] - رابط صورة موجودة مسبقاً (في حالة التعديل).
-             */
+                // حساب الأبعاد الجديدة مع الحفاظ على النسبة
+                const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
+                const newWidth = Math.round(width * ratio);
+                const newHeight = Math.round(height * ratio);
+
+                // رسم على كانفاس
+                const canvas = Object.assign(document.createElement('canvas'), { width: newWidth, height: newHeight });
+                const ctx = canvas.getContext('2d');
+
+                // تعبئة خلفية بيضاء لتفادي قنوات alpha في بعض الحالات
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0,0,newWidth,newHeight);
+
+                ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
+
+                const webpSupported = await WEBP_SUPPORTED_PROMISE;
+                const mime = webpSupported ? 'image/webp' : 'image/jpeg';
+
+                // تحويل إلى blob
+                const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
+
+                // إغلاق الـ ImageBitmap لتحرير الذاكرة
+                try { imgBitmap.close(); } catch(e){}
+
+                return blob;
+            }
+
+            // --- دالة إنشاء معاينة مصغرة وإظهارها في الواجهة ---
             function createPreviewItem(state, existingImageUrl = null) {
                 const wrapper = document.createElement('div');
                 wrapper.className = 'add-product-modal__preview';
                 wrapper.setAttribute('data-id', state.id);
 
-                // إضافة حدث للنقر لتحديد الصورة (للأغراض الجمالية أو الوظيفية المستقبلية)
+                // عند النقر على الصورة، يتم تحديدها وإظهار زر الحذف
                 wrapper.addEventListener('click', (e) => {
+                    // لا تقم بأي شيء إذا كان النقر على زر الحذف أو أيقونته الداخلية
                     if (e.target.closest('.add-product-modal__preview-remove')) return;
+
+                    // إزالة التحديد من كل الصور الأخرى
                     document.querySelectorAll('.add-product-modal__preview--selected').forEach(p => p.classList.remove('add-product-modal__preview--selected'));
+                    // إضافة التحديد للصورة الحالية
                     wrapper.classList.add('add-product-modal__preview--selected');
                 });
-
-                // زر الحذف
                 const removeBtn = document.createElement('button');
-                removeBtn.type = "button"; // منع إرسال النموذج عند النقر
+                removeBtn.type = "button"; // ✅ إصلاح: منع الزر من إرسال النموذج
                 removeBtn.className = 'add-product-modal__preview-remove';
                 removeBtn.setAttribute('title', 'إزالة الصورة');
-                removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>'; // تغيير الأيقونة إلى سلة محذوفات
                 removeBtn.addEventListener('click', () => removeImage(state.id));
 
-                const img = document.createElement('img');
+                const img = document.createElement('img'); // تم إزالة alt لأنه لا يوجد اسم الآن
 
-                // عنصر لعرض معلومات (حجم الملف أو الحالة)
                 const meta = document.createElement('div');
                 meta.className = 'add-product-modal__preview-meta';
-                meta.textContent = 'جاري الحساب...';
+                meta.textContent = 'جاري الحساب...'; // نص مؤقت
 
                 wrapper.appendChild(removeBtn);
                 wrapper.appendChild(img);
                 wrapper.appendChild(meta);
 
                 if (existingImageUrl) {
-                    // حالة عرض صورة مرفوعة مسبقاً (من الخادم)
                     img.src = existingImageUrl;
                     meta.textContent = 'صورة حالية';
                 } else {
-                    // حالة عرض معاينة لملف محلي جديد
                     const reader = new FileReader();
                     reader.onload = (e) => { img.src = e.target.result; };
                     reader.readAsDataURL(state.file);
                 }
 
                 previewsEl.appendChild(wrapper);
-
-                // حفظ مراجع العناصر في كائن الحالة لتحديثها لاحقاً
                 state._el = wrapper;
-                state._metaEl = meta;
+                state._metaEl = meta; // تخزين مرجع لعنصر الميتا لتحديثه لاحقًا
             }
 
-            /**
-             * @function removeImage
-             * @description تحذف صورة من القائمة والواجهة بعد تأكيد المستخدم.
-             * @param {string} id - معرف الصورة المراد حذفها.
-             */
+            // --- حذف صورة ---
             function removeImage(id) {
                 console.log(`[ImageUploader] Attempting to remove image with id: ${id}`);
                 Swal.fire({
@@ -604,173 +585,151 @@
                     cancelButtonText: 'إلغاء'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        // 1. ابحث عن فهرس الصورة في مصفوفة الحالة
                         const idx = images.findIndex(i => i.id === id);
                         if (idx > -1) {
                             const state = images[idx];
-                            // إزالة العنصر من DOM
+                            // 2. قم بإزالة عنصر الصورة من واجهة المستخدم (DOM)
                             if (state._el) state._el.remove();
-                            console.log(`[ImageUploader] Image ${id} removed.`);
-                            // إزالة من المصفوفة
+                            console.log(`[ImageUploader] Image ${id} (${state.fileName || 'new file'}) removed from view.`);
+                            // 3. قم بإزالة الصورة من مصفوفة الحالة
                             images.splice(idx, 1);
+                            // ملاحظة: لا يتم استدعاء أي دالة حذف من السحابة هنا.
+                            // سيتم التعامل مع الحذف الفعلي عند إرسال النموذج.
                         }
                     }
                 });
             }
 
-            // --- معالجة الملفات والضغط ---
-
-            /**
-             * @function handleNewFiles
-             * @description الدالة الرئيسية لمعالجة الملفات المختارة أو المضافة.
-             * تقوم بـ:
-             * 1. التحقق من نوع الملف.
-             * 2. إنشاء كائن حالة للصورة.
-             * 3. عرض المعاينة.
-             * 4. ضغط الصورة في الخلفية.
-             * 
-             * @param {FileList} fileList - قائمة الملفات القادمة من input أو drop event.
-             */
-            async function handleNewFiles(fileList) {
+        
+            // --- معالجة ملفات عند اختيارها أو إفلاتها ---
+            async function handleNewFiles(fileList){
+                // إخفاء رسالة الخطأ الخاصة بالصور بمجرد محاولة إضافة صور جديدة
                 console.log(`[ImageUploader] Handling ${fileList.length} new files.`);
                 clearError(uploaderEl);
 
-                // أخذ عدد محدود من الصور فقط
                 const filesArr = Array.from(fileList).slice(0, MAX_FILES - images.length);
-
-                for (const file of filesArr) {
-                    if (!file.type.startsWith('image/')) continue; // تجاهل الملفات غير الصور
-
+                for(const file of filesArr){
+                    if(!file.type.startsWith('image/')) continue;
                     const id = genId();
-                    const state = { id, file, compressedBlob: null, status: 'pending' };
-                    images.push(state);
+                    const state = { id, file, compressedBlob: null, status:'pending' };
+                    images.push(state); // إضافة الصورة الجديدة إلى مصفوفة الحالة
                     createPreviewItem(state);
-
-                    // بدء عملية الضغط
-                    try {
+                    // ضغط الصورة (غير متزامن، تحدث التحديثات على واجهة المعاينة)
+                    try{
                         console.log(`[ImageUploader] Compressing image: ${file.name}`);
                         state.status = 'compressing';
-
-                        // استخدام دالة الضغط المحلية (للملفات المختارة من الجهاز)
-                        // ملاحظة: الصور القادمة من الكاميرا تكون مضغوطة عبر CameraUtils ولكنه هنا يعيد ضغطها
-                        // لضمان التوافق إذا جاءت عبر هذا المسار، وهو إجراء آمن.
-                        const compressed = await localCompressImage(file);
-
+                        const compressed = await compressImage(file);
                         state.compressedBlob = compressed;
                         state.status = 'ready';
-                        console.log(`%c[ImageUploader] Compressed: ${file.name} -> ${formatBytes(compressed.size)}`, 'color: green;');
-
+                        console.log(`%c[ImageUploader] Image compressed successfully: ${file.name} -> ${formatBytes(compressed.size)}`, 'color: green;');
+                        // تحديث واجهة المستخدم بحجم الصورة بعد الضغط
                         if (state._metaEl) {
                             state._metaEl.textContent = formatBytes(compressed.size);
                         }
-                    } catch (err) {
+                    }catch(err){
                         console.error('%c[ImageUploader] Error compressing image:', 'color: red;', err);
                         state.status = 'error';
-                        if (state._metaEl) state._metaEl.textContent = 'خطأ';
+                        if (state._metaEl) {
+                            state._metaEl.textContent = 'خطأ';
+                        }
                     }
                 }
-                // إعادة تعيين قيمة input file للسماح باختيار نفس الملف مرة أخرى
+                // *** الإصلاح: إعادة تعيين قيمة حقل إدخال الملفات ***
+                // هذا يضمن أن حدث 'change' سيعمل حتى لو تم اختيار نفس الملف مرة أخرى
                 fileInput.value = '';
             }
 
-            /**
-             * @function localCompressImage
-             * @description دالة ضغط صور محلية (تستخدم Canvas).
-             * تُستخدم للصور المختارة من المعرض لضمان تقليل حجمها قبل الرفع.
-             * 
-             * @param {File} file - ملف الصورة الأصلي.
-             * @returns {Promise<Blob>} - Blob الصورة المضغوطة (WebP).
-             */
-            async function localCompressImage(file) {
-                if (self.createImageBitmap) {
-                    try {
-                        const bmp = await createImageBitmap(file);
-                        const { width, height } = bmp;
-                        // حساب الأبعاد الجديدة
-                        const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
-                        const canvas = document.createElement('canvas');
-                        canvas.width = Math.round(width * ratio);
-                        canvas.height = Math.round(height * ratio);
+            // --- رفع إلى الخادم (نموذجي - قم بتعديله ليتوافق مع API الخاص بك) ---
+            async function uploadAll(progressCallback){
+                // تقمص سلوك رفع متسلسل: لكل صورة طلب منفصل
+                const uploaded = [];
+                for(const state of images){
+                    if(state.status !== 'ready' || !state.compressedBlob) continue;
+                    // مثال: استخدام FormData
+                    const fd = new FormData();
+                    // اسم الحقل: images[] لإرسال مصفوفة
+                    fd.append('images[]', state.compressedBlob, state.file.name);
+                    // هنا استبدل URL بواجهتك
+                    const endpoint = '/api/upload-image';
 
-                        const ctx = canvas.getContext('2d');
-                        ctx.fillStyle = '#fff'; // خلفية بيضاء
-                        ctx.fillRect(0, 0, canvas.width, canvas.height);
-                        ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
+                    // دمج progress بصري بسيط (محاكاة لأنه لا يمكن تتبع toBlob مباشرة بدون XHR)
+                    try{
+                        state.status = 'uploading';
 
-                        // التحويل لـ WebP للحصول على أفضل ضغط
-                        return new Promise(r => canvas.toBlob(r, 'image/webp', IMAGE_QUALITY));
-                    } catch (e) {
-                        console.warn('Bitmap error', e);
-                        return file; // في حال الفشل، أعد الملف الأصلي
+                        // استخدم fetch - ملاحظة: fetch لا يدعم progress للـ request body في المتصفحات حالياً
+                        const res = await fetch(endpoint, { method:'POST', body:fd });
+                        if(!res.ok) throw new Error('Upload failed ' + res.status);
+
+                        state.status = 'uploaded';
+                        uploaded.push(await res.json());
+                    }catch(err){
+                        console.error('Upload error', err);
+                        state.status = 'error';
                     }
                 }
-                return file; // للمتصفحات القديمة جداً
+                return uploaded;
             }
 
-            // --- التفاعل مع الأحداث (Event Listeners) ---
-
-            // زر اختيار الملفات من الجهاز
+            // --- أحداث واجهة المستخدم ---
             pickFilesBtn.addEventListener('click', () => {
-                fileInput.removeAttribute('capture'); // ضمان عدم فتح الكاميرا
+                // التأكد من إزالة خاصية الكاميرا لفتح معرض الملفات
+                fileInput.removeAttribute('capture');
                 fileInput.click();
             });
 
-            // زر الكاميرا
-            // عند النقر عليه، يتم استدعاء CameraUtils لفتح الكاميرا وضغط الصورة وحفظها
-            takePhotoBtn.addEventListener('click', () => {
-                if (typeof CameraUtils === 'undefined') {
-                    console.error('CameraUtils not loaded!');
-                    Swal.fire('خطأ', 'موديول الكاميرا غير محمل.', 'error');
-                    return;
-                }
-                // استدعاء دالة الكاميرا الموحدة
-                // CameraUtils سيتولى عملية التصوير، الحفظ، وإعادة تحميل الصفحة
-                CameraUtils.openCamera('productAdd');
-            });
-
-            // عند اختيار ملفات من الجهاز
-            fileInput.addEventListener('change', (e) => handleNewFiles(e.target.files));
-
-            // دعم السحب والإفلات (Drag and Drop)
-            uploaderEl.addEventListener('dragover', (e) => { e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
-            uploaderEl.addEventListener('dragleave', (e) => { uploaderEl.style.borderColor = ''; });
-            uploaderEl.addEventListener('drop', (e) => { e.preventDefault(); uploaderEl.style.borderColor = ''; handleNewFiles(e.dataTransfer.files); });
-
-            // --- التحقق اللحظي من المدخلات (Validation Listeners) ---
-            // تقوم هذه الأحداث بتحديث عدد الحروف ومسح رسائل الخطأ عند الكتابة
-
+            // جديد: عداد الحروف وإخفاء الخطأ لاسم المنتج
             productNameInput.addEventListener('input', () => {
-                const len = productNameInput.value.length;
-                document.getElementById('product-name-char-counter').textContent = `${len} / ${productNameInput.maxLength}`;
-                if (len > 0) clearError(productNameInput);
+                const currentLength = productNameInput.value.length;
+                const maxLength = productNameInput.maxLength;
+                document.getElementById('product-name-char-counter').textContent = `${currentLength} / ${maxLength}`;
+                
+                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+                if (currentLength > 0) clearError(productNameInput);
             });
 
+            // عداد الحروف وإخفاء الخطأ لوصف المنتج
             descriptionTextarea.addEventListener('input', () => {
-                const len = descriptionTextarea.value.length;
-                document.getElementById('description-char-counter').textContent = `${len} / ${descriptionTextarea.maxLength}`;
-                if (len > 0) clearError(descriptionTextarea);
+                const currentLength = descriptionTextarea.value.length;
+                const maxLength = descriptionTextarea.maxLength;
+                document.getElementById('description-char-counter').textContent = `${currentLength} / ${maxLength}`;
+                
+                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+                if (currentLength > 0) clearError(descriptionTextarea);
             });
 
+            // عداد الحروف وإخفاء الخطأ لرسالة البائع
             sellerMessageTextarea.addEventListener('input', () => {
-                const len = sellerMessageTextarea.value.length;
-                document.getElementById('seller-message-char-counter').textContent = `${len} / ${sellerMessageTextarea.maxLength}`;
-                if (len > 0) clearError(sellerMessageTextarea);
+                const currentLength = sellerMessageTextarea.value.length;
+                const maxLength = sellerMessageTextarea.maxLength;
+                document.getElementById('seller-message-char-counter').textContent = `${currentLength} / ${maxLength}`;
+                
+                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+                if (currentLength > 0) clearError(sellerMessageTextarea);
             });
 
+            // جديد: عداد الحروف لحقل الملاحظات
             notesInput.addEventListener('input', () => {
-                const len = notesInput.value.length;
-                document.getElementById('notes-char-counter').textContent = `${len} / ${notesInput.maxLength}`;
-                if (len > 0) clearError(notesInput);
+                const currentLength = notesInput.value.length;
+                const maxLength = notesInput.maxLength;
+                document.getElementById('notes-char-counter').textContent = `${currentLength} / ${maxLength}`;
+                // إخفاء رسالة الخطأ بمجرد أن يبدأ المستخدم في الكتابة
+                if (currentLength > 0) clearError(notesInput);
             });
 
+            // إخفاء رسائل الخطأ عند التفاعل مع حقول الكمية والسعر
             quantityInput.addEventListener('input', () => {
+                // ✅ تحسين: تحويل الأرقام الهندية والسماح بالأرقام الإنجليزية فقط
                 let value = normalizeDigits(quantityInput.value);
                 quantityInput.value = value.replace(/[^0-9]/g, '');
                 if (quantityInput.value) clearError(quantityInput);
             });
 
             priceInput.addEventListener('input', () => {
+                // ✅ تحسين: تحويل الأرقام الهندية والسماح بالأرقام والنقاط فقط
                 let value = normalizeDigits(priceInput.value);
                 value = value.replace(/[^0-9.]/g, '');
+                // التأكد من وجود نقطة عشرية واحدة فقط
                 const parts = value.split('.');
                 if (parts.length > 2) {
                     value = parts[0] + '.' + parts.slice(1).join('');
@@ -778,8 +737,10 @@
                 priceInput.value = value;
                 if (priceInput.value) clearError(priceInput);
             });
-
+            
+            // جديد: التحقق من حقل السعر قبل الخصم
             originalPriceInput.addEventListener('input', () => {
+                // ✅ تحسين: تحويل الأرقام الهندية
                 let value = normalizeDigits(originalPriceInput.value);
                 value = value.replace(/[^0-9.]/g, '');
                 const parts = value.split('.');
@@ -787,48 +748,137 @@
                     value = parts[0] + '.' + parts.slice(1).join('');
                 }
                 originalPriceInput.value = value;
+                // لا يوجد خطأ هنا لأنه حقل اختياري
+                // if (originalPriceInput.value) clearError(originalPriceInput);
             });
 
+            // التقاط صورة عبر الكاميرا: فتح ملف مع capture
+            takePhotoBtn.addEventListener('click', () => {
+                // ✅ جديد: منطق مشروط للكاميرا
+                // 1. التحقق إذا كان الجهاز محمولاً
+                const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
 
-            // --- إرسال النموذج (Submit Handler) ---
-            form.addEventListener('submit', async (e) => {
+                if (isMobile) {
+                    // السلوك الحالي للهواتف: استخدام capture لفتح تطبيق الكاميرا الأصلي
+                    console.log('[Camera] Mobile device detected. Using capture attribute.');
+                    fileInput.setAttribute('capture', 'environment');
+                    fileInput.click();
+                } else {
+                    // السلوك الجديد لأجهزة سطح المكتب: استخدام getUserMedia
+                    console.log('[Camera] Desktop device detected. Using getUserMedia API.');
+                    openDesktopCamera();
+                }
+            });
+
+            /**
+             * ✅ جديد: دالة لفتح كاميرا الويب على أجهزة سطح المكتب.
+             */
+            async function openDesktopCamera() {
+                const cameraModalContainer = document.getElementById('camera-modal-container');
+                if (!cameraModalContainer) {
+                    console.error('Camera modal container not found!');
+                    return;
+                }
+
+                // 1. إنشاء واجهة المستخدم لنافذة الكاميرا
+                cameraModalContainer.innerHTML = `
+                    <div class="modal-content camera-modal-content">
+                        <button class="close-button" id="camera-modal-close-btn" aria-label="إغلاق"><i class="fas fa-times"></i></button>
+                        <video id="camera-preview" autoplay playsinline></video>
+                        <canvas id="camera-canvas" style="display:none;"></canvas>
+                        <div class="camera-controls">
+                            <button id="capture-photo-btn" class="btn btn-primary"><i class="fas fa-camera"></i> التقاط الصورة</button>
+                        </div>
+                    </div>
+                `;
+                cameraModalContainer.style.display = 'flex';
+
+                const video = document.getElementById('camera-preview');
+                const captureBtn = document.getElementById('capture-photo-btn');
+                const closeBtn = document.getElementById('camera-modal-close-btn');
+
+                // 2. طلب الوصول إلى الكاميرا
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                    video.srcObject = stream;
+
+                    const closeStream = () => {
+                        stream.getTracks().forEach(track => track.stop());
+                        cameraModalContainer.style.display = 'none';
+                        cameraModalContainer.innerHTML = '';
+                    };
+
+                    closeBtn.onclick = closeStream;
+
+                    captureBtn.onclick = () => {
+                        const canvas = document.getElementById('camera-canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        canvas.getContext('2d').drawImage(video, 0, 0);
+                        canvas.toBlob(blob => {
+                            handleNewFiles([blob]); // استخدام نفس الدالة لمعالجة الصورة الملتقطة
+                            closeStream(); // إغلاق النافذة بعد الالتقاط
+                        }, 'image/jpeg', 0.9);
+                    };
+                } catch (err) {
+                    console.error("Error accessing camera: ", err);
+                    Swal.fire('خطأ!', 'لم نتمكن من الوصول إلى الكاميرا. يرجى التأكد من منح الإذن اللازم.', 'error');
+                    cameraModalContainer.style.display = 'none';
+                }
+            }
+
+            fileInput.addEventListener('change', (e)=> handleNewFiles(e.target.files));
+
+            // سحب وإفلات
+            uploaderEl.addEventListener('dragover', (e)=>{ e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
+            uploaderEl.addEventListener('dragleave', (e)=>{ uploaderEl.style.borderColor = ''; });
+            uploaderEl.addEventListener('drop', (e)=>{ e.preventDefault(); uploaderEl.style.borderColor = ''; handleNewFiles(e.dataTransfer.files); });
+
+            // إرسال النموذج: مثال يضغط الملفات ويقوم بالرفع
+            form.addEventListener('submit', async (e)=>{
                 e.preventDefault();
                 console.log('%c[ProductForm] Submit event triggered.', 'color: blue;');
                 let isValid = true;
 
-                // 1. التحقق من المدخلات
+                // --- التحقق من صحة المدخلات ---
                 console.log('[ProductForm] Starting validation...');
 
+                // 1. التحقق من وجود صورة واحدة على الأقل
                 clearError(uploaderEl);
                 if (images.length === 0) {
                     showError(uploaderEl, 'يجب إضافة صورة واحدة على الأقل للمنتج.');
                     isValid = false;
                 }
 
+                // 2. التحقق من وجود اسم للمنتج
                 clearError(productNameInput);
                 if (!productNameInput.value.trim()) {
                     showError(productNameInput, 'اسم المنتج مطلوب.');
                     isValid = false;
                 }
 
+                // 3. التحقق من وجود وصف للمنتج
                 clearError(descriptionTextarea);
                 if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
                     showError(descriptionTextarea, 'وصف المنتج مطلوب (10 أحرف على الأقل).');
                     isValid = false;
                 }
 
+                // 4. التحقق من وجود رسالة من البائع
                 clearError(sellerMessageTextarea);
                 if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
                     showError(sellerMessageTextarea, 'رسالة البائع مطلوبة (10 أحرف على الأقل).');
                     isValid = false;
                 }
 
+                // 5. التحقق من الكمية
                 clearError(quantityInput);
                 if (!quantityInput.value || parseFloat(quantityInput.value) < 1) {
                     showError(quantityInput, 'يجب إدخال كمية متاحة صالحة (1 على الأقل).');
                     isValid = false;
                 }
 
+                // 6. التحقق من السعر
                 clearError(priceInput);
                 if (priceInput.value === '' || parseFloat(priceInput.value) < 0) {
                     showError(priceInput, 'يجب إدخال سعر صالح للمنتج.');
@@ -836,40 +886,46 @@
                 }
 
                 if (!isValid) {
-                    console.warn('[ProductForm] Validation failed.');
-                    return;
+                    console.warn('[ProductForm] Validation failed. Submission aborted.');
+                    return; // إيقاف التنفيذ إذا كانت البيانات غير صالحة
                 }
 
-                // 2. بدء عملية الرفع والحفظ
-                console.log('%c[ProductForm] Validation passed.', 'color: green;');
+                // إذا كانت جميع البيانات صالحة، استمر في عملية الرفع
+                console.log('%c[ProductForm] Validation passed. Starting submission process.', 'color: green;');
                 Swal.fire({
                     title: 'جاري إضافة المنتج...',
                     text: 'الرجاء الانتظار قليلاً بينما يتم رفع الصور.',
                     allowOutsideClick: false,
-                    didOpen: () => { Swal.showLoading(); },
+                    didOpen: () => {
+                        Swal.showLoading();
+                    },
                 });
 
                 try {
+                    // توليد سريال فريد للمنتج
                     const productSerial = generateProductSerial();
+                    
+                    // 1. رفع الصور بالتسلسل
                     const uploadedImageUrls = [];
-
-                    // رفع الصور
-                    console.log(`[ProductForm] Uploading images...`);
+                    console.log(`[ProductForm] Uploading ${images.filter(s => s.status === 'ready').length} new images...`);
                     for (let i = 0; i < images.length; i++) {
                         const state = images[i];
                         if (state.status !== 'ready' || !state.compressedBlob) continue;
 
+                        // تكوين اسم الصورة الجديد
                         const fileName = `${i + 1}_${productSerial}.webp`;
-                        // uploadFile2cf هي دالة خارجية (يفترض وجودها في context)
+
+                        // استدعاء دالة الرفع من cloudFileManager.js
                         const result = await uploadFile2cf(state.compressedBlob, fileName, (msg) => console.log('[CloudflareUpload]', msg));
                         console.log(`[ProductForm] Image uploaded: ${result.file}`);
                         uploadedImageUrls.push(result.file);
                     }
 
-                    // تجميع البيانات
+                    console.log('[ProductForm] Assembling final product data for API.');
+                    // 2. تجميع بيانات المنتج لإرسالها إلى قاعدة البيانات
                     const productData = {
                         productName: normalizeArabicText(document.getElementById('product-name').value.trim()),
-                        user_key: userSession.user_key,
+                        user_key: userSession.user_key, // قيمة ثابتة كما طلبت
                         product_key: productSerial,
                         product_description: normalizeArabicText(document.getElementById('product-description').value.trim()),
                         product_price: parseFloat(document.getElementById('product-price').value) || 0,
@@ -878,25 +934,29 @@
                         user_message: normalizeArabicText(document.getElementById('seller-message').value.trim()),
                         user_note: normalizeArabicText(document.getElementById('product-notes').value.trim()),
                         ImageName: uploadedImageUrls.join(','),
-                        MainCategory: mainCategorySelectToAdd,
-                        SubCategory: subCategorySelectToAdd,
+                        MainCategory: mainCategorySelectToAdd, // قيمة ثابتة
+                        SubCategory: subCategorySelectToAdd,  // قيمة ثابتة
                         ImageIndex: uploadedImageUrls.length,
-                        serviceType: productTypeToAdd
+                        serviceType: productTypeToAdd // غير مستخدم في هذه الصفحة
                     };
 
-                    // إرسال للـ API
-                    console.log('[ProductForm] Sending ADD request...');
+                    // 3. إرسال طلب إضافة المنتج
+                    console.log('[ProductForm] Sending ADD request to backend...');
                     const dbResult = await addProduct(productData);
 
                     if (dbResult && dbResult.error) {
                         throw new Error(`فشل حفظ بيانات المنتج: ${dbResult.error}`);
                     }
 
-                    console.log('%c[ProductForm] Product saved successfully.', 'color: green; font-weight: bold;');
+                    console.log('%c[ProductForm] Product saved to DB successfully.', 'color: green; font-weight: bold;');
+                    // 4. عرض رسالة النجاح
                     Swal.fire('تم بنجاح!', 'تم إضافة المنتج بنجاح.', 'success').then(() => {
+                        // إعادة تعيين النموذج
                         form.reset();
                         previewsEl.innerHTML = '';
                         images.length = 0;
+                        
+                        // إعادة تعيين عدادات الأحرف
                         document.getElementById('product-name-char-counter').textContent = '0 / 100';
                         document.getElementById('description-char-counter').textContent = '0 / 400';
                         document.getElementById('seller-message-char-counter').textContent = '0 / 100';
@@ -904,15 +964,14 @@
                     });
 
                 } catch (error) {
-                    console.error('%c[ProductForm] Error:', 'color: red;', error);
+                    console.error('%c[ProductForm] Submission failed with critical error:', 'color: red; font-weight: bold;', error);
                     Swal.fire('خطأ!', `فشل في حفظ المنتج: ${error.message}`, 'error');
                 }
             });
 
             /**
-             * @function generateProductSerial
-             * @description يولد سريال عشوائي للمنتج.
-             * @returns {string} سريال مكون من 6 خانات.
+             * يقوم بإنشاء سريال فريد للمنتج مكون من 6 أحرف وأرقام عشوائية.
+             * @returns {string} سريال المنتج.
              */
             function generateProductSerial() {
                 const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -923,54 +982,19 @@
                 return serial;
             }
 
-            // --- استعادة حالة الكاميرا ---
-            /**
-             * @function checkSavedImagesCallback
-             * @description دالة رد النداء (Callback) التي يستدعيها mainLoader بعد إعادة تحميل الصفحة.
-             * تقوم بـ:
-             * 1. (اختياري) تهيئة النموذج.
-             * 2. استدعاء CameraUtils لاستعادة الصور المخزنة مؤقتاً.
-             */
-            window.checkSavedImagesCallback = function () {
-                console.log('[ProductAdd] checkSavedImagesCallback triggered via mainLoader.');
-                // 1. تهيئة النموذج (تم تعطيلها لأن mainLoader قد يقوم بها بالفعل، أو لتجنب تصفير الصور المستعادة)
-                try {
-                    // initializeAddProductForm(); 
-                } catch (e) { console.error(e); }
-
-                // 2. فحص الصور واستعادتها من LocalStorage
-                if (typeof CameraUtils !== 'undefined') {
-                    CameraUtils.checkForSavedImages('productAdd', (blobs) => {
-                        if (blobs && blobs.length > 0) {
-                            console.log(`[productAdd] Restoring ${blobs.length} images.`);
-                            handleNewFiles(blobs);
-                        }
-                    });
-                }
-            };
-
-            // واجهة الموديول العامة (Public API)
+            // إرجاع الدوال والمتغيرات التي تحتاجها
             return {
                 images,
                 originalImageNames: [],
                 genId,
-                createPreviewItem,
-                handleNewFiles,
-                checkSavedImagesCallback
+                createPreviewItem
             };
 
-        })(); // نهاية IIFE
+        })(); // نهاية الوحدة
 
-        // عند تحميل السكربت، نحاول تهيئة النموذج مباشرة
-        // (مفيد في تطبيقات الصفحة الواحدة SPA حيث لا يحدث حدث DOMContentLoaded دائماً عند التنقل)
-        try {
-            console.log('[ProductAdd] Calling initializeAddProductForm directly...');
+        // تهيئة النموذج عند تحميل الصفحة
+        document.addEventListener('DOMContentLoaded', function() {
             initializeAddProductForm();
-        } catch (e) {
-            console.error('[ProductAdd] Error initializing form:', e);
-        }
-
-        // تسجيل إضافي للتحقق
-        console.log('[ProductAdd] Script loaded.');
+        });
     </script>
 </body>
