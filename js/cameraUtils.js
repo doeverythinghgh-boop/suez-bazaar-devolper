@@ -28,8 +28,14 @@ window.CameraUtils = (function () {
      * @param {Function} [reloadCallback] - دالة اختيارية لإعادة التحميل في حال لم يتم التعرف على الصفحة.
      */
     async function openCamera(pageId, reloadCallback) {
+        // [Fix] تنظيف أي عناصر input سابقة قد تكون بقيت معلقة (مثلاً إذا ألغى المستخدم التصوير)
+        // هذا يمنع تراكم العناصر المخفية الذي قد يسبب مشاكل في الذاكرة أو الكاميرا
+        const existingInput = document.getElementById('temp-camera-input');
+        if (existingInput) existingInput.remove();
+
         // إنشاء عنصر input مخفي لمحاكاة النقر
         const input = document.createElement('input');
+        input.id = 'temp-camera-input'; // تعيين ID للتحكم به
         input.type = 'file';
         input.accept = 'image/*';
         // 'environment' تجبر المتصفح على استخدام الكاميرا الخلفية
@@ -39,10 +45,13 @@ window.CameraUtils = (function () {
 
         // الاستماع لحدث اختيار الملف (التقاط الصورة)
         input.addEventListener('change', async (e) => {
+            // إزالة العنصر فوراً لتجنب التكرار، سنعالجه الآن
+            input.remove();
+
             if (e.target.files && e.target.files.length > 0) {
                 const file = e.target.files[0];
 
-                // عرض تنبيه للمستخدم بأن العملية جارية (لأن الضغط قد يستغرق وقتًا)
+                // عرض تنبيه للمستخدم بأن العملية جارية
                 Swal.fire({
                     title: 'جاري معالجة الصورة...',
                     text: 'يرجى الانتظار بينما يتم ضغط وحفظ الصورة.',
@@ -61,37 +70,33 @@ window.CameraUtils = (function () {
                     saveimageToStorage(pageId, base64);
 
                     // 4. منطق إعادة تحميل الصفحة
-                    // يتم التعامل مع كل صفحة بشكل خاص لضمان استدعاء الـ Loader الصحيح
                     if (pageId === 'productAdd') {
                         console.log(`[CameraUtils] Reloading ${pageId} via mainLoader...`);
 
-                        // التحقق من وجود دالة mainLoader
                         if (typeof mainLoader === 'function') {
-                            // تم استخدام undefined للدالة الراجعة هنا بناءً على طلب المستخدم
-                            // لأننا سنقوم باستدعاء الدالة الراجعة يدويًا في السطر التالي
-                        await    mainLoader(
-                                "./pages/productAdd.html", // رابط الصفحة
-                                "index-product-container",   // الحاوية
-                                0,                           // وقت الانتظار
-                                undefined,                   // الدالة الراجعة (تم تعطيلها هنا)
-                                "showHomeIcon",              // دالة أيقونة الصفحة الرئيسية
-                                false                        // هل هو إعادة تحميل؟
+                            // تم استخدام undefined في الوسيط الرابع لأنه يمثل rules CSS (ويأخذ الافتراضي)
+                            // الوسيط الخامس هو اسم الـ callback ("showHomeIcon")
+                            await mainLoader(
+                                "./pages/productAdd.html", // صفحة
+                                "index-product-container",   // حاوية
+                                0,                           // انتظار
+                                undefined,                   // cssRules (الافتراضي)
+                                "showHomeIcon",              // callbackName
+                                false                        // reload force
                             );
 
                             // استدعاء دالة الفحص والاستعادة الخاصة بصفحة إضافة المنتج يدويًا
-                            // وتأكد من أن الكائن productModule00 متاح عالميًا
+                            // بعد اكتمال mainLoader
                             if (typeof productModule00 !== 'undefined' && typeof productModule00.checkSavedImagesCallback === 'function') {
                                 productModule00.checkSavedImagesCallback();
                             }
 
-                            Swal.close(); // إغلاق التنبيه
+                            Swal.close();
                         } else {
                             console.error('[CameraUtils] mainLoader is not defined!');
-                            // استخدام الـ callback الاحتياطي إذا وجد
                             if (reloadCallback) reloadCallback();
                         }
                     } else if (typeof reloadCallback === 'function') {
-                        // لأي صفحات أخرى، نستخدم الـ callback الممرر
                         Swal.close();
                         console.log(`[CameraUtils] Image saved for ${pageId}. Triggering generic reload callback.`);
                         reloadCallback();
@@ -100,15 +105,12 @@ window.CameraUtils = (function () {
                 } catch (error) {
                     console.error('[CameraUtils] Error processing image:', error);
                     let msg = 'حدث خطأ أثناء معالجة الصورة.';
-                    // التحقق من خطأ امتلاء مساحة التخزين (QuotaExceededError)
                     if (error.name === 'QuotaExceededError' || error.message.includes('quota')) {
                         msg = 'مساحة التخزين المؤقت ممتلئة. يرجى إتمام العملية الحالية أو تقليل عدد الصور.';
                     }
                     Swal.fire('خطأ', msg, 'error');
                 }
             }
-            // إزالة عنصر الـ input من الـ DOM بعد الانتهاء
-            document.body.removeChild(input);
         });
 
         // محاكاة النقر لفتح الكاميرا
