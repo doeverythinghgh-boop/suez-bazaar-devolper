@@ -602,9 +602,13 @@
                 });
             }
 
-
+let stop =0;
             // --- معالجة ملفات عند اختيارها أو إفلاتها ---
             async function handleNewFiles(fileList) {
+                stop++;
+                if(stop>1){
+                    return;
+                }
                 // إخفاء رسالة الخطأ الخاصة بالصور بمجرد محاولة إضافة صور جديدة
                 console.log(`[ImageUploader] Handling ${fileList.length} new files.`);
                 clearError(uploaderEl);
@@ -639,6 +643,7 @@
                 // *** الإصلاح: إعادة تعيين قيمة حقل إدخال الملفات ***
                 // هذا يضمن أن حدث 'change' سيعمل حتى لو تم اختيار نفس الملف مرة أخرى
                 fileInput0.value = '';
+                stop=0;
             }
 
             // --- رفع إلى الخادم (نموذجي - قم بتعديله ليتوافق مع API الخاص بك) ---
