@@ -102,21 +102,7 @@ async function getSalesMovement(userKey) {
   }
 }
 
-/**
- * @description يرسل إشعارًا فوريًا (Push Notification) إلى جهاز معين باستخدام توكن Firebase Cloud Messaging (FCM).
- * @function sendNotification
- * @param {string} token - توكن Firebase Cloud Messaging (FCM) الخاص بالجهاز المستهدف.
- * @param {string} title - عنوان الإشعار.
- * @param {string} body - نص الإشعار.
- * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن يحتوي على نتيجة الإرسال من الخادم، أو كائن خطأ في حالة الفشل.
- * @see apiFetch
- */
-async function sendNotification(token, title, body) {
-  return await apiFetch('/api/send-notification', {
-    method: 'POST',
-    body: { token, title, body },
-  });
-}
+
 
 /**
  * @description يحدث حالة طلب معين في قاعدة البيانات عبر واجهة برمجة التطبيقات (API).

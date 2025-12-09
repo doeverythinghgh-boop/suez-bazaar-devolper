@@ -254,41 +254,6 @@ async function handleStatusUpdateClick(event, userKey) {
   }
 }
 
-/**
- * @description يرسل إشعارات بعد تحديث حالة الطلب.
- * @param {string} orderKey - مفتاح الطلب المحدث.
- * @param {string} sellerKey - مفتاح المستخدم (البائع).
- * @param {string} newStatusState - اسم الحالة الجديدة.
- */
-async function sendUpdateNotifications(
-  orderKey,
-  sellerKey,
-  newStatusState,
-  withDelivery = true
-) {
-  try {
-    let deliveryTokens = [];
-    //  جلب توكنات خدمات التوصيل إذا كان من اطلق الحدث بائع
-    if (withDelivery && sessionStorage.getItem("isSELLER")) {
-      // 1. جلب توكنات خدمات التوصيل النشطة للبائع
-      deliveryTokens = await getTokensForActiveDelivery2Seller(sellerKey); // استخراج التوكنات الصالحة فقط
-    }
-    if (!sessionStorage.getItem("isADMIN")) {
-      // 2. جلب توكنات المسؤولين (الدالة معرفة في js/helpers/network.js)
-      const adminTokens = await getAdminTokens();
-    }
-
-    // 3. دمج جميع التوكنات (خدمات التوصيل والمسؤولين) وإزالة التكرار
-    const allTokens = [
-      ...new Set([...(deliveryTokens || []), ...(adminTokens || [])]),
-    ];
-    const title = "تحديث حالة طلب";
-    const body = `تم تحديث حالة الطلب رقم #${orderKey} إلى "${newStatusState}".`;
-    await sendNotificationsToTokens(allTokens, title, body);
-  } catch (error) {
-    console.error("[Notifications] فشل في إرسال الإشعارات:", error);
-  }
-}
 
 /**
  * @description يعالج حدث النقر لعرض تفاصيل المنتج.
