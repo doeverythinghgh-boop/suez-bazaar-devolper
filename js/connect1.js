@@ -161,25 +161,3 @@ async function getLatestUpdate() {
   }
 }
 
-/**
- * @description يجلب قائمة الموزعين النشطين المرتبطين ببائع معين.
- *   يستخدم الفلتر `activeOnly=true` لجلب البيانات بكفاءة من الخادم.
- * @function getActiveDeliveryRelations
- * @param {string} sellerKey - المفتاح الفريد للبائع (`user_key`).
- * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات الموزعين النشطين، أو `null` في حالة حدوث خطأ.
- * @throws {Error} - إذا فشل جلب البيانات من API.
- * @see apiFetch
- */
-async function getActiveDeliveryRelations(sellerKey) {
-  try {
-    const relations = await apiFetch(`/api/suppliers-deliveries?sellerKey=${sellerKey}&activeOnly=true`);
-    if (relations.error) {
-      throw new Error(relations.error);
-    }
-    console.log(`%c[API] getActiveDeliveryRelations successful for seller ${sellerKey}.`, "color: green;", relations);
-    return relations;
-  } catch (error) {
-    console.error(`%c[getActiveDeliveryRelations] for seller ${sellerKey} failed:`, "color: red;", error);
-    return null;
-  }
-}
