@@ -340,8 +340,8 @@ async function notifySellersOnPurchase(order) {
     const sellersMap = new Map();
 
     order.items.forEach(item => {
-        // نفترض أن كل عنصر يحتوي على seller_key أو user_key للبائع
-        const sellerKey = item.seller_key || item.user_key || item.vendor_id;
+        // نفترض أن كل عنصر يحتوي على seller_key للبائع
+        const sellerKey = item.seller_key;
 
         if (sellerKey) {
             if (!sellersMap.has(sellerKey)) {
@@ -361,7 +361,7 @@ async function notifySellersOnPurchase(order) {
             if (sellerTokens.length > 0) {
                 const productCount = products.length;
                 const title = "مبيعات جديدة!";
-                const body = `لقد باع ${productCount} من منتجاتك (${products[0]}${productCount > 1 ? ' وآخرين' : ''}). تفقد الطلبات الآن.`;
+                const body = `طلب شراء. تفقد الطلبات الآن.`;
 
                 await sendNotificationsToTokens(sellerTokens, title, body);
                 console.log(`[Notifications] تم إرسال إشعار للبائع ${sellerKey}.`);

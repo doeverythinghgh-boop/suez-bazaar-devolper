@@ -106,157 +106,14 @@ function generateOrderKey() {
   return key.split('').sort(() => 0.5 - Math.random()).join('');
 }
 
-/**
- * @description تعالج عملية إتمام الشراء، بما في ذلك التحقق من صلاحية المستخدم،
- *   حساب إجمالي المبلغ، إنشاء الطلب، إرسال إشعارات للبائعين والمسؤولين،
- *   ثم مسح سلة المشتريات وتحديث واجهة المستخدم.
- * @function sendOrder2Excution
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، يعالج عمليات الشراء غير المتزامنة.
- * @see getCurrentUser
- * @see getCart
- * @see generateOrderKey
- * @see createOrder
- * @see getUniqueSellerKeys
- * @see getUsersTokens
- * @see sendNotification
- * @see clearCart
- * @see showCartModal
- */
-async function sendOrder2Excution() {
-  // 1. جلب البيانات
-  const loggedInUser = getCurrentUser();
-  const cart = getCart();
 
-  // التحقق من الشروط
-  if (!loggedInUser || loggedInUser.is_guest) {
-    Swal.fire({
-      title: 'مطلوب التسجيل',
-      text: 'لإتمام عملية الشراء، يجب عليك تسجيل الدخول أو إنشاء حساب جديد.',
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonText: 'تسجيل الدخول',
-      cancelButtonText: 'إلغاء'
-    }).then((result) => {
-      if (result.isConfirmed) window.location.href = 'login.html';
-    });
-    return;
-  }
-  if (cart.length === 0) {
-    Swal.fire('السلة فارغة', 'لا توجد منتجات في السلة لإتمام الشراء.', 'info');
-    return;
-  }
-
-  // 2. حساب المبلغ الإجمالي وإنشاء مفتاح الطلب
-  const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const orderKey = generateOrderKey();
-
-  const orderData = {
-    order_key: orderKey,
-    user_key: loggedInUser.user_key,
-    total_amount: totalAmount,
-    items: cart.map(item => ({
-      product_key: item.product_key,
-      quantity: item.quantity,
-      seller_key: item.seller_key // ✅ إضافة: إرسال مفتاح البائع مع كل عنصر
-    }))
-  };
-  console.log('[Checkout] جاري إرسال بيانات الطلب:', orderData);
-
-  // إظهار رسالة تأكيد
-  const result = await Swal.fire({
-    title: 'تأكيد الطلب',
-    text: `المبلغ الإجمالي هو ${totalAmount.toFixed(2)} جنيه. هل تريد المتابعة؟`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'نعم، أرسل الطلب!',
-    cancelButtonText: 'إلغاء',
-    showLoaderOnConfirm: true,
-    preConfirm: async () => {
-      const response = await createOrder(orderData);
-      console.log('[Checkout] الاستجابة من الخادم:', response);
-      return response;
-    },
-    allowOutsideClick: () => !Swal.isLoading()
-  });
-
-  if (result.isConfirmed && result.value && !result.value.error) {
-
-    // ✅ إصلاح: استخلاص مفتاح الطلب من نتيجة SweetAlert
-    const createdOrderKey = result.value.order_key;
-    console.log(`[Checkout] Order created with key: ${createdOrderKey}. Now sending notifications.`);
-
-    // 1. جلب توكنات البائعين
-    const sellerKeys = getUniqueSellerKeys(orderData);
-    const sellerTokens = await getUsersTokens(sellerKeys);
-
-    // 2. جلب توكنات المسؤولين (من الدالة المركزية)
-    const adminTokens = await getAdminTokens();
-
-    // 3. دمج جميع التوكنات وإزالة التكرار
-    const allTokens = [...new Set([...(sellerTokens||[]), ...(adminTokens||[])])];
-
-    // 4. إرسال الإشعارات باستخدام الدالة العامة
-    const title = 'طلب شراء جديد';
-    const body = `تم استلام طلب شراء جديد رقم #${createdOrderKey}. يرجى المراجعة.`;
-    await sendNotificationsToTokens(allTokens, title, body);
-
-    console.log('[Checkout] نجاح! تم تأكيد الطلب من قبل المستخدم وإنشاءه بنجاح.');
-    clearCart(); // هذه الدالة تحذف السلة وتطلق حدث 'cartUpdated'
-
-    // ✅ إصلاح: عرض رسالة النجاح، وبعد إغلاقها، يتم إعادة رسم نافذة السلة لتظهر فارغة.
-    Swal.fire('تم إتمام طلبك بنجاح 🎉').then(() => {
-      showCartModal(); // إعادة رسم المودال ليظهر فارغًا
-    });
-  } else if (result.value && result.value.error) {
-    console.error('[Checkout] فشل! الخادم أعاد خطأ:', result.value.error);
-    Swal.fire('حدث خطأ', `فشل إرسال الطلب: ${result.value.error}`, 'error');
-  }
-}
-
-
-
-
-
-
-
-
-
-/**
- * @description تستخلص المفاتيح الفريدة للبائعين (`seller_key`) من بنية بيانات الطلب (`orderData`).
- * @function getUniqueSellerKeys
- * @param {object} orderData - هيكل بيانات الطلب الذي يتم إعداده للإرسال إلى API، ويحتوي على مصفوفة `items`.
- * @param {Array<object>} orderData.items - مصفوفة من عناصر المنتج في الطلب، حيث يجب أن يحتوي كل عنصر على `seller_key`.
- * @returns {Array<string>} - قائمة بمفاتيح البائعين الفريدة المستخرجة من عناصر الطلب.
- */
-function getUniqueSellerKeys(orderData) {
-    if (!orderData || !Array.isArray(orderData.items)) {
-        console.error("Invalid order data structure provided.");
-        return [];
-    }
-    
-    // استخدام كائن Set لضمان أن كل مفتاح بائع يظهر مرة واحدة فقط (فريد)
-    const sellerKeys = new Set(); 
-    
-    // المرور على كل عنصر في الطلب
-    orderData.items.forEach(item => {
-        // يتم افتراض أن كل عنصر (item) يحتوي على حقل باسم 'seller_key'
-        if (item.seller_key) {
-            sellerKeys.add(item.seller_key);
-        }
-    });
-    
-    // تحويل الـ Set إلى مصفوفة وإعادتها
-    return Array.from(sellerKeys);
-}
 
 async function sendOrder2Excution() {
   // 1. جلب البيانات
-
   const cart = getCart();
 
-  // التحقق من الشروط
-
-  if (!userSession || !Number(userSession.is_seller) < 0) {
+  // 2. التحقق من الجلسة (إصلاح الشرط المعكوس)
+  if (!userSession || userSession.user_key == "guest_user") {
     Swal.fire({
       title: "مطلوب التسجيل",
       text: "لإتمام عملية الشراء، يجب عليك تسجيل الدخول أو إنشاء حساب جديد.",
@@ -276,21 +133,23 @@ async function sendOrder2Excution() {
         );
       }
     });
-
     return;
   }
+
+  // 3. التحقق من السلة
   if (cart.length === 0) {
     Swal.fire("السلة فارغة", "لا توجد منتجات في السلة لإتمام الشراء.", "info");
     return;
   }
 
-  // 2. حساب المبلغ الإجمالي وإنشاء مفتاح الطلب
+  // 4. حساب المبلغ الإجمالي وإنشاء مفتاح الطلب
   const totalAmount = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
   );
   const orderKey = generateOrderKey();
 
+  // 5. بناء بيانات الطلب (إزالة التكرار)
   const orderData = {
     order_key: orderKey,
     user_key: userSession.user_key,
@@ -298,58 +157,93 @@ async function sendOrder2Excution() {
     items: cart.map((item) => ({
       product_key: item.product_key,
       quantity: item.quantity,
-      product_key: item.product_key,
-      quantity: item.quantity,
-      seller_key: item.seller_key, // ✅ إضافة: إرسال مفتاح البائع مع كل عنصر
-      note: item.note || "", // ✅ إضافة: إرسال الملاحظة مع كل عنصر
+      seller_key: item.seller_key,
+      note: item.note || "",
     })),
   };
   console.log("[Checkout] جاري إرسال بيانات الطلب:", orderData);
 
-  // إظهار رسالة تأكيد
+  // 6. إظهار رسالة تأكيد
   const result = await Swal.fire({
     title: "تأكيد الطلب",
-    text: `المبلغ الإجمالي هو ${totalAmount.toFixed(
-      2
-    )} جنيه. هل تريد المتابعة؟`,
+    text: `المبلغ الإجمالي هو ${totalAmount.toFixed(2)} جنيه. هل تريد المتابعة؟`,
     icon: "question",
     showCancelButton: true,
     confirmButtonText: "نعم، أرسل الطلب!",
     cancelButtonText: "إلغاء",
     showLoaderOnConfirm: true,
     preConfirm: async () => {
-      const response = await createOrder(orderData);
-      console.log("[Checkout] الاستجابة من الخادم:", response);
-      return response;
+      try {
+        const response = await createOrder(orderData);
+        console.log("[Checkout] الاستجابة من الخادم:", response);
+        return response;
+      } catch (error) {
+        Swal.showValidationMessage(`فشل الطلب: ${error.message || error}`);
+        return null;
+      }
     },
     allowOutsideClick: () => !Swal.isLoading(),
   });
 
+  // 7. معالجة النتيجة
   if (result.isConfirmed && result.value && !result.value.error) {
-    // ✅ إصلاح: استخلاص مفتاح الطلب من نتيجة SweetAlert
     const createdOrderKey = result.value.order_key;
-    console.log(
-      `[Checkout] Order created with key: ${createdOrderKey}. Now sending notifications.`
-    );
+    console.log(`[Checkout] تم إنشاء الطلب بنجاح: ${createdOrderKey}`);
 
-    // استخدام الدوال الجديدة لإدارة الإشعارات
+    // 8. إرسال الإشعارات باستخدام الدالة الجديدة
     if (typeof handlePurchaseNotifications === 'function') {
       const finalOrderForNotify = { ...orderData, id: createdOrderKey };
-      // عدم انتظار الإشعارات لتجنب تأخير واجهة المستخدم، أو يمكن انتظارها حسب الحاجة
-      handlePurchaseNotifications(finalOrderForNotify).catch(err => console.error('[Checkout] Notification Error:', err));
+      handlePurchaseNotifications(finalOrderForNotify)
+        .catch(err => console.error('[Checkout] خطأ في إرسال الإشعارات:', err));
     } else {
-      console.warn('[Checkout] handlePurchaseNotifications function is not available.');
+      console.warn('[Checkout] دالة handlePurchaseNotifications غير متوفرة');
     }
-    console.log(
-      "[Checkout] نجاح! تم تأكيد الطلب من قبل المستخدم وإنشاءه بنجاح."
-    );
-    clearCart(); // هذه الدالة تحذف السلة وتطلق حدث 'cartUpdated'
 
-    // ✅ إصلاح: عرض رسالة النجاح، وبعد إغلاقها، يتم إعادة رسم نافذة السلة لتظهر فارغة.
-    Swal.fire("تم إتمام طلبك بنجاح 🎉").then(() => {
+    // 9. تنظيف السلة وإظهار رسالة النجاح
+    clearCart();
+    await Swal.fire({
+      title: "تم إتمام طلبك بنجاح! 🎉",
+      text: `رقم الطلب: #${createdOrderKey}`,
+      icon: "success",
+      confirmButtonText: "حسناً"
     });
+
   } else if (result.value && result.value.error) {
-    console.error("[Checkout] فشل! الخادم أعاد خطأ:", result.value.error);
+    console.error("[Checkout] فشل إنشاء الطلب:", result.value.error);
     Swal.fire("حدث خطأ", `فشل إرسال الطلب: ${result.value.error}`, "error");
   }
 }
+
+
+
+
+
+
+/**
+ * @description تستخلص المفاتيح الفريدة للبائعين (`seller_key`) من بنية بيانات الطلب (`orderData`).
+ * @function getUniqueSellerKeys
+ * @param {object} orderData - هيكل بيانات الطلب الذي يتم إعداده للإرسال إلى API، ويحتوي على مصفوفة `items`.
+ * @param {Array<object>} orderData.items - مصفوفة من عناصر المنتج في الطلب، حيث يجب أن يحتوي كل عنصر على `seller_key`.
+ * @returns {Array<string>} - قائمة بمفاتيح البائعين الفريدة المستخرجة من عناصر الطلب.
+ */
+function getUniqueSellerKeys(orderData) {
+  if (!orderData || !Array.isArray(orderData.items)) {
+    console.error("Invalid order data structure provided.");
+    return [];
+  }
+
+  // استخدام كائن Set لضمان أن كل مفتاح بائع يظهر مرة واحدة فقط (فريد)
+  const sellerKeys = new Set();
+
+  // المرور على كل عنصر في الطلب
+  orderData.items.forEach(item => {
+    // يتم افتراض أن كل عنصر (item) يحتوي على حقل باسم 'seller_key'
+    if (item.seller_key) {
+      sellerKeys.add(item.seller_key);
+    }
+  });
+
+  // تحويل الـ Set إلى مصفوفة وإعادتها
+  return Array.from(sellerKeys);
+}
+
