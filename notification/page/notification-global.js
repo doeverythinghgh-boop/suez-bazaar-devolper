@@ -124,7 +124,15 @@ window.GLOBAL_NOTIFICATIONS = {
     notifyCountUpdate: function () {
         // نتحقق مما إذا كانت صفحة الإشعارات معروضة حالياً
         const notificationsContainer = document.getElementById('index-notifications-container');
-        const isPageVisible = notificationsContainer && notificationsContainer.style.display !== 'none' && notificationsContainer.innerHTML.trim() !== '';
+
+        // فحص أكثر دقة لمعرفة إذا كانت الصفحة مرئية
+        let isPageVisible = false;
+        if (notificationsContainer) {
+            const hasContent = notificationsContainer.innerHTML.trim() !== '';
+            const isDisplayed = notificationsContainer.offsetParent !== null ||
+                window.getComputedStyle(notificationsContainer).display !== 'none';
+            isPageVisible = hasContent && isDisplayed;
+        }
 
         if (isPageVisible) {
             // إذا كانت الصفحة مفتوحة، نُخفي الشارة بغض النظر عن العدد (لأن المستخدم يرى الإشعارات الآن)
@@ -157,6 +165,8 @@ window.GLOBAL_NOTIFICATIONS = {
             return;
         }
 
+        console.log(`[Global] تحديث الشارة: العدد = ${this.unreadCount}`);
+
         // تحديث المحتوى والعرض
         if (this.unreadCount > 0) {
             badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
@@ -164,9 +174,11 @@ window.GLOBAL_NOTIFICATIONS = {
             badge.style.display = 'flex';
             // تأكيد اللون (احترازي)
             badge.style.backgroundColor = '#dc3545';
+            console.log(`[Global] ✅ تم إظهار الشارة بالعدد: ${badge.textContent}`);
         } else {
             // إخفاء الشارة
             badge.style.display = 'none';
+            console.log('[Global] ⭕ تم إخفاء الشارة (العدد = 0)');
         }
     },
 
