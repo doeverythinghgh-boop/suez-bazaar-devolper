@@ -200,6 +200,11 @@ window.GLOBAL_NOTIFICATIONS = {
         window.addEventListener('notificationLogAdded', async (event) => {
             console.log('[Global] حدث إشعار جديد:', event.detail);
 
+            // تشغيل صوت التنبيه للإشعارات المستلمة فقط
+            if (event.detail && event.detail.type === 'received') {
+                this.playNotificationSound();
+            }
+
             // إعادة حساب العدد الكلي من قاعدة البيانات لضمان الدقة وتجنب الأخطاء التراكمية
             await this.updateCounter();
 
@@ -273,6 +278,31 @@ window.GLOBAL_NOTIFICATIONS = {
 
         // إغلاق الإشعار تلقائياً بعد 5 ثوان
         setTimeout(() => notif.close(), 5000);
+    },
+
+    /**
+     * @description تشغيل صوت تنبيه باستخدام Web Audio API
+     */
+    playNotificationSound: function () {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // صوت متوسط للإشعارات الجديدة
+            oscillator.frequency.value = 600;
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        } catch (error) {
+            console.warn('[Global] لا يمكن تشغيل الصوت:', error);
+        }
     }
 };
 

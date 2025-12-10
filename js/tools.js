@@ -218,7 +218,7 @@ async function clearAllBrowserData() {
 }
 
 function showNotificationsModal() {
-      mainLoader("./notification/page/notifications.html", "index-notifications-container", 0, undefined, "showHomeIcon", true);
+      mainLoader("./notification/page/notifications.html", "index-notifications-container", 500, undefined, "showHomeIcon", true);
 }
 
 const pageSnapshots = {};

@@ -769,6 +769,9 @@ const NotificationPage = {
      * @param {string} type
      */
     showToast(message, type = 'info') {
+        // تشغيل صوت التنبيه
+        this.playNotificationSound(type);
+
         // إنشاء عنصر toast
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
@@ -797,6 +800,39 @@ const NotificationPage = {
                 toast.remove();
             }
         }, 3000);
+    },
+
+    /**
+     * @description تشغيل صوت تنبيه باستخدام Web Audio API
+     * @param {string} type - نوع الإشعار (info, success, error)
+     */
+    playNotificationSound(type = 'info') {
+        try {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // تحديد التردد بناءً على نوع الإشعار
+            if (type === 'error') {
+                oscillator.frequency.value = 400; // صوت منخفض للأخطاء
+            } else if (type === 'success') {
+                oscillator.frequency.value = 800; // صوت عالي للنجاح
+            } else {
+                oscillator.frequency.value = 600; // صوت متوسط للمعلومات
+            }
+
+            oscillator.type = 'sine';
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.2);
+        } catch (error) {
+            console.warn('[Notifications] لا يمكن تشغيل الصوت:', error);
+        }
     },
 
     /**
