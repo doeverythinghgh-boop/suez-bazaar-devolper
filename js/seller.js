@@ -3,29 +3,7 @@
  * @description يحتوي على المنطق الخاص بلوحة تحكم البائع (إضافة/تعديل/عرض المنتجات).
  */
 
-/**
- * @description يعرض نافذة منبثقة (Modal) لإضافة منتج جديد.
- *   يقوم بتحميل قالب إضافة المنتج من `pages/addProduct.html` ويهيئ النموذج عند الفتح.
- * @function showAddProductModal
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
- * @see loadAndShowModal
- * @see initializeAddProductForm
- */
-async function showAddProductModal() {
-  await loadAndShowModal(
-    "add-product-modal",
-    "pages/addProduct.html",
-    () => {
-      // Reset the form in case it was initialized before.
-      if (typeof window.productResetAddProductForm === "function") {
-        window.productResetAddProductForm();
-      }
-      if (typeof productInitializeAddProductForm === "function") {
-        window.productInitializeAddProductForm();
-      }
-    }
-  );
-}
+
 
 /**
  * @description يعرض نافذة منبثقة (Modal) لتعديل منتج موجود.

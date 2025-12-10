@@ -119,7 +119,7 @@ async function initAdverModule(containerId, forceRefresh = false) {
 function buildSlider(container, adImages) {
   // إذا لم توجد صور، اعرض رسالة
   if (adImages.length === 0) {
-    container.innerHTML = '<p class="no-ads-message">لا توجد إعلانات حالياً</p>';
+    container.innerHTML = '<p class="no-ads-message">لا توجد إعلانات حالياً تاكد من الاتصال بالانترنت</p>';
     container.style.height = 'auto'; // ضبط الارتفاع
     return;
   }

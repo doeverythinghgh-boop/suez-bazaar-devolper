@@ -8,7 +8,7 @@ window.CategoryModal = (function () {
     // 1. المتغيرات العامة
     // ============================================
     const MODAL_ID = 'category-modal';
-    const DEFAULT_TITLE = '📋 تحديد فئة المنتج';
+    const DEFAULT_TITLE = '📋 تحديد فئة المنتج الجديد';
     const CATEGORIES_URL = './shared/list.json';
     const HTML_URL = './shared/categoryModal.html';
     const CSS_URL = './shared/categoryModal.css';

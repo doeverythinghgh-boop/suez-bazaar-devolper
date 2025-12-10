@@ -126,7 +126,7 @@
 </style>
 <!-- ✅ جديد: حاوية شريط الإعلانات -->
 <div id="advertisement-section" class="ad-slider-container">
-  <p class="no-ads-message" style="display: none">لا توجد إعلانات حالياً</p>
+  <p class="no-ads-message" style="display: none">لا توجد إعلانات حالياً تاكد من الاتصال بالانترنت</p>
   <div class="ad-slider-track"></div>
   <div class="ad-slider-dots"></div>
   <button class="ad-slider-nav prev" aria-label="Previous Slide" style="display: none">
@@ -281,7 +281,7 @@
     /** @param {HTMLElement} container - عنصر DOM الذي سيحتوي على شريط التمرير. */
     // إذا لم توجد صور، اعرض رسالة
     if (adImages.length === 0) {
-      container.innerHTML = '<p class="no-ads-message">لا توجد إعلانات حالياً</p>';
+      container.innerHTML = '<p class="no-ads-message">لا توجد إعلانات حالياً تاكد من الاتصال بالانترنت</p>';
       container.style.height = 'auto'; // ضبط الارتفاع
       return;
     }
