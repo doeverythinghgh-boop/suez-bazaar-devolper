@@ -31,8 +31,9 @@ export default async function handler(request) {
     const { searchParams } = new URL(request.url);
     const user_key = searchParams.get('user_key');
     const role = searchParams.get('role');
+    const order_key = searchParams.get('order_key'); // ✅ جديد: دعم الفلترة برقم الطلب
 
-    console.log(`[API: user-all-orders] المعاملات المستلمة - user_key: ${user_key}, role: ${role}`);
+    console.log(`[API: user-all-orders] المعاملات المستلمة - user_key: ${user_key}, role: ${role}, order_key: ${order_key || 'N/A'}`);
 
     // التحقق من وجود المعاملات المطلوبة
     if (!user_key) {
@@ -92,6 +93,10 @@ export default async function handler(request) {
       case 'purchaser':
         orderKeysQuery = `SELECT order_key FROM orders WHERE user_key = ?`;
         queryArgs = [user_key];
+        if (order_key) {
+          orderKeysQuery += ` AND order_key = ?`;
+          queryArgs.push(order_key);
+        }
         console.log('[API: user-all-orders] البحث عن الطلبات التي اشتراها المستخدم');
         break;
 
@@ -103,6 +108,10 @@ export default async function handler(request) {
           WHERE oi.seller_key = ?
         `;
         queryArgs = [user_key];
+        if (order_key) {
+          orderKeysQuery += ` AND o.order_key = ?`;
+          queryArgs.push(order_key);
+        }
         console.log('[API: user-all-orders] البحث عن الطلبات التي يبيعها المستخدم');
         break;
 
@@ -115,12 +124,20 @@ export default async function handler(request) {
           WHERE sd.delivery_key = ? AND sd.is_active = 1
         `;
         queryArgs = [user_key];
+        if (order_key) {
+          orderKeysQuery += ` AND o.order_key = ?`;
+          queryArgs.push(order_key);
+        }
         console.log('[API: user-all-orders] البحث عن الطلبات التي يوزعها المستخدم');
         break;
 
       case 'admin':
-        orderKeysQuery = `SELECT order_key FROM orders`;
+        orderKeysQuery = `SELECT order_key FROM orders WHERE 1=1`;
         queryArgs = [];
+        if (order_key) {
+          orderKeysQuery += ` AND order_key = ?`;
+          queryArgs.push(order_key);
+        }
         console.log('[API: user-all-orders] البحث عن جميع الطلبات (وضع المشرف)');
         break;
     }

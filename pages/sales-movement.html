@@ -787,10 +787,65 @@
                 // إضافة مستمعي الأحداث للبطاقات
                 const salesMovement_cards = document.querySelectorAll('.salesMovement_orderCard');
                 salesMovement_cards.forEach((salesMovement_card) => {
-                    salesMovement_card.addEventListener('click', function () {
-                        const salesMovement_orderIndex = parseInt(this.getAttribute('data-order-index'));
-                        const salesMovement_orderData = salesMovement_sortedOrders[salesMovement_orderIndex];
-                        salesMovement_showOrderDetails(salesMovement_orderData);
+                    salesMovement_card.addEventListener('click', async function () {
+                        try {
+                            // 1. إعادة تعيين القيم الافتراضية
+                            localStorage.setItem('productKeyFromStepReview', '');
+                            if (window.globalStepperAppData) window.globalStepperAppData = null;
+
+                            const salesMovement_orderIndex = parseInt(this.getAttribute('data-order-index'));
+                            let salesMovement_orderData = salesMovement_sortedOrders[salesMovement_orderIndex];
+
+                            if (!salesMovement_orderData) return;
+
+                            // 2. إظهار مؤشر تحميل بسيط (اختياري: يمكن تحسينه UI)
+                            const originalCursor = document.body.style.cursor;
+                            document.body.style.cursor = 'wait';
+
+                            console.log(`[SalesMovement] Fetching fresh data for order: ${salesMovement_orderData.order_key} `);
+
+                            // 3. جلب البيانات الطازجة
+                            const userKey = userSession.user_key;
+                            // نحتاج معرفة الدور الحالي (buyer, seller, delivery)
+                            // يمكن استنتاجه من الراديو المحدد
+                            const selectedRoleRadio = document.querySelector('input[name="salesMovement_userType"]:checked');
+                            const roleType = selectedRoleRadio ? selectedRoleRadio.value : 'buyer'; // default
+
+                            // تحويل roleType إلى Role API المناسب
+                            let apiRole = 'purchaser';
+                            if (roleType === 'seller') apiRole = 'seller';
+                            if (roleType === 'delivery') apiRole = 'delivery';
+
+                            // بناء الرابط
+                            const fetchUrl = `${baseURL}/api/user-all-orders?user_key=${userKey}&role=${apiRole}&order_key=${salesMovement_orderData.order_key}`;
+
+                            const response = await fetch(fetchUrl);
+                            if (response.ok) {
+                                const freshDataArray = await response.json();
+                                if (freshDataArray && freshDataArray.length > 0) {
+                                    console.log('[SalesMovement] Fresh data received:', freshDataArray[0]);
+                                    salesMovement_orderData = freshDataArray[0]; // تحديث البيانات بالنسخة الأحدث
+                                } else {
+                                    console.warn('[SalesMovement] No fresh data found, using cached.');
+                                }
+                            } else {
+                                console.error('[SalesMovement] Failed to fetch fresh data:', response.status);
+                            }
+
+                            document.body.style.cursor = originalCursor;
+
+                            // 4. عرض التفاصيل بالبيانات (المحدثة أو المتاحة)
+                            salesMovement_showOrderDetails(salesMovement_orderData);
+
+                        } catch (e) {
+                            console.error('[SalesMovement] Error handling card click:', e);
+                            document.body.style.cursor = 'default';
+                            // Fallback to existing data if fetch fails critically
+                            const idx = parseInt(this.getAttribute('data-order-index'));
+                            if (salesMovement_sortedOrders[idx]) {
+                                salesMovement_showOrderDetails(salesMovement_sortedOrders[idx]);
+                            }
+                        }
                     });
                 });
 
@@ -810,7 +865,7 @@
         function salesMovement_saveUserTypeSelection(salesMovement_userType) {
             try {
                 localStorage.setItem(salesMovement_STORAGE_KEY, salesMovement_userType);
-                console.log(`تم حفظ الاختيار: ${salesMovement_userType}`);
+                console.log(`تم حفظ الاختيار: ${salesMovement_userType} `);
             } catch (salesMovement_error) {
                 console.error('حدث خطأ في دالة saveUserTypeSelection:', salesMovement_error);
             }
@@ -821,9 +876,9 @@
             try {
                 const salesMovement_savedType = localStorage.getItem(salesMovement_STORAGE_KEY);
                 if (salesMovement_savedType) {
-                    console.log(`تم استعادة الاختيار المحفوظ: ${salesMovement_savedType}`);
+                    console.log(`تم استعادة الاختيار المحفوظ: ${salesMovement_savedType} `);
                     // تحديد الراديو بوتن المناسب
-                    const salesMovement_radioToCheck = document.getElementById(`salesMovement_${salesMovement_savedType}`);
+                    const salesMovement_radioToCheck = document.getElementById(`salesMovement_${salesMovement_savedType} `);
                     if (salesMovement_radioToCheck) {
                         salesMovement_radioToCheck.checked = true;
                     }
@@ -885,7 +940,7 @@
                 salesMovement_hours = salesMovement_hours % 12;
                 salesMovement_hours = salesMovement_hours ? salesMovement_hours : 12;
 
-                return `${salesMovement_day} ${salesMovement_month} ${salesMovement_year} - ${salesMovement_hours}:${salesMovement_minutes} ${salesMovement_ampm}`;
+                return `${salesMovement_day} ${salesMovement_month} ${salesMovement_year} - ${salesMovement_hours}:${salesMovement_minutes} ${salesMovement_ampm} `;
             } catch (salesMovement_error) {
                 console.error('خطأ في تنسيق التاريخ:', salesMovement_error);
                 return salesMovement_dateString;
@@ -958,6 +1013,7 @@
                 console.log('تم تعيين globalStepperAppData من صفحة  pages_sales-movement.html   :', window.globalStepperAppData);
                 console.log('Sample item from globalStepperAppData:', window.globalStepperAppData.ordersData[0].order_items[0]);
 
+                // إنشاء iframe لعرض صفحة stepper
                 // إنشاء iframe لعرض صفحة stepper
                 salesMovement_modalBody.innerHTML = `
                     <iframe 
@@ -1049,7 +1105,7 @@
 
                     try {
                         // جلب بيانات المنتج
-                        const salesMovement_response = await fetch(`${baseURL}/api/products?product_key=${salesMovement_currentProductKey}`);
+                        const salesMovement_response = await fetch(`${baseURL} / api / products ? product_key = ${salesMovement_currentProductKey}`);
 
                         if (!salesMovement_response.ok) {
                             throw new Error(`HTTP error! status: ${salesMovement_response.status}`);
