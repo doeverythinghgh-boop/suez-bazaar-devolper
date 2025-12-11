@@ -12,6 +12,19 @@
     <link rel="stylesheet" href="style.css" id="main-stylesheet">
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" id="sweetalert-script"></script>
+
+    <!-- Notification Dependencies -->
+    <script src="../js/config.js"></script>
+    <script src="../js/globalVariable.js"></script>
+    <script src="../notification/notificationSetUp.js"></script>
+    <script src="../notification/notificationTools.js"></script>
+    <script src="../notification/notification-db-manager.js"></script>
+
+    <script>
+        // Initialize userSession for notificationTools.js
+        window.userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
+    </script>
+
     <script src="./main.js" type="module" id="main-script"></script>
 </head>
 
