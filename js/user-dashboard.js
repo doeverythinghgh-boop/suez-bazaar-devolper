@@ -73,10 +73,10 @@ function handleAdminPanelClick() {
     Swal.fire({
       title: "اختر وجهتك",
       html: `
-                <div class="swal-custom-actions" style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
-                    <button id="swal-users-btn" class="swal2-confirm swal2-styled">مستخدمين</button>
-                    <button id="swal-advert-btn" class="swal2-deny swal2-styled">الاعلان</button>
-                    <button id="swal-notifications-btn" class="swal2-styled" style="background-color: #808080;">اشعارات</button>
+                <div class="swal-custom-actions" style="display: flex; justify-content: center; gap: 8px; margin-top: 20px;">
+                    <button id="swal-users-btn" class="swal2-confirm swal2-styled" style="font-size: 0.85em; padding: 0.5em 1.2em;">مستخدمين</button>
+                    <button id="swal-advert-btn" class="swal2-deny swal2-styled" style="font-size: 0.85em; padding: 0.5em 1.2em;">الاعلان</button>
+                    <button id="swal-notifications-btn" class="swal2-styled" style="background-color: #808080; font-size: 0.85em; padding: 0.5em 1.2em;">اشعارات</button>
                 </div>
             `,
       showConfirmButton: false,
