@@ -5,48 +5,57 @@
  * @returns {Promise<boolean>}
  */
 let cachedDefaultConfig = null;
+/**
+ * @description التحقق من تفعيل التنبيه لحدث معين ودور معين بناءً على ملف JSON.
+ * ✅ يعتمد **حصرياً** على notification_config.json (المحمل في window.globalNotificationConfig أو عبر الجلب).
+ * ❌ يتجاهل localStorage (لأنه للإدارة فقط أو التصدير اليدوي).
+ * @param {string} eventKey - مفتاح الحدث (مثل 'purchase', 'step-confirmed').
+ * @param {string} role - الدور المستهدف (admin, seller, buyer, delivery).
+ * @returns {Promise<boolean>} - هل يجب إرسال الإشعار؟
+ */
 async function shouldNotify(eventKey, role) {
-    try {
-        const stored = localStorage.getItem('notification_config');
-        if (stored) {
-            const config = JSON.parse(stored);
-            if (config[eventKey] && config[eventKey][role] !== undefined) {
-                return config[eventKey][role];
-            }
-        }
-    } catch (e) {
-        console.warn('[Notifications] Error reading config, using defaults:', e);
-    }
+    let config = window.globalNotificationConfig;
 
-    // Fallback Defaults (Fetched from JSON if possible)
-    if (!cachedDefaultConfig) {
-        try {
-            const response = await fetch('/notification_config.json');
-            if (response.ok) {
-                cachedDefaultConfig = await response.json();
-            } else {
-                console.warn('[Notifications] Failed to fetch defaults from JSON.');
+    // 1. إذا لم يكن Config محملاً عالمياً، نحاول جلبه فوراً
+    if (!config) {
+        if (!cachedDefaultConfig) { // استخدام الكاش الداخلي كخط دفاع ثانٍ
+            try {
+                console.warn('[Notifications] Config not in window, fetching JSON...');
+                const response = await fetch('/notification_config.json');
+                if (response.ok) {
+                    cachedDefaultConfig = await response.json();
+                    config = cachedDefaultConfig;
+                    // تحديث المتغير العام للمستقبل
+                    window.globalNotificationConfig = config;
+                } else {
+                    console.error('[Notifications] Failed to fetch JSON config:', response.status);
+                }
+            } catch (e) {
+                console.error('[Notifications] Error fetching JSON config:', e);
             }
-        } catch (e) {
-            console.warn('[Notifications] Error fetching JSON defaults:', e);
+        } else {
+            config = cachedDefaultConfig;
         }
     }
 
-    const defaults = cachedDefaultConfig || {
-        // Hardcoded specific fallback if JSON completely fails (safety net)
-        'purchase': { buyer: false, admin: true, seller: true, delivery: false },
-        // ... other critical defaults could be here, but usually JSON should load or stored config exists.
+    // 2. التحقق من القيمة في Config (إذا وجد)
+    if (config && config[eventKey] && config[eventKey][role] !== undefined) {
+        return config[eventKey][role];
+    }
+
+    // 3. Fallback Defaults (شبكة أمان فقط في حالة فشل التحميل الكلي)
+    // العودة إلى true (السماح بالإشعار) لعدم تفويت أحداث مهمة في حالة الخطأ،
+    // إلا إذا كان هناك منطق حرج يتطلب العكس.
+    const criticalDefaults = {
+        'purchase': { admin: true }, // دائماً أبلغ الإدارة بالشراء كأولوية قصوى
     };
 
-    // If we have defaults (from JSON)
-    if (defaults && defaults[eventKey]) {
-        return defaults[eventKey][role] !== false; // Default to true if not explicitly false, or match logic
+    if (criticalDefaults[eventKey] && criticalDefaults[eventKey][role] !== undefined) {
+        return criticalDefaults[eventKey][role];
     }
 
-    // Safety fallback: only purchase notification to admin is critical true by default if EVERYTHING fails
-    if (eventKey === 'purchase' && role === 'admin') return true;
-
-    return true; // Default permissive or restrictive? Usually permissive if config missing is better to not lose notification
+    console.warn(`[Notifications] Config missing for ${eventKey}.${role}, defaulting to TRUE per user requirement.`);
+    return true;
 }
 
 /**

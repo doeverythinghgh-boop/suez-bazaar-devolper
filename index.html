@@ -318,7 +318,24 @@
     }
 
     // [نقطة البداية] يتم تنفيذ هذا الكود بعد تحميل محتوى DOM بالكامل.
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("DOMContentLoaded", async () => {
+      // [خطوة 0] التحقق من وجود واجهة Android ودالة التحديث.
+      if (window.Android && typeof window.Android.checkForUpdates === "function") {
+        window.Android.checkForUpdates();
+      }
+      // [خطوة 0] تحميل إعدادات الإشعارات من السيرفر (المصدر الوحيد للحقيقة)
+      try {
+        const response = await fetch('/notification_config.json');
+        if (response.ok) {
+          window.globalNotificationConfig = await response.json();
+          console.log('✅ تم تحميل إعدادات الإشعارات من السيرفر بنجاح:', window.globalNotificationConfig);
+        } else {
+          console.error('❌ فشل تحميل إعدادات الإشعارات من السيرفر:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ خطأ في الاتصال أثناء تحميل إعدادات الإشعارات:', error);
+      }
+
       // [خطوة 1] قراءة بيانات المستخدم المسجل من التخزين المحلي. إذا لم توجد، تكون القيمة null.
       userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
       // [خطوة 2] تحديث اسم المستخدم في شريط التنقل العلوي.
