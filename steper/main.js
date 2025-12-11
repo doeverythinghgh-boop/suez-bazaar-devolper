@@ -88,11 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         ordersData,
                         isBuyerReviewModificationLocked
                     );
-
-                    // 8. بدء عملية الاستطلاع (Polling) للتحديثات
-                    console.log("  [Main] Starting polling for updates...");
-                    startPollingForUpdates(controlData, ordersData, userId);
-
                     console.log("🎉 [Main] Application initialized successfully!");
                 } catch (initializationError) {
                     console.error(
@@ -106,57 +101,3 @@ document.addEventListener("DOMContentLoaded", () => {
             );
     });
 });
-
-/**
- * @function startPollingForUpdates
- * @description آلية المزامنة الدورية للتحقق من وجود تحديثات على حالة الطلب من السيرفر.
- * تقوم هذه الدالة بفحص المجلد الأب (window.parent) أو API إذا توفرت للحصول على آخر البيانات وتحديث الواجهة.
- */
-function startPollingForUpdates(controlData, ordersData, userId) {
-    if (!ordersData || ordersData.length === 0) return;
-
-    // فترة التحديث (مثلاً كل 5 ثواني)
-    const POLL_INTERVAL = 5000;
-
-    setInterval(() => {
-        // بدلاً من طلب API حقيقي هنا (لأن الهيكل الحالي يعتمد على window.parent data injection)،
-        // سنحاول إعادة قراءة البيانات من النافذة الأم إذا كانت متاحة، أو محاكاة جلب التحديث.
-
-        // ملاحظة: في بيئة إنتاج حقيقية، يجب استدعاء API: fetch('/api/orders/status?id=...')
-
-        if (window.parent && window.parent.globalStepperAppData) {
-            const serverState = window.parent.globalStepperAppData;
-
-            // قراءة الحالة المحلية الحالية للمقارنة
-            const localState = JSON.parse(localStorage.getItem(`stepper_app_data_${ordersData[0].order_key}`)) || {};
-
-            // مقارنة بسيطة: هل تغير شيء؟
-            // (للمقارنة الدقيقة يفضل استخدام JSON.stringify أو فحص timestamps)
-            if (JSON.stringify(serverState) !== JSON.stringify(localState)) {
-                console.log("🔄 [Polling] Detected update from server/parent. Refreshing UI...");
-
-                // تحديث الحالة المحلية
-                // ملاحظة: هنا يجب الحذر من الكتابة فوق تغييرات المستخدم المحلي إذا كان هو من يقوم بالتعديل حالياً.
-                // لكن بما أن هذه النسخة للمشتري (للعرض غالباً عند انتظار الشحن)، فالتحديث من السيرفر له الأولوية.
-                import('./stateManagement.js').then(module => {
-                    // نحفظ الحالة الجديدة
-                    // ملاحظة: نستخدم دالة saveAppState للتأكد من التناسق لكن بحذر من الدوران،
-                    // هنا نحدث الـ localStorage مباشرة لتفادي loop إذا كانت saveAppState تستدعي تحديث السيرفر
-                    // ولكن بما أننا في "استقبال"، التحديث المباشر آمن.
-                    localStorage.setItem(`stepper_app_data_${ordersData[0].order_key}`, JSON.stringify(serverState));
-
-                    // إعادة تحميل الصفحة أو تحديث الواجهة
-                    // الأسهل لضمان التناسق هو تحديث الخطوات
-                    import('./uiUpdates.js').then(uiModule => {
-                        uiModule.updateCurrentStepFromState(controlData, ordersData);
-                    });
-
-                    // تحديث المتغير العام
-                    import('./config.js').then(configModule => {
-                        configModule.updateGlobalStepperAppData(serverState);
-                    });
-                });
-            }
-        }
-    }, POLL_INTERVAL);
-}

@@ -4,58 +4,49 @@
  * @param {string} role ('buyer' | 'admin' | 'seller' | 'delivery')
  * @returns {Promise<boolean>}
  */
-/**
- * @description التحقق مما إذا كان يجب إرسال الإشعار بناءً على الإعدادات (من ملف JSON حصراً)
- * @param {string} eventKey
- * @param {string} role ('buyer' | 'admin' | 'seller' | 'delivery')
- * @returns {Promise<boolean>}
- */
 let cachedDefaultConfig = null;
+async function shouldNotify(eventKey, role) {
+    try {
+        const stored = localStorage.getItem('notification_config');
+        if (stored) {
+            const config = JSON.parse(stored);
+            if (config[eventKey] && config[eventKey][role] !== undefined) {
+                return config[eventKey][role];
+            }
+        }
+    } catch (e) {
+        console.warn('[Notifications] Error reading config, using defaults:', e);
+    }
 
-async function initNotificationSystem() {
+    // Fallback Defaults (Fetched from JSON if possible)
     if (!cachedDefaultConfig) {
         try {
-            console.log('[Notifications] Pre-loading configuration from JSON...');
             const response = await fetch('/notification_config.json');
             if (response.ok) {
                 cachedDefaultConfig = await response.json();
-                console.log('[Notifications] Configuration loaded successfully.');
             } else {
-                console.warn('[Notifications] Failed to load configuration (Status: ' + response.status + ')');
+                console.warn('[Notifications] Failed to fetch defaults from JSON.');
             }
         } catch (e) {
-            console.error('[Notifications] Error loading configuration:', e);
+            console.warn('[Notifications] Error fetching JSON defaults:', e);
         }
     }
-}
 
-// استدعاء دالة التهيئة فوراً عند تحميل الملف
-initNotificationSystem();
+    const defaults = cachedDefaultConfig || {
+        // Hardcoded specific fallback if JSON completely fails (safety net)
+        'purchase': { buyer: false, admin: true, seller: true, delivery: false },
+        // ... other critical defaults could be here, but usually JSON should load or stored config exists.
+    };
 
-async function shouldNotify(eventKey, role) {
-    // إزالة الاعتماد المحلي تماماً كما طلب المستخدم
-    // const stored = localStorage.getItem('notification_config'); ... (REMOVED)
-
-    // التأكد من تحميل الإعدادات من JSON
-    if (!cachedDefaultConfig) {
-        await initNotificationSystem();
-    }
-
-    const config = cachedDefaultConfig;
-
-    // الرد بناءً على الملف المحمل من السيرفر فقط
-    if (config && config[eventKey]) {
-        // إذا كان الدور معرفاً في الإعدادات، نرجع قيمته.
-        // إذا لم يكن معرفاً، نرجع true (افتراضي) أو false حسب الرغبة. هنا نلتزم بالملف.
-        if (config[eventKey][role] !== undefined) {
-            return config[eventKey][role];
-        }
+    // If we have defaults (from JSON)
+    if (defaults && defaults[eventKey]) {
+        return defaults[eventKey][role] !== false; // Default to true if not explicitly false, or match logic
     }
 
     // Safety fallback: only purchase notification to admin is critical true by default if EVERYTHING fails
     if (eventKey === 'purchase' && role === 'admin') return true;
 
-    return true; // Default permissive for unknown inputs
+    return true; // Default permissive or restrictive? Usually permissive if config missing is better to not lose notification
 }
 
 /**
