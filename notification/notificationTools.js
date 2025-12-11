@@ -1,4 +1,38 @@
 /**
+ * @description التحقق مما إذا كان يجب إرسال الإشعار بناءً على الإعدادات
+ * @param {string} eventKey
+ * @param {string} role ('buyer' | 'admin' | 'seller' | 'delivery')
+ * @returns {boolean}
+ */
+function shouldNotify(eventKey, role) {
+    try {
+        const stored = localStorage.getItem('notification_config');
+        if (stored) {
+            const config = JSON.parse(stored);
+            if (config[eventKey] && config[eventKey][role] !== undefined) {
+                return config[eventKey][role];
+            }
+        }
+    } catch (e) {
+        console.warn('[Notifications] Error reading config, using defaults:', e);
+    }
+
+    // Fallback Defaults (Based on User's Table)
+    const defaults = {
+        'purchase': { buyer: false, admin: true, seller: true, delivery: false },
+        'step-review': { buyer: true, admin: true, seller: false, delivery: false },
+        'step-cancelled': { buyer: false, admin: true, seller: true, delivery: false },
+        'step-confirmed': { buyer: true, admin: true, seller: false, delivery: true },
+        'step-rejected': { buyer: true, admin: true, seller: false, delivery: false },
+        'step-shipped': { buyer: true, admin: true, seller: false, delivery: true },
+        'step-delivered': { buyer: true, admin: true, seller: false, delivery: true },
+        'step-returned': { buyer: false, admin: false, seller: false, delivery: false }
+    };
+
+    return defaults[eventKey] ? defaults[eventKey][role] : true;
+}
+
+/**
  * @description دالة مخصصة ليتم استدعاؤها من كود الأندرويد الأصلي.
  *   تقوم هذه الدالة باستلام بيانات إشعار كـ JSON string وحفظه في IndexedDB.
  * @function saveNotificationFromAndroid
@@ -336,10 +370,18 @@ async function handlePurchaseNotifications(order) {
 
     try {
         // 1. إشعار الإدارة
-        await notifyAdminOnPurchase(order);
+        if (shouldNotify('purchase', 'admin')) {
+            await notifyAdminOnPurchase(order);
+        } else {
+            console.log('[Notifications] تم تخطي إشعار الإدارة (شراء) بناءً على الإعدادات.');
+        }
 
         // 2. إشعار البائعين
-        await notifySellersOnPurchase(order);
+        if (shouldNotify('purchase', 'seller')) {
+            await notifySellersOnPurchase(order);
+        } else {
+            console.log('[Notifications] تم تخطي إشعار البائعين (شراء) بناءً على الإعدادات.');
+        }
 
     } catch (error) {
         console.error('[Notifications] خطأ في معالجة إشعارات الشراء:', error);
@@ -569,21 +611,23 @@ async function notifyOnStepActivation({
         // إرسال الإشعارات بالتوازي لتحسين الأداء
         const notificationPromises = [];
 
-        // 1. إشعار المشتري (دائماً)
-        if (buyerKey) {
+        // 1. إشعار المشتري
+        if (buyerKey && shouldNotify(stepId, 'buyer')) {
             notificationPromises.push(
                 notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId)
             );
         }
 
-        // 2. إشعار الإدارة (دائماً)
-        notificationPromises.push(
-            notifyAdminOnStepChange(stepId, stepName, orderId, userName)
-        );
+        // 2. إشعار الإدارة
+        if (shouldNotify(stepId, 'admin')) {
+            notificationPromises.push(
+                notifyAdminOnStepChange(stepId, stepName, orderId, userName)
+            );
+        }
 
-        // 3. إشعار خدمات التوصيل (إذا كانت المرحلة متعلقة بالشحن/التوصيل)
+        // 3. إشعار خدمات التوصيل
         if (['step-confirmed', 'step-shipped', 'step-delivered'].includes(stepId)) {
-            if (deliveryKeys && deliveryKeys.length > 0) {
+            if (deliveryKeys && deliveryKeys.length > 0 && shouldNotify(stepId, 'delivery')) {
                 notificationPromises.push(
                     notifyDeliveryOnStepChange(deliveryKeys, stepId, stepName, orderId)
                 );
@@ -677,19 +721,21 @@ async function notifyOnSubStepActivation({
         switch (stepId) {
             case 'step-cancelled':
                 // ملغي: إشعار البائعين + الإدارة
-                if (sellerKeys && sellerKeys.length > 0) {
+                if (sellerKeys && sellerKeys.length > 0 && shouldNotify('step-cancelled', 'seller')) {
                     notificationPromises.push(
                         notifySellerOnStepChange(sellerKeys, stepId, stepName, orderId)
                     );
                 }
-                notificationPromises.push(
-                    notifyAdminOnStepChange(stepId, stepName, orderId, userName)
-                );
+                if (shouldNotify('step-cancelled', 'admin')) {
+                    notificationPromises.push(
+                        notifyAdminOnStepChange(stepId, stepName, orderId, userName)
+                    );
+                }
                 break;
 
             case 'step-rejected':
                 // مرفوض: إشعار المشتري + الإدارة
-                if (buyerKey) {
+                if (buyerKey && shouldNotify('step-rejected', 'buyer')) {
                     // تحديث رسالة المشتري للمرحلة "مرفوض"
                     const title = "منتجات مرفوضة";
                     const body = `تم رفض بعض المنتجات من طلبك${orderId ? ` رقم #${orderId}` : ''} لعدم توفرها.`;
@@ -700,21 +746,25 @@ async function notifyOnSubStepActivation({
                         );
                     }
                 }
-                notificationPromises.push(
-                    notifyAdminOnStepChange(stepId, stepName, orderId, userName)
-                );
+                if (shouldNotify('step-rejected', 'admin')) {
+                    notificationPromises.push(
+                        notifyAdminOnStepChange(stepId, stepName, orderId, userName)
+                    );
+                }
                 break;
 
             case 'step-returned':
                 // مرتجع: إشعار البائعين + الإدارة
-                if (sellerKeys && sellerKeys.length > 0) {
+                if (sellerKeys && sellerKeys.length > 0 && shouldNotify('step-returned', 'seller')) {
                     notificationPromises.push(
                         notifySellerOnStepChange(sellerKeys, stepId, stepName, orderId)
                     );
                 }
-                notificationPromises.push(
-                    notifyAdminOnStepChange(stepId, stepName, orderId, userName)
-                );
+                if (shouldNotify('step-returned', 'admin')) {
+                    notificationPromises.push(
+                        notifyAdminOnStepChange(stepId, stepName, orderId, userName)
+                    );
+                }
                 break;
         }
 
