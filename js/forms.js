@@ -1,16 +1,16 @@
 /**
  * @file js/forms.js
  * =======================================================================
- * وحدة تحميل المحتوى الديناميكي (Dynamic Content Loader - BidStory)
+ * Dynamic Content Loader Module (BidStory)
  *
- * تم تحديث profileRestartScripts لتغليف الأكواد المضمنة بـ IIFE
- * للتعامل مع أخطاء "Identifier has already been declared" الناتجة عن const/let.
+ * Updated profileRestartScripts to wrap inline codes with IIFE
+ * to handle "Identifier has already been declared" errors affecting const/let.
  * 
- * تمت إضافة دالة containerGoBack للعودة إلى الحاوية السابقة
+ * Added containerGoBack function to return to previous container
  * =======================================================================
  */
 
-// سجل المعرّفات (ID's) الخاصة بالحاويات التي تم تحميلها مع حفظ الترتيب
+// Log of IDs for containers that have been loaded, maintaining order
 /**
  * @constant
  * @type {string[]}
@@ -20,42 +20,44 @@
 const LOADER_REGISTRY = [];
 
 /**
- * @description إخفاء جميع الحاويات المسجلة ما عدا الحالية، والتحقق مما إذا كانت الحاوية مطلوبة للتحميل أم للعرض فقط.
+ * @description Hide all registered containers except current one, and check if container needs loading or just displaying.
  * @function profileHandleRegistry
- * @param {string} containerId - المعرّف (ID) الخاص بالحاوية الهدف.
- * @param {boolean} reload - هل يجب إعادة تحميل المحتوى حتى لو كان مسجلاً؟
- * @returns {boolean} - true إذا تم العثور على الحاوية ولم يُطلب إعادة التحميل، مما يوقف عملية التحميل.
+ * @param {string} containerId - Target container ID.
+ * @param {boolean} reload - Should content be reloaded even if registered?
+ * @returns {boolean} - true if container found and reload not requested, stopping load process.
  * @throws {Error} - If an error occurs during DOM manipulation or array operations.
  */
 function profileHandleRegistry(containerId, reload) {
     try {
-        // إخفاء جميع الحاويات المفتوحة حاليًا لتحاكي نظام التبويبات
+        // Hide all currently open containers to mimic tab system
         LOADER_REGISTRY.forEach((id) => {
             const el = document.getElementById(id);
             if (el) el.style.display = "none";
         });
 
-        // البحث عن الحاوية في المصفوفة
+        // Search for container in array
         const existingIndex = LOADER_REGISTRY.indexOf(containerId);
 
-        // إذا كانت الحاوية مسجلة بالفعل
+        // If container is already registered
         if (existingIndex !== -1) {
             const container = document.getElementById(containerId);
             if (container) container.style.display = "block";
 
-            // نقل الحاوية إلى نهاية المصفوفة لتصبح الأحدث
+            if (container) container.style.display = "block";
+
+            // Move container to end of array to become most recent
             LOADER_REGISTRY.splice(existingIndex, 1);
             LOADER_REGISTRY.push(containerId);
 
-            // إيقاف عملية التحميل إذا كانت غير مطلوبة
+            // Stop loading process if not required
             if (!reload) {
                 return true;
             }
         } else {
-            // تسجيل الحاوية الجديدة في نهاية المصفوفة
+            // Register new container at end of array
             LOADER_REGISTRY.push(containerId);
         }
-        return false; // المتابعة لعملية التحميل
+        return false; // Continue loading process
     } catch (error) {
         console.error("خطأ في إدارة سجل التحميل (profileHandleRegistry):", error);
         return false;
@@ -63,10 +65,10 @@ function profileHandleRegistry(containerId, reload) {
 }
 
 /**
- * @description جلب محتوى HTML من الرابط المحدد.
+ * @description Fetch HTML content from specified URL.
  * @function profileFetchContent
- * @param {string} pageUrl - رابط الصفحة المراد جلبها.
- * @returns {Promise<string|null>} - وعد (Promise) يعود بمحتوى HTML أو null في حال حدوث خطأ.
+ * @param {string} pageUrl - URL of page to fetch.
+ * @returns {Promise<string|null>} - Promise returning HTML content or null on error.
  * @async
  * @throws {Error} - If the fetch request fails or the response is not OK.
  */
@@ -84,40 +86,40 @@ async function profileFetchContent(pageUrl) {
 }
 
 /**
- * @description إعادة تشغيل السكربتات المضمنة يدوياً (المنهجية: hgh_sec).
+ * @description Manually restart inline scripts (Method: hgh_sec).
  *
- * *تم التحديث*: تغليف السكربتات المضمنة بدالة مُنفذة فورياً (IIFE)
- * لإنشاء نطاق خاص وتجنب خطأ "already declared" مع const/let.
+ * *Updated*: Wrapping inline scripts with IIFE
+ * to create private scope and avoid "already declared" error with const/let.
  * @function profileRestartScripts
- * @param {HTMLElement} container - العنصر الذي يحتوي على السكربتات المراد إعادة تشغيلها.
+ * @param {HTMLElement} container - Element containing scripts to restart.
  * @returns {Promise<void>}
  * @async
  * @throws {Error} - If an error occurs during DOM manipulation or script execution.
  */
 async function profileRestartScripts(container) {
     try {
-        // استخراج جميع عناصر السكربتات الموجودة
+        // Extract all existing script elements
         const scripts = [...container.querySelectorAll("script")];
 
         for (const oldScript of scripts) {
             const newScript = document.createElement("script");
 
-            // 1. نسخ السمات والخصائص
+            // 1. Copy attributes and properties
             for (const attr of oldScript.attributes) {
                 newScript.setAttribute(attr.name, attr.value);
             }
 
-            // 2. معالجة محتوى السكربت (للسكربتات المضمنة)
+            // 2. Handle script content (for inline scripts)
             if (oldScript.innerHTML.trim()) {
                 let scriptContent = oldScript.innerHTML;
 
-                // تغليف الكود المضمن بدالة منفذة فورياً (IIFE) لإنشاء نطاق خاص
-                // هذا يمنع خطأ "Identifier 'X' has already been declared" عند إعادة التحميل
+                // Wrap inline code with IIFE to create private scope
+                // This prevents "Identifier 'X' has already been declared" error on reload
                 scriptContent = `(function() {
                     try {
                         ${scriptContent}
                     } catch (err) {
-                        // طباعة الخطأ للمساعدة في تتبع المشكلة داخل السكربت المُنفّذ
+                        // Print error to help trace issue inside executed script
                         console.error("❌ خطأ في تنفيذ سكربت مُغلّف (IIFE) بعد التحميل:", err);
                     }
                 })();`;
@@ -125,17 +127,17 @@ async function profileRestartScripts(container) {
                 newScript.textContent = scriptContent;
             }
 
-            // 3. استبدال السكربت القديم بالجديد
+            // 3. Replace old script with new one
             oldScript.replaceWith(newScript);
 
-            // 4. إذا كان السكربت خارجياً (لديه src)، يجب الانتظار حتى يتم تحميله
+            // 4. If script is external (has src), must wait for it to load
             if (newScript.src) {
-                // الانتظار باستخدام Promise لضمان التنفيذ التسلسلي قبل متابعة السكربت التالي
+                // Wait using Promise to ensure sequential execution before proceeding to next script
                 await new Promise((resolve) => {
                     newScript.onload = () => resolve();
                     newScript.onerror = () => {
                         console.error(`❌ فشل تحميل السكربت الخارجي: ${newScript.src}`);
-                        resolve(); // الاستمرار حتى لو فشل السكربت
+                        resolve(); // Continue even if script fails
                     };
                 });
             }
@@ -146,10 +148,10 @@ async function profileRestartScripts(container) {
 }
 
 /**
- * @description تنفيذ دالة رد النداء (Callback) بعد اكتمال التحميل.
+ * @description Execute callback function after load completes.
  * @function profileExecuteCallback
  * @function profileExecuteCallback
- * @param {string|string[]} callbackName - اسم دالة رد النداء (أو مصفوفة من الأسماء) في النطاق العام (window).
+ * @param {string|string[]} callbackName - Name of callback function (or array of names) in global scope (window).
  * @returns {void}
  * @throws {Error} - If the specified callback function does not exist or throws an error during execution.
  */
@@ -157,7 +159,7 @@ function profileExecuteCallback(callbackName) {
     try {
         if (!callbackName) return;
 
-        // دعم تعدد الكول باك (Array of callbacks)
+        // Support multiple callbacks (Array of callbacks)
         if (Array.isArray(callbackName)) {
             callbackName.forEach(name => profileExecuteCallback(name));
             return;
@@ -175,21 +177,21 @@ function profileExecuteCallback(callbackName) {
 }
 
 /**
- * @description تقوم بمسح الأنماط (Styles) والسكربتات (Scripts) المرتبطة بالتحميل السابق للحاوية لمنع التضارب.
+ * @description Clears styles and scripts associated with previous container load to prevent conflict.
  * @function profileClearOldContent
- * @param {string} containerId - المعرّف (ID) الخاص بالحاوية الهدف.
+ * @param {string} containerId - Target container ID.
  * @returns {void}
  * @throws {Error} - If an error occurs during DOM manipulation.
  */
 function profileClearOldContent(containerId) {
     try {
-        // 1. مسح الـ CSS المخصص المضاف تلقائيًا للحاوية
-        // البحث باستخدام السمة المخصصة data-loader-id لضمان تحديد دقيق
+        // 1. Clear custom CSS automatically added to container
+        // Search using custom attribute data-loader-id to ensure precise selection
         document.querySelectorAll(`style[data-loader-id="${containerId}"]`).forEach(styleTag => {
             styleTag.remove();
         });
 
-        // 2. مسح محتوى HTML للحاوية
+        // 2. Clear HTML content of container
         const container = document.getElementById(containerId);
         if (container) {
             container.innerHTML = '';
@@ -203,14 +205,14 @@ function profileClearOldContent(containerId) {
 }
 
 /**
- * @description الدالة الرئيسية لتحميل المحتوى الديناميكي وتطبيقه في الحاوية الهدف.
+ * @description Main function to load dynamic content and apply it to target container.
  *
- * @param {string} pageUrl - رابط الصفحة المراد تحميلها.
- * @param {string} containerId - الـ ID الخاص بالحاوية الهدف.
- * @param {number} [waitMs=300] - وقت الانتظار بالملي ثانية.
- * @param {string} [cssRules=...] - كود CSS يتم تطبيقه على الـ container (افتراضي جاهز).
- * @param {string|string[]} [callbackName] - اسم دالة رد النداء (أو مصفوفة أسماء) في النطاق العام (window) ليتم استدعاؤها بعد التحميل.
- * @param {boolean} [reload=false] - فرض إعادة تحميل المحتوى حتى لو كان مسجلاً.
+ * @param {string} pageUrl - Page URL to load.
+ * @param {string} containerId - Target container ID.
+ * @param {number} [waitMs=300] - Wait time in milliseconds.
+ * @param {string} [cssRules=...] - CSS code applied to container (default ready).
+ * @param {string|string[]} [callbackName] - Name of callback function (or array of names) in global scope (window) to be called after load.
+ * @param {boolean} [reload=false] - Force content reload even if registered.
  */
 async function mainLoader(
     pageUrl,
@@ -226,7 +228,7 @@ async function mainLoader(
     reload = false
 ) {
     try {
-        // 1. إدارة السجل وإخفاء الحاويات الأخرى
+        // 1. Registry management and hiding other containers
         const skipLoading = profileHandleRegistry(containerId, reload);
 
         if (skipLoading) {
@@ -234,15 +236,15 @@ async function mainLoader(
             return;
         }
 
-        // 2. المسح عند إعادة التحميل: يمنع تضارب الـ Styles والـ Scripts القديمة
+        // 2. Clear on reload: prevents conflict of old Styles and Scripts
         if (reload) {
             profileClearOldContent(containerId);
         }
 
-        // 3. تحميل محتوى HTML
+        // 3. Fetch HTML content
         const html = await profileFetchContent(pageUrl);
 
-        if (html === null) return; // فشل التحميل
+        if (html === null) return; // Load failed
 
         const container = document.getElementById(containerId);
         if (!container) {
@@ -250,13 +252,13 @@ async function mainLoader(
             return;
         }
 
-        // إدخال المحتوى وعرض الحاوية
+        // Insert content and show container
         container.innerHTML = html;
         container.style.display = "block";
 
-        // 4. تطبيق CSS تلقائياً (فصل المسؤوليات - SoC)
+        // 4. Apply CSS automatically (SoC)
         const styleTag = document.createElement("style");
-        // إضافة سمة مخصصة لتمييز الأنماط التي أنشأها الـ Loader
+        // Add custom attribute to distinguish loader-created styles
         styleTag.setAttribute('data-loader-id', containerId);
         styleTag.innerHTML = `
             #${containerId} {
@@ -265,13 +267,13 @@ async function mainLoader(
         `;
         document.head.appendChild(styleTag);
 
-        // 5. إعادة تشغيل السكربتات (المنهجية المحفوظة: hgh_sec)
+        // 5. Restart scripts (Saved method: hgh_sec)
         await profileRestartScripts(container);
 
-        // 6. الانتظار
+        // 6. Wait
         await new Promise((r) => setTimeout(r, waitMs));
 
-        // سجل الإخراج النهائي لعملية التحميل
+        // Final output log of load process
         console.log(
             `%c✔✔✔✔✔✔✔ تم التحميل ✔✔✔✔✔✔✔\n` +
             `pageUrl: ${pageUrl}\n` +
@@ -280,7 +282,7 @@ async function mainLoader(
             "color: #0a4902ff; font-size: 12px; font-weight: bold; font-family: 'Tahoma';"
         );
 
-        // 7. تنفيذ رد النداء
+        // 7. Execute callback
         profileExecuteCallback(callbackName);
 
     } catch (globalError) {
@@ -299,41 +301,41 @@ async function mainLoader(
  */
 
 /**
- * @description العودة إلى الحاوية السابقة (إن وجدت) وإزالة الحاوية الحالية من السجل.
+ * @description Go back to previous container (if any) and remove current container from registry.
  * @function containerGoBack
- * @returns {boolean} - true إذا تمت العملية بنجاح، false إذا لم تكن هناك حاوية سابقة للعودة إليها.
+ * @returns {boolean} - true if successful, false if no previous container to return to.
  * @throws {Error} - If an error occurs during DOM manipulation or registry updates.
  * @see profileClearOldContent
  */
 function containerGoBack() {
     try {
-        // التحقق من وجود حاويات كافية للعودة
+        // Check if enough containers to go back
         if (LOADER_REGISTRY.length < 2) {
             console.warn("⚠ لا توجد حاوية سابقة للعودة إليها.");
             return false;
         }
 
-        // إزالة الحاوية الحالية من نهاية المصفوفة
+        // Remove current container from end of array
         const currentContainerId = LOADER_REGISTRY.pop();
 
-        // الحصول على الحاوية السابقة (أصبحت الآن الأخيرة في المصفوفة)
+        // Get previous container (now last in array)
         const previousContainerId = LOADER_REGISTRY[LOADER_REGISTRY.length - 1];
 
-        // إخفاء الحاوية الحالية
+                                                                                        // Hide current container
         const currentContainer = document.getElementById(currentContainerId);
         if (currentContainer) {
             currentContainer.style.display = "none";
         }
 
-        // تنظيف محتوى الحاوية الحالية إذا كانت لا تزال في الـ DOM
+        // Clean current container content if still in DOM
         profileClearOldContent(currentContainerId);
 
-        // إظهار الحاوية السابقة
+        // Show previous container
         const previousContainer = document.getElementById(previousContainerId);
         if (previousContainer) {
             previousContainer.style.display = "block";
 
-            // تسجيل في console للتحليل
+            // Log to console for analysis
             console.log(
                 `%c↩ تم العودة من ${currentContainerId} إلى ${previousContainerId}\n` +
                 `السجل الحالي: [${LOADER_REGISTRY.join(", ")}]`,

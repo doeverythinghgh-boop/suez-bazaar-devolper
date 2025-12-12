@@ -1,29 +1,29 @@
 /**
  * @file js/cardPackage.js
- * @description وحدة لإدارة سلة المشتريات.
+ * @description Shopping Cart management module.
  *
- * توفر هذه الوحدة مجموعة من الدوال للتعامل مع سلة المشتريات المحفوظة في LocalStorage.
- * تشمل العمليات: الإضافة، الحذف، تحديث الكمية، جلب محتويات السلة، وحساب الإجمالي.
+ * This module provides functions to handle the shopping cart stored in LocalStorage.
+ * Includes operations: Add, Remove, Update Quantity, Fetch Cart, and Calculate Totals.
  */
 
 /**
- * @description ينشئ مفتاح تخزين فريد للسلة بناءً على المستخدم المسجل دخوله.
+ * @description Generates a unique storage key for the cart based on the logged-in user.
  * @function getCartStorageKey
- * @returns {string|null} - مفتاح السلة (مثل 'cart_abcd1234') إذا كان هناك مستخدم مسجل دخوله، وإلا `null`.
+ * @returns {string|null} - Cart key (e.g., 'cart_abcd1234') if user is logged in, otherwise `null`.
  * @see localStorage
  */
 function getCartStorageKey() {
   if (window.userSession && window.userSession.user_key) {
 
-    return `cart_${window.userSession.user_key}`; // ربط السلة بالـ user_key
+    return `cart_${window.userSession.user_key}`; // Associates cart with user_key
   }
-  return null; // لا يوجد مستخدم، لا توجد سلة
+  return null; // No user, no cart
 }
 
 /**
- * @description يجلب السلة الحالية من LocalStorage.
+ * @description Retrieves the current cart from LocalStorage.
  * @function getCart
- * @returns {Array<Object>} - مصفوفة من كائنات المنتجات الموجودة في السلة، أو مصفوفة فارغة إذا كانت السلة فارغة أو حدث خطأ.
+ * @returns {Array<Object>} - Array of product objects in the cart, or empty array if empty or error.
  * @throws {Error} - If there's an error parsing JSON from LocalStorage.
  * @see getCartStorageKey
  */
@@ -35,7 +35,7 @@ function getCart() {
     const cartJson = localStorage.getItem(CART_STORAGE_KEY);
     const cart = cartJson ? JSON.parse(cartJson) : [];
 
-    // إضافة ملاحظة افتراضية إذا لم تكن موجودة
+    // Add default note if not present
     return cart.map((item) => ({
       ...item,
       note: item.note || "",
@@ -47,9 +47,9 @@ function getCart() {
 }
 
 /**
- * @description يحفظ السلة المحدثة في LocalStorage ويرسل حدثًا مخصصًا (`cartUpdated`) لإعلام المكونات الأخرى بالتغيير.
+ * @description Saves the updated cart to LocalStorage and dispatches a custom event (`cartUpdated`).
  * @function saveCart
- * @param {Array<Object>} cart - مصفوفة كائنات المنتجات التي تمثل السلة الحالية.
+ * @param {Array<Object>} cart - Array of product objects representing the current cart.
  * @returns {void}
  * @throws {Error} - If there's an error saving to LocalStorage.
  * @see getCartStorageKey
@@ -60,7 +60,7 @@ function saveCart(cart) {
 
   try {
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-    // إرسال حدث مخصص لإعلام أجزاء أخرى من التطبيق بتحديث السلة
+    // Dispatch custom event to notify other app parts of cart update
     window.dispatchEvent(new CustomEvent("cartUpdated"));
   } catch (error) {
     console.error("خطأ في حفظ السلة في LocalStorage:", error);
@@ -68,19 +68,19 @@ function saveCart(cart) {
 }
 
 /**
- * @description يضيف منتجًا إلى السلة، أو يقوم بتحديث كميته إذا كان المنتج موجودًا بالفعل.
+ * @description Adds a product to the cart, or updates its quantity if already exists.
  * @function addToCart
- * @param {Object} product - كائن المنتج المراد إضافته.
- * @param {number} quantity - الكمية المراد إضافتها للمنتج.
- * @param {string} note - ملاحظة للمنتج (اختياري).
- * @returns {boolean} - true إذا تمت الإضافة بنجاح، false إذا كان البائع هو نفسه المستخدم.
+ * @param {Object} product - Product object to add.
+ * @param {number} quantity - Quantity to add.
+ * @param {string} note - Product note (optional).
+ * @returns {boolean} - true if added successfully, false if seller matches user.
  * @throws {Error} - If `window.Swal.fire` or `containerGoBack` encounters an error.
  * @see getCart
  * @see saveCart
  * @see containerGoBack
  */
 function addToCart(product, quantity, note = "") {
-  // منع المستخدم من الشراء من نفسه
+  // Prevent user from buying their own products
   if (
     window.userSession &&
     window.userSession.user_key === product.seller_key
@@ -101,16 +101,16 @@ function addToCart(product, quantity, note = "") {
   );
 
   if (existingProductIndex > -1) {
-    // المنتج موجود، قم بتحديث الكمية
+    // Product exists, update quantity
     cart[existingProductIndex].quantity += quantity;
     if (note) cart[existingProductIndex].note = note;
   } else {
-    // المنتج غير موجود، أضفه كعنصر جديد
+    // Product does not exist, add as new item
     const newCartItem = {
       ...product,
       quantity,
       note,
-      addedDate: new Date().toISOString(), // إضافة تاريخ الإضافة
+      addedDate: new Date().toISOString(), // Add added date
     };
     if (!newCartItem.product_key && product.product_key) {
       newCartItem.product_key = product.product_key;
@@ -134,9 +134,9 @@ function addToCart(product, quantity, note = "") {
 }
 
 /**
- * @description يزيل منتجًا محددًا من السلة بناءً على مفتاحه الفريد.
+ * @description Removes a specific product from the cart based on its unique key.
  * @function removeFromCart
- * @param {string} productKey - المفتاح الفريد للمنتج المراد إزالته من السلة.
+ * @param {string} productKey - Unique key of the product to remove.
  * @returns {void}
  * @see getCart
  * @see saveCart
@@ -148,10 +148,10 @@ function removeFromCart(productKey) {
 }
 
 /**
- * @description يحدث كمية منتج معين في السلة.
+ * @description Updates the quantity of a specific product in the cart.
  * @function updateCartQuantity
- * @param {string} productKey - المفتاح الفريد للمنتج.
- * @param {number} newQuantity - الكمية الجديدة للمنتج.
+ * @param {string} productKey - Unique product key.
+ * @param {number} newQuantity - New quantity.
  * @returns {void}
  * @see getCart
  * @see saveCart
@@ -173,10 +173,10 @@ function updateCartQuantity(productKey, newQuantity) {
 }
 
 /**
- * @description يحدث ملاحظة منتج في السلة.
+ * @description Updates the note of a product in the cart.
  * @function updateCartItemNote
- * @param {string} productKey - المفتاح الفريد للمنتج.
- * @param {string} note - الملاحظة الجديدة.
+ * @param {string} productKey - Unique product key.
+ * @param {string} note - New note.
  * @returns {void}
  * @see getCart
  * @see saveCart
@@ -194,7 +194,7 @@ function updateCartItemNote(productKey, note) {
 }
 
 /**
- * @description يفرغ السلة بالكامل.
+ * @description Clears the entire cart.
  * @function clearCart
  * @returns {void}
  * @see saveCart
@@ -204,9 +204,9 @@ function clearCart() {
 }
 
 /**
- * @description يحسب العدد الإجمالي للوحدات من جميع المنتجات في السلة.
+ * @description Calculates the total number of units for all items in the cart.
  * @function getCartItemCount
- * @returns {number} - إجمالي عدد الوحدات.
+ * @returns {number} - Total unit count.
  * @see getCart
  */
 function getCartItemCount() {
@@ -215,9 +215,9 @@ function getCartItemCount() {
 }
 
 /**
- * @description يحسب المجموع الكلي لسعر المنتجات في السلة.
+ * @description Calculates the total price of products in the cart.
  * @function getCartTotalPrice
- * @returns {number} - المجموع الكلي.
+ * @returns {number} - Total price.
  * @see getCart
  */
 function getCartTotalPrice() {
@@ -226,17 +226,17 @@ function getCartTotalPrice() {
 }
 
 /**
- * @description يحسب إجمالي التوفير من الخصومات.
+ * @description Calculates total savings from discounts.
  * @function getCartTotalSavings
- * @returns {number} - إجمالي التوفير.
+ * @returns {number} - Total savings.
  * @see getCart
  */
 
 /**
- * @description يبحث عن منتج في السلة.
+ * @description Finds a product in the cart.
  * @function findInCart
- * @param {string} productKey - المفتاح الفريد للمنتج.
- * @returns {Object|null} - المنتج إذا وجد، وإلا null.
+ * @param {string} productKey - Unique product key.
+ * @returns {Object|null} - The product if found, otherwise null.
  * @see getCart
  */
 function findInCart(productKey) {
@@ -245,12 +245,12 @@ function findInCart(productKey) {
 }
 
 /**
- * @description يحدث شارة عدد عناصر السلة في الواجهة الرسومية.
+ * @description Updates the cart item count badge in the UI.
  * @function updateCartBadge
  * @returns {void}
  */
 function updateCartBadge() {
-  // استهداف زر السلة الرئيسي
+  // Target main cart button
   const cartButton = document.getElementById("index-cart-btn");
   if (!cartButton) {
     console.warn("updateCartBadge: لم يتم العثور على زر السلة 'index-cart-btn'.");
@@ -261,25 +261,25 @@ function updateCartBadge() {
   let badge = document.getElementById(badgeId);
   const count = getCartItemCount();
 
-  // إذا لم تكن الشارة موجودة، قم بإنشائها وإضافتها إلى زر السلة
+  // If badge doesn't exist, create it and append to cart button
   if (!badge) {
     badge = document.createElement('span');
     badge.id = badgeId;
-    badge.className = 'cart-badge'; // تطبيق الأنماط العصرية
+    badge.className = 'cart-badge'; // Apply modern styles
     cartButton.appendChild(badge);
   }
 
-  // تحديث محتوى الشارة وإظهارها أو إخفائها بناءً على عدد المنتجات
+  // Update badge content and visibility based on count
   if (count > 0) {
     badge.textContent = count;
-    badge.style.display = 'flex'; // إظهار الشارة
+    badge.style.display = 'flex'; // Show badge
   } else {
-    badge.style.display = 'none'; // إخفاء الشارة إذا كانت السلة فارغة
+    badge.style.display = 'none'; // Hide badge if cart is empty
   }
 }
 
-// الاستماع لحدث تحديث السلة لتحديث الشارة تلقائياً
+// Listen for cart update event to update badge automatically
 window.addEventListener("cartUpdated", updateCartBadge);
 
-// تحديث الشارة عند تحميل الصفحة
+// Update badge on page load
 document.addEventListener("DOMContentLoaded", updateCartBadge);

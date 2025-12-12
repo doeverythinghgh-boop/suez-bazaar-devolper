@@ -1,35 +1,35 @@
 /**
  * @file cloudflare-workers/cloudFileManager.js
- * @description مكتبة من جهة العميل (Client-side Library) للتفاعل مع خدمة إدارة الملفات على Cloudflare R2.
- * 
- * يوفر هذا الملف ثلاث دوال رئيسية للتعامل مع الملفات:
- * - `uploadFile2cf(blob, fileName)`: لرفع ملف (Blob) إلى السحابة.
- * - `downloadFile2cf(fileName)`: لتحميل ملف من السحابة كـ Blob.
- * - `deleteFile2cf(fileName)`: لحذف ملف من السحابة.
- * 
- * يقوم تلقائيًا بطلب توكن مصادقة مؤقت وتضمينه في الطلبات.
- * يتم استخدامه بشكل أساسي في نموذج إضافة منتج جديد لرفع صور المنتجات.
- * 
+ * @description Client-side Library for interacting with Cloudflare R2 file management service.
+ *
+ * This file provides three main functions for file handling:
+ * - `uploadFile2cf(blob, fileName)`: Uploads a file (Blob) to the cloud.
+ * - `downloadFile2cf(fileName)`: Downloads a file from the cloud as a Blob.
+ * - `deleteFile2cf(fileName)`: Deletes a file from the cloud.
+ *
+ * Automatically requests a temporary authentication token and includes it in requests.
+ * Primarily used in the "Add Product" form to upload product images.
+ *
  * @example
  * const blob = await downloadFile2cf("example.pdf");
- * const url = URL.createObjectURL(blob); // يمكن عرضه أو حفظه
+ * const url = URL.createObjectURL(blob); // Can be displayed or saved
  */
 
 /**
- * @description العنوان الأساسي (Base URL) لنقطة نهاية خدمة Cloudflare Worker المسؤولة عن إدارة الملفات.
+ * @description Base URL for the Cloudflare Worker file management endpoint.
  * @type {string}
  * @const
  */
 const baseUrl = "https://bidstory-files.bidsstories.workers.dev";
 
 /**
- * @description يضمن وجود توكن مصادقة (X-Auth-Key) صالح للتفاعل مع خدمة Cloudflare Workers.
- *   إذا كان التوكن موجودًا في `localStorage`، يتم إعادته. وإلا، يتم جلب توكن جديد من نقطة نهاية `/login`
- *   وحفظه في `localStorage`.
+ * @description Ensures a valid authentication token (X-Auth-Key) exists for Cloudflare Workers interaction.
+ *   If a token exists in `localStorage`, it returns it. Otherwise, it fetches a new token from `/login` endpoint
+ *   and saves it to `localStorage`.
  * @function ensureToken2cf
- * @returns {Promise<string>} - وعد (Promise) يحتوي على توكن المصادقة.
+ * @returns {Promise<string>} - A Promise containing the auth token.
  * @async
- * @throws {Error} - إذا فشل جلب التوكن.
+ * @throws {Error} - If token fetch fails.
  */
 async function ensureToken2cf() {
   const existing = localStorage.getItem("X-Auth-Key");
@@ -46,14 +46,14 @@ async function ensureToken2cf() {
 }
 
 /**
- * @description يقوم برفع ملف من نوع Blob إلى خدمة Cloudflare R2 عبر نقطة نهاية `/upload`.
- *   يستخدم توكن مصادقة لضمان الأمان.
+ * @description Uploads a Blob file to Cloudflare R2 via `/upload` endpoint.
+ *   Uses an auth token to ensure security.
  * @function uploadFile2cf
- * @param {Blob} blob - كائن Blob يمثل الملف المراد رفعه.
- * @param {string} fileName - اسم الملف الذي سيتم حفظه به في السحابة.
- * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
- * @returns {Promise<object>} - وعد (Promise) يحتوي على كائن يوضح نتيجة عملية الرفع.
- * @throws {Error} - إذا لم يتم توفير Blob أو اسم الملف، أو فشل الرفع.
+ * @param {Blob} blob - Blob object representing the file to upload.
+ * @param {string} fileName - Name to save the file as in the cloud.
+ * @param {function(string): void} [onLog=console.log] - Optional callback for logging messages.
+ * @returns {Promise<object>} - A Promise with the upload result object.
+ * @throws {Error} - If Blob or fileName is missing, or upload fails.
  * @async
  * @see ensureToken2cf
  */
@@ -90,13 +90,13 @@ async function uploadFile2cf(blob, fileName, onLog = console.log) {
 }
 
 /**
- * @description يقوم بتحميل ملف من خدمة Cloudflare R2 عبر نقطة نهاية `/download`.
- *   يستخدم توكن مصادقة لضمان الأمان.
+ * @description Downloads a file from Cloudflare R2 via `/download` endpoint.
+ *   Uses an auth token to ensure security.
  * @function downloadFile2cf
- * @param {string} fileName - اسم الملف المراد تحميله من السحابة.
- * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
- * @returns {Promise<Blob>} - وعد (Promise) يحتوي على كائن Blob يمثل محتوى الملف المحمل.
- * @throws {Error} - إذا لم يتم توفير اسم الملف، أو فشل التحميل.
+ * @param {string} fileName - Name of the file to download from cloud.
+ * @param {function(string): void} [onLog=console.log] - Optional callback for logging messages.
+ * @returns {Promise<Blob>} - A Promise containing the downloaded file as a Blob.
+ * @throws {Error} - If fileName is missing, or download fails.
  * @async
  * @see ensureToken2cf
  */
@@ -126,20 +126,20 @@ async function downloadFile2cf(fileName, onLog = console.log) {
     localStorage.removeItem("X-Auth-Key");
 
     onLog("✅ تم تحميل الملف بنجاح.");
-    return blob; // تُعيد Blob ليُستخدم حسب السياق (عرض، حفظ، إلخ)
+    return blob; // Returns Blob for context usage (display, save, etc.)
   } catch (err) {
     throw new Error("❌ 🛑 خطأ أثناء التحميل: " + err.message);
   }
 }
 
 /**
- * @description يقوم بحذف ملف من خدمة Cloudflare R2 عبر نقطة نهاية `/delete`.
- *   يستخدم توكن مصادقة لضمان الأمان.
+ * @description Deletes a file from Cloudflare R2 via `/delete` endpoint.
+ *   Uses an auth token to ensure security.
  * @function deleteFile2cf
- * @param {string} fileName - اسم الملف المراد حذفه من السحابة.
- * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
- * @returns {Promise<object>} - وعد (Promise) يحتوي على كائن يوضح نتيجة عملية الحذف.
- * @throws {Error} - إذا لم يتم توفير اسم الملف، أو فشل الحذف.
+ * @param {string} fileName - Name of the file to delete.
+ * @param {function(string): void} [onLog=console.log] - Optional callback for logging messages.
+ * @returns {Promise<object>} - A Promise with the deletion result object.
+ * @throws {Error} - If fileName is missing, or deletion fails.
  * @async
  * @see ensureToken2cf
  */

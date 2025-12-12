@@ -1,19 +1,19 @@
 /**
  * @file js/config.js
- * @description هذا الملف يحتوي على إعدادات وثوابت عامة تستخدم في جميع أنحاء التطبيق،
- *   مثل عناوين URL للـ API، قوائم المستخدمين المسموح لهم، وخريطة حالات الطلبات.
- *   يهدف إلى توفير نقطة مركزية لإدارة التكوينات.
+ * @description This file contains general settings and constants used throughout the application,
+ *   such as API URLs, allowed user lists, and order status maps.
+ *   It aims to provide a central point for configuration management.
  */
 
 /**
- * @description يحدد عنوان URL الأساسي لنقاط نهاية API بناءً على بيئة التشغيل (محلي، Cloudflare Pages، أو تطبيق Android).
+ * @description Defines the base API URL based on the runtime environment (Local, Cloudflare Pages, or Android App).
  * @type {string}
  * @const
  */
 const VERCEL_URL = "https://bazaar-neon-three.vercel.app";
 
 /**
- * @description قائمة بأسماء النطاقات المسموح لها باستخدام Vercel URL.
+ * @description List of domain names allowed to use the Vercel URL.
  * @type {string[]}
  * @const
  */
@@ -24,24 +24,24 @@ const allowedHosts = [
   "appassets.androidplatform.net",
 ];
 
-// ✅ تحسين: تبسيط منطق تحديد baseURL باستخدام مصفوفة.
+// ✅ Improvement: Simplify baseURL determination logic using an array.
 /**
- * @description عنوان URL الأساسي لواجهة برمجة التطبيقات (API). يتم تحديده ديناميكيًا بناءً على بيئة التشغيل.
+ * @description Base API URL. Dynamically determined based on the runtime environment.
  * @type {string}
  * @const
  */
 const baseURL = allowedHosts.includes(location.hostname) ? VERCEL_URL : "";
 
 /**
- * @description قائمة بأرقام هواتف المسؤولين المسموح لهم بالوصول الإداري.
+ * @description List of admin phone numbers allowed administrative access.
  * @type {string[]}
  * @const
  */
 const adminPhoneNumbers = ["01024182175", "01026546550"];
 
 /**
- * @description كائن يمثل خريطة لحالات الطلبات المختلفة، مع توفير معرف (id) وحالة (state) ووصف (description) لكل حالة.
- *   يستخدم لتجنب "الأرقام السحرية" وتوفير وصول مباشر لحالات الطلب.
+ * @description Object mapping different order statuses, providing an ID, state, and description for each.
+ *   Used to avoid "magic numbers" and provide direct access to order states.
  * @type {Object<string, {id: number, state: string, description: string}>}
  * @const
  */
@@ -85,13 +85,13 @@ const ORDER_STATUS_MAP = {
 };
 
 /**
- * @description مصفوفة تحتوي على قيم حالات الطلبات المشتقة مباشرة من `ORDER_STATUS_MAP`.
- *   تعتبر مصدر الحقيقة الوحيد لحالات الطلبات.
+ * @description Array containing order status values derived directly from `ORDER_STATUS_MAP`.
+ *   Considered the single source of truth for order statuses.
  * @type {Array<{id: number, state: string, description: string}>}
  * @const
  * @see ORDER_STATUS_MAP
  */
 const ORDER_STATUSES = Object.values(ORDER_STATUS_MAP);
-//متغير حاله المستخدم الحالي علي شكل جسون
+// Current user state variable as JSON
 
 

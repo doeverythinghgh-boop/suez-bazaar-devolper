@@ -358,9 +358,9 @@
             // Get value from input field
             const quantity = parseInt(productView_domElements.selectedQuantityInput.value, 10) || 1;
             const total = price * quantity;
-            productView_domElements.totalPriceEl.textContent = `${total.toFixed(2)} EGP`;
+            productView_domElements.totalPriceEl.textContent = `${total.toFixed(2)} جنيه`;
         } catch (error) {
-            console.error("productView_updateTotalPrice - Error updating total price:", error);
+            console.error("productView_updateTotalPrice - خطأ في تحديث السعر الإجمالي:", error);
         }
     }
 
@@ -389,11 +389,11 @@
                 };
 
                 thumb.onerror = () => {
-                    console.warn("[productView_] Thumbnail load failed:", src);
+                    console.warn("[productView_] فشل تحميل الصورة المصغرة:", src);
                     // Replace failed image with placeholder (CSS can improve this)
                     const placeholder = document.createElement("div");
                     placeholder.className = "image-load-error-placeholder";
-                    placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>Load Failed</span>`;
+                    placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>فشل التحميل</span>`;
                     thumb.replaceWith(placeholder);
                 };
                 thumbnailsContainerEl.appendChild(thumb);
@@ -405,7 +405,7 @@
             }, 0);
 
         } catch (error) {
-            console.error("productView_populateThumbnails - Error populating thumbnails:", error);
+            console.error("productView_populateThumbnails - خطأ في إنشاء الصور المصغرة:", error);
         }
     }
 
@@ -461,7 +461,7 @@
             productView_updateTotalPrice(pricePerItem); // Initial price calculation
 
         } catch (error) {
-            console.error("productView_setupQuantityControls - Error initializing quantity controls:", error);
+            console.error("productView_setupQuantityControls - خطأ في تهيئة أدوات التحكم بالكمية:", error);
         }
     }
 
@@ -475,7 +475,7 @@
             productView_domElements.addToCartBtn.onclick = async () => {
 
                 if (userSession && Number(userSession.is_seller) > -1) {
-                    console.log("[productView_] User logged in, adding to cart...");
+                    console.log("[productView_] المستخدم مسجل دخول، جاري الإضافة للسلة...");
                     const quantity = parseInt(productView_domElements.selectedQuantityInput.value, 10);
 
                     const productInfoForCart = {
@@ -488,15 +488,15 @@
                     };
                     addToCart(productInfoForCart, quantity); // Defined externally
                 } else {
-                    console.warn("[productView_] Guest user. Redirecting to login.");
+                    console.warn("[productView_] مستخدم زائر. جاري التوجيه لتسجيل الدخول.");
                     // Use preset SweetAlert2 style
                     Swal.fire({
                         icon: "info",
-                        title: "Login Required",
-                        text: "To add products to cart, please login first.",
+                        title: "تنبيه",
+                        text: "يرجى تسجيل الدخول أولاً لإضافة منتجات إلى السلة.",
                         showCancelButton: true,
-                        confirmButtonText: "Login",
-                        cancelButtonText: "Cancel",
+                        confirmButtonText: "تسجيل الدخول",
+                        cancelButtonText: "إلغاء",
                         customClass: { popup: 'fullscreen-swal' }, // Apply custom style
                     }).then((result) => {
                         if (result.isConfirmed) {
@@ -524,7 +524,7 @@
      */
     function productView_viewDetails(productData, options = {}) {
         try {
-            console.log("[productView_] Displaying product details...", options.showAddToCart);
+            console.log("[productView_] عرض تفاصيل المنتج...", options.showAddToCart);
             const {
                 name, quantityValue, price, description, sellerMessage,
                 quantityContainer, priceContainer, cartActionsContainer,
@@ -535,9 +535,9 @@
             const showAddToCart = options.showAddToCart !== false; // Default is true
 
             // Populate basic data
-            name.textContent = productData.productName || "Not Available";
-            description.textContent = productData.description || "No description available.";
-            sellerMessage.textContent = productData.sellerMessage || "No message from seller.";
+            name.textContent = productData.productName || "غير متوفر";
+            description.textContent = productData.description || "لا يوجد وصف متاح.";
+            sellerMessage.textContent = productData.sellerMessage || "لا توجد رسالة من البائع.";
 
             // Configure display based on showAddToCart option
             if (showAddToCart) {
@@ -545,7 +545,7 @@
                 priceContainer.style.display = "flex";
                 cartActionsContainer.style.display = "block";
                 quantityValue.textContent = productData.availableQuantity;
-                price.textContent = `${productData.pricePerItem} EGP`;
+                price.textContent = `${productData.pricePerItem} جنيه`;
                 productView_setupQuantityControls(productData);
                 productView_setupAddToCart(productData);
             } else {
@@ -566,22 +566,22 @@
             const currentPriceVal = productData.pricePerItem ? parseFloat(productData.pricePerItem) : 0;
 
             if (originalPriceVal > 0 && originalPriceVal > currentPriceVal) {
-                console.log("[productView_] Showing original price.");
-                originalPrice.textContent = `${originalPriceVal.toFixed(2)} EGP`;
+                console.log("[productView_] إظهار السعر الأصلي.");
+                originalPrice.textContent = `${originalPriceVal.toFixed(2)} جنيه`;
                 originalPriceContainer.style.display = "flex";
             } else {
-                console.log("[productView_] Hiding original price.");
+                console.log("[productView_] إخفاء السعر الأصلي.");
                 originalPriceContainer.style.display = "none";
                 originalPrice.textContent = "";
             }
 
         } catch (error) {
-            console.error("productView_viewDetails - General error displaying details:", error);
+            console.error("productView_viewDetails - خطأ عام في عرض التفاصيل:", error);
             // Alert user using SweetAlert2
             Swal.fire({
                 icon: "error",
-                title: "Opps!",
-                text: "An error occurred while loading product details. Please try again later.",
+                title: "خطأ!",
+                text: "حدث خطأ أثناء تحميل تفاصيل المنتج. يرجى المحاولة مرة أخرى لاحقاً.",
                 customClass: { popup: 'fullscreen-swal' },
             });
         }

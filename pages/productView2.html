@@ -389,7 +389,7 @@
         </h3>
         <div class="productView_description_box" id="productView_description_container">
             <h4 id="productView_description_header">
-                <i class="fas fa-file-alt"></i>Service Description
+                <i class="fas fa-file-alt"></i> وصف الخدمة
             </h4>
             <p id="productView_description_text"></p>
         </div>
@@ -397,28 +397,28 @@
         <div class="productView_seller_message_box" id="productView_seller_message_container">
             <h4 id="productView_seller_message_header">
                 <i class="fas fa-comment-dots" id="productView_seller_message_icon"></i>
-                Seller's Message
+                رسالة من البائع
             </h4>
             <p id="productView_seller_message_text"></p>
         </div>
 
         <!-- New: Order Photos and Notes Section -->
         <div class="productView_order_box" id="productView_order_box">
-            <h4><i class="fas fa-camera"></i> Request Special Photos</h4>
+            <h4><i class="fas fa-camera"></i> طلب صور خاصة</h4>
 
             <textarea id="productView_note" maxlength="300"
-                placeholder="Add your notes about requested photos (optional - max 300 chars)..."></textarea>
+                placeholder="أضف ملاحظاتك حول الصور المطلوبة (اختياري - بحد أقصى 300 حرف)..."></textarea>
 
             <div class="productView_uploader" id="productView_uploader_area">
-                <div style="font-weight:600; color:#555;">Click or Drag Photos Here</div>
-                <div style="font-size:0.8rem; color:#888; margin-top:5px;">(Max 4 photos - 5MB per photo)</div>
+                <div style="font-weight:600; color:#555;">اضغط أو اسحب الصور هنا</div>
+                <div style="font-size:0.8rem; color:#888; margin-top:5px;">(بحد أقصى 4 صور - 5 ميجابايت لكل صورة)</div>
 
                 <input type="file" id="productView_fileInput" accept="image/*" multiple style="display:none">
 
                 <div class="productView_uploader_actions">
-                    <div class="productView_uploader_btn" id="productView_pickImgBtn" title="Choose Photos"><i
+                    <div class="productView_uploader_btn" id="productView_pickImgBtn" title="اختر صور"><i
                             class="fas fa-folder-open"></i></div>
-                    <div class="productView_uploader_btn" id="productView_camBtn" title="Camera"><i
+                    <div class="productView_uploader_btn" id="productView_camBtn" title="الكاميرا"><i
                             class="fas fa-camera"></i></div>
                 </div>
 
@@ -426,7 +426,7 @@
             </div>
 
             <button id="productView_sendBtn" class="productView_send_btn">
-                <i class="fas fa-paper-plane"></i> Send Request
+                <i class="fas fa-paper-plane"></i> إرسال الطلب
             </button>
         </div>
     </div>
@@ -493,7 +493,7 @@
         nextBtn.style.display = 'none';
 
         if (!images || images.length === 0) {
-            sliderTrack.innerHTML = '<p style="text-align:center; color:#666; width:100%;">No product images available</p>';
+            sliderTrack.innerHTML = '<p style="text-align:center; color:#666; width:100%;">لا توجد صور للمنتج</p>';
             return;
         }
 
@@ -655,7 +655,7 @@
         try {
             imgBitmap = await createImageBitmap(file);
         } catch (e) {
-            console.warn("Compression fallback: createImageBitmap failed", e);
+            console.warn("فشل ضغط الصورة، العودة للنسخة الأصلية", e);
             return file; // Return original if cannot parse
         }
 
@@ -709,23 +709,23 @@
      */
     function productView_viewDetails(productData) {
         try {
-            console.log("[productView_] Displaying details with slider...");
+            console.log("[productView_] عرض التفاصيل مع السلايدر...");
             const { name, description, sellerMessage } = productView_domElements;
 
-            name.textContent = productData.productName || "Not Available";
-            description.textContent = productData.description || "No description available.";
-            sellerMessage.textContent = productData.sellerMessage || "No message from seller.";
+            name.textContent = productData.productName || "غير متوفر";
+            description.textContent = productData.description || "لا يوجد وصف متاح.";
+            sellerMessage.textContent = productData.sellerMessage || "لا توجد رسالة من البائع.";
 
             // Build slider
             const images = productData.imageSrc || [];
             productView_buildSlider(images);
 
         } catch (error) {
-            console.error("productView_viewDetails - Error:", error);
+            console.error("productView_viewDetails - خطأ:", error);
             Swal.fire({
                 icon: "error",
-                title: "Error",
-                text: "An error occurred while displaying the product.",
+                title: "خطأ",
+                text: "حدث خطأ أثناء عرض المنتج.",
                 customClass: { popup: 'fullscreen-swal' },
             });
         }
@@ -774,7 +774,7 @@
                 productView_orderEls.fileInput.setAttribute('capture', 'environment');
                 productView_orderEls.fileInput.click();
             } else {
-                Swal.fire('Alert', 'Please use the file picker button on desktop', 'info');
+                Swal.fire('تنبيه', 'يرجى استخدام زر اختيار الملفات على الكمبيوتر', 'info');
             }
         };
 

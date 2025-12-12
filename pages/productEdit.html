@@ -624,7 +624,7 @@
                 const img = document.createElement('img');
                 const meta = document.createElement('div');
                 meta.className = 'edit-product-modal__preview-meta';
-                meta.textContent = state.status === 'uploaded' ? 'Current Image' : 'Calculating...';
+                meta.textContent = state.status === 'uploaded' ? 'الصورة الحالية' : 'جاري المعالجة...';
 
                 wrapper.appendChild(removeBtn);
                 wrapper.appendChild(img);
@@ -689,7 +689,7 @@
                         console.error(`Failed to load image: ${name}`);
                         state.status = 'error';
                         createPreviewItem(state, '');
-                        state._metaEl.textContent = 'Load Failed';
+                        state._metaEl.textContent = 'فشل التحميل';
                         if (i === imageNames.length - 1) {
                             imagesLoadingEl.style.display = 'none';
                         }
@@ -709,16 +709,16 @@
              * @param {string} id - The ID of the image to remove.
              */
             function removeImage(id) {
-                console.log(`[ImageUploader] Attempting to remove image with id: ${id}`);
+                console.log(`[ImageUploader] محاولة حذف الصورة بالمعرف: ${id}`);
                 Swal.fire({
-                    title: 'Are you sure?',
-                    text: "Do you really want to delete this image?",
+                    title: 'هل أنت متأكد؟',
+                    text: "هل تريد حقاً حذف هذه الصورة؟",
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#d33',
                     cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Yes, delete it!',
-                    cancelButtonText: 'Cancel'
+                    confirmButtonText: 'نعم، احذفها!',
+                    cancelButtonText: 'إلغاء'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         const idx = images.findIndex(i => i.id === id);
@@ -765,7 +765,7 @@
                         console.error('%c[ImageUploader] Error compressing image:', 'color: red;', err);
                         state.status = 'error';
                         if (state._metaEl) {
-                            state._metaEl.textContent = 'Error';
+                            state._metaEl.textContent = 'خطأ';
                         }
                     }
                 }
@@ -901,7 +901,7 @@
                     };
                 } catch (err) {
                     console.error("Error accessing camera: ", err);
-                    Swal.fire('Error!', 'Could not access camera. Please ensure permissions are granted.', 'error');
+                    Swal.fire('خطأ!', 'تعذر الوصول للكاميرا. يرجى التأكد من منح الصلاحيات.', 'error');
                     cameraModalContainer.style.display = 'none';
                 }
             }
@@ -920,42 +920,42 @@
                 // 1. Check for at least one image
                 clearError(uploaderEl);
                 if (images.length === 0) {
-                    showError(uploaderEl, 'At least one product image is required.');
+                    showError(uploaderEl, 'مطلوب صورة واحدة للمنتج على الأقل.');
                     isValid = false;
                 }
 
                 // 2. Check Product Name
                 clearError(productNameInput);
                 if (!productNameInput.value.trim()) {
-                    showError(productNameInput, 'Product name is required.');
+                    showError(productNameInput, 'اسم المنتج مطلوب.');
                     isValid = false;
                 }
 
                 // 3. Check Description
                 clearError(descriptionTextarea);
                 if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
-                    showError(descriptionTextarea, 'Product description is required (at least 10 characters).');
+                    showError(descriptionTextarea, 'وصف المنتج مطلوب (على الأقل 10 أحرف).');
                     isValid = false;
                 }
 
                 // 4. Check Seller Message
                 clearError(sellerMessageTextarea);
                 if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
-                    showError(sellerMessageTextarea, 'Seller message is required (at least 10 characters).');
+                    showError(sellerMessageTextarea, 'رسالة البائع مطلوبة (على الأقل 10 أحرف).');
                     isValid = false;
                 }
 
                 // 5. Check Quantity
                 clearError(quantityInput);
                 if (!quantityInput.value || parseFloat(quantityInput.value) < 1) {
-                    showError(quantityInput, 'Please enter a valid available quantity (at least 1).');
+                    showError(quantityInput, 'يرجى إدخال كمية متاحة صالحة (على الأقل 1).');
                     isValid = false;
                 }
 
                 // 6. Check Price
                 clearError(priceInput);
                 if (priceInput.value === '' || parseFloat(priceInput.value) < 0) {
-                    showError(priceInput, 'Please enter a valid product price.');
+                    showError(priceInput, 'يرجى إدخال سعر منتج صالح.');
                     isValid = false;
                 }
 
@@ -964,10 +964,10 @@
                     return;
                 }
 
-                console.log('%c[ProductForm] Validation passed. Starting update process.', 'color: green;');
+                console.log('%c[ProductForm] التحقق نجح. بدء عملية التحديث.', 'color: green;');
                 Swal.fire({
-                    title: 'Updating Product...',
-                    text: 'Please wait while changes are being saved.',
+                    title: 'جاري تحديث المنتج...',
+                    text: 'يرجى الانتظار بينما يتم حفظ التغييرات.',
                     allowOutsideClick: false,
                     didOpen: () => {
                         Swal.showLoading();
@@ -1076,8 +1076,8 @@
 
                     // 7. Show Success Message
                     Swal.fire({
-                        title: 'Success!',
-                        text: 'Product updated successfully.',
+                        title: 'تم بنجاح!',
+                        text: 'تم تحديث المنتج بنجاح.',
                         icon: 'success',
                         timer: 2000,
                         showConfirmButton: false
@@ -1086,8 +1086,8 @@
                 } catch (error) {
                     console.error('%c[ProductForm] Update failed with critical error:', 'color: red; font-weight: bold;', error);
                     Swal.fire({
-                        title: 'Error!',
-                        text: `Failed to update product: ${error.message}`,
+                        title: 'خطأ!',
+                        text: `فشل تحديث المنتج: ${error.message}`,
                         icon: 'error'
                     });
                 }

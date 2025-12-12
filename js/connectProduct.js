@@ -1,18 +1,18 @@
 /**
  * @file js/connectProduct.js
- * @description طبقة الاتصال بالواجهة البرمجية (API) الخاصة بالمنتجات، ومنطق عرض تفاصيل المنتج.
+ * @description API connection layer for Products, and product details display logic.
  *
- * هذا الملف يحتوي على مجموعة من الدوال غير المتزامنة (async functions) التي تسهل عملية
- * التعامل مع المنتجات، بما في ذلك إضافتها، تحديثها، حذفها، وجلبها من قاعدة البيانات.
- * كما يحتوي على المنطق الخاص بعرض نافذة تفاصيل المنتج المنبثقة وتعبئتها بالبيانات.
- * يعتمد على متغير `baseURL` العام الذي يجب تعريفه في `js/config.js`.
+ * This file contains a set of async functions to facilitate handling products,
+ * including adding, updating, deleting, and fetching from the database.
+ * It also contains logic for displaying and populating the product details modal.
+ * Depends on the global `baseURL` variable which must be defined in `js/config.js`.
  */
 
 /**
- * @description يضيف منتجًا جديدًا إلى قاعدة البيانات عبر استدعاء الواجهة البرمجية (API).
+ * @description Adds a new product to the database via API call.
  * @function addProduct
- * @param {object} productData - كائن يحتوي على جميع بيانات المنتج المراد إضافته.
- * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن بيانات المنتج الذي تم إنشاؤه، أو كائن خطأ في حالة الفشل.
+ * @param {object} productData - Object containing all data of the product to add.
+ * @returns {Promise<Object>} - Promise containing the created product object, or an error object on failure.
  * @async
  * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
@@ -25,10 +25,10 @@ async function addProduct(productData) {
 }
 
 /**
- * @description يحدث بيانات منتج موجود في قاعدة البيانات عبر الواجهة البرمجية (API).
+ * @description Updates an existing product in the database via API.
  * @function updateProduct
- * @param {object} productData - كائن يحتوي على بيانات المنتج المحدثة. يجب أن يحتوي الكائن على `product_key` لتحديد المنتج المراد تحديثه.
- * @returns {Promise<Object>} - وعد (Promise) يحتوي على الكائن الذي تم تحديثه، أو كائن خطأ في حالة الفشل.
+ * @param {object} productData - Object containing updated product data. Must include `product_key` to identify the product.
+ * @returns {Promise<Object>} - Promise containing the updated object, or an error object on failure.
  * @async
  * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
@@ -41,10 +41,10 @@ async function updateProduct(productData) {
 }
 
 /**
- * @description يحذف منتجًا موجودًا من قاعدة البيانات عبر الواجهة البرمجية (API).
+ * @description Deletes an existing product from the database via API.
  * @function deleteProduct
- * @param {string} productKey - المفتاح الفريد للمنتج المراد حذفه.
- * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن الاستجابة من الخادم.
+ * @param {string} productKey - Unique key of the product to delete.
+ * @returns {Promise<Object>} - Promise containing the server response object.
  * @async
  * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
@@ -56,27 +56,27 @@ async function deleteProduct_(productKey) {
 }
 
 /**
- * @description يجلب قائمة المنتجات بناءً على الفئة الرئيسية والفرعية المحددة من واجهة برمجة التطبيقات (API).
+ * @description Fetches the list of products based on the selected Main and Sub category from the API.
  * @function getProductsByCategory
- * @param {string} mainCatId - معرف الفئة الرئيسية للمنتجات المراد جلبها.
- * @param {string} subCatId - معرف الفئة الفرعية للمنتجات المراد جلبها.
- * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات المنتجات، أو `null` في حالة الفشل.
- * @throws {Error} - إذا كان `baseURL` غير معرف، أو فشل جلب البيانات من API.
+ * @param {string} mainCatId - ID of the main category.
+ * @param {string} subCatId - ID of the sub category.
+ * @returns {Promise<Array<Object>|null>} - Promise containing an array of product objects, or `null` on failure.
+ * @throws {Error} - If `baseURL` is undefined, or API fetch fails.
  * @see apiFetch
  * @see baseURL
  */
 async function getProductsByCategory(mainCatId, subCatId) {
   try {
-    // التحقق من وجود متغير baseURL لضمان أن الإعدادات تم تحميلها بشكل صحيح.
+    // Check for baseURL to ensure settings are loaded correctly.
     if (typeof baseURL === "undefined" || !baseURL) {
       console.error(
         "%c[API-Debug] متغير baseURL غير معرف أو فارغ!",
         "color: red; font-weight: bold;"
       );
-      throw new Error("baseURL is not defined"); // إيقاف التنفيذ إذا كان المتغير غير موجود.
+      throw new Error("baseURL is not defined"); // Stop execution if variable is missing.
     }
-    // استخدام URLSearchParams لإنشاء رابط الاستعلام بطريقة آمنة وصحيحة.
-    // هذا يضمن عدم إرسال قيم 'null' أو 'undefined' كجزء من الرابط.
+    // Use URLSearchParams to create the query string safely and correctly.
+    // This ensures 'null' or 'undefined' values are not sent as part of the URL.
     const params = new URLSearchParams();
     if (mainCatId) {
       params.append("MainCategory", mainCatId);
@@ -88,7 +88,7 @@ async function getProductsByCategory(mainCatId, subCatId) {
     if (data.error) throw new Error(data.error);
     return data;
   } catch (error) {
-    // تسجيل أي خطأ وإرجاع `null`.
+    // Log any error and return `null`.
     console.error(
       "%c[getProductsByCategory] failed:",
       "color: red;",
@@ -99,10 +99,10 @@ async function getProductsByCategory(mainCatId, subCatId) {
 }
 
 /**
- * @description يجلب جميع المنتجات التي أضافها مستخدم معين (بائع) من واجهة برمجة التطبيقات (API).
+ * @description Fetches all products added by a specific user (seller) from the API.
  * @function getProductsByUser
- * @param {string} userKey - المفتاح الفريد للمستخدم (`user_key`) البائع الذي نريد جلب منتجاته.
- * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات المنتجات، أو `null` في حالة الفشل.
+ * @param {string} userKey - Unique key of the user (`user_key`) whose products we want to fetch.
+ * @returns {Promise<Array<Object>|null>} - Promise containing an array of product objects, or `null` on failure.
  * @async
  * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
@@ -118,10 +118,10 @@ async function getProductsByUser(userKey) {
 }
 
 /**
- * @description يجلب بيانات منتج واحد بناءً على مفتاحه الفريد من واجهة برمجة التطبيقات (API).
+ * @description Fetches data of a single product based on its unique key from the API.
  * @function getProductByKey
- * @param {string} productKey - المفتاح الفريد للمنتج المراد جلبه.
- * @returns {Promise<Object|null>} - وعد (Promise) يحتوي على كائن المنتج، أو `null` إذا لم يتم العثور على المنتج أو حدث خطأ.
+ * @param {string} productKey - Unique key of the product to fetch.
+ * @returns {Promise<Object|null>} - Promise containing the product object, or `null` if not found or error.
  * @async
  * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
@@ -142,22 +142,22 @@ async function getProductByKey(productKey) {
     return null;
   }
 }
- 
+
 /**
- * @description يعرض نافذة منبثقة (Modal) تحتوي على تفاصيل المنتج.
- *   يتحقق من بيانات الفئة الأساسية للمنتج قبل العرض ويقوم بتحميل قالب عرض المنتج.
+ * @description Displays a modal containing product details.
+ *   Checks for primary category data before display and loads the product view template.
  * @function showProductDetails
- * @param {object} productData - كائن يحتوي على جميع بيانات المنتج الكاملة لعرضها.
- * @param {function(): void} [onCloseCallback] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
- * @param {object} [options={}] - خيارات إضافية للتحكم في عرض النافذة، مثل `showAddToCart`.
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @param {object} productData - Object containing all full product data to display.
+ * @param {function(): void} [onCloseCallback] - Optional callback called when modal closes.
+ * @param {object} [options={}] - Additional options to control modal display, like `showAddToCart`.
+ * @returns {Promise<void>} - Promise that resolves when complete.
  * @async
  * @throws {Error} - If `productData` is missing category information, or `loadAndShowModal` fails.
  * @see loadAndShowModal
  * @see populateProductDetails
  */
 async function showProductDetails(productData, onCloseCallback, options = {}) {
-  // التحقق من وجود بيانات الفئة الرئيسية والفرعية، وهي ضرورية لعرض التفاصيل بشكل صحيح.
+  // Check for main and sub category data, which is necessary to display details correctly.
   if (!productData.MainCategory || !productData.SubCategory) {
     console.error(
       "[Modal] Missing category data. Cannot open product details.",
@@ -168,9 +168,9 @@ async function showProductDetails(productData, onCloseCallback, options = {}) {
       "لا يمكن عرض تفاصيل المنتج لعدم توفر معلومات الفئة.",
       "error"
     );
-    // استدعاء دالة رد الاتصال (إذا كانت موجودة) لإعلام الجزء الذي استدعى الدالة بأن العملية فشلت.
+    // Call callback function (if exists) to notify caller that operation failed.
     if (typeof onCloseCallback === "function") onCloseCallback();
-    return; // إيقاف التنفيذ
+    return; // Stop execution
   }
 
   console.log(
@@ -191,28 +191,28 @@ async function showProductDetails(productData, onCloseCallback, options = {}) {
 }
 
 /**
- * @description يملأ تفاصيل المنتج في النافذة المنبثقة ويربط الأحداث اللازمة للتحكم في الكمية والإضافة إلى السلة.
- *   تتعامل مع عرض الصور، الأسعار، رسائل البائع، وتظهر أو تخفي حقول معينة بناءً على نوع المنتج وخيارات العرض.
+ * @description Populates product details in the modal and binds events for quantity control and add to cart.
+ *   Handles image display, prices, seller messages, and shows/hides specific fields based on product type and options.
  * @function populateProductDetails
- * @param {object} productData - كائن يحتوي على جميع بيانات المنتج الكاملة لملء تفاصيل النافذة.
- * @param {function(): void} [onCloseCallback] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
- * @param {object} [options={}] - خيارات إضافية للتحكم في عرض النافذة، مثل `showAddToCart`.
+ * @param {object} productData - Object containing all full product data to populate the modal.
+ * @param {function(): void} [onCloseCallback] - Optional callback called when modal closes.
+ * @param {object} [options={}] - Additional options to control modal display, like `showAddToCart`.
  * @returns {void}
  * @see SERVICE_CATEGORY_NoPrice_ID
  * @see getCurrentUser
  * @see addToCart
  */
 function populateProductDetails(productData, onCloseCallback, options = {}) {
-  // تعبئة الوصف ورسالة البائع.
+  // Populate description and seller message.
   document.getElementById("product-modal-description").textContent =
     productData.description || "لا يوجد وصف متاح.";
   document.getElementById("product-modal-seller-message").textContent =
     productData.sellerMessage || "لا توجد رسالة من البائع.";
 
-  // ✅ جديد: إخفاء حقول السعر والكمية إذا كانت الفئة هي "الخدمات العامة" (id=6)
+  // ✅ NEW: Hide price and quantity fields if category is "General Services" (id=6)
   const isServiceCategory =
-    productData.MainCategory == SERVICE_CATEGORY_NoPrice_ID; // `SERVICE_CATEGORY_NoPrice_ID` معرف في utils.js
-  // الوصول إلى عناصر DOM التي قد يتم إخفاؤها.
+    productData.MainCategory == SERVICE_CATEGORY_NoPrice_ID; // `SERVICE_CATEGORY_NoPrice_ID` defined in utils.js
+  // Access DOM elements that might be hidden.
   const quantityContainer = document.getElementById(
     "product-modal-quantity-container"
   );
@@ -223,22 +223,22 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
     "product-modal-cart-actions"
   );
 
-  // التحقق مما إذا كان يجب إظهار زر "إضافة إلى السلة". يكون ظاهرًا افتراضيًا.
-  const showAddToCart = options.showAddToCart !== false; // يكون true افتراضيًا
+  // Check if "Add to Cart" button should be shown. Visible by default.
+  const showAddToCart = options.showAddToCart !== false; // default true
 
-  // منطق إظهار أو إخفاء الأقسام بناءً على نوع المنتج والخيارات.
+  // Logic to show or hide sections based on product type and options.
   if (isServiceCategory) {
-    // إذا كان المنتج خدمة، أخفِ كل ما يتعلق بالسعر والكمية والسلة.
+    // If product is service, hide everything related to price, quantity, and cart.
     quantityContainer.style.display = "none";
     priceContainer.style.display = "none";
     cartActionsContainer.style.display = "none";
   } else if (!showAddToCart) {
-    // إذا كان الخيار `showAddToCart` هو `false`، أخفِ قسم السلة فقط.
+    // If `showAddToCart` is `false`, hide only the cart section.
     cartActionsContainer.style.display = "none";
   } else {
     quantityContainer.style.display = "block";
     priceContainer.style.display = "block";
-    // تأكد من إظهار حاوية السلة إذا لم تكن هناك إشارة لإخفائها.
+    // Ensure cart container is shown if not signaled to hide.
     cartActionsContainer.style.display = "block";
     document.getElementById("product-modal-quantity").textContent =
       productData.availableQuantity;
@@ -247,24 +247,24 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
     ).textContent = `${productData.pricePerItem} جنيه`;
   }
 
-  // تعبئة معرض الصور (الصورة الرئيسية والصور المصغرة).
+  // Populate image gallery (main image and thumbnails).
   const mainImage = document.getElementById("product-modal-image");
   const thumbnailsContainer = document.getElementById(
     "product-modal-thumbnails"
   );
   console.log("[Modal] Populating product data and images.");
-  mainImage.src = productData.imageSrc[0]; // عرض الصورة الأولى كصورة رئيسية.
-  thumbnailsContainer.innerHTML = ""; // مسح الصور المصغرة القديمة
+  mainImage.src = productData.imageSrc[0]; // Display first image as main.
+  thumbnailsContainer.innerHTML = ""; // Clear old thumbnails
   productData.imageSrc.forEach((src) => {
     const thumb = document.createElement("img");
     thumb.src = src;
-    thumb.onclick = () => { // عند النقر على صورة مصغرة، يتم تحديث الصورة الرئيسية.
+    thumb.onclick = () => { // On click thumbnail, update main image.
       mainImage.src = src;
     };
-    // ✅ إصلاح: التعامل مع فشل تحميل الصور بسبب مشاكل الشبكة
+    // ✅ FIX: Handle image load failures due to network issues
     thumb.onerror = () => {
       console.warn("[Modal] Thumbnail image failed to load:", src);
-      // استبدال الصورة الفاشلة بعنصر نائب مع زر إعادة المحاولة
+      // Replace failed image with placeholder and retry button
       const placeholder = document.createElement("div");
       placeholder.className = "image-load-error-placeholder";
       placeholder.innerHTML = `
@@ -276,18 +276,18 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
     thumbnailsContainer.appendChild(thumb);
   });
 
-  // عرض السعر قبل الخصم إذا كان موجودًا وأكبر من السعر الحالي.
+  // Display original price if exists and greater than current price.
   const originalPriceContainer = document.getElementById(
     "product-modal-original-price-container"
   );
   const originalPriceEl = document.getElementById(
     "product-modal-original-price"
   );
-  // التحقق من وجود القيم قبل المقارنة لتجنب الأخطاء.
+  // Check existence of values before comparison to avoid errors.
   const originalPrice = productData.original_price
     ? parseFloat(productData.original_price)
     : 0;
-  // إظهار السعر الأصلي فقط إذا لم تكن خدمة.
+  // Show original price only if not service.
   if (!isServiceCategory) {
     const currentPrice = productData.pricePerItem
       ? parseFloat(productData.pricePerItem)
@@ -295,22 +295,22 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
     if (originalPrice > 0 && originalPrice !== currentPrice) {
       console.log("[Modal] Displaying original price.");
       originalPriceEl.textContent = `${originalPrice.toFixed(2)} جنيه`;
-      originalPriceContainer.style.display = "block"; // إظهار الحاوية بأكملها
+      originalPriceContainer.style.display = "block"; // Show container
     } else {
       console.log("[Modal] Hiding original price.");
-      originalPriceContainer.style.display = "none"; // إخفاء الحاوية بأكملها
+      originalPriceContainer.style.display = "none"; // Hide container
       originalPriceEl.textContent = "";
     }
   }
 
   const modal = document.getElementById("product-details-modal");
-  // وظيفة لإغلاق النافذة المنبثقة.
+  // Function to close modal.
   const closeModal = () => {
     console.log("[Modal] Closing product details modal.");
     modal.style.display = "none";
     document.body.classList.remove("modal-open");
-    // استدعاء دالة رد الاتصال عند الإغلاق (إذا تم تمريرها).
-    if (typeof onCloseCallback === "function") { 
+    // Call callback function on close (if passed).
+    if (typeof onCloseCallback === "function") {
       onCloseCallback();
     }
   };
@@ -319,7 +319,7 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
     if (event.target == modal) closeModal();
   };
 
-  // --- منطق التحكم بالكمية والسعر الإجمالي ---
+  // --- Quantity and Total Price Control Logic ---
   const decreaseBtn = document.getElementById(
     "product-modal-decrease-quantity"
   );
@@ -331,17 +331,17 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
   );
   const totalPriceEl = document.getElementById("product-modal-total-price");
 
-  // لا تقم بتهيئة عناصر التحكم بالكمية إذا كانت من فئة الخدمات أو إذا كان زر السلة مخفيًا.
+  // Do not initialize quantity controls if service category or add to cart hidden.
   if (isServiceCategory || !showAddToCart) {
-    // لا تفعل شيئًا، فقد تم إخفاء الحاوية بالفعل
+    // Do nothing, container already hidden
     return;
   }
 
   console.log("[Modal] Initializing quantity controls.");
-  // تعيين الحد الأقصى للكمية
+  // Set max quantity
   selectedQuantityInput.max = productData.availableQuantity;
 
-  // دالة لتحديث السعر الإجمالي بناءً على الكمية المحددة.
+  // Function to update total price based on selected quantity.
   function updateTotalPrice() {
     const price = parseFloat(productData.pricePerItem);
     const quantity = parseInt(selectedQuantityInput.value, 10);
@@ -349,7 +349,7 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
     totalPriceEl.textContent = `${total.toFixed(2)} جنيه`;
   }
 
-  // إضافة الأحداث لأزرار زيادة وإنقاص الكمية.
+  // Add events for increase and decrease buttons.
   decreaseBtn.addEventListener("click", () => {
     if (selectedQuantityInput.value > 1) {
       selectedQuantityInput.value--;
@@ -366,36 +366,36 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
   });
 
   selectedQuantityInput.addEventListener("change", updateTotalPrice);
-  updateTotalPrice(); // حساب السعر المبدئي عند فتح النافذة لأول مرة.
+  updateTotalPrice(); // Calculate initial price when modal opens.
 
-  // --- منطق إضافة المنتج إلى السلة ---
+  // --- Add to Cart Logic ---
   const addToCartBtn = document.getElementById("product-modal-add-to-cart");
   addToCartBtn.addEventListener("click", () => {
-    // التحقق مما إذا كان المستخدم قد سجل دخوله (وليس ضيفًا).
+    // Check if user is logged in (not guest).
     const loggedInUser = getCurrentUser();
 
     if (loggedInUser && !loggedInUser.is_guest) {
       console.log("[Modal] Add to cart button clicked by a registered user.");
-      // إذا كان المستخدم مسجلاً، استمر في عملية الإضافة للسلة.
+      // If user is registered, proceed with adding to cart.
       const quantity = parseInt(
         document.getElementById("product-modal-selected-quantity").value,
         10
       );
       const productInfoForCart = {
         product_key: productData.product_key,
-        productName: productData.productName, // اسم المنتج
-        price: productData.pricePerItem, // استخدام السعر الصحيح (pricePerItem)
-        original_price: productData.original_price, // تمرير السعر قبل الخصم
-        image: productData.imageSrc[0], // استخدام الصورة الأولى كصورة للسلة
-        seller_key: productData.user_key, // تضمين مفتاح البائع لإرسال الإشعارات لاحقًا
+        productName: productData.productName, // Product Name
+        price: productData.pricePerItem, // Use correct price (pricePerItem)
+        original_price: productData.original_price, // Pass original price
+        image: productData.imageSrc[0], // Use first image for cart
+        seller_key: productData.user_key, // Include seller key for notifications
       };
       addToCart(productInfoForCart, quantity);
     } else {
-      // هذا الشرط سيتحقق إذا كان المستخدم ضيفًا أو لم يسجل دخوله على الإطلاق.
+      // This condition checks if user is guest or not logged in at all.
       console.warn(
         "[Modal] Add to cart button clicked by guest or non-logged-in user. Prompting for login/registration."
       );
-      // إذا لم يكن المستخدم مسجلاً، أظهر رسالة تنبيه تدعوه لتسجيل الدخول.
+      // If user is not registered, show alert to log in.
       Swal.fire({
         icon: "info",
         title: "يجب تسجيل الدخول",
@@ -406,7 +406,7 @@ function populateProductDetails(productData, onCloseCallback, options = {}) {
       }).then((result) => {
         if (result.isConfirmed) {
           console.log("[Modal] User chose to log in. Redirecting...");
-                    mainLoader("./pages/login.html","index-user-container",0,undefined,"hiddenLoginIcon",true  );
+          mainLoader("./pages/login.html", "index-user-container", 0, undefined, "hiddenLoginIcon", true);
 
         }
       });

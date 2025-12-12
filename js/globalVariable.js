@@ -1,63 +1,63 @@
-/**
+                         /**
  * @file js/globalVariable.js
- * @description تعريف المتغيرات العامة والدوال المسؤولة عن توجيه الصفحات وتخطيط العرض (Layout)
- *   الخاص بالمنتجات (إضافة، عرض، تعديل).
+ * @description Definition of global variables and functions responsible for page routing and layout
+ *   specific to products (add, view, edit).
  */
 
 /**
- * @description بيانات المستخدم المسجل حالياً.
+ * @description Currently logged-in user data.
  * @type {object|null}
  * @global
  */
 window.userSession = null;
 
 /**
- * @description بيانات المنتج المعروض حالياً (للتفاصيل أو التعديل).
+ * @description Currently displayed product data (for details or editing).
  * @type {Array|object|null}
  * @global
  */
 window.productSession = null;
 
 /**
- * @description المعرف (ID) للفئة الرئيسية المختارة عند إضافة منتج.
+ * @description ID of the main category selected when adding a product.
  * @type {string|number|null}
  * @global
  */
 window.mainCategorySelectToAdd = null;
 
 /**
- * @description المعرف (ID) للفئة الفرعية المختارة عند إضافة منتج.
+ * @description ID of the sub-category selected when adding a product.
  * @type {string|number|null}
  * @global
  */
 window.subCategorySelectToAdd = null;
 
 /**
- * @description نوع المنتج المختار عند الإضافة (0 = افتراضي، 2 = خدمي، etc).
+ * @description Product type selected when adding (0 = default, 2 = service, etc).
  * @type {number|null}
  * @global
  */
 window.productTypeToAdd = null;
 
 /**
- * @description قائمة بمنتجات المستخدم الحالي (للعرض في صفحة "منتجاتي").
+ * @description List of current user's products (for display in "My Products" page).
  * @type {Array|null}
  * @global
  */
 window.myProducts = null;
 
 /**
- * @description يقوم بتحميل وعرض صفحة تفاصيل المنتج بناءً على نوع العرض المطلوب.
+ * @description Loads and displays the product details page based on the requested view type.
  * @function productViewLayout
- * @param {string} View - نوع العرض ('0' للعرض العادي، '2' للعرض البديل).
+ * @param {string} View - View type ('0' for normal view, '2' for alternate view).
  * @returns {void}
  * @see mainLoader
  */
 function productViewLayout(View) {
   console.log('------------------------نوع الخدمه-------------------', View);
-  //في الارسال
+  //In sending
   //productSession = [productDataForModal,{showAddToCart:true}];
-  //في الاستقبال
+  //In receiving
   //(productSession[0],  productSession[1] )
   //function productView_viewDetails(productData, options = {})--->options.showAddToCart
   if (View == '0') {
@@ -84,17 +84,17 @@ function productViewLayout(View) {
 }
 
 /**
- * @description يوجه المستخدم إلى صفحة إضافة منتج جديد، مع تحديد نوع المنتج بناءً على الفئة المختارة.
+ * @description Directs the user to the add new product page, setting the product type based on the selected category.
  * @function productAddLayout
- * @param {boolean} [editMode=false] - هل الوضع هو تعديل منتج موجود؟ (حالياً غير مستخدم بالكامل في هذا المنطق).
+ * @param {boolean} [editMode=false] - Is it edit existing product mode? (Currently not fully used in this logic).
  * @returns {void}
  * @see mainLoader
  */
 function productAddLayout(editMode = false) {
   if (mainCategorySelectToAdd == 6) {
-    productTypeToAdd = 2; //نوع المنتج خدمي
+    productTypeToAdd = 2; // Product type: Service
   } else {
-    productTypeToAdd = 0; //نوع المنتج افتراضي
+    productTypeToAdd = 0; // Product type: Default
   }
   if (editMode == false) {
     mainLoader(
@@ -110,16 +110,16 @@ function productAddLayout(editMode = false) {
 }
 
 /**
- * @description يوجه المستخدم إلى صفحة تعديل المنتج، مع تحديد نوع المنتج بناءً على الفئة المختارة.
+ * @description Directs the user to the edit product page, setting the product type based on the selected category.
  * @function productEditLayout
  * @returns {void}
  * @see mainLoader
  */
 function productEditLayout() {
   if (mainCategorySelectToAdd == 6) {
-    productTypeToAdd = 2; //نوع المنتج خدمي
+    productTypeToAdd = 2; // Product type: Service
   } else {
-    //نوع المنتج افتراضي
+    // Product type: Default
     mainLoader(
       "./pages/productEdit.html",
       "index-product-container",
@@ -132,7 +132,7 @@ function productEditLayout() {
 }
 
 /**
- * @description يعرض نافذة منبثقة لاختيار الفئة الرئيسية والفرعية قبل إضافة منتج جديد.
+ * @description Displays a modal to select the main and sub-category before adding a new product.
  * @async
  * @function showAddProductModal
  * @returns {Promise<void>}
@@ -146,8 +146,8 @@ async function showAddProductModal() {
     const result = await CategoryModal.show();
     if (result.status === 'success') {
       console.log('تم الاختيار:', result.mainId, result.subId);
-      mainCategorySelectToAdd = result.mainId; //الفئه الرئيسية المختارة عند اضافة منتج
-      subCategorySelectToAdd = result.subId; //الفئه الفرعية المختارة عند اضافة منتج
+      mainCategorySelectToAdd = result.mainId; // Main category selected when adding product
+      subCategorySelectToAdd = result.subId; // Sub category selected when adding product
       productAddLayout();
     }
 

@@ -15,7 +15,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://unpkg.com/@zxing/library@latest"></script>
 
-  <!-- ✅ ربط ملف المتغيرات لاستخدامها في الأنماط الداخلية -->
+  <!-- ✅ Link variables file for usage in internal styles -->
   <link rel="stylesheet" href="style/variables.css" />
   <script src="pages/category/categoryModal.js"></script>
   <script src="/js/cloudFileManager.js"></script>
@@ -47,16 +47,16 @@
     }
 
 
-    /* ✅ تعديل: إعادة تسمية الفئة وتطبيق Flexbox */
+    /* ✅ Edit: Rename class and apply Flexbox */
     .index-app-header {
       display: flex;
       justify-content: flex-start;
-      /* محاذاة العناصر من بداية الحاوية (اليمين في RTL) */
+      /* Align items from start (Right in RTL) */
       align-items: center;
       flex-wrap: nowrap;
-      /* منع العناصر من الانتقال إلى سطر جديد */
+      /* Prevent items from wrapping */
       overflow-x: auto;
-      /* إضافة شريط تمرير أفقي عند الحاجة */
+      /* Add horizontal scroll if needed */
       background-color: var(--bg-color-light);
       padding: 15px 20px;
       box-shadow: var(--shadow-interactive);
@@ -66,77 +66,77 @@
     }
 
     .index-header-login-btn {
-      /* ✅ تعديل: استخدام Flexbox لترتيب الأيقونة والنص عمودياً */
+      /* ✅ Edit: Use Flexbox to align icon and text vertically */
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 4px;
-      /* مسافة بين الأيقونة والنص */
+      /* Space between icon and text */
 
-      /* ✅ تعديل: إزالة الخلفية والحدود لجعله يبدو كأيقونة ونص فقط */
+      /* ✅ Edit: Remove background and border to make it look like just icon and text */
       background-color: transparent;
       border: none;
       padding: 5px;
-      /* تقليل الحشو */
+      /* Reduce padding */
 
       font-family: "Tajawal", sans-serif;
       text-decoration: none;
       cursor: pointer;
       transition: transform 0.2s;
       position: relative;
-      /* ✅ جديد: ضروري لتحديد موضع الشارة بشكل صحيح */
+      /* ✅ New: Necessary for badge positioning */
     }
 
-    /* ✅ جديد: تنسيق الأيقونة */
+    /* ✅ New: Icon Styling */
     .index-header-login-btn .index-user-icon {
       font-size: 20px;
-      /* تكبير حجم الأيقونة */
+      /* Increase icon size */
       color: var(--primary-color);
-      /* لون الأيقونة */
+      /* Icon color */
     }
 
-    /* ✅ جديد: تنسيق النص */
+    /* ✅ New: Text Styling */
     .index-header-login-btn span {
       font-size: 8px;
-      /* تصغير حجم الخط */
+      /* Decrease font size */
       color: var(--dark-blue);
       white-space: nowrap;
-      /* ✅ جديد: منع النص من الانقسام إلى سطرين */
+      /* ✅ New: Prevent text wrapping */
     }
 
     .index-header-login-btn {
-      /* ... الأنماط الحالية للزر ... */
+      /* ... Current button styles ... */
 
-      /* ✅ جديد: إضافة خصائص الانتقال للتحكم في الانميشن */
-      /* ✅ تحسين: إضافة المزيد من الخصائص للانميشن لضمان اختفاء كامل */
+      /* ✅ New: Add transition properties for animation control */
+      /* ✅ Improvement: Add more properties to animation to ensure full disappearance */
       opacity: 1;
       margin-left: 20px;
       margin-right: 5px;
       transform: translateY(0);
       max-width: 100px;
-      /* تحديد عرض أقصى للسماح بالانميشن */
+      /* Max width to allow animation */
       transition: opacity 0.3s ease, transform 0.3s ease, max-width 0.5s ease,
         padding 0.5s ease, margin 0.5s ease;
     }
 
     .index-header-login-btn.index-hidden {
-      /* ✅ جديد: تحديد حالة الزر عندما يكون مخفياً */
-      /* ✅ تحسين: جعل الزر يتقلص ويختفي تمامًا من التخطيط */
+      /* ✅ New: Define button state when hidden */
+      /* ✅ Improvement: Make button shrink and disappear completely from layout */
       opacity: 0;
       transform: translateY(-10px
-          /* تحريك الزر للأعلى قليلاً عند الاختفاء */
+          /* Move button up slightly when disappearing */
         );
       pointer-events: none;
-      /* منع التفاعل مع الزر أثناء اختفائه */
+      /* Prevent interaction when hidden */
       max-width: 0;
-      /* جعل العرض صفرًا لإزالة الزر من التدفق */
+      /* Set width to zero to remove from flow */
       padding-left: 0;
       padding-right: 0;
-      /* ✅ حل مشكلة الفجوة: إزالة الهوامش بالكامل عند الإخفاء */
+      /* ✅ Fix Gap Issue: Remove margins completely when hidden */
       margin: 0;
     }
 
-    /* ✅ جديد: تنسيق الزر النشط */
+    /* ✅ New: Active button styling */
     .index-header-login-btn.active {
       border-bottom: 2px solid var(--primary-color);
       background-color: var(--primary-color-light);
@@ -153,44 +153,44 @@
       font-weight: bold;
     }
 
-    /* ✅ جديد: أنماط شارة عدد المنتجات في السلة */
+    /* ✅ New: Cart Badge styling */
     .cart-badge {
       position: absolute;
       top: -5px;
-      /* تعديل الموضع الرأسي */
+      /* Update vertical position */
       right: -8px;
-      /* تعديل الموضع الأفقي */
+      /* Update horizontal position */
       background-color: var(--accent-color);
-      /* لون الخلفية */
+      /* Background color */
       border-radius: 50%;
-      /* لجعلها دائرية */
+      /* Make it circular */
       width: 18px;
-      /* عرض الشارة */
+      /* Badge width */
       height: 18px;
-      /* ارتفاع الشارة */
+      /* Badge height */
       font-size: 10px;
-      /* حجم الخط */
+      /* Font size */
       font-weight: bold;
       display: flex;
-      /* لتوسيط الرقم */
+      /* Center number */
       align-items: center;
       justify-content: center;
       border: 2px solid var(--bg-color-light);
-      /* إضافة حدود لفصلها عن الخلفية */
+      /* Add border to separate from background */
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-      /* ظل خفيف */
+      /* Light shadow */
 
-      /* إخفاء الشارة افتراضيًا */
+      /* Hide badge by default */
       display: none;
     }
 
-    /* ✅ جديد: تنسيق العلامة المائية لوضع المسؤول */
+    /* ✅ New: Admin Mode Watermark Styling */
     .admin-watermark {
       position: fixed;
       bottom: 20px;
       right: 20px;
       background-color: rgba(220, 53, 69, 0.9);
-      /* لون أحمر شفاف */
+      /* Transparent Red */
       color: white;
       padding: 8px 15px;
       border-radius: 25px;
@@ -198,13 +198,14 @@
       font-size: 12px;
       z-index: 9999;
       pointer-events: none;
-      /* للسماح بالنقر من خلالها */
+      /* Allow clicking through */
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       gap: 8px;
       direction: rtl;
     }
+
 
     .admin-watermark i {
       font-size: 14px;
@@ -339,7 +340,7 @@
      */
     document.addEventListener("DOMContentLoaded", async () => {
 
-      // [خطوة 0] تحميل إعدادات الإشعارات من السيرفر (المصدر الوحيد للحقيقة)
+      // [Step 0] Load notification configurations from server (Single Source of Truth)
       try {
         const response = await fetch('/notification_config.json');
         if (response.ok) {
@@ -352,19 +353,19 @@
         console.error('❌ خطأ في الاتصال أثناء تحميل إعدادات الإشعارات:', error);
       }
 
-      // [خطوة 1] قراءة بيانات المستخدم المسجل من التخزين المحلي. إذا لم توجد، تكون القيمة null.
+      // [Step 1] Read logged-in user data from storage. If not exists, value is null.
       userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
-      // [خطوة 2] تحديث اسم المستخدم في شريط التنقل العلوي.
+      // [Step 2] Update username in top navigation bar.
       setUserNameInIndexBar();
-      // [خطوة 3] تحديث شارة عدد المنتجات في السلة.
+      // [Step 3] Update cart item count badge.
       updateCartBadge();
-      // [خطوة 4] تحميل الصفحة الرئيسية بشكل افتراضي عند فتح التطبيق.
+      // [Step 4] Load home page by default when app opens.
       mainLoader(
         "./pages/home.html",
         "index-home-container",
         0,
         undefined,
-        // استدعاء دالة لإخفاء زر "الرئيسية" لأنه بالفعل في الصفحة الرئيسية.
+        // Call function to hide "Home" button since we are already on home.
         "hiddenHomeIcon"
       );
 
@@ -705,10 +706,10 @@
         setActiveButton(homeBtn);
       }
 
-      // [خطوة 8] التحقق من وضع انتحال الشخصية (عندما يتصفح مسؤول كأنه مستخدم عادي) وإظهار علامة مائية إذا كان نشطًا.
+      // [Step 8] Check for Impersonation Mode (Admin viewing as user) and show watermark if active.
       checkImpersonationMode();
 
-      // [خطوة 9] تهيئة FCM تلقائياً إذا كان المستخدم مسجلاً الدخول مسبقاً
+      // [Step 9] Auto-initialize FCM if user is already logged in.
       if (userSession && userSession.user_key) {
         setupFCM();
       }

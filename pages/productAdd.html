@@ -614,7 +614,7 @@
 
             const meta = document.createElement('div');
             meta.className = 'add-product-modal__preview-meta';
-            meta.textContent = 'Calculating...'; // Temporary text
+            meta.textContent = 'جاري المعالجة...'; // Temporary text
 
             wrapper.appendChild(removeBtn);
             wrapper.appendChild(img);
@@ -641,16 +641,16 @@
          * @param {string} id - The ID of the image to remove.
          */
         function removeImage(id) {
-            console.log(`[ImageUploader] Attempting to remove image with id: ${id}`);
+            console.log(`[ImageUploader] محاولة حذف الصورة بالمعرف: ${id}`);
             Swal.fire({
-                title: 'Are you sure?',
-                text: "Do you really want to delete this image?",
+                title: 'هل أنت متأكد؟',
+                text: "هل تريد حقاً حذف هذه الصورة؟",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
+                confirmButtonText: 'نعم، احذفها!',
+                cancelButtonText: 'إلغاء'
             }).then((result) => {
                 if (result.isConfirmed) {
                     // 1. Find the index of the image in the state array
@@ -693,7 +693,7 @@
                 // Check max limit
                 const availableSlots = MAX_FILES - images.length;
                 if (availableSlots <= 0) {
-                    Swal.fire('Warning', `Cannot add more than ${MAX_FILES} images`, 'warning');
+                    Swal.fire('تحذير', `لا يمكن إضافة أكثر من ${MAX_FILES} صور`, 'warning');
                     return;
                 }
 
@@ -734,14 +734,14 @@
                         console.error('[ImageUploader] Compression error:', err);
                         state.status = 'error';
                         if (state._metaEl) {
-                            state._metaEl.textContent = 'Compression Error';
+                            state._metaEl.textContent = 'خطأ في الضغط';
                         }
                     }
                 }
 
             } catch (error) {
-                console.error('[ImageUploader] Critical error:', error);
-                Swal.fire('Error', 'An error occurred while processing images', 'error');
+                console.error('[ImageUploader] خطأ حرج:', error);
+                Swal.fire('خطأ', 'حدث خطأ أثناء معالجة الصور', 'error');
             } finally {
                 window.isProcessingFiles = false;
             }
@@ -1000,42 +1000,42 @@
             // 1. Check for at least one image
             clearError(uploaderEl);
             if (images.length === 0) {
-                showError(uploaderEl, 'At least one product image is required.');
+                showError(uploaderEl, 'مطلوب صورة واحدة للمنتج على الأقل.');
                 isValid = false;
             }
 
             // 2. Check Product Name
             clearError(productNameInput);
             if (!productNameInput.value.trim()) {
-                showError(productNameInput, 'Product name is required.');
+                showError(productNameInput, 'اسم المنتج مطلوب.');
                 isValid = false;
             }
 
             // 3. Check Description
             clearError(descriptionTextarea);
             if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
-                showError(descriptionTextarea, 'Product description is required (at least 10 characters).');
+                showError(descriptionTextarea, 'وصف المنتج مطلوب (على الأقل 10 أحرف).');
                 isValid = false;
             }
 
             // 4. Check Seller Message
             clearError(sellerMessageTextarea);
             if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
-                showError(sellerMessageTextarea, 'Seller message is required (at least 10 characters).');
+                showError(sellerMessageTextarea, 'رسالة البائع مطلوبة (على الأقل 10 أحرف).');
                 isValid = false;
             }
 
             // 5. Check Quantity
             clearError(quantityInput);
             if (!quantityInput.value || parseFloat(quantityInput.value) < 1) {
-                showError(quantityInput, 'Please enter a valid available quantity (at least 1).');
+                showError(quantityInput, 'يرجى إدخال كمية متاحة صالحة (على الأقل 1).');
                 isValid = false;
             }
 
             // 6. Check Price
             clearError(priceInput);
             if (priceInput.value === '' || parseFloat(priceInput.value) < 0) {
-                showError(priceInput, 'Please enter a valid product price.');
+                showError(priceInput, 'يرجى إدخال سعر منتج صالح.');
                 isValid = false;
             }
 
@@ -1045,10 +1045,10 @@
             }
 
             // If all data is valid, proceed with upload
-            console.log('%c[ProductForm] Validation passed. Starting submission process.', 'color: green;');
+            console.log('%c[ProductForm] التحقق نجح. بدء عملية الإرسال.', 'color: green;');
             Swal.fire({
-                title: 'Adding Product...',
-                text: 'Please wait while images are being uploaded.',
+                title: 'جاري إضافة المنتج...',
+                text: 'يرجى الانتظار بينما يتم رفع الصور.',
                 allowOutsideClick: false,
                 didOpen: () => {
                     Swal.showLoading();
@@ -1102,9 +1102,9 @@
                     throw new Error(`Failed to save product data: ${dbResult.error}`);
                 }
 
-                console.log('%c[ProductForm] Product saved to DB successfully.', 'color: green; font-weight: bold;');
+                console.log('%c[ProductForm] تم حفظ المنتج بنجاح.', 'color: green; font-weight: bold;');
                 // 4. Show success message
-                Swal.fire('Success!', 'Product added successfully.', 'success').then(() => {
+                Swal.fire('تم بنجاح!', 'تم إضافة المنتج بنجاح.', 'success').then(() => {
                     // Reset form
                     form.reset();
                     previewsEl.innerHTML = '';

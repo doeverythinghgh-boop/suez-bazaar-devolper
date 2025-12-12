@@ -1,41 +1,41 @@
 /**
  * @file js/network.js
- * @description يدير حالة الاتصال بالشبكة في التطبيق ويقدم دالة مركزية لإجراء طلبات API.
- *   يشمل آليات للتحقق الدوري من الاتصال، وعرض إشعارات عدم الاتصال، وتخزين حالة الاتصال مؤقتًا.
+ * @description Manages network connection state in the application and provides a central function for making API requests.
+ *   Includes mechanisms for periodic connection checking, displaying offline notifications, and caching connection state.
  */
 
 /* ----------------------------------------
-    🟦 تخزين حالة الاتصال مؤقتاً (Cache)
+    🟦 Connection State Cache
 ---------------------------------------- */
 /**
- * @description Timestamp لآخر مرة تم فيها التحقق من الاتصال بالإنترنت.
+ * @description Timestamp of the last internet connection check.
  * @type {number}
  */
 let lastConnectionCheck = 0;
 /**
- * @description حالة الاتصال بالإنترنت المخزنة مؤقتًا.
+ * @description Cached internet connection state.
  * @type {boolean}
  */
 let isConnectedCache = false;
 /**
- * @description مرجع لكائن "Swal" (SweetAlert) الخاص بإشعار عدم الاتصال، لتمكين إغلاقه.
+ * @description Reference to the "Swal" (SweetAlert) object for offline notification, to enable closing it.
  * @type {object|null}
  */
-let offlineToast = null; 
+let offlineToast = null;
 /**
- * @description الفاصل الزمني (بالمللي ثانية) بين عمليات التحقق الدورية من الاتصال بالإنترنت.
+ * @description Interval (in milliseconds) between periodic internet connection checks.
  * @type {number}
  * @const
  */
-const CONNECTION_CHECK_INTERVAL = 10000; // 10 ثوانٍ
+const CONNECTION_CHECK_INTERVAL = 10000; // 10 seconds
 
 /* ----------------------------------------
-    🟦 دالة مستخدمة من أي مكان
+    🟦 Function used from anywhere
 ---------------------------------------- */
 /**
- * @description تعيد حالة الاتصال بالإنترنت المخزنة مؤقتًا.
+ * @description Returns the cached internet connection state.
  * @function checkInternetConnection
- * @returns {boolean} - `true` إذا كان هناك اتصال بالإنترنت، وإلا `false`.
+ * @returns {boolean} - `true` if there is an internet connection, otherwise `false`.
  * @async
  * @see isConnectedCache
  */
@@ -44,13 +44,13 @@ async function checkInternetConnection() {
 }
 
 /* ----------------------------------------
-    🟦 Snackbar ثابت عند فقد الاتصال
+    🟦 Fixed Snackbar on connection loss
 ---------------------------------------- */
 /**
- * @description يجري فحصًا فعليًا لحالة الاتصال بالإنترنت عن طريق محاولة جلب مورد من `gstatic.com`.
- *   يقوم بتحديث حالة الاتصال المخزنة مؤقتًا (`isConnectedCache`) ويعرض أو يخفي إشعار عدم الاتصال (`offlineToast`) حسب الحاجة.
+ * @description Performs an actual internet connection check by attempting to fetch a resource from `gstatic.com`.
+ *   Updates the cached connection state (`isConnectedCache`) and shows or hides the offline notification (`offlineToast`) as needed.
  * @function performActualConnectionCheck
- * @returns {Promise<boolean>} - وعد (Promise) يُرجع `true` إذا كان الاتصال متاحًا، وإلا `false`.
+ * @returns {Promise<boolean>} - Promise returning `true` if connection is available, otherwise `false`.
  * @async
  * @throws {Error} - If `navigator.onLine` is false or the fetch request fails.
  * @see isConnectedCache
@@ -74,14 +74,14 @@ async function performActualConnectionCheck() {
 
     clearTimeout(timeout);
 
-    // 🔹 عاد الاتصال
+    // 🔹 Connection restored
     if (!isConnectedCache) {
       console.log("%c[الشبكة] عاد الاتصال بالإنترنت.", "color: green;");
     }
 
     isConnectedCache = true;
 
-    // 🔹 اغلاق Snackbar إذا كان ظاهر
+    // 🔹 Close Snackbar if visible
     if (offlineToast) {
       Swal.close();
       offlineToast = null;
@@ -90,35 +90,35 @@ async function performActualConnectionCheck() {
     return true;
 
   } catch (error) {
-    // 🔻 تم فقد الاتصال
+    // 🔻 Connection lost
     if (isConnectedCache) {
       console.warn("%c[الشبكة] تم فقد الاتصال بالإنترنت.", "color: red;");
     }
 
     isConnectedCache = false;
 
-    // 🔹 إظهار Snackbar ثابت *مرة واحدة فقط*
+    // 🔹 Show fixed Snackbar *only once*
     if (!offlineToast) {
-    offlineToast = Swal.fire({
-  toast: true,
-  position: 'bottom',
-  html: `
+      offlineToast = Swal.fire({
+        toast: true,
+        position: 'bottom',
+        html: `
     <div style="display: grid; align-items:center;justify-items: center;margin:0;padding:0;">
       <i class="fas fa-wifi-slash" style=""></i>
       <span style="font-size:14px;">الاتصال بالانترنت ضعيف او منقطع</span>
     </div>
   `,
-  showConfirmButton: false,
-  background: '#979797d9',
-  color: 'white',
-  padding:0,
-width: 300,
-  timer: undefined,
-  timerProgressBar: false,
-  customClass: {
+        showConfirmButton: false,
+        background: '#979797d9',
+        color: 'white',
+        padding: 0,
+        width: 300,
+        timer: undefined,
+        timerProgressBar: false,
+        customClass: {
 
-  }
-});
+        }
+      });
 
 
     }
@@ -128,10 +128,10 @@ width: 300,
 }
 
 /* ----------------------------------------
-    🟦 الفحص الدوري
+    🟦 Periodic Check
 ---------------------------------------- */
 /**
- * @description يبدأ الفحص الدوري لحالة الاتصال بالإنترنت ويُعدل معالجات الأحداث لتغييرات حالة الاتصال عبر المتصفح.
+ * @description Starts periodic internet connection checking and sets up event handlers for browser connection state changes.
  * @function startPeriodicConnectionCheck
  * @returns {void}
  * @see performActualConnectionCheck
@@ -157,22 +157,22 @@ function startPeriodicConnectionCheck() {
 }
 
 /* ----------------------------------------
-    🟦 البدء
+    🟦 Start
 ---------------------------------------- */
 startPeriodicConnectionCheck();
 
 
 /**
- * @description دالة مركزية لإجراء طلبات API.
- *   تغلف منطق `fetch`، معالجة الأخطاء، وتحويل JSON.
+ * @description Central function for making API requests.
+ *   Wraps `fetch` logic, error handling, and JSON conversion.
  * @function apiFetch
- * @param {string} endpoint - نقطة النهاية (المسار) في API (e.g., '/users').
- * @param {object} [options={}] - خيارات طلب `fetch`، بما في ذلك `method`, `body`, `headers`, و `specialHandlers`.
- * @param {string} [options.method='GET'] - طريقة طلب HTTP (GET, POST, PUT, DELETE).
- * @param {object|null} [options.body=null] - البيانات التي سيتم إرسالها مع الطلب، يتم تحويلها إلى JSON.
- * @param {object} [options.headers={}] - رأس الطلب HTTP.
- * @param {object} [options.specialHandlers={}] - كائن يحتوي على دوال لمعالجة حالات استجابة HTTP محددة (مثل 401, 404).
- * @returns {Promise<Object>} - وعد (Promise) يحتوي على بيانات الاستجابة من الخادم ككائن JSON، أو كائن خطأ في حالة الفشل.
+ * @param {string} endpoint - API endpoint path (e.g., '/users').
+ * @param {object} [options={}] - `fetch` request options, including `method`, `body`, `headers`, and `specialHandlers`.
+ * @param {string} [options.method='GET'] - HTTP request method (GET, POST, PUT, DELETE).
+ * @param {object|null} [options.body=null] - Data to send with request, converted to JSON.
+ * @param {object} [options.headers={}] - HTTP request headers.
+ * @param {object} [options.specialHandlers={}] - Object containing functions to handle specific HTTP response statuses (like 401, 404).
+ * @returns {Promise<Object>} - Promise containing server response data as JSON object, or error object on failure.
  * @async
  * @throws {Error} - If the fetch request fails or the server responds with a non-OK status.
  * @see baseURL
@@ -200,7 +200,7 @@ async function apiFetch(endpoint, options = {}) {
     const response = await fetch(url, fetchOptions);
 
     if (specialHandlers[response.status]) {
-      return specialHandlersresponse.status;
+      return specialHandlers[response.status]();
     }
 
     const data = await response.json();

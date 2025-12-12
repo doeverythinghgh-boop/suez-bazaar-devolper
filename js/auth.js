@@ -1,10 +1,10 @@
 /**
  * @file js/auth.js
- * @description إدارة حالة المصادقة وتسجيل دخول المستخدم.
+ * @description Manages authentication state and user login.
  *
- * هذا الملف يوفر الدوال اللازمة للتعامل مع حالة تسجيل دخول المستخدم عبر التخزين المحلي (localStorage).
- * - `checkLoginStatus`: تتحقق مما إذا كان المستخدم مسجلاً دخوله عند تحميل الصفحة وتقوم بتحديث واجهة المستخدم.
- * - `logout`: تقوم بتسجيل خروج المستخدم عبر حذف بياناته من التخزين المحلي وتحديث الصفحة.
+ * This file provides functions to handle user login state via LocalStorage.
+ * - `checkLoginStatus`: Checks if the user is logged in on page load and updates the UI.
+ * - `logout`: Logs the user out by removing their data from LocalStorage and refreshing the page.
  */
 
 
@@ -12,16 +12,16 @@
 
 
 /**
- * @description يقوم بتسجيل خروج المستخدم عن طريق إزالة بياناته من التخزين المحلي وإعادة التوجيه إلى صفحة `index.html`.
- *   يتضمن ذلك حذف توكنات FCM من الخادم و`localStorage`.
+ * @description Logs out the user by removing their data from local storage and redirecting to `index.html`.
+ *   This includes removing FCM tokens from the server and `localStorage`.
  * @function logout
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، يعالج عمليات تسجيل الخروج غير المتزامنة.
+ * @returns {Promise<void>} - A Promise that resolves when the async logout process is complete.
  * @async
  * @throws {Error} - If `clearAndNavigateToLogin` fails.
  * @see clearAndNavigateToLogin
  */
 async function logout() {
-  // [خطوة 1] إظهار نافذة تأكيد منبثقة للمستخدم قبل تسجيل الخروج باستخدام SweetAlert.
+  // [Step 1] Show a confirmation popup to the user before logging out using SweetAlert.
   Swal.fire({
     title: "هل أنت متأكد؟",
     text: "سيتم تسجيل خروجك.",
@@ -31,27 +31,27 @@ async function logout() {
     cancelButtonColor: "#d33",
     confirmButtonText: "نعم، تسجيل الخروج",
     cancelButtonText: "إلغاء",
-    showLoaderOnConfirm: true, // إظهار أيقونة تحميل عند الضغط على "نعم".
-    // [خطوة 2] استخدام `preConfirm` لتنفيذ عملية تسجيل الخروج غير المتزامنة.
-    // سيضمن هذا أن النافذة المنبثقة ستظل مفتوحة وتعرض مؤشر التحميل حتى تكتمل العملية.
+    showLoaderOnConfirm: true, // Show loading icon when "Yes" is clicked.
+    // [Step 2] Use `preConfirm` to execute the async logout process.
+    // This ensures the popup stays open showing the loader until the process completes.
     preConfirm: async () => {
       await clearAndNavigateToLogin();
     },
-    // [خطوة 3] منع إغلاق النافذة عند النقر خارجها أثناء عملية التحميل.
+    // [Step 3] Prevent closing the popup by clicking outside during loading.
     allowOutsideClick: () => !Swal.isLoading(),
   });
 
 }
 
 /**
- * @description تقوم بمسح محتوى جميع الحاويات الرئيسية في الصفحة.
- *   تُستخدم هذه الدالة لإعادة تهيئة الواجهة عند تسجيل الخروج أو الانتقال بين الأقسام الرئيسية.
+ * @description Clears the content of all main containers on the page.
+ *   Used to reset the interface upon logout or navigation between main sections.
  * @function clearMainContainers
  * @returns {void}
  * @throws {Error} - If there's an error manipulating DOM elements.
  */
 function clearMainContainers() {
-  // [خطوة 1] تعريف مصفوفة تحتوي على معرفات جميع الحاويات التي يجب مسحها.
+  // [Step 1] Define an array of container IDs to clear.
   const containerIds = [
     "index-home-container",
     "index-search-container",
@@ -63,11 +63,11 @@ function clearMainContainers() {
 
   console.log("[UI] جاري مسح الحاويات الرئيسية...");
 
-  // [خطوة 2] المرور على كل معرف في المصفوفة.
+  // [Step 2] Iterate through each ID in the array.
   containerIds.forEach(id => {
     const container = document.getElementById(id);
     if (container) {
-      // [خطوة 3] إذا تم العثور على الحاوية، يتم تفريغ محتواها بالكامل.
+      // [Step 3] If found, clear its content completely.
       container.innerHTML = "";
     }
   });
@@ -76,11 +76,11 @@ function clearMainContainers() {
 }
 
 /**
- * @description دالة مساعدة جديدة تعالج عملية تسجيل الخروج الكاملة:
- * 1. إعلام واجهة Android (إذا كانت موجودة).
- * 2. محاولة حذف توكن FCM من الخادم.
- * 3. مسح جميع بيانات المتصفح (localStorage, etc.).
- * 4. إعادة توجيه المستخدم إلى صفحة تسجيل الدخول.
+ * @description Helper function handling the full logout process:
+ * 1. Notify Android interface (if exists).
+ * 2. Attempt to delete FCM token from server.
+ * 3. Clear all browser data (localStorage, etc.).
+ * 4. Redirect user to login page.
  * @async
  * @function clearAndNavigateToLogin
  * @returns {Promise<void>}
@@ -95,17 +95,17 @@ function clearMainContainers() {
 async function clearAndNavigateToLogin() {
   const fcmToken = localStorage.getItem("fcm_token") || localStorage.getItem("android_fcm_key");
 
-  // 1. إعلام واجهة Android (إن وجدت)
+  // 1. Notify Android interface (if exists)
   if (typeof onUserLoggedOutAndroid === "function") {
     onUserLoggedOutAndroid();
   } else if (window.Android && typeof window.Android.onUserLoggedOut === "function") {
     window.Android.onUserLoggedOut(userSession?.user_key);
   }
 
-  // 2. محاولة حذف التوكن من الخادم (إذا كان المستخدم والتوكن موجودين)
+  // 2. Attempt to delete token from server (if user and token exist)
   /*if (fcmToken && userSession?.user_key) {
     try {
-      // إرسال طلب للحذف (اختياري، يعتمد على دعم الـ API)
+      // Send delete request (optional, depends on API support)
       await fetch(`${baseURL}/api/tokens`, {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
@@ -123,7 +123,7 @@ async function clearAndNavigateToLogin() {
     }
   }*/
 
-  // 3. مسح جميع بيانات المتصفح
+  // 3. Clear all browser data
   console.log("[Auth] جاري مسح جميع بيانات المتصفح...");
   await clearAllBrowserData();
   clearMainContainers();
@@ -132,7 +132,7 @@ async function clearAndNavigateToLogin() {
   //
   setUserNameInIndexBar();
   checkImpersonationMode();
-  // [خطوة 1] استدعاء `mainLoader` لتحميل محتوى صفحة تسجيل الدخول في حاوية المستخدم الرئيسية.
+  // [Step 1] Call `mainLoader` to load login page content into the main user container.
   console.log("[Auth] دخلنا دالة clearAndNavigateToLogin 00000000000. جاري تحميل صفحة تسجيل الدخول...");
   await mainLoader(
     "pages/login.html",
