@@ -21,6 +21,7 @@ import { addStatusToggleListener } from "./popupHelpers.js";
 
 /**
  * Helper to get product name from orders data.
+ * @function getProductName
  * @param {string} productKey 
  * @param {Array<object>} ordersData 
  * @returns {string}
@@ -35,6 +36,8 @@ function getProductName(productKey, ordersData) {
 
 /**
  * Helper to attach log button listeners
+ * @function attachLogButtonListeners
+ * @returns {void}
  */
 function attachLogButtonListeners() {
     document.querySelectorAll('.btn-show-key').forEach(btn => {
@@ -50,14 +53,22 @@ function attachLogButtonListeners() {
  * @function showSellerConfirmationProductsAlert
  * @description تعرض نافذة للبائع لتأكيد توفر المنتجات التي طلبها المشتري.
  * هذه هي الخطوة الثانية (Confirmed Step).
- * 
+ *
  * المنطق يشمل:
  * 1. عرض فقط المنتجات التي تخص هذا البائع والتي قام المشتري باختيارها.
  * 2. السماح للبائع بإلغاء تحديد المنتجات (رفضها) إذا لم تكن متوفرة.
  * 3. حفظ حالة التأكيد (المقبول والمرفوض).
- * 
+ *
  * @param {object} data - بيانات التحكم.
  * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @returns {void}
+ * @throws {Error} - If there is an error displaying the alert or processing product confirmations.
+ * @see saveStepState
+ * @see loadStepState
+ * @see determineCurrentStepId
+ * @see updateCurrentStepFromState
+ * @see createStepStatusFooter
+ * @see addStatusToggleListener
  */
 export function showSellerConfirmationProductsAlert(data, ordersData) {
     try {
@@ -253,9 +264,13 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
  * @function showSellerRejectedProductsAlert
  * @description تعرض نافذة بالمنتجات التي قام البائع برفضها (إلغاء تحديدها) في مرحلة التأكيد.
  * تظهر عند النقر على خطوة "مرفوض".
- * 
+ *
  * @param {object} data - بيانات التحكم.
  * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @returns {void}
+ * @throws {Error} - If there is an error displaying the alert for rejected products.
+ * @see loadStepState
+ * @see getProductName
  */
 export function showSellerRejectedProductsAlert(data, ordersData) {
     try {
@@ -307,9 +322,16 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
  * @description تعرض نافذة بالمنتجات التي تم شحنها.
  * تظهر هذه النافذة في خطوة "شُحن".
  * تعرض فقط المنتجات التي تم تأكيدها من قبل البائع.
- * 
+ *
  * @param {object} data - بيانات التحكم.
  * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @returns {void}
+ * @throws {Error} - If there is an error displaying the shipping information alert.
+ * @see loadStepState
+ * @see getProductName
+ * @see determineCurrentStepId
+ * @see createStepStatusFooter
+ * @see addStatusToggleListener
  */
 export function showShippingInfoAlert(data, ordersData) {
     try {

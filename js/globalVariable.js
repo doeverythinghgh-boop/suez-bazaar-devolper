@@ -51,6 +51,7 @@ window.myProducts = null;
  * @function productViewLayout
  * @param {string} View - نوع العرض ('0' للعرض العادي، '2' للعرض البديل).
  * @returns {void}
+ * @see mainLoader
  */
 function productViewLayout(View) {
   console.log('------------------------نوع الخدمه-------------------', View);
@@ -87,6 +88,7 @@ function productViewLayout(View) {
  * @function productAddLayout
  * @param {boolean} [editMode=false] - هل الوضع هو تعديل منتج موجود؟ (حالياً غير مستخدم بالكامل في هذا المنطق).
  * @returns {void}
+ * @see mainLoader
  */
 function productAddLayout(editMode = false) {
   if (mainCategorySelectToAdd == 6) {
@@ -111,6 +113,7 @@ function productAddLayout(editMode = false) {
  * @description يوجه المستخدم إلى صفحة تعديل المنتج، مع تحديد نوع المنتج بناءً على الفئة المختارة.
  * @function productEditLayout
  * @returns {void}
+ * @see mainLoader
  */
 function productEditLayout() {
   if (mainCategorySelectToAdd == 6) {
@@ -133,6 +136,9 @@ function productEditLayout() {
  * @async
  * @function showAddProductModal
  * @returns {Promise<void>}
+ * @throws {Error} - If there's an error displaying the category modal or setting product layout.
+ * @see CategoryModal.show
+ * @see productAddLayout
  */
 async function showAddProductModal() {
   try {

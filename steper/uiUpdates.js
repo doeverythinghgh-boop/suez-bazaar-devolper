@@ -16,10 +16,9 @@ import { saveStepState, loadStepState, saveStepDate, loadStepDate } from "./stat
 let messageTimeout;
 
 /**
- * @function formatDate
  * @description تنسيق التاريخ والوقت للعرض.
  * التنسيق: YYYY-MM-DD hh:mm:ss A (نظام 12 ساعة)
- * 
+ * @function formatDate
  * @param {string|Date} dateInput - التاريخ المراد تنسيقه.
  * @returns {string} - التاريخ المنسق.
  */
@@ -43,9 +42,10 @@ function formatDate(dateInput) {
 }
 
 /**
- * @function showUnauthorizedAlert
  * @description تعرض رسالة تنبيه للمستخدم عندما يحاول النقر على خطوة ليس لديه صلاحية الوصول إليها.
  * تظهر الرسالة لفترة قصيرة ثم تختفي تلقائياً.
+ * @function showUnauthorizedAlert
+ * @returns {void}
  */
 export function showUnauthorizedAlert() {
     try {
@@ -71,10 +71,10 @@ export function showUnauthorizedAlert() {
 }
 
 /**
- * @function animateStep
  * @description تضيف تأثير حركة (Animation) على دائرة الخطوة لجذب الانتباه.
- * 
+ * @function animateStep
  * @param {HTMLElement} circle - عنصر الدائرة (DOM Element) المراد تحريكه.
+ * @returns {void}
  */
 export function animateStep(circle) {
     try {
@@ -86,11 +86,11 @@ export function animateStep(circle) {
 }
 
 /**
- * @function highlightCurrentStep
  * @description تقوم بتحديث المظهر المرئي لشريط التقدم.
  * تزيل التمييز عن جميع الخطوات ثم تضيفه فقط للخطوة المحددة كـ "حالية".
- * 
+ * @function highlightCurrentStep
  * @param {string} stepId - معرف الخطوة المراد إبرازها وتمييزها.
+ * @returns {void}
  */
 export function highlightCurrentStep(stepId) {
     try {
@@ -113,7 +113,6 @@ export function highlightCurrentStep(stepId) {
 }
 
 /**
- * @function updateCurrentStepFromState
  * @description دالة مركزية لتحديث حالة التطبيق بالكامل بناءً على البيانات.
  * تقوم بما يلي:
  * 1. تحديد الخطوة الحالية.
@@ -121,9 +120,10 @@ export function highlightCurrentStep(stepId) {
  * 3. حفظ الحالة الجديدة.
  * 4. التحقق من الحالات الخاصة (مثل وجود منتجات ملغاة أو مرفوضة) وتحديث أيقونات الخطوات المقابلة.
  * 5. عرض وصف الخطوة مع التاريخ.
- * 
+ * @function updateCurrentStepFromState
  * @param {object} controlData - بيانات التحكم.
  * @param {Array<object>} ordersData - بيانات الطلبات (اختياري).
+ * @returns {void}
  */
 export function updateCurrentStepFromState(controlData, ordersData) {
     try {
@@ -266,13 +266,11 @@ export function updateCurrentStepFromState(controlData, ordersData) {
 }
 
 /**
- * @function createStepStatusFooter
  * @description تنشئ كود HTML لتذييل النافذة المنبثقة (Modal Footer).
  * يحتوي التذييل عادةً على مربع اختيار (Checkbox) للسماح للمستخدم بتفعيل المرحلة والانتقال إليها.
- * 
+ * @function createStepStatusFooter
  * @param {string} stepId - معرف الخطوة التي تظهر النافذة لها.
  * @param {object} currentStep - كائن يمثل الخطوة النشطة حالياً في النظام.
- * 
  * @returns {string} - كود HTML جاهز للإدراج في النافذة.
  */
 export function createStepStatusFooter(stepId, currentStep) {

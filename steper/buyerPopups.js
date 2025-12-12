@@ -22,8 +22,9 @@ import { addStatusToggleListener } from "./popupHelpers.js";
 
 /**
  * Helper to get product name from orders data.
- * @param {string} productKey 
- * @param {Array<object>} ordersData 
+ * @function getProductName
+ * @param {string} productKey
+ * @param {Array<object>} ordersData
  * @returns {string}
  */
 function getProductName(productKey, ordersData) {
@@ -36,6 +37,8 @@ function getProductName(productKey, ordersData) {
 
 /**
  * Helper to attach log button listeners
+ * @function attachLogButtonListeners
+ * @returns {void}
  */
 function attachLogButtonListeners() {
     document.querySelectorAll('.btn-show-key').forEach(button => {
@@ -52,16 +55,25 @@ function attachLogButtonListeners() {
  * @function showProductKeysAlert
  * @description تعرض نافذة للمشتري لمراجعة المنتجات وتحديد ما يريد طلبه منها.
  * هذه هي الخطوة الأولى في العملية (Review Step).
- * 
+ *
  * المنطق يشمل:
  * 1. تصفية المنتجات بناءً على نوع المستخدم (المشتري يرى منتجاته، البائع يرى منتجاته، إلخ).
  * 2. التحقق من حالة القفل (إذا تم شحن الطلب، لا يمكن تعديل المراجعة).
  * 3. إنشاء مربعات اختيار (Checkboxes) لكل منتج.
  * 4. التعامل مع تغييرات الاختيار (إلغاء منتج يتطلب تأكيداً).
- * 
+ *
  * @param {object} data - بيانات التحكم.
  * @param {Array<object>} ordersData - بيانات الطلبات.
  * @param {boolean} isModificationLocked - هل التعديل مقفل (مثلاً لأن المرحلة تجاوزت المراجعة).
+ * @returns {void}
+ * @throws {Error} - If an error occurs during alert display or product key processing.
+ * @see loadStepState
+ * @see getProductName
+ * @see determineCurrentStepId
+ * @see createStepStatusFooter
+ * @see addStatusToggleListener
+ * @see saveStepState
+ * @see updateCurrentStepFromState
  */
 export function showProductKeysAlert(data, ordersData, isModificationLocked) {
     try {
@@ -247,9 +259,13 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
  * @function showUnselectedProductsAlert
  * @description تعرض نافذة بالمنتجات التي قام المشتري بإلغائها (عدم تحديدها) في خطوة المراجعة.
  * تظهر هذه النافذة عند النقر على خطوة "ملغي".
- * 
+ *
  * @param {object} data - بيانات التحكم.
  * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @returns {void}
+ * @throws {Error} - If an error occurs displaying the alert for unselected products.
+ * @see loadStepState
+ * @see getProductName
  */
 export function showUnselectedProductsAlert(data, ordersData) {
     try {
@@ -295,9 +311,17 @@ export function showUnselectedProductsAlert(data, ordersData) {
  * @function showDeliveryConfirmationAlert
  * @description تعرض نافذة للمشتري لتأكيد استلام المنتجات.
  * تظهر فقط المنتجات التي تم تأكيدها من قبل البائع.
- * 
+ *
  * @param {object} data - بيانات التحكم.
  * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @returns {void}
+ * @throws {Error} - If an error occurs displaying the alert for delivery confirmation.
+ * @see loadStepState
+ * @see getProductName
+ * @see determineCurrentStepId
+ * @see createStepStatusFooter
+ * @see addStatusToggleListener
+ * @see updateCurrentStepFromState
  */
 export function showDeliveryConfirmationAlert(data, ordersData) {
     try {
@@ -482,9 +506,13 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
 /**
  * @function showReturnedProductsAlert
  * @description تعرض نافذة بالمنتجات التي تم إرجاعها (لم يتم استلامها في خطوة التسليم).
- * 
+ *
  * @param {object} data - بيانات التحكم.
- * @param {object} ordersData
+ * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @returns {void}
+ * @throws {Error} - If an error occurs displaying the alert for returned products.
+ * @see loadStepState
+ * @see getProductName
  */
 // NOTE: I am adding ordersData here because I need it for the name look up.
 // It seems the original function signature was (data). I need to check where it is called.

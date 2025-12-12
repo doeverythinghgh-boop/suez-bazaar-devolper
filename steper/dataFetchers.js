@@ -11,8 +11,10 @@ import { appDataControl, ordersData } from "./config.js";
  * @function fetchControlData
  * @description تقوم هذه الدالة بإرجاع بيانات التحكم من ملف الإعدادات مباشرة.
  * تم استبدال جلب ملف `control.json` باستخدام المتغير `appDataControl` من `config.js`.
- * 
+ *
  * @returns {Promise<Object>} وعد (Promise) يتم حله (resolves) بكائن بيانات التحكم.
+ * @throws {Error} - If there is an error resolving the promise with `appDataControl`.
+ * @see appDataControl
  */
 export function fetchControlData() {
     try {
@@ -28,8 +30,10 @@ export function fetchControlData() {
  * @function fetchOrdersData
  * @description تقوم هذه الدالة بإرجاع بيانات الطلبات من ملف الإعدادات مباشرة.
  * تم استبدال جلب ملف `orders_.json` باستخدام المتغير `ordersData` من `config.js`.
- * 
+ *
  * @returns {Promise<Object>} وعد (Promise) يتم حله بكائن بيانات الطلبات (مصفوفة).
+ * @throws {Error} - If there is an error resolving the promise with `ordersData`.
+ * @see ordersData
  */
 export function fetchOrdersData() {
     try {

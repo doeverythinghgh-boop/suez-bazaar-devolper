@@ -137,6 +137,7 @@ function processOrderStatus(order) {
  * @description تعرض رسالة خطأ تحت حقل الإدخال المحدد وتضيف فئة خطأ إليه.
  * @param {HTMLInputElement} input - عنصر الإدخال الذي حدث فيه الخطأ.
  * @param {string} message - رسالة الخطأ المراد عرضها.
+ * @returns {void}
  */
 const showError = (input, message) => {
   // العثور على العنصر المخصص لعرض رسالة الخطأ.
@@ -191,6 +192,7 @@ function setUserNameInIndexBar() {
  * @function clearAllBrowserData
  * @async
  * @returns {Promise<boolean>} - وعد (Promise) يعود بـ `true` عند الانتهاء.
+ * @throws {Error} - If there's an error clearing localStorage, sessionStorage, or IndexedDB.
  */
 async function clearAllBrowserData() {
   // -----------------------------
@@ -241,6 +243,7 @@ async function clearAllBrowserData() {
  * @description تعرض نافذة الإشعارات المنبثقة باستخدام `mainLoader`.
  * @function showNotificationsModal
  * @returns {void}
+ * @deprecated - This function is commented out in the code and appears unused.
  */
 function showNotificationsModal() {
   //  mainLoader("./notification/page/notifications.html", "index-notifications-container", 500, undefined, "showHomeIcon", true);
@@ -248,10 +251,16 @@ function showNotificationsModal() {
 
 
 // متغير عام لإعادة استخدام AudioContext
+/**
+ * @type {AudioContext|null}
+ * @description Global variable to store and reuse the AudioContext instance for notification sounds.
+ */
 let suzeAudioContext = null;
 
 /**
  * @description تشغيل صوت تنبيه باستخدام Web Audio API
+ * @returns {void}
+ * @throws {Error} - If the Web Audio API encounters an error during sound playback.
  */
 function playNotificationSound() {
   try {
@@ -288,6 +297,11 @@ function playNotificationSound() {
 
 
 const pageSnapshots = {};
+/**
+ * @type {object}
+ * @description A cache for storing HTML content of pages fetched via `insertUniqueSnapshot`.
+ * Keys are page URLs and values are their HTML content.
+ */
 
 /**
  * @description يقوم بجلب محتوى صفحة HTML وتخزينه مؤقتًا، ثم إدراجه في حاوية محددة.
@@ -298,6 +312,7 @@ const pageSnapshots = {};
  * @param {string} pageUrl - رابط الصفحة المراد جلبها.
  * @param {string} containerId - معرف الحاوية التي سيتم إدراج المحتوى فيها.
  * @returns {Promise<void>}
+ * @throws {Error} - If the page fails to load or the container element is not found.
  */
 async function insertUniqueSnapshot(pageUrl, containerId) {
   try {
@@ -364,6 +379,9 @@ async function insertUniqueSnapshot(pageUrl, containerId) {
  * @param {string} pageUrl - رابط الملف الخارجي المراد تحميله
  * @param {string} containerId - معرف العنصر الذي سيحتوي على المحتوى
  * @param {number} waitMs - فترة الانتظار بعد اكتمال تحميل وتشغيل كل شيء
+ * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If fetching HTML fails, the container element is not found, or script execution encounters an error.
  */
 async function loader(pageUrl, containerId, waitMs = 300) {
   try {

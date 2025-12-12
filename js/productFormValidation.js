@@ -10,6 +10,7 @@
  * @param {HTMLElement} element - عنصر DOM الذي ستظهر رسالة الخطأ أسفله.
  * @param {string} message - رسالة الخطأ المراد عرضها.
  * @returns {void}
+ * @throws {Error} - If `element` is null.
  * @see productClearError
  */
 function productShowError(element, message) {
@@ -56,6 +57,7 @@ function productClearError(element) {
  *   يعرض رسائل خطأ للمستخدم في حالة عدم الصحة ويقوم بالتمرير إلى أول خطأ.
  * @function productValidateForm
  * @returns {boolean} - `true` إذا كان النموذج صالحًا وجاهزًا للإرسال، وإلا `false`.
+ * @throws {Error} - If critical DOM elements are missing.
  * @see productShowError
  * @see productClearError
  */
@@ -222,6 +224,7 @@ function productValidateForm() {
  * @function productQuickValidateField
  * @param {HTMLInputElement|HTMLTextAreaElement} field - عنصر حقل النموذج المراد التحقق منه.
  * @returns {boolean} - `true` إذا كان الحقل صالحًا، وإلا `false`.
+ * @throws {Error} - If critical DOM elements are missing.
  * @see productShowError
  * @see productClearError
  */
@@ -295,6 +298,7 @@ function productQuickValidateField(field) {
  * @description تنظيف النموذج وإعادة الخلفية عند الإغلاق
  * @function productCleanupForm
  * @returns {void}
+ * @see productResetModalBackground
  */
 function productCleanupForm() {
   console.log('%c[ProductForm] 🧹 Cleaning up form and resetting background', 'color: gray;');

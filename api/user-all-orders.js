@@ -1,8 +1,41 @@
+/**
+ * @file api/user-all-orders.js
+ * @description نقطة نهاية (API Endpoint) لجلب جميع الطلبات المتعلقة بمستخدم معين بناءً على دوره.
+ *
+ * هذا الملف يعمل كواجهة خلفية (Serverless Function على Vercel) ويتولى كافة العمليات المتعلقة بالطلبات:
+ * - GET: جلب تفاصيل الطلبات وعناصرها وخدمات التوصيل المرتبطة بها بناءً على user_key والدور (purchaser, seller, delivery, admin).
+ * - OPTIONS: معالجة طلبات CORS Preflight.
+ */
 import { createClient } from "@libsql/client/web";
 
 export const config = { runtime: 'edge' };
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 
+/**
+ * @description نقطة نهاية API لجلب جميع الطلبات المتعلقة بمستخدم معين بناءً على دوره.
+ * تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS وطلبات `GET` لجلب تفاصيل الطلبات وعناصرها المجمعة.
+ * @function handler
+ * @param {Request} request - كائن طلب HTTP الوارد.
+ * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @async
+ * @throws {Response} - Returns an HTTP response with an error status (400, 405, 500, 503, 504) if validation fails or an unexpected error occurs during database operations.
+ * @see createClient
+ */
 export default async function handler(request) {
+/**
+ * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @type {object}
+ * @const
+ */
+/**
+ * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @type {object}
+ * @const
+ */
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',

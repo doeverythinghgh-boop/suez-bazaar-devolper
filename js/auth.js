@@ -16,6 +16,8 @@
  *   يتضمن ذلك حذف توكنات FCM من الخادم و`localStorage`.
  * @function logout
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، يعالج عمليات تسجيل الخروج غير المتزامنة.
+ * @async
+ * @throws {Error} - If `clearAndNavigateToLogin` fails.
  * @see clearAndNavigateToLogin
  */
 async function logout() {
@@ -46,6 +48,7 @@ async function logout() {
  *   تُستخدم هذه الدالة لإعادة تهيئة الواجهة عند تسجيل الخروج أو الانتقال بين الأقسام الرئيسية.
  * @function clearMainContainers
  * @returns {void}
+ * @throws {Error} - If there's an error manipulating DOM elements.
  */
 function clearMainContainers() {
   // [خطوة 1] تعريف مصفوفة تحتوي على معرفات جميع الحاويات التي يجب مسحها.
@@ -81,6 +84,13 @@ function clearMainContainers() {
  * @async
  * @function clearAndNavigateToLogin
  * @returns {Promise<void>}
+ * @throws {Error} - If `onUserLoggedOutAndroid`, `clearAllBrowserData`, `clearMainContainers`, `setUserNameInIndexBar`, `checkImpersonationMode`, or `mainLoader` fails.
+ * @see onUserLoggedOutAndroid
+ * @see clearAllBrowserData
+ * @see clearMainContainers
+ * @see setUserNameInIndexBar
+ * @see checkImpersonationMode
+ * @see mainLoader
  */
 async function clearAndNavigateToLogin() {
   const fcmToken = localStorage.getItem("fcm_token") || localStorage.getItem("android_fcm_key");

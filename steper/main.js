@@ -23,7 +23,23 @@ import { addStepClickListeners } from "./stepClickHandlers.js"; import { initial
  * @description يتم تنفيذ هذا الكود بمجرد تحميل هيكل الصفحة (DOM) بالكامل.
  * يضمن هذا أن جميع العناصر التي سنحاول الوصول إليها موجودة بالفعل.
  */
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded",
+/**
+ * @description The main initialization routine for the application, executed once the DOM is fully loaded.
+ * It coordinates data fetching, user authentication, state management, and event listener setup.
+ * @function mainInitializationRoutine
+ * @returns {Promise<void>}
+ * @throws {Error} - If any critical step during initialization fails (e.g., data fetching, user type determination).
+ * @see fetchControlData
+ * @see fetchOrdersData
+ * @see initializeState
+ * @see determineUserType
+ * @see determineCurrentStepId
+ * @see updateCurrentStepFromState
+ * @see addStepClickListeners
+ * @see initializationPromise
+ */
+async () => {
     console.log("🚀 [Main] DOMContentLoaded: Page loaded. Starting application initialization.");
 
     // أولاً، انتظر اكتمال التهيئة من الصفحة الأم

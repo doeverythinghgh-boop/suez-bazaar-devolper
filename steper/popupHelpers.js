@@ -26,6 +26,13 @@ import {
  * 5. حفظ الحالة الجديدة وتحديث الواجهة عند التأكيد.
  * 
  * @param {object} controlData - بيانات التحكم التي تحتوي على تعريف الخطوات.
+ * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @returns {void}
+ * @throws {Error} - If there is an error adding the event listener or processing the step activation logic.
+ * @see saveStepState
+ * @see loadStepState
+ * @see updateCurrentStepFromState
+ * @see sendStepActivationNotifications
  */
 export function addStatusToggleListener(controlData, ordersData) {
     try {

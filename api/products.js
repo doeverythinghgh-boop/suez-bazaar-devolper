@@ -41,6 +41,8 @@ const corsHeaders = {
  * @function handler
  * @param {Request} request - كائن طلب HTTP الوارد.
  * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @async
+ * @throws {Response} - Returns an HTTP response with an error status (400, 404, 405, 500) if validation fails or an unexpected error occurs during database operations.
  */
 export default async function handler(request) {
   if (request.method === "OPTIONS") {

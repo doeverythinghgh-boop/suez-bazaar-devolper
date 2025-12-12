@@ -177,7 +177,7 @@ export var baseURL = '';
 export var order_status = '';
 
 /**
- * @var {Promise<void>} initializationPromise
+ * @constant {Promise<void>} initializationPromise
  * @description وعد (Promise) يتم حله عندما تنتهي دالة `initializeFromParent` من عملها.
  * هذا يضمن أن أي كود يعتمد على البيانات المهيأة من الصفحة الأم لن يعمل إلا بعد اكتمال التهيئة.
  */
@@ -188,6 +188,10 @@ export const initializationPromise = new Promise(resolve => { resolveInitializat
  * @function updateGlobalStepperAppData
  * @description دالة لتحديث المتغير العام globalStepperAppData وطباعة القيمة الجديدة.
  * @param {object} newData - البيانات الجديدة.
+ * @returns {void}
+ * @throws {Error} - If a critical error occurs during the fetch request to update the server.
+ * @see baseURL
+ * @see ordersData
  */
 export function updateGlobalStepperAppData(newData) {
     console.log("🚀 [Config] updateGlobalStepperAppData: Function called. 000000000000", { newData });
@@ -216,8 +220,17 @@ export function updateGlobalStepperAppData(newData) {
 }
 
 /**
- * @description تهيئة البيانات من window.parent.globalStepperAppData إذا كانت متوفرة
- * يتم تحديث idUser و ordersData بالقيم الحقيقية
+ * @function initializeFromParent
+ * @description تهيئة البيانات من window.parent.globalStepperAppData إذا كانت متوفرة.
+ * يتم تحديث idUser و ordersData بالقيم الحقيقية.
+ * @returns {void}
+ * @throws {Error} - If a critical error occurs during initialization from the parent window.
+ * @see window.parent.globalStepperAppData
+ * @see appDataControl
+ * @see ordersData
+ * @see baseURL
+ * @see globalStepperAppData
+ * @see resolveInitialization
  */
 (function initializeFromParent() {
     console.log("🚀 [Config] initializeFromParent: Starting initialization from parent window...");

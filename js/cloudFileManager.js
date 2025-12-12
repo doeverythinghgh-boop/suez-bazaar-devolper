@@ -28,6 +28,7 @@ const baseUrl = "https://bidstory-files.bidsstories.workers.dev";
  *   وحفظه في `localStorage`.
  * @function ensureToken2cf
  * @returns {Promise<string>} - وعد (Promise) يحتوي على توكن المصادقة.
+ * @async
  * @throws {Error} - إذا فشل جلب التوكن.
  */
 async function ensureToken2cf() {
@@ -53,6 +54,7 @@ async function ensureToken2cf() {
  * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
  * @returns {Promise<object>} - وعد (Promise) يحتوي على كائن يوضح نتيجة عملية الرفع.
  * @throws {Error} - إذا لم يتم توفير Blob أو اسم الملف، أو فشل الرفع.
+ * @async
  * @see ensureToken2cf
  */
 async function uploadFile2cf(blob, fileName, onLog = console.log) {
@@ -95,6 +97,7 @@ async function uploadFile2cf(blob, fileName, onLog = console.log) {
  * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
  * @returns {Promise<Blob>} - وعد (Promise) يحتوي على كائن Blob يمثل محتوى الملف المحمل.
  * @throws {Error} - إذا لم يتم توفير اسم الملف، أو فشل التحميل.
+ * @async
  * @see ensureToken2cf
  */
 async function downloadFile2cf(fileName, onLog = console.log) {
@@ -137,6 +140,7 @@ async function downloadFile2cf(fileName, onLog = console.log) {
  * @param {function(string): void} [onLog=console.log] - دالة رد اتصال اختيارية لتسجيل الرسائل.
  * @returns {Promise<object>} - وعد (Promise) يحتوي على كائن يوضح نتيجة عملية الحذف.
  * @throws {Error} - إذا لم يتم توفير اسم الملف، أو فشل الحذف.
+ * @async
  * @see ensureToken2cf
  */
 async function deleteFile2cf(fileName, onLog = console.log) {

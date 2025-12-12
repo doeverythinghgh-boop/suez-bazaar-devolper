@@ -10,6 +10,9 @@
 
 /**
  * اختبار إرسال إشعار للمشتري
+ * @function testBuyerNotification
+ * @returns {Promise<void>}
+ * @see notifyBuyerOnStepChange
  */
 async function testBuyerNotification() {
     console.log('🧪 [Test] اختبار إشعار المشتري...');
@@ -31,6 +34,9 @@ async function testBuyerNotification() {
 
 /**
  * اختبار إرسال إشعار للإدارة
+ * @function testAdminNotification
+ * @returns {Promise<void>}
+ * @see notifyAdminOnStepChange
  */
 async function testAdminNotification() {
     console.log('🧪 [Test] اختبار إشعار الإدارة...');
@@ -52,6 +58,9 @@ async function testAdminNotification() {
 
 /**
  * اختبار إرسال إشعار لخدمات التوصيل
+ * @function testDeliveryNotification
+ * @returns {Promise<void>}
+ * @see notifyDeliveryOnStepChange
  */
 async function testDeliveryNotification() {
     console.log('🧪 [Test] اختبار إشعار خدمات التوصيل...');
@@ -73,6 +82,9 @@ async function testDeliveryNotification() {
 
 /**
  * اختبار الدالة الرئيسية (إرسال لجميع الأطراف)
+ * @function testFullNotification
+ * @returns {Promise<void>}
+ * @see notifyOnStepActivation
  */
 async function testFullNotification() {
     console.log('🧪 [Test] اختبار الدالة الرئيسية (جميع الإشعارات)...');
@@ -96,6 +108,9 @@ async function testFullNotification() {
 
 /**
  * اختبار شامل لجميع المراحل
+ * @function testAllSteps
+ * @returns {Promise<void>}
+ * @see notifyOnStepActivation
  */
 async function testAllSteps() {
     console.log('🧪 [Test] اختبار شامل لجميع المراحل...');
@@ -128,6 +143,8 @@ async function testAllSteps() {
 
 /**
  * التحقق من توفر جميع الدوال
+ * @function checkFunctionsAvailability
+ * @returns {boolean}
  */
 function checkFunctionsAvailability() {
     console.log('🔍 [Test] التحقق من توفر الدوال...\n');

@@ -10,6 +10,7 @@
  * @param {object} [options={}] - خيارات إضافية.
  * @param {function(): void} [options.onClose] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
  * @returns {{open: function(): void, close: function(): void, modalElement: HTMLElement}|null} - كائن يحتوي على دوال الفتح والإغلاق وعنصر النافذة، أو `null` إذا لم يتم العثور على عنصر النافذة.
+ * @throws {Error} - If the modal element specified by `modalId` is not found in the DOM.
  */
 function setupModalLogic(modalId, closeBtnId, options = {}) {
   // [خطوة 1] البحث عن عنصر النافذة المنبثقة في DOM باستخدام المعرف المقدم.
@@ -61,6 +62,9 @@ function setupModalLogic(modalId, closeBtnId, options = {}) {
  *   يقوم بتحميل صفحة لوحة التحكم في الحاوية الرئيسية.
  * @function handleAdminPanelClick
  * @returns {void}
+ * @throws {Error} - If an error occurs during `mainLoader` execution or DOM manipulation.
+ * @see mainLoader
+ * @see Swal.fire
  */
 function handleAdminPanelClick() {
   try {
@@ -149,11 +153,7 @@ function handleAdminPanelClick() {
     console.error("حدث خطأ أثناء محاولة تحميل لوحة تحكم المسؤول:", error);
   }
 }
-/**
- * @file js/user-dashboard.js
- * @description يحتوي هذا الملف على المنطق البرمجي الخاص بصفحة لوحة تحكم المستخدم (`user-dashboard.html`).
- * يتولى عرض الأزرار والإجراءات المناسبة بناءً على دور المستخدم.
- */
+
 
 /**
  * @description تحديث واجهة المستخدم لتعكس حالة تسجيل الدخول،
@@ -165,9 +165,12 @@ function handleAdminPanelClick() {
  * @param {boolean} [userSession.is_guest] - علامة تشير إلى ما إذا كان المستخدم ضيفًا.
  * @param {number} [userSession.is_seller] - دور المستخدم (1: بائع، 2: توصيل).
  * @param {string} [userSession.phone] - رقم هاتف المستخدم.
- * @requires module:js/config - للوصول إلى `adminPhoneNumbers`.
- * @requires module:js/auth - لاستخدام دالة `logout`.
- * @requires module:js/messaging-system - لاستخدام `requestNavigation`.
+ * @returns {void}
+ * @throws {Error} - If critical DOM elements are missing or functions like `logout` or `mainLoader` fail.
+ * @see logout
+ * @see mainLoader
+ * @see adminPhoneNumbers
+ * @see userSession
  */
 function updateViewForLoggedInUser() {
   // [خطوة 1] التحقق من وجود جلسة مستخدم. إذا لم يكن هناك مستخدم مسجل، تتوقف الدالة.
@@ -272,4 +275,10 @@ function updateViewForLoggedInUser() {
 }
 
 // [خطوة أخيرة] استدعاء الدالة فور تحميل الملف لتحديث الواجهة بناءً على حالة المستخدم الحالية.
+/**
+ * @description Automatically initializes the user dashboard view when the script loads.
+ * @function initializeDashboardView
+ * @returns {void}
+ * @see updateViewForLoggedInUser
+ */
 updateViewForLoggedInUser();

@@ -59,7 +59,9 @@ function productNormalizeArabicText(text) {
 }
 
 /**
- * توليد سريال فريد للمنتج
+ * @description Generates a unique 6-character alphanumeric serial for a product.
+ * @function productGenerateProductSerial
+ * @returns {string} - The generated unique serial.
  */
 function productGenerateProductSerial() {
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -76,6 +78,7 @@ function productGenerateProductSerial() {
  * @function productSupportsWebP
  * @async
  * @returns {Promise<boolean>} - وعد (Promise) يُرجع `true` إذا كان المتصفح يدعم WebP، و`false` بخلاف ذلك.
+ * @throws {Error} - If `fetch` or `createImageBitmap` encounters an error.
  */
 async function productSupportsWebP() {
   if (!self.createImageBitmap) return false;
@@ -90,6 +93,7 @@ async function productSupportsWebP() {
  * @description إعادة تعيين قوية للخلفية مع فحص مسبق
  * @function productForceResetBackground
  * @returns {void}
+ * @see productDebugBackground
  */
 function productForceResetBackground() {
   console.log('%c[ProductForm] 🎨 FORCED Background Reset Started', 'color: red; font-weight: bold;');
@@ -130,6 +134,7 @@ function productForceResetBackground() {
  * @function productSetServiceCategoryBackground
  * @param {string} newBackground - الخلفية الجديدة (لون أو تدرج)
  * @returns {void}
+ * @see productUpdateExtendedMode
  */
 function productSetServiceCategoryBackground(newBackground) {
   window.SERVICE_CATEGORY_BACKGROUND = newBackground;

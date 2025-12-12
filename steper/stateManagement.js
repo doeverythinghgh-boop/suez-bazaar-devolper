@@ -11,6 +11,7 @@ import { updateGlobalStepperAppData, globalStepperAppData, ordersData } from "./
  * @function getAppKey
  * @description إنشاء مفتاح تخزين فريد لكل طلب بناءً على order_key.
  * @returns {string} - مفتاح التخزين الديناميكي.
+ * @throws {Error} - If `ordersData` is not available or empty, it returns a default key, logging a warning.
  */
 function getAppKey() {
     if (ordersData && ordersData.length > 0 && ordersData[0].order_key) {
@@ -24,6 +25,8 @@ function getAppKey() {
  * @function getAppState
  * @description استرجاع حالة التطبيق الكاملة من LocalStorage.
  * @returns {object} كائن الحالة الكامل (يحتوي على steps و dates).
+ * @throws {Error} - If there is an error parsing the stored state from LocalStorage.
+ * @see getAppKey
  */
 function getAppState() {
     console.log("🔄 [State] getAppState: Attempting to retrieve state from LocalStorage.");
@@ -42,6 +45,10 @@ function getAppState() {
  * @function saveAppState
  * @description حفظ حالة التطبيق الكاملة في LocalStorage وتحديث المتغير العام.
  * @param {object} state - كائن الحالة الكامل.
+ * @returns {void}
+ * @throws {Error} - If there is an error saving the state to LocalStorage.
+ * @see getAppKey
+ * @see updateGlobalStepperAppData
  */
 function saveAppState(state) {
     console.log("💾 [State] saveAppState: Attempting to save state to LocalStorage.", state);
@@ -59,6 +66,12 @@ function saveAppState(state) {
  * @function initializeState
  * @description تهيئة الحالة الأولية إذا لم تكن موجودة.
  * يجب استدعاؤها عند بدء التطبيق.
+ * @returns {void}
+ * @throws {Error} - If there is an error during state initialization or cleanup.
+ * @see getAppState
+ * @see saveAppState
+ * @see cleanupLegacyKeys
+ * @see updateGlobalStepperAppData
  */
 export function initializeState() {
     // 1. التحقق من المتغير العام أولاً
@@ -109,6 +122,8 @@ export function initializeState() {
 /**
  * @function cleanupLegacyKeys
  * @description إزالة المفاتيح القديمة التي كانت تستخدم قبل التجميع.
+ * @returns {void}
+ * @throws {Error} - If there is an error accessing LocalStorage during cleanup.
  */
 function cleanupLegacyKeys() {
     console.log("🧹 [State] cleanupLegacyKeys: Checking for and removing legacy keys...");
@@ -146,9 +161,13 @@ function cleanupLegacyKeys() {
 /**
  * @function saveStepState
  * @description حفظ حالة خطوة معينة داخل الكائن المجمع.
- * 
+ *
  * @param {string} stepId - المعرف الفريد للخطوة.
  * @param {object} state - كائن البيانات الذي يحتوي على حالة الخطوة.
+ * @returns {void}
+ * @throws {Error} - If there is an error saving the step state.
+ * @see getAppState
+ * @see saveAppState
  */
 export function saveStepState(stepId, state) {
     console.log(`💾 [State] saveStepState: Saving state for step '${stepId}'.`, state);
@@ -162,9 +181,11 @@ export function saveStepState(stepId, state) {
 /**
  * @function loadStepState
  * @description استرجاع حالة خطوة معينة من الكائن المجمع.
- * 
+ *
  * @param {string} stepId - المعرف الفريد للخطوة.
  * @returns {object|null} - تعيد كائن الحالة إذا وجد، أو null.
+ * @throws {Error} - If there is an error loading the step state.
+ * @see getAppState
  */
 export function loadStepState(stepId) {
     console.log(`🔄 [State] loadStepState: Loading state for step '${stepId}'.`);
@@ -176,9 +197,13 @@ export function loadStepState(stepId) {
 /**
  * @function saveStepDate
  * @description حفظ تاريخ تفعيل خطوة معينة.
- * 
+ *
  * @param {string} stepId - المعرف الفريد للخطوة.
  * @param {string} dateStr - نص التاريخ المنسق.
+ * @returns {void}
+ * @throws {Error} - If there is an error saving the step date.
+ * @see getAppState
+ * @see saveAppState
  */
 export function saveStepDate(stepId, dateStr) {
     console.log(`💾 [State] saveStepDate: Saving date for step '${stepId}': ${dateStr}`);
@@ -192,9 +217,11 @@ export function saveStepDate(stepId, dateStr) {
 /**
  * @function loadStepDate
  * @description استرجاع تاريخ تفعيل خطوة معينة.
- * 
+ *
  * @param {string} stepId - المعرف الفريد للخطوة.
  * @returns {string|null} - نص التاريخ أو null.
+ * @throws {Error} - If there is an error loading the step date.
+ * @see getAppState
  */
 export function loadStepDate(stepId) {
     console.log(`🔄 [State] loadStepDate: Loading date for step '${stepId}'.`);

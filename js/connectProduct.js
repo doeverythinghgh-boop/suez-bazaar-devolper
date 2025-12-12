@@ -13,6 +13,8 @@
  * @function addProduct
  * @param {object} productData - كائن يحتوي على جميع بيانات المنتج المراد إضافته.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن بيانات المنتج الذي تم إنشاؤه، أو كائن خطأ في حالة الفشل.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function addProduct(productData) {
@@ -27,6 +29,8 @@ async function addProduct(productData) {
  * @function updateProduct
  * @param {object} productData - كائن يحتوي على بيانات المنتج المحدثة. يجب أن يحتوي الكائن على `product_key` لتحديد المنتج المراد تحديثه.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على الكائن الذي تم تحديثه، أو كائن خطأ في حالة الفشل.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function updateProduct(productData) {
@@ -41,6 +45,8 @@ async function updateProduct(productData) {
  * @function deleteProduct
  * @param {string} productKey - المفتاح الفريد للمنتج المراد حذفه.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن الاستجابة من الخادم.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function deleteProduct_(productKey) {
@@ -97,6 +103,8 @@ async function getProductsByCategory(mainCatId, subCatId) {
  * @function getProductsByUser
  * @param {string} userKey - المفتاح الفريد للمستخدم (`user_key`) البائع الذي نريد جلب منتجاته.
  * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات المنتجات، أو `null` في حالة الفشل.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function getProductsByUser(userKey) {
@@ -114,6 +122,8 @@ async function getProductsByUser(userKey) {
  * @function getProductByKey
  * @param {string} productKey - المفتاح الفريد للمنتج المراد جلبه.
  * @returns {Promise<Object|null>} - وعد (Promise) يحتوي على كائن المنتج، أو `null` إذا لم يتم العثور على المنتج أو حدث خطأ.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function getProductByKey(productKey) {
@@ -141,6 +151,8 @@ async function getProductByKey(productKey) {
  * @param {function(): void} [onCloseCallback] - دالة رد اتصال اختيارية يتم استدعاؤها عند إغلاق النافذة.
  * @param {object} [options={}] - خيارات إضافية للتحكم في عرض النافذة، مثل `showAddToCart`.
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @async
+ * @throws {Error} - If `productData` is missing category information, or `loadAndShowModal` fails.
  * @see loadAndShowModal
  * @see populateProductDetails
  */

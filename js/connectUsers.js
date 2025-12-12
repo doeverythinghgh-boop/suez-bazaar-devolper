@@ -12,6 +12,8 @@
  *   تُستخدم هذه الدالة عادةً في لوحات تحكم المسؤولين.
  * @function fetchUsers
  * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات المستخدمين، أو `null` في حالة حدوث خطأ.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function fetchUsers() {
@@ -34,6 +36,8 @@ async function fetchUsers() {
  * @param {string} [userData.address] - العنوان (اختياري).
  * @param {string} userData.user_key - الرقم التسلسلي الفريد للمستخدم.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على الكائن الذي تم إنشاؤه، أو كائن خطأ في حالة الفشل.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function addUser(userData) {
@@ -48,6 +52,8 @@ async function addUser(userData) {
  * @function updateUser
  * @param {object} userData - كائن يحتوي على بيانات المستخدم للتحديث. يجب أن يحتوي الكائن على `user_key` لتحديد المستخدم المراد تحديثه.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على الكائن الذي تم تحديثه، أو كائن خطأ في حالة الفشل.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function updateUser(userData) {
@@ -63,6 +69,7 @@ async function updateUser(userData) {
  * @async
  * @function getDeliveryUsers
  * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات مستخدمي التوصيل، أو `null` في حالة حدوث خطأ.
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function getDeliveryUsers() {
@@ -82,6 +89,8 @@ async function getDeliveryUsers() {
  * @function updateUsers
  * @param {Array<Object>} updates - مصفوفة من الكائنات تحتوي على بيانات التحديث لكل مستخدم. كل كائن يجب أن يحتوي على `user_key` على الأقل.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن الاستجابة من الخادم، أو كائن خطأ في حالة الفشل.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function updateUsers(updates) {
@@ -97,6 +106,8 @@ async function updateUsers(updates) {
  * @param {string} phone - رقم هاتف المستخدم.
  * @param {string} password - كلمة المرور للتحقق منها.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن بيانات المستخدم عند النجاح، أو كائن خطأ عند الفشل.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function verifyUserPassword(phone, password) {
@@ -111,6 +122,8 @@ async function verifyUserPassword(phone, password) {
  * @function deleteUser
  * @param {string} userKey - المفتاح الفريد للمستخدم المراد حذفه.
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن الاستجابة من الخادم.
+ * @async
+ * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
 async function deleteUser(userKey) {

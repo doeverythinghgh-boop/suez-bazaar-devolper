@@ -24,6 +24,7 @@ function getCartStorageKey() {
  * @description يجلب السلة الحالية من LocalStorage.
  * @function getCart
  * @returns {Array<Object>} - مصفوفة من كائنات المنتجات الموجودة في السلة، أو مصفوفة فارغة إذا كانت السلة فارغة أو حدث خطأ.
+ * @throws {Error} - If there's an error parsing JSON from LocalStorage.
  * @see getCartStorageKey
  */
 function getCart() {
@@ -50,6 +51,7 @@ function getCart() {
  * @function saveCart
  * @param {Array<Object>} cart - مصفوفة كائنات المنتجات التي تمثل السلة الحالية.
  * @returns {void}
+ * @throws {Error} - If there's an error saving to LocalStorage.
  * @see getCartStorageKey
  */
 function saveCart(cart) {
@@ -72,6 +74,10 @@ function saveCart(cart) {
  * @param {number} quantity - الكمية المراد إضافتها للمنتج.
  * @param {string} note - ملاحظة للمنتج (اختياري).
  * @returns {boolean} - true إذا تمت الإضافة بنجاح، false إذا كان البائع هو نفسه المستخدم.
+ * @throws {Error} - If `window.Swal.fire` or `containerGoBack` encounters an error.
+ * @see getCart
+ * @see saveCart
+ * @see containerGoBack
  */
 function addToCart(product, quantity, note = "") {
   // منع المستخدم من الشراء من نفسه
@@ -132,6 +138,8 @@ function addToCart(product, quantity, note = "") {
  * @function removeFromCart
  * @param {string} productKey - المفتاح الفريد للمنتج المراد إزالته من السلة.
  * @returns {void}
+ * @see getCart
+ * @see saveCart
  */
 function removeFromCart(productKey) {
   let cart = getCart();
@@ -145,6 +153,8 @@ function removeFromCart(productKey) {
  * @param {string} productKey - المفتاح الفريد للمنتج.
  * @param {number} newQuantity - الكمية الجديدة للمنتج.
  * @returns {void}
+ * @see getCart
+ * @see saveCart
  */
 function updateCartQuantity(productKey, newQuantity) {
   const cart = getCart();
@@ -168,6 +178,8 @@ function updateCartQuantity(productKey, newQuantity) {
  * @param {string} productKey - المفتاح الفريد للمنتج.
  * @param {string} note - الملاحظة الجديدة.
  * @returns {void}
+ * @see getCart
+ * @see saveCart
  */
 function updateCartItemNote(productKey, note) {
   const cart = getCart();
@@ -185,6 +197,7 @@ function updateCartItemNote(productKey, note) {
  * @description يفرغ السلة بالكامل.
  * @function clearCart
  * @returns {void}
+ * @see saveCart
  */
 function clearCart() {
   saveCart([]);
@@ -194,6 +207,7 @@ function clearCart() {
  * @description يحسب العدد الإجمالي للوحدات من جميع المنتجات في السلة.
  * @function getCartItemCount
  * @returns {number} - إجمالي عدد الوحدات.
+ * @see getCart
  */
 function getCartItemCount() {
   const cart = getCart();
@@ -204,6 +218,7 @@ function getCartItemCount() {
  * @description يحسب المجموع الكلي لسعر المنتجات في السلة.
  * @function getCartTotalPrice
  * @returns {number} - المجموع الكلي.
+ * @see getCart
  */
 function getCartTotalPrice() {
   const cart = getCart();
@@ -214,22 +229,15 @@ function getCartTotalPrice() {
  * @description يحسب إجمالي التوفير من الخصومات.
  * @function getCartTotalSavings
  * @returns {number} - إجمالي التوفير.
+ * @see getCart
  */
-function getCartTotalSavings() {
-  const cart = getCart();
-  return cart.reduce((total, item) => {
-    if (item.original_price && item.original_price > item.price) {
-      return total + (item.original_price - item.price) * item.quantity;
-    }
-    return total;
-  }, 0);
-}
 
 /**
  * @description يبحث عن منتج في السلة.
  * @function findInCart
  * @param {string} productKey - المفتاح الفريد للمنتج.
  * @returns {Object|null} - المنتج إذا وجد، وإلا null.
+ * @see getCart
  */
 function findInCart(productKey) {
   const cart = getCart();

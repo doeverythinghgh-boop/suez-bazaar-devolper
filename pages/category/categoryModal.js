@@ -1,5 +1,10 @@
-// pages/category/categoryModal.js
-// نافذة اختيار الفئات - مع فصل HTML وCSS وعزل الأنماط
+/**
+ * @file pages/category/categoryModal.js
+ * @description This module provides a reusable category selection modal.
+ * It encapsulates its UI and logic, optionally using Shadow DOM for style isolation,
+ * and handles external file loading, category data fetching, and user interactions
+ * to allow selection of main and sub-categories.
+ */
 
 window.CategoryModal = (function () {
     'use strict';
@@ -8,14 +13,42 @@ window.CategoryModal = (function () {
     // 1. المتغيرات العامة
     // ============================================
     const MODAL_ID = 'category-modal';
+    /**
+     * @constant
+     * @type {string}
+     */
     const DEFAULT_TITLE = '📋 تحديد فئة المنتج الجديد';
+    /**
+     * @constant
+     * @type {string}
+     */
     const CATEGORIES_URL = './shared/list.json';
+    /**
+     * @constant
+     * @type {string}
+     */
     const HTML_URL = 'pages/category/categoryModal.html';
+    /**
+     * @constant
+     * @type {string}
+     */
     const CSS_URL = 'pages/category/categoryModal.css';
 
     let categoriesData = [];
+    /**
+     * @type {boolean}
+     * @description Indicates if the modal has been initialized (DOM created and event listeners set up).
+     */
     let isInitialized = false;
+    /**
+     * @type {ShadowRoot|null}
+     * @description The Shadow DOM root for the modal, if Shadow DOM is used.
+     */
     let shadowRoot = null;
+    /**
+     * @type {HTMLStyleElement|null}
+     * @description The style element inserted into the Shadow DOM or document head.
+     */
     let styleElement = null;
 
     // ============================================
@@ -28,6 +61,7 @@ window.CategoryModal = (function () {
      * @param {string} [type='text'] - نوع الاستجابة المتوقع (حالياً يتم التعامل معه كنص دائماً).
      * @returns {Promise<string>} محتوى الملف كنص.
      * @throws {Error} إذا فشل التحميل.
+     * @async
      */
     async function loadExternalFile(url, type = 'text') {
         try {
@@ -52,6 +86,10 @@ window.CategoryModal = (function () {
      * @function createModalDOM
      * @description إنشاء هيكل النافذة وعزل الأنماط باستخدام Shadow DOM.
      * @returns {Promise<boolean>} returns true إذا تم الإنشاء بنجاح أو كانت موجودة.
+     * @throws {Error} - If HTML content fails to load.
+     * @async
+     * @see loadExternalFile
+     * @see createFallbackModal
      */
     async function createModalDOM() {
         console.log('[CategoryModal] إنشاء عناصر النافذة مع Shadow DOM...');
@@ -161,6 +199,9 @@ window.CategoryModal = (function () {
      * @description طريقة احتياطية لإنشاء النافذة إذا فشل Shadow DOM.
      * تقوم بإضافة HTML و CSS مباشرة إلى المستند الرئيسي.
      * @returns {Promise<boolean>} returns true إذا نجحت العملية.
+     * @throws {Error} - If fetching HTML or CSS fails.
+     * @async
+     * @see loadExternalFile
      */
     async function createFallbackModal() {
         console.log('[CategoryModal] استخدام الطريقة الاحتياطية...');
@@ -204,6 +245,7 @@ window.CategoryModal = (function () {
      * @description جلب بيانات الفئات من ملف JSON الخارجي.
      * @returns {Promise<Array>} مصفوفة الفئات.
      * @throws {Error} إذا فشل جلب البيانات.
+     * @async
      */
     async function fetchCategoriesData() {
         if (categoriesData && categoriesData.length > 0) {
@@ -265,6 +307,7 @@ window.CategoryModal = (function () {
      * @function updateModalTitle
      * @description تحديث النص الظاهر في عنوان النافذة.
      * @param {string} title - العنوان الجديد.
+     * @returns {void}
      */
     function updateModalTitle(title) {
         const titleElement = querySelector('.category-modal-title');
@@ -283,6 +326,13 @@ window.CategoryModal = (function () {
      * @param {string|null} [initialSubId=null] - معرف الفئة الفرعية الأولية.
      * @param {string|null} [customTitle=null] - عنوان مخصص.
      * @returns {Promise<object>} وعد يتم حله عند إغلاق النافذة بنجاح أو إلغاء.
+     * @async
+     * @throws {Error} - If an unexpected error occurs during modal display.
+     * @see createModalDOM
+     * @see getModalElement
+     * @see updateModalTitle
+     * @see fetchCategoriesData
+     * @see querySelector
      */
     function showCategoryModal(initialMainId = null, initialSubId = null, customTitle = null) {
         console.log('[CategoryModal] فتح النافذة', {
@@ -407,6 +457,13 @@ window.CategoryModal = (function () {
                 });
 
                 // 7. دالة تحديث القائمة الفرعية
+                /**
+                 * @description Updates the sub-category dropdown based on the selected main category.
+                 * If the selected main category has subcategories, it populates the sub-category dropdown
+                 * and enables it; otherwise, it disables the dropdown.
+                 * @function updateSubCategories
+                 * @returns {void}
+                 */
                 function updateSubCategories() {
                     const selectedId = mainSelect.value;
                     const selectedCategory = categories.find(cat => String(cat.id) === selectedId);
@@ -452,10 +509,22 @@ window.CategoryModal = (function () {
                 // 9. معالجات الأحداث
                 let isModalActive = true;
 
+                /**
+                 * @description Event handler for when the main category selection changes.
+                 * Triggers the update of sub-categories.
+                 * @function handleMainChange
+                 * @returns {void}
+                 */
                 function handleMainChange() {
                     updateSubCategories();
                 }
 
+                /**
+                 * @description Handles the confirmation action of the modal.
+                 * Validates selections and resolves the modal promise with success status.
+                 * @function handleConfirm
+                 * @returns {void}
+                 */
                 function handleConfirm() {
                     if (!isModalActive) return;
 
@@ -484,6 +553,12 @@ window.CategoryModal = (function () {
                     });
                 }
 
+                /**
+                 * @description Handles the cancellation action of the modal.
+                 * Resolves the modal promise with a cancelled status.
+                 * @function handleCancel
+                 * @returns {void}
+                 */
                 function handleCancel() {
                     if (!isModalActive) return;
 
@@ -505,6 +580,12 @@ window.CategoryModal = (function () {
                     });
                 }
 
+                /**
+                 * @description Handles clicks outside the modal content, treating it as a cancellation.
+                 * @function handleBackdropClick
+                 * @param {MouseEvent} e - The click event object.
+                 * @returns {void}
+                 */
                 function handleBackdropClick(e) {
                     if (!isModalActive) return;
 
@@ -528,6 +609,12 @@ window.CategoryModal = (function () {
                     }
                 }
 
+                /**
+                 * @description Handles the 'Escape' key press to close the modal.
+                 * @function handleEscKey
+                 * @param {KeyboardEvent} e - The keyboard event object.
+                 * @returns {void}
+                 */
                 function handleEscKey(e) {
                     if (!isModalActive) return;
 
@@ -552,6 +639,12 @@ window.CategoryModal = (function () {
                 }
 
                 // 10. دالة تنظيف المستمعات
+                /**
+                 * @description Removes all event listeners to prevent memory leaks and duplicate triggers.
+                 * Also resets the modal title to its default value.
+                 * @function cleanup
+                 * @returns {void}
+                 */
                 function cleanup() {
                     mainSelect.removeEventListener('change', handleMainChange);
                     confirmBtn.removeEventListener('click', handleConfirm);
@@ -603,6 +696,9 @@ window.CategoryModal = (function () {
     /**
      * @function closeCategoryModal
      * @description إغلاق النافذة يدوياً وإخفائها من الواجهة.
+     * @returns {void}
+     * @see getModalElement
+     * @see updateModalTitle
      */
     function closeCategoryModal() {
         const modalElement = getModalElement();
@@ -623,6 +719,7 @@ window.CategoryModal = (function () {
      * @function isModalOpen
      * @description التحقق مما إذا كانت النافذة مفتوحة حالياً (تحتوي على فئة 'show').
      * @returns {boolean} true إذا كانت مفتوحة.
+     * @see getModalElement
      */
     function isModalOpen() {
         const modalElement = getModalElement();
@@ -635,6 +732,10 @@ window.CategoryModal = (function () {
     /**
      * @function resetModal
      * @description إعادة تعيين حقول النافذة (القوائم المنسدلة، العنوان) إلى الحالة الافتراضية.
+     * @returns {void}
+     * @see getModalElement
+     * @see querySelector
+     * @see updateModalTitle
      */
     function resetModal() {
         const modalElement = getModalElement();
@@ -661,6 +762,7 @@ window.CategoryModal = (function () {
     /**
      * @function destroy
      * @description إزالة النافذة وعناصرها تماماً من DOM وتنظيف المتغيرات.
+     * @returns {void}
      */
     function destroy() {
         const container = document.getElementById('category-modal-container');
@@ -714,7 +816,8 @@ window.CategoryModal = (function () {
         isOpen: isModalOpen,
 
         /**
-         * التحقق مما إذا كانت النافذة مهيأة
+         * @description Checks if the modal has been initialized.
+         * @function isInitialized
          * @returns {boolean}
          */
         isInitialized: function () {
@@ -749,7 +852,8 @@ window.CategoryModal = (function () {
         destroy: destroy,
 
         /**
-         * الحصول على بيانات الفئات المخزنة
+         * @description Retrieves a copy of the currently loaded categories data.
+         * @function getCategories
          * @returns {Array}
          */
         getCategories: function () {
@@ -757,8 +861,12 @@ window.CategoryModal = (function () {
         },
 
         /**
-         * تهيئة النافذة مسبقاً دون عرضها
+         * @description Preloads the modal's external files and category data without displaying it.
+         * Useful for optimizing the first display time.
+         * @function preload
          * @returns {Promise<boolean>}
+         * @async
+         * @throws {Error} - If preloading of external files or category data fails.
          */
         preload: async function () {
             try {
@@ -781,7 +889,8 @@ window.CategoryModal = (function () {
         },
 
         /**
-         * الحصول على معلومات التهيئة (لأغراض التصحيح)
+         * @description Provides debugging information about the modal's current state.
+         * @function debug
          * @returns {Object}
          */
         debug: function () {

@@ -36,6 +36,7 @@ const CONNECTION_CHECK_INTERVAL = 10000; // 10 ثوانٍ
  * @description تعيد حالة الاتصال بالإنترنت المخزنة مؤقتًا.
  * @function checkInternetConnection
  * @returns {boolean} - `true` إذا كان هناك اتصال بالإنترنت، وإلا `false`.
+ * @async
  * @see isConnectedCache
  */
 async function checkInternetConnection() {
@@ -50,6 +51,8 @@ async function checkInternetConnection() {
  *   يقوم بتحديث حالة الاتصال المخزنة مؤقتًا (`isConnectedCache`) ويعرض أو يخفي إشعار عدم الاتصال (`offlineToast`) حسب الحاجة.
  * @function performActualConnectionCheck
  * @returns {Promise<boolean>} - وعد (Promise) يُرجع `true` إذا كان الاتصال متاحًا، وإلا `false`.
+ * @async
+ * @throws {Error} - If `navigator.onLine` is false or the fetch request fails.
  * @see isConnectedCache
  * @see offlineToast
  * @see lastConnectionCheck
@@ -170,6 +173,8 @@ startPeriodicConnectionCheck();
  * @param {object} [options.headers={}] - رأس الطلب HTTP.
  * @param {object} [options.specialHandlers={}] - كائن يحتوي على دوال لمعالجة حالات استجابة HTTP محددة (مثل 401, 404).
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على بيانات الاستجابة من الخادم ككائن JSON، أو كائن خطأ في حالة الفشل.
+ * @async
+ * @throws {Error} - If the fetch request fails or the server responds with a non-OK status.
  * @see baseURL
  */
 async function apiFetch(endpoint, options = {}) {

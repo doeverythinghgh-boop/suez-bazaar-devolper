@@ -27,6 +27,8 @@ export const config = {
  * @param {import("@libsql/client/web").Client} db - عميل قاعدة البيانات المستخدم للاتصال بـ Turso.
  * @param {string | null} userKey - مفتاح المستخدم (`user_key`) للتحقق من دوره.
  * @returns {Promise<number>} - وعد (Promise) يُرجع دور المستخدم (على سبيل المثال: 1 للبائع، 3 للمشرف، 0 لغير المصرح له).
+ * @async
+ * @throws {Error} - If a database error occurs during the role lookup.
  */
 async function getUserRole(db, userKey) {
   if (!userKey) {
@@ -51,6 +53,8 @@ async function getUserRole(db, userKey) {
  * @function handler
  * @param {Request} request - كائن طلب HTTP الوارد.
  * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @async
+ * @throws {Response} - Returns an HTTP response with an error status (405, 500) if the method is not allowed or a server error occurs.
  * @see createClient
  * @see getUserRole
  */

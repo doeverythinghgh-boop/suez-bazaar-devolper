@@ -1,3 +1,15 @@
+/**
+ * @file api/database-analysis.js
+ * @description نقطة النهاية (API Endpoint) لتحليل هيكل قاعدة بيانات Turso بشكل شامل.
+ *
+ * يوفر هذا الملف دالة خالية من الخادم (Serverless Function على Vercel) تقوم بـ:
+ * - جلب معلومات حول جميع الجداول، الأعمدة، والمفاتيح الخارجية في قاعدة البيانات.
+ * - تنسيق هذه المعلومات في بنية JSON غنية بالبيانات الوصفية.
+ * - معالجة طلبات CORS (Cross-Origin Resource Sharing).
+ *
+ * الهدف هو توفير رؤى هيكلية لقاعدة البيانات يمكن استخدامها لأغراض التوثيق،
+ * تحليل المخطط (schema analysis)، أو لتمكين أدوات خارجية من فهم بنية البيانات.
+ */
 import { createClient } from "@libsql/client/web";
 
 export const config = {
@@ -160,6 +172,8 @@ export async function analyzeAndSaveDatabase() {
  * @function handler
  * @param {Request} request - كائن طلب HTTP الوارد.
  * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @async
+ * @throws {Response} - Returns an HTTP response with an error status (405, 500) if the method is not allowed or an unexpected error occurs during database analysis.
  */
 export default async function handler(request) {
   // معالجة طلبات OPTIONS (preflight)

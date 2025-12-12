@@ -55,6 +55,8 @@ importScripts("/notification/notification-db-manager.js");
  * @param {string} [payload.notification.body] - نص الإشعار.
  * @param {object} [payload.data] - حقل البيانات المخصص الذي يمكن استخدامه كبديل لـ `notification`.
  * @returns {Promise<void>} - وعد (Promise) يتم حله بعد عرض الإشعار بنجاح.
+ * @throws {Error} - If `addNotificationLog` fails to save the notification to IndexedDB.
+ * @see addNotificationLog
  */
 messaging.onBackgroundMessage((payload) => {
   console.log('%c[FCM SW] 📩 تم استقبال رسالة في الخلفية (Background):', 'color: #ff00ff; font-weight: bold; font-size: 14px;', payload);
@@ -96,11 +98,25 @@ messaging.onBackgroundMessage((payload) => {
   });
 });
 
-// Added to ensure immediate activation
+/**
+ * @description Listens for the 'install' event of the Service Worker.
+ * Ensures that the new Service Worker activates immediately, skipping the waiting phase.
+ * @event install
+ * @param {ExtendableEvent} event - The install event.
+ * @returns {void}
+ */
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
+/**
+ * @description Listens for the 'activate' event of the Service Worker.
+ * Claims all currently controlled clients immediately, allowing the new Service Worker
+ * to take control of pages without requiring a refresh.
+ * @event activate
+ * @param {ExtendableEvent} event - The activate event.
+ * @returns {void}
+ */
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
 });

@@ -18,12 +18,14 @@ import { ADMIN_IDS } from "./config.js";
  * 2. هل هو مرتبط بأي طلب كمشتري؟
  * 3. هل هو مرتبط بأي منتج كبائع؟
  * 4. هل هو معين لتوصيل أي منتج كساعي؟
- * 
+ *
  * @param {string} userId - معرف المستخدم الحالي الذي نريد تحديد دوره.
  * @param {Array<Object>} ordersData - مصفوفة تحتوي على كل بيانات الطلبات للبحث فيها.
  * @param {Object} controlData - بيانات التحكم (قد تحتوي على معلومات إضافية، تم الاحتفاظ بها للتوافق المستقبلي).
- * 
+ *
  * @returns {string|null} - يعيد نوع المستخدم كنص ('admin', 'buyer', 'seller', 'courier') أو null إذا لم يتم التعرف عليه.
+ * @throws {Error} - If a fatal error occurs during user type determination (e.g., user is both buyer and seller).
+ * @see ADMIN_IDS
  */
 export function determineUserType(userId, ordersData, controlData) {
     try {
@@ -98,10 +100,12 @@ export function determineUserType(userId, ordersData, controlData) {
  * @function determineCurrentStepId
  * @description تحدد هذه الدالة ما هي الخطوة التي يجب أن تكون نشطة حالياً عند تحميل الصفحة.
  * تعتمد على البيانات المحفوظة في LocalStorage لتذكر آخر حالة وصل إليها المستخدم.
- * 
+ *
  * @param {Object} controlData - بيانات التحكم التي تحتوي على تعريف الخطوات وأرقامها.
- * 
+ *
  * @returns {{stepId: string, stepNo: string, status: string}} - كائن يحتوي على معرف الخطوة، رقمها، وحالتها.
+ * @throws {Error} - If an error occurs during step determination.
+ * @see loadStepState
  */
 export function determineCurrentStepId(controlData) {
     try {
@@ -173,11 +177,12 @@ export function determineCurrentStepId(controlData) {
  * @function isStepAllowedForCurrentUser
  * @description تتحقق مما إذا كان المستخدم الحالي يمتلك الصلاحية للتفاعل مع خطوة معينة.
  * تعتمد على مصفوفة `allowedSteps` المعرفة لكل دور في ملف `control.json`.
- * 
+ *
  * @param {string} stepId - معرف الخطوة المراد التحقق منها (مثل 'step-review').
  * @param {object} data - بيانات التحكم الكاملة التي تحتوي على تعريفات المستخدمين وصلاحياتهم.
- * 
+ *
  * @returns {boolean} - true إذا كان مسموحاً له، و false إذا لم يكن.
+ * @throws {Error} - If an error occurs during permission checking.
  */
 export function isStepAllowedForCurrentUser(stepId, data) {
     try {

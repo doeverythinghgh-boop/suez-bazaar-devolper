@@ -24,8 +24,8 @@ const NOTIFICATIONS_STORE = 'notificationsLog';
 
 let db;
 /**
- * @description متغير لتخزين الوعد (Promise) الخاص بتهيئة قاعدة البيانات، لضمان عدم تكرار عملية الفتح.
- * @type {Promise<IDBDatabase>|null}
+ * @type {IDBDatabase}
+ * @description The IndexedDB database instance.
  */
 let dbPromise; // ✅ جديد: متغير لتخزين الوعد الخاص بتهيئة قاعدة البيانات
 
@@ -35,6 +35,7 @@ let dbPromise; // ✅ جديد: متغير لتخزين الوعد الخاص ب
  * @function initDB
  * @returns {Promise<IDBDatabase>} - وعد (Promise) يحتوي على كائن قاعدة بيانات IndexedDB عند النجاح.
  * @throws {string} - رسالة خطأ في حالة فشل فتح قاعدة البيانات.
+ * @async
  * @see DB_NAME
  * @see DB_VERSION
  * @see NOTIFICATIONS_STORE
@@ -98,6 +99,7 @@ async function initDB() {
  * @param {object} notificationData - كائن يحتوي على بيانات الإشعار المراد إضافته (مثل `messageId`, `type`, `title`, `body`, `timestamp`, `status`, `relatedUser`, `payload`).
  * @returns {Promise<number>} - وعد (Promise) يحتوي على مفتاح السجل الجديد (`id`) الذي تم إنشاؤه في قاعدة البيانات.
  * @throws {string} - رسالة خطأ في حالة فشل إضافة السجل.
+ * @async
  * @see initDB
  * @see NOTIFICATIONS_STORE
  */
@@ -183,6 +185,7 @@ function addRecord(store, notificationData, resolve, reject) {
  * @param {number} [limit=50] - أقصى عدد من السجلات المراد جلبها.
  * @returns {Promise<Array<object>>} - وعد (Promise) يحتوي على مصفوفة من كائنات سجلات الإشعارات.
  * @throws {string} - رسالة خطأ في حالة فشل جلب السجلات.
+ * @async
  * @see initDB
  * @see NOTIFICATIONS_STORE
  */
@@ -224,6 +227,7 @@ async function getNotificationLogs(type = 'all', limit = 50) {
  * @function clearNotificationLogs
  * @returns {Promise<void>} - وعد (Promise) يتم حله عند مسح جميع السجلات بنجاح.
  * @throws {string} - رسالة خطأ في حالة فشل عملية المسح.
+ * @async
  * @see initDB
  * @see NOTIFICATIONS_STORE
  */
@@ -254,6 +258,10 @@ async function clearNotificationLogs() {
  * @param {number} id - معرف الإشعار
  * @param {string} status - الحالة الجديدة ('read' | 'unread')
  * @returns {Promise<void>}
+ * @async
+ * @throws {string} - An error message if the update operation fails.
+ * @see initDB
+ * @see NOTIFICATIONS_STORE
  */
 async function updateNotificationStatusInDB(id, status) {
   const db = await initDB();
@@ -300,6 +308,10 @@ async function updateNotificationStatusInDB(id, status) {
  * @description تحديد جميع الإشعارات كمقروءة في قاعدة البيانات
  * @function markAllNotificationsAsReadInDB
  * @returns {Promise<void>}
+ * @async
+ * @throws {string} - An error message if the update operation fails.
+ * @see initDB
+ * @see NOTIFICATIONS_STORE
  */
 async function markAllNotificationsAsReadInDB() {
   const db = await initDB();

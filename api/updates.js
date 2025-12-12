@@ -23,6 +23,8 @@ export const config = {
  * @function handler
  * @param {Request} request - كائن طلب HTTP الوارد.
  * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @async
+ * @throws {Response} - Returns an HTTP response with an error status (404, 405, 500) if an error occurs during database operations or the method is not allowed.
  * @see createClient
  */
 export default async function handler(request) {

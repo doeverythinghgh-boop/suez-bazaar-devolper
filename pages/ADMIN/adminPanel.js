@@ -1,7 +1,17 @@
-/** 
- * دالة getAllUsers_
- * @description دالة غير متزامنة لجلب جميع بيانات المستخدمين الأساسية من API الخادم
- * @returns {Promise<Array>} مصفوفة من كائنات المستخدمين بعد معالجة البيانات
+/**
+ * @file pages/ADMIN/adminPanel.js
+ * @description هذا الملف يدير واجهة لوحة تحكم المسؤول، ويتعامل مع جلب بيانات المستخدمين،
+ * عرضها في جدول، وإدارة علاقات البائعين والموزعين، بالإضافة إلى وظائف تسجيل الدخول كـ (Impersonation) وإرسال الإشعارات.
+ */
+/**
+ * @description دالة غير متزامنة لجلب جميع بيانات المستخدمين الأساسية من API الخادم.
+ * تعالج البيانات لتضمين حالة البائع والتوصيل بناءً على `suppliers_deliveries`.
+ * @returns {Promise<Array<object>>} مصفوفة من كائنات المستخدمين بعد معالجة البيانات.
+ * @async
+ * @throws {Error} - If there is a network error or the API response indicates failure.
+ * @see baseURL
+ * @see api/users
+ * @see api/suppliers-deliveries
  */
 async function getAllUsers_() {
     console.log('[getAllUsers_] بدء عملية جلب جميع بيانات المستخدمين...');
@@ -93,7 +103,13 @@ async function getAllUsers_() {
 
 /**
  * @description تقوم بتعبئة جدول المستخدمين بالبيانات التي تم جلبها.
+ * @function populateUsersTable
  * @param {Array<object>} users - مصفوفة تحتوي على كائنات المستخدمين.
+ * @returns {void}
+ * @throws {Error} - If DOM elements are not found or an error occurs during HTML manipulation.
+ * @see showRelationsModal
+ * @see loginAsUser
+ * @see sendAdminNotification
  */
 function populateUsersTable(users) {
     const tbody = document.getElementById('admin-panel-users-tbody');
@@ -155,7 +171,18 @@ function populateUsersTable(users) {
 }
 
 /**
- * @description الدالة الرئيسية التي يتم تنفيذها عند تحميل الصفحة.
+ * @description الدالة الرئيسية التي يتم تنفيذها عند تحميل الصفحة لتهيئة لوحة تحكم المسؤول.
+ * تقوم بجلب بيانات المستخدمين، وتعبئة الجدول، وإعداد مستمعي الأحداث لزر النسخ.
+ * @function initializeAdminPanel
+ * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If data fetching or table population fails.
+ * @see getAllUsers_
+ * @see populateUsersTable
+ * @see Swal.mixin
+ * @see showRelationsModal
+ * @see loginAsUser
+ * @see sendAdminNotification
  */
 async function initializeAdminPanel() {
     const loader = document.getElementById('admin-panel-loader');
@@ -239,6 +266,11 @@ async function initializeAdminPanel() {
  * @param {string} userKey - مفتاح المستخدم.
  * @param {string} username - اسم المستخدم.
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If fetching relations data fails.
+ * @see baseURL
+ * @see createRelationsListHtml
+ * @see handleAddRelation
  */
 async function showRelationsModal(userKey, username) {
     Swal.fire({
@@ -292,6 +324,7 @@ async function showRelationsModal(userKey, username) {
  * @param {string} currentUserKey - مفتاح المستخدم الحالي.
  * @param {string} currentRoleContext - سياق الدور الحالي ('seller' أو 'delivery').
  * @returns {string} كود HTML للقائمة.
+ * @see handleToggleRelation
  */
 function createRelationsListHtml(list, currentUserKey, currentRoleContext) {
     let html = '<ul style="list-style: none; padding: 0; margin: 0;">';
@@ -369,6 +402,11 @@ window.handleAddRelation = async (currentUserKey) => {
         Swal.fire('خطأ', error.message, 'error');
     }
 };
+/**
+ * @throws {Error} - If the API call to add the relation fails.
+ * @see baseURL
+ * @see showRelationsModal
+ */
 
 /**
  * @function handleToggleRelation
@@ -405,6 +443,11 @@ window.handleToggleRelation = async (sellerKey, deliveryKey, newStatus, modalOwn
         Swal.fire('خطأ', 'فشل تغيير الحالة', 'error');
     }
 };
+/**
+ * @throws {Error} - If the API call to update the relation fails.
+ * @see baseURL
+ * @see showRelationsModal
+ */
 
 /**
  * @function loginAsUser
@@ -476,6 +519,11 @@ window.loginAsUser = async (targetUserKey) => {
         });
     }
 };
+/**
+ * @throws {Error} - If the user is not found, no valid admin session exists, or browser data cleanup fails.
+ * @see baseURL
+ * @see clearAllBrowserData
+ */
 
 
 /**
@@ -531,5 +579,10 @@ window.sendAdminNotification = async (userKey) => {
         Swal.fire('خطأ', 'فشل الإرسال: ' + error.message, 'error');
     }
 };
+/**
+ * @throws {Error} - If token retrieval fails or the notification cannot be sent.
+ * @see getUsersTokens
+ * @see sendNotificationsToTokens
+ */
 
 initializeAdminPanel();

@@ -1,12 +1,21 @@
 /**
+ * @file js/config.js
+ * @description هذا الملف يحتوي على إعدادات وثوابت عامة تستخدم في جميع أنحاء التطبيق،
+ *   مثل عناوين URL للـ API، قوائم المستخدمين المسموح لهم، وخريطة حالات الطلبات.
+ *   يهدف إلى توفير نقطة مركزية لإدارة التكوينات.
+ */
+
+/**
  * @description يحدد عنوان URL الأساسي لنقاط نهاية API بناءً على بيئة التشغيل (محلي، Cloudflare Pages، أو تطبيق Android).
  * @type {string}
+ * @const
  */
 const VERCEL_URL = "https://bazaar-neon-three.vercel.app";
 
 /**
  * @description قائمة بأسماء النطاقات المسموح لها باستخدام Vercel URL.
  * @type {string[]}
+ * @const
  */
 const allowedHosts = [
   "127.0.0.1",

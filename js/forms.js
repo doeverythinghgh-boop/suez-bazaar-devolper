@@ -11,6 +11,12 @@
  */
 
 // سجل المعرّفات (ID's) الخاصة بالحاويات التي تم تحميلها مع حفظ الترتيب
+/**
+ * @constant
+ * @type {string[]}
+ * @description Stores the IDs of containers that have been loaded, maintaining their order.
+ * This registry is used to manage dynamic content loading and navigation history.
+ */
 const LOADER_REGISTRY = [];
 
 /**
@@ -19,6 +25,7 @@ const LOADER_REGISTRY = [];
  * @param {string} containerId - المعرّف (ID) الخاص بالحاوية الهدف.
  * @param {boolean} reload - هل يجب إعادة تحميل المحتوى حتى لو كان مسجلاً؟
  * @returns {boolean} - true إذا تم العثور على الحاوية ولم يُطلب إعادة التحميل، مما يوقف عملية التحميل.
+ * @throws {Error} - If an error occurs during DOM manipulation or array operations.
  */
 function profileHandleRegistry(containerId, reload) {
     try {
@@ -60,6 +67,8 @@ function profileHandleRegistry(containerId, reload) {
  * @function profileFetchContent
  * @param {string} pageUrl - رابط الصفحة المراد جلبها.
  * @returns {Promise<string|null>} - وعد (Promise) يعود بمحتوى HTML أو null في حال حدوث خطأ.
+ * @async
+ * @throws {Error} - If the fetch request fails or the response is not OK.
  */
 async function profileFetchContent(pageUrl) {
     try {
@@ -81,6 +90,9 @@ async function profileFetchContent(pageUrl) {
  * لإنشاء نطاق خاص وتجنب خطأ "already declared" مع const/let.
  * @function profileRestartScripts
  * @param {HTMLElement} container - العنصر الذي يحتوي على السكربتات المراد إعادة تشغيلها.
+ * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If an error occurs during DOM manipulation or script execution.
  */
 async function profileRestartScripts(container) {
     try {
@@ -138,6 +150,8 @@ async function profileRestartScripts(container) {
  * @function profileExecuteCallback
  * @function profileExecuteCallback
  * @param {string|string[]} callbackName - اسم دالة رد النداء (أو مصفوفة من الأسماء) في النطاق العام (window).
+ * @returns {void}
+ * @throws {Error} - If the specified callback function does not exist or throws an error during execution.
  */
 function profileExecuteCallback(callbackName) {
     try {
@@ -164,6 +178,8 @@ function profileExecuteCallback(callbackName) {
  * @description تقوم بمسح الأنماط (Styles) والسكربتات (Scripts) المرتبطة بالتحميل السابق للحاوية لمنع التضارب.
  * @function profileClearOldContent
  * @param {string} containerId - المعرّف (ID) الخاص بالحاوية الهدف.
+ * @returns {void}
+ * @throws {Error} - If an error occurs during DOM manipulation.
  */
 function profileClearOldContent(containerId) {
     try {
@@ -271,11 +287,23 @@ async function mainLoader(
         console.error("خطأ عام غير متوقع في دالة mainLoader:", globalError);
     }
 }
+/**
+ * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If any sub-function (`profileHandleRegistry`, `profileClearOldContent`, `profileFetchContent`, `profileRestartScripts`, `profileExecuteCallback`) throws an error, or if critical DOM elements are not found.
+ * @see profileHandleRegistry
+ * @see profileClearOldContent
+ * @see profileFetchContent
+ * @see profileRestartScripts
+ * @see profileExecuteCallback
+ */
 
 /**
  * @description العودة إلى الحاوية السابقة (إن وجدت) وإزالة الحاوية الحالية من السجل.
  * @function containerGoBack
  * @returns {boolean} - true إذا تمت العملية بنجاح، false إذا لم تكن هناك حاوية سابقة للعودة إليها.
+ * @throws {Error} - If an error occurs during DOM manipulation or registry updates.
+ * @see profileClearOldContent
  */
 function containerGoBack() {
     try {

@@ -8,6 +8,8 @@
  *   يقوم بإزالة أي معالجات سابقة لتجنب التكرار.
  * @function productSetupFormSubmit
  * @returns {void}
+ * @throws {Error} - If the form element (`add-product-form`) is not found in the DOM.
+ * @see productHandleFormSubmit
  */
 function productSetupFormSubmit() {
   const form = document.getElementById('add-product-form');
@@ -30,6 +32,7 @@ function productSetupFormSubmit() {
  * @async
  * @param {Event} e - كائن حدث إرسال النموذج.
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @throws {Error} - If `productValidateForm` fails or `productProcessFormSubmission` encounters an error.
  * @see productValidateForm
  */
 async function productHandleFormSubmit(e) {
@@ -58,7 +61,12 @@ async function productHandleFormSubmit(e) {
  * @async
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
  * @throws {Error} - إذا فشلت أي خطوة حرجة في العملية (مثل رفع الصور أو الحفظ في قاعدة البيانات).
- * @see Swal.fire
+ * @see productGenerateProductSerial
+ * @see productHandleImageDeletion
+ * @see productUploadImages
+ * @see productPrepareProductData
+ * @see productSaveToDatabase
+ * @see productShowSuccessMessage
  */
 async function productProcessFormSubmission() {
   const form = document.getElementById('add-product-form');
@@ -118,6 +126,7 @@ async function productProcessFormSubmission() {
  * @function productHandleImageDeletion
  * @async
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
+ * @throws {Error} - If `deleteFile2cf` fails to delete an image.
  * @see deleteFile2cf
  */
 async function productHandleImageDeletion() {
@@ -272,6 +281,8 @@ function productPrepareProductData(productSerial, uploadedImageFiles) {
  * @param {'add' | 'edit'} mode - وضع النموذج الحالي ('add' أو 'edit').
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
  * @throws {Error} - إذا فشلت عملية الحفظ في قاعدة البيانات أو إذا كانت دوال `addProduct`/`updateProduct` غير متاحة.
+ * @see addProduct
+ * @see updateProduct
  */
 async function productSaveToDatabase(productData, mode) {
   let dbResult;

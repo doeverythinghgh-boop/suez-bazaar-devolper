@@ -4,6 +4,9 @@
  */
 
 // كائن إدارة صفحة الإشعارات
+/**
+ * @namespace NotificationPage
+ */
 const NotificationPage = {
     /**
      * @description البيانات الحالية للصفحة
@@ -93,6 +96,17 @@ const NotificationPage = {
             this.showError('خطأ في تهيئة صفحة الإشعارات');
         }
     },
+    /**
+     * @returns {Promise<void>}
+     * @throws {Error} - If any error occurs during the initialization process.
+     * @see initElements
+     * @see loadSettings
+     * @see setupEventListeners
+     * @see setupGlobalCounter
+     * @see loadNotifications
+     * @see markAllAsRead
+     * @see startAutoRefresh
+     */
 
     /**
      * @description تهيئة عناصر DOM
@@ -124,6 +138,9 @@ const NotificationPage = {
             receivedCountEl: document.getElementById('received-count')
         };
     },
+    /**
+     * @returns {void}
+     */
 
     /**
      * @description تحميل الإعدادات من localStorage
@@ -149,6 +166,12 @@ const NotificationPage = {
             console.warn('[Notifications] خطأ في تحميل الإعدادات:', error);
         }
     },
+    /**
+     * @returns {void}
+     * @throws {Error} - If there's an error parsing the saved settings from LocalStorage.
+     * @see applyFilterValues
+     * @see updateAutoRefreshToggle
+     */
 
     /**
      * @description حفظ الإعدادات في localStorage
@@ -166,6 +189,10 @@ const NotificationPage = {
             console.warn('[Notifications] خطأ في حفظ الإعدادات:', error);
         }
     },
+    /**
+     * @returns {void}
+     * @throws {Error} - If there's an error saving settings to LocalStorage.
+     */
 
     /**
      * @description تطبيق قيم الفلاتر على عناصر DOM
@@ -184,6 +211,9 @@ const NotificationPage = {
             this.elements.sortSelect.value = this.filters.sortBy;
         }
     },
+    /**
+     * @returns {void}
+     */
 
     /**
      * @description تحديث زر التحديث التلقائي
@@ -195,6 +225,9 @@ const NotificationPage = {
                 this.refreshSettings.autoRefresh ? 'مفعل' : 'معطل';
         }
     },
+    /**
+     * @returns {void}
+     */
 
     /**
      * @description إعداد مستمعي الأحداث
@@ -298,6 +331,19 @@ const NotificationPage = {
             }
         });
     },
+    /**
+     * @returns {void}
+     * @throws {Error} - If an error occurs during event listener setup or callback execution.
+     * @see applyFilters
+     * @see saveSettings
+     * @see refreshNotifications
+     * @see startAutoRefresh
+     * @see stopAutoRefresh
+     * @see updateAutoRefreshToggle
+     * @see markAllAsRead
+     * @see clearFilters
+     * @see showToast
+     */
 
     /**
      * @description إعداد العداد العالمي
@@ -311,6 +357,10 @@ const NotificationPage = {
             };
         }
     },
+    /**
+     * @returns {void}
+     * @see window.GLOBAL_NOTIFICATIONS.onCountUpdate
+     */
 
     /**
      * @description تحميل الإشعارات من IndexedDB
@@ -350,6 +400,15 @@ const NotificationPage = {
             });
         }
     },
+    /**
+     * @returns {Promise<void>}
+     * @throws {Error} - If there's an error initializing the DB or fetching notification logs.
+     * @see initDB
+     * @see getNotificationLogs
+     * @see setState
+     * @see updateStats
+     * @see applyFilters
+     */
 
     /**
      * @description تحديث الإشعارات
@@ -368,6 +427,11 @@ const NotificationPage = {
 
         await this.loadNotifications();
     },
+    /**
+     * @returns {Promise<void>}
+     * @throws {Error} - If `loadNotifications` fails.
+     * @see loadNotifications
+     */
 
     /**
      * @description بدء التحديث التلقائي
@@ -383,6 +447,11 @@ const NotificationPage = {
             console.log('[Notifications] تم تفعيل التحديث التلقائي');
         }
     },
+    /**
+     * @returns {void}
+     * @see stopAutoRefresh
+     * @see refreshNotifications
+     */
 
     /**
      * @description إيقاف التحديث التلقائي
@@ -394,6 +463,9 @@ const NotificationPage = {
             console.log('[Notifications] تم إيقاف التحديث التلقائي');
         }
     },
+    /**
+     * @returns {void}
+     */
 
     /**
      * @description تحديث إحصائيات الصفحة
@@ -433,6 +505,12 @@ const NotificationPage = {
             }
         }
     },
+    /**
+     * @returns {void}
+     * @see window.GLOBAL_NOTIFICATIONS.unreadCount
+     * @see window.GLOBAL_NOTIFICATIONS.updateBrowserTitle
+     * @see window.GLOBAL_NOTIFICATIONS.notifyCountUpdate
+     */
 
     /**
      * @description تطبيق الفلاتر
@@ -470,6 +548,10 @@ const NotificationPage = {
         this.state.filteredNotifications = filtered;
         this.renderNotifications();
     },
+    /**
+     * @returns {void}
+     * @see renderNotifications
+     */
 
     /**
      * @description مسح جميع الفلاتر
@@ -486,6 +568,12 @@ const NotificationPage = {
         this.applyFilters();
         this.saveSettings();
     },
+    /**
+     * @returns {void}
+     * @see applyFilterValues
+     * @see applyFilters
+     * @see saveSettings
+     */
 
     /**
      * @description عرض الإشعارات في واجهة المستخدم (تخطيط واتساب)
@@ -540,6 +628,15 @@ const NotificationPage = {
         // التمرير لأسفل القائمة (اختياري، لكن في واتساب يتم التمرير للأحدث)
         // في حالتنا "الأحدث في الأعلى"، لذا لا داعي للتمرير.
     },
+    /**
+     * @returns {void}
+     * @see showLoading
+     * @see showError
+     * @see showEmptyState
+     * @see hideAllStates
+     * @see createNotificationElement
+     * @see escapeHtml
+     */
 
     /**
      * @description إنشاء عنصر إشعار (تصميم فقاعة المحادثة)
@@ -589,6 +686,9 @@ const NotificationPage = {
 
         return element;
     },
+    /**
+     * @see escapeHtml
+     */
 
     /**
      * @description تحديث حالة الإشعار (مقروء/غير مقروء)
@@ -641,6 +741,13 @@ const NotificationPage = {
             // لا نظهر خطأ للمستخدم هنا لأن التغيير البصري قد حدث بالفعل
         }
     },
+    /**
+     * @returns {Promise<void>}
+     * @throws {Error} - If there's an error updating the status in the database.
+     * @see updateNotificationStatusInDB
+     * @see updateStats
+     * @see window.GLOBAL_NOTIFICATIONS.notifyCountUpdate
+     */
 
 
 
@@ -702,6 +809,13 @@ const NotificationPage = {
             if (!silent) this.showToast('حدث خطأ أثناء العملية', 'error');
         }
     },
+    /**
+     * @returns {Promise<void>}
+     * @throws {Error} - If there's an error marking notifications as read in the database.
+     * @see markAllNotificationsAsReadInDB
+     * @see updateStats
+     * @see showToast
+     */
 
     /**
      * @description تحديث حالة الصفحة
@@ -710,6 +824,9 @@ const NotificationPage = {
     setState(newState) {
         this.state = { ...this.state, ...newState };
     },
+    /**
+     * @returns {void}
+     */
 
     /**
      * @description إظهار حالة التحميل
@@ -723,6 +840,10 @@ const NotificationPage = {
             this.elements.list.style.display = 'none';
         }
     },
+    /**
+     * @returns {void}
+     * @see hideAllStates
+     */
 
     /**
      * @description إظهار حالة الخطأ
@@ -739,6 +860,10 @@ const NotificationPage = {
             this.elements.list.style.display = 'none';
         }
     },
+    /**
+     * @returns {void}
+     * @see hideAllStates
+     */
 
     /**
      * @description إظهار حالة فارغة
@@ -752,6 +877,10 @@ const NotificationPage = {
             this.elements.list.style.display = 'none';
         }
     },
+    /**
+     * @returns {void}
+     * @see hideAllStates
+     */
 
     /**
      * @description إخفاء جميع الحالات
@@ -770,6 +899,9 @@ const NotificationPage = {
             this.elements.list.style.display = 'block';
         }
     },
+    /**
+     * @returns {void}
+     */
 
     /**
      * @description إظهار رسالة toast
@@ -809,6 +941,9 @@ const NotificationPage = {
             }
         }, 3000);
     },
+    /**
+     * @returns {void}
+     */
 
 
     /**
@@ -834,6 +969,9 @@ const NotificationPage = {
             return 'الآن';
         }
     },
+    /**
+     * @returns {string}
+     */
 
     /**
      * @description حماية النص من HTML Injection
@@ -847,8 +985,16 @@ const NotificationPage = {
         return div.innerHTML;
     }
 };
+/**
+ * @returns {string}
+ */
 
 // تهيئة الصفحة عند تحميل DOM
+/**
+ * @description Automatically initializes the `NotificationPage` controller when the DOM is fully loaded.
+ * This ensures the notification page is set up as soon as possible.
+ * @throws {Error} - If `NotificationPage.init()` fails during execution.
+ */
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         NotificationPage.init();

@@ -63,6 +63,13 @@ window.GLOBAL_NOTIFICATIONS = {
             console.error('[Global] خطأ في تحديث العداد:', error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error fetching notifications from the database.
+     * @see getNotificationLogs
+     * @see getLastOpenedTime
+     * @see notifyCountUpdate
+     * @see updateBrowserTitle
+     */
 
     /**
      * @description إعادة العداد إلى الصفر عند فتح صفحة الإشعارات
@@ -73,6 +80,12 @@ window.GLOBAL_NOTIFICATIONS = {
         this.notifyCountUpdate();
         this.updateBrowserTitle();
     },
+    /**
+     * @returns {void}
+     * @see setLastOpenedTime
+     * @see notifyCountUpdate
+     * @see updateBrowserTitle
+     */
 
     /**
      * @description تحديث عنوان المتصفح ليعرض العدد
@@ -89,6 +102,10 @@ window.GLOBAL_NOTIFICATIONS = {
             console.error('[Global] خطأ في تحديث عنوان المتصفح:', error);
         }
     },
+    /**
+     * @returns {void}
+     * @throws {Error} - If there's an error manipulating the document title.
+     */
 
     /**
      * @description الحصول على آخر وقت فتح من localStorage
@@ -103,6 +120,9 @@ window.GLOBAL_NOTIFICATIONS = {
             return null;
         }
     },
+    /**
+     * @throws {Error} - If there's an error accessing LocalStorage.
+     */
 
     /**
      * @description حفظ وقت الفتح الحالي في localStorage
@@ -117,6 +137,9 @@ window.GLOBAL_NOTIFICATIONS = {
             console.error('[Global] خطأ في حفظ lastOpened:', error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error saving to LocalStorage.
+     */
 
     /**
      * @description إعلام Callback بتحديث العداد وتحديث شارة الإشعارات في الواجهة
@@ -153,6 +176,11 @@ window.GLOBAL_NOTIFICATIONS = {
             }
         }
     },
+    /**
+     * @returns {void}
+     * @throws {Error} - If an error occurs during the callback execution.
+     * @see updateNotificationBadge
+     */
 
     /**
      * @description تحديث شارة الإشعارات في الزر الرئيسي
@@ -182,6 +210,9 @@ window.GLOBAL_NOTIFICATIONS = {
             //console.log('[Global] ⭕ تم إخفاء الشارة (العدد = 0)');
         }
     },
+    /**
+     * @returns {void}
+     */
 
     /**
      * @description تهيئة النظام العالمي
@@ -203,6 +234,13 @@ window.GLOBAL_NOTIFICATIONS = {
             console.error('[Global] خطأ في التهيئة:', error);
         }
     },
+    /**
+     * @returns {Promise<void>}
+     * @throws {Error} - If an error occurs during initialization.
+     * @see getLastOpenedTime
+     * @see updateCounter
+     * @see setupEventListeners
+     */
 
     /**
      * @description إعداد مستمعي الأحداث
@@ -235,6 +273,12 @@ window.GLOBAL_NOTIFICATIONS = {
             await this.updateCounter();
         });
     },
+    /**
+     * @returns {void}
+     * @see updateCounter
+     * @see playNotificationSound
+     * @see showSystemNotification
+     */
 
     /**
      * @description إظهار إشعار نظام
@@ -262,6 +306,11 @@ window.GLOBAL_NOTIFICATIONS = {
             console.error('[Global] خطأ في إشعار النظام:', error);
         }
     },
+    /**
+     * @returns {void}
+     * @throws {Error} - If an error occurs during notification permission request or creation.
+     * @see createNotification
+     */
 
     /**
      * @description إنشاء إشعار نظام
@@ -293,11 +342,19 @@ window.GLOBAL_NOTIFICATIONS = {
         // إغلاق الإشعار تلقائياً بعد 5 ثوان
         setTimeout(() => notif.close(), 5000);
     },
+    /**
+     * @returns {void}
+     */
 
 
 };
 
 // تهيئة النظام تلقائياً عند تحميل الصفحة
+/**
+ * @description Automatically initializes the `GLOBAL_NOTIFICATIONS` object when the DOM is fully loaded.
+ * This ensures the global notification system is set up as soon as possible.
+ * @throws {Error} - If `GLOBAL_NOTIFICATIONS.init()` fails during execution.
+ */
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         GLOBAL_NOTIFICATIONS.init();

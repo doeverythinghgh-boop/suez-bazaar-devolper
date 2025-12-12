@@ -90,6 +90,8 @@ if (!admin.apps.length && missingEnvVars.length === 0) {
  * @param {object} req - كائن طلب HTTP الوارد من Vercel.
  * @param {object} res - كائن استجابة HTTP من Vercel.
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة، ولكنه يرسل استجابة HTTP.
+ * @async
+ * @throws {Response} - Returns an HTTP response with an error status (500) if Firebase is not initialized or if sending the notification fails.
  */
 export default async function handler(req, res) {
   // التعامل مع طلبات OPTIONS (preflight) أولاً لمنع أخطاء CORS

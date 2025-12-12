@@ -1,11 +1,28 @@
+/**
+ * @file api/suppliers-deliveries.js
+ * @description نقطة النهاية (API Endpoint) لإدارة العلاقات بين البائعين وموزعي التوصيل.
+ *
+ * هذا الملف يعمل كواجهة خلفية (Serverless Function على Vercel) ويتولى العمليات المتعلقة بهذه العلاقات:
+ * - GET: جلب قائمة الموزعين المرتبطين ببائع معين، أو جميع العلاقات لمستخدم معين.
+ * - PUT: تحديث أو إنشاء علاقة بين بائع وموزع.
+ * - POST: التحقق من أدوار المستخدمين (بائع/موزع).
+ * - OPTIONS: معالجة طلبات CORS Preflight.
+ */
 import { createClient } from "@libsql/client/web";
 
 export const config = {
   runtime: 'edge',
 };
+/**
+ * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @type {object}
+ * @const
+ */
 
 /**
  * @description تهيئة الاتصال بقاعدة البيانات Turso
+ * @type {import("@libsql/client/web").Client}
+ * @const
  */
 const db = createClient({
   url: process.env.DATABASE_URL,
@@ -14,6 +31,8 @@ const db = createClient({
 
 /**
  * @description ترويسات CORS للسماح بالطلبات من أي مصدر.
+ * @type {object}
+ * @const
  */
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,6 +45,8 @@ const corsHeaders = {
  * @description تحقق من وجود مجموعة user_keys في جدول suppliers_deliveries
  * @param {string[]} userKeys - مصفوفة مفاتيح المستخدمين للتحقق
  * @returns {Promise<Array<{key: string, isSeller: boolean, isDelivery: boolean}>>} مصفوفة كائنات توضح دور كل مستخدم
+ * @async
+ * @throws {Error} - If a database error occurs.
  */
 export async function checkUserInSuppliersDeliveries(userKeys) {
   if (!Array.isArray(userKeys) || userKeys.length === 0) return [];
@@ -62,6 +83,8 @@ export async function checkUserInSuppliersDeliveries(userKeys) {
  * - PUT: لتحديث (أو إنشاء) حالة الارتباط بين بائع وموزع.
  * @param {Request} request - كائن طلب HTTP الوارد.
  * @returns {Promise<Response>} - وعد يحتوي على كائن استجابة HTTP.
+ * @async
+ * @throws {Response} - Returns an HTTP response with an error status (400, 405, 500) if validation fails or an unexpected error occurs during database operations.
  */
 export default async function handler(request) {
   // ✅ تتبع: معالجة طلبات CORS التمهيدية (preflight)

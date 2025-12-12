@@ -12,6 +12,11 @@
  */
 let cachedDefaultConfig = null;
 /**
+ * @type {object|null}
+ * @description Cache for the default notification configuration loaded from `notification_config.json`.
+ * This helps avoid redundant fetches if `window.globalNotificationConfig` is not yet available.
+ */
+/**
  * @description التحقق من تفعيل التنبيه لحدث معين ودور معين بناءً على ملف JSON.
  * ✅ يعتمد **حصرياً** على notification_config.json (المحمل في window.globalNotificationConfig أو عبر الجلب).
  * ❌ يتجاهل localStorage (لأنه للإدارة فقط أو التصدير اليدوي).
@@ -63,6 +68,10 @@ async function shouldNotify(eventKey, role) {
     console.warn(`[Notifications] Config missing for ${eventKey}.${role}, defaulting to TRUE per user requirement.`);
     return true;
 }
+/**
+ * @throws {Error} - If fetching the notification_config.json file fails.
+ * @see window.globalNotificationConfig
+ */
 
 /**
  * @description دالة مخصصة ليتم استدعاؤها من كود الأندرويد الأصلي.
@@ -70,6 +79,7 @@ async function shouldNotify(eventKey, role) {
  * @function saveNotificationFromAndroid
  * @param {string} notificationJson - سلسلة JSON تحتوي على بيانات الإشعار (title, body).
  * @returns {void}
+ * @throws {Error} - If `notificationJson` is not valid JSON or `addNotificationLog` is not available.
  * @see addNotificationLog
  */
 function saveNotificationFromAndroid(notificationJson) {
@@ -118,6 +128,10 @@ async function sendNotification(token, title, body) {
         body: { token, title, body },
     });
 }
+/**
+ * @async
+ * @throws {Error} - If the API request fails or returns an error.
+ */
 
 /**
 * @description تتلقى الدالة مصفوفة نهائية من توكنات الإشعارات الصالحة (FCM Tokens)
@@ -199,6 +213,11 @@ async function sendNotificationsToTokens(allTokens, title, body) {
         console.error("[Notifications ERROR] حدث خطأ غير متوقع أثناء إرسال الإشعارات.", error);
     }
 }
+/**
+ * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If `sendNotification` fails for any token or a network error occurs.
+ */
 
 /**
  * @description يجلب توكنات الإشعارات (FCM tokens) لجميع المسؤولين.
@@ -222,6 +241,9 @@ async function getAdminTokens() {
         return []; // إرجاع مصفوفة فارغة في حالة حدوث خطأ
     }
 }
+/**
+ * @throws {Error} - If `apiFetch` fails to retrieve tokens.
+ */
 
 /**
  * @description يجلب قائمة الموزعين النشطين المرتبطين ببائع معين.
@@ -230,6 +252,7 @@ async function getAdminTokens() {
  * @param {string} sellerKey - المفتاح الفريد للبائع (`user_key`).
  * @returns {Promise<Array<Object>|null>} - وعد (Promise) يحتوي على مصفوفة من كائنات الموزعين النشطين، أو `null` في حالة حدوث خطأ.
  * @throws {Error} - إذا فشل جلب البيانات من API.
+ * @async
  * @see apiFetch
  */
 async function getActiveDeliveryRelations(sellerKey) {
@@ -303,6 +326,9 @@ async function getUsersTokens(usersKeys) {
         return [];
     }
 }
+/**
+ * @throws {Error} - If the `apiFetch` call encounters a critical error.
+ */
 
 /**
  * @description دالة مساعدة لإرسال توكن FCM إلى الخادم.
@@ -312,6 +338,7 @@ async function getUsersTokens(usersKeys) {
  * @param {string} platform - منصة الجهاز (مثل "android" أو "web").
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال، ولكنه يعالج الاستجابة من الخادم.
  * @throws {Error} - في حالة فشل الاتصال بالشبكة أو وجود مشكلة في استجابة الخادم.
+ * @async
  */
 async function sendTokenToServer(userKey, token, platform) {
     console.log(`%c[FCM] Sending token to server...`, "color: #fd7e14");
@@ -380,6 +407,7 @@ async function askForNotificationPermission() {
  *   تقوم بإبلاغ الواجهة الأصلية وحذف توكن الأندرويد المخزن محلياً.
  * @function onUserLoggedOutAndroid
  * @returns {void}
+ * @see userSession
  */
 function onUserLoggedOutAndroid() {
     if (
@@ -402,6 +430,11 @@ function onUserLoggedOutAndroid() {
  * @function handlePurchaseNotifications
  * @param {Object} order - كائن الطلب الذي تم إنشاؤه.
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If any sub-notification function fails.
+ * @see shouldNotify
+ * @see notifyAdminOnPurchase
+ * @see notifySellersOnPurchase
  */
 async function handlePurchaseNotifications(order) {
     console.log('[Notifications] معالجة إشعارات الشراء للطلب:', order.id);
@@ -431,6 +464,10 @@ async function handlePurchaseNotifications(order) {
  * @function notifyAdminOnPurchase
  * @param {Object} order
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If `getAdminTokens` or `sendNotificationsToTokens` fails.
+ * @see getAdminTokens
+ * @see sendNotificationsToTokens
  */
 async function notifyAdminOnPurchase(order) {
     try {
@@ -453,6 +490,10 @@ async function notifyAdminOnPurchase(order) {
  * @function notifySellersOnPurchase
  * @param {Object} order
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If `getUsersTokens` or `sendNotificationsToTokens` fails for any seller.
+ * @see getUsersTokens
+ * @see sendNotificationsToTokens
  */
 async function notifySellersOnPurchase(order) {
     if (!order.items || !Array.isArray(order.items)) return;
@@ -501,6 +542,10 @@ async function notifySellersOnPurchase(order) {
  * @param {string} stepName - اسم المرحلة بالعربية.
  * @param {string} orderId - رقم الطلب (اختياري).
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If `getUsersTokens` or `sendNotificationsToTokens` fails.
+ * @see getUsersTokens
+ * @see sendNotificationsToTokens
  */
 async function notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId = '') {
     try {
@@ -551,6 +596,10 @@ async function notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId = '')
  * @param {string} orderId - رقم الطلب (اختياري).
  * @param {string} userName - اسم المستخدم الذي فعّل المرحلة (اختياري).
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If `getAdminTokens` or `sendNotificationsToTokens` fails.
+ * @see getAdminTokens
+ * @see sendNotificationsToTokens
  */
 async function notifyAdminOnStepChange(stepId, stepName, orderId = '', userName = '') {
     try {
@@ -579,6 +628,10 @@ async function notifyAdminOnStepChange(stepId, stepName, orderId = '', userName 
  * @param {string} stepName - اسم المرحلة بالعربية.
  * @param {string} orderId - رقم الطلب (اختياري).
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If `getUsersTokens` or `sendNotificationsToTokens` fails.
+ * @see getUsersTokens
+ * @see sendNotificationsToTokens
  */
 async function notifyDeliveryOnStepChange(deliveryKeys, stepId, stepName, orderId = '') {
     if (!deliveryKeys || deliveryKeys.length === 0) {
@@ -634,6 +687,13 @@ async function notifyDeliveryOnStepChange(deliveryKeys, stepId, stepName, orderI
  * @param {string} [params.orderId] - رقم الطلب (اختياري).
  * @param {string} [params.userName] - اسم المستخدم الذي فعّل المرحلة (اختياري).
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If any of the sub-notification functions (`notifyBuyerOnStepChange`, `notifyAdminOnStepChange`, `notifySellerOnStepChange`, `notifyDeliveryOnStepChange`) fail.
+ * @see shouldNotify
+ * @see notifyBuyerOnStepChange
+ * @see notifyAdminOnStepChange
+ * @see notifySellerOnStepChange
+ * @see notifyDeliveryOnStepChange
  */
 async function notifyOnStepActivation({
     stepId,
@@ -698,6 +758,10 @@ async function notifyOnStepActivation({
  * @param {string} stepName - اسم المرحلة بالعربية.
  * @param {string} orderId - رقم الطلب (اختياري).
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If `getUsersTokens` or `sendNotificationsToTokens` fails.
+ * @see getUsersTokens
+ * @see sendNotificationsToTokens
  */
 async function notifySellerOnStepChange(sellerKeys, stepId, stepName, orderId = '') {
     if (!sellerKeys || sellerKeys.length === 0) {
@@ -757,6 +821,13 @@ async function notifySellerOnStepChange(sellerKeys, stepId, stepName, orderId = 
  * @param {string} [params.orderId] - رقم الطلب.
  * @param {string} [params.userName] - اسم المستخدم الذي فعّل المرحلة.
  * @returns {Promise<void>}
+ * @async
+ * @throws {Error} - If any of the sub-notification functions (`notifySellerOnStepChange`, `notifyAdminOnStepChange`, `sendNotificationsToTokens`) fail.
+ * @see shouldNotify
+ * @see notifySellerOnStepChange
+ * @see notifyAdminOnStepChange
+ * @see getUsersTokens
+ * @see sendNotificationsToTokens
  */
 async function notifyOnSubStepActivation({
     stepId,

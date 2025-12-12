@@ -7,8 +7,17 @@
 // القيم الافتراضية كما تم تحديدها من قبل المستخدم
 // القيم الافتراضية سيتم تحميلها من ملف JSON
 let notifiSetting_DEFAULT_CONFIG = {};
+/**
+ * @type {object}
+ * @description Stores the default notification settings loaded from a JSON file.
+ */
 
 const notifiSetting_STORAGE_KEY = 'notification_config';
+/**
+ * @constant
+ * @type {string}
+ * @description The key used to store and retrieve notification settings in LocalStorage.
+ */
 
 /**
  * @description المتحكم الرئيسي لصفحة إعدادات الإشعارات.
@@ -37,6 +46,13 @@ const notifiSetting_Controller = {
             this.notifiSetting_showToast('فشل تحميل الصفحة بشكل صحيح ❌');
         }
     },
+    /**
+     * @throws {Error} - If there's an error during any of the initialization steps.
+     * @see notifiSetting_loadDefaults
+     * @see notifiSetting_loadConfig
+     * @see notifiSetting_renderTable
+     * @see notifiSetting_setupEventListeners
+     */
 
     /**
      * @description تحميل الإعدادات الافتراضية من ملف JSON
@@ -58,6 +74,9 @@ const notifiSetting_Controller = {
             notifiSetting_DEFAULT_CONFIG = {};
         }
     },
+    /**
+     * @throws {Error} - If the notification configuration JSON file fails to load or parse.
+     */
 
     /**
      * @description تحميل الإعدادات المخزنة محلياً ودمجها مع الافتراضيات
@@ -96,6 +115,11 @@ const notifiSetting_Controller = {
             console.error('حدث خطأ أثناء تحميل الإعدادات:', notifiSetting_error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error accessing or parsing data from LocalStorage.
+     * @see notifiSetting_STORAGE_KEY
+     * @see notifiSetting_DEFAULT_CONFIG
+     */
 
     /**
      * @description حفظ الإعدادات الحالية في localStorage
@@ -111,6 +135,10 @@ const notifiSetting_Controller = {
             this.notifiSetting_showToast('فشل حفظ الإعدادات ❌');
         }
     },
+    /**
+     * @throws {Error} - If there's an error saving data to LocalStorage.
+     * @see notifiSetting_STORAGE_KEY
+     */
 
     /**
      * @description استعادة الإعدادات الافتراضية
@@ -127,6 +155,12 @@ const notifiSetting_Controller = {
             console.error('حدث خطأ أثناء استعادة الافتراضيات:', notifiSetting_error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error during the reset process or saving the new configuration.
+     * @see notifiSetting_DEFAULT_CONFIG
+     * @see notifiSetting_saveConfig
+     * @see notifiSetting_renderTable
+     */
 
     /**
      * @description تحديث قيمة إعداد واحد
@@ -145,6 +179,10 @@ const notifiSetting_Controller = {
             console.error('حدث خطأ أثناء تحديث الإعداد:', notifiSetting_error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error updating the setting or saving the configuration.
+     * @see notifiSetting_saveConfig
+     */
 
     /**
      * @description رسم جدول الإعدادات
@@ -178,6 +216,11 @@ const notifiSetting_Controller = {
             console.error('حدث خطأ أثناء عرض الجدول:', notifiSetting_error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error creating or appending table rows/checkboxes.
+     * @see notifiSetting_DEFAULT_CONFIG
+     * @see notifiSetting_createCheckbox
+     */
 
     /**
      * @description إنشاء HTML لمربع اختيار (Checkbox)
@@ -204,6 +247,10 @@ const notifiSetting_Controller = {
             return '';
         }
     },
+    /**
+     * @throws {Error} - If there's an error generating the HTML string for the checkbox.
+     * @see notifiSetting_Controller.notifiSetting_handleCheckboxChange
+     */
 
     /**
      * @description معالجة تغيير حالة مربع الاختيار
@@ -221,6 +268,10 @@ const notifiSetting_Controller = {
             console.error('حدث خطأ أثناء تغيير الحالة:', notifiSetting_error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error extracting data from the input element or updating the setting.
+     * @see notifiSetting_updateSetting
+     */
 
     /**
      * @description إعداد مستمعي الأحداث للأزرار
@@ -238,6 +289,10 @@ const notifiSetting_Controller = {
             console.error('حدث خطأ أثناء إعداد مستمعي الأحداث:', notifiSetting_error);
         }
     },
+    /**
+     * @throws {Error} - If there's an error attaching event listeners to DOM elements.
+     * @see notifiSetting_resetDefaults
+     */
 
     /**
      * @description إظهار رسالة تنبيه (Toast)
@@ -259,9 +314,16 @@ const notifiSetting_Controller = {
         }
     }
 };
+/**
+ * @throws {Error} - If there's an error manipulating DOM elements to show the toast message.
+ */
 
-// التهيئة عند جاهزية الـ DOM
-
+/**
+ * @description Initializes the notification settings page controller when the DOM is ready.
+ * This IIFE ensures that the `notifiSetting_Controller.notifiSetting_init()` method is called
+ * as soon as the DOM is loaded, setting up the page's functionality.
+ * @throws {Error} - If `notifiSetting_Controller.notifiSetting_init()` fails to execute.
+ */
 try {
     notifiSetting_Controller.notifiSetting_init();
 } catch (notifiSetting_error) {

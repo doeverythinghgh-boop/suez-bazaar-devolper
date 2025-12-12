@@ -16,6 +16,10 @@
  * @function setupFCM
  * @async
  * @returns {Promise<void>}
+ * @throws {Error} - If `setupFirebaseAndroid` or `setupFirebaseWeb` encounters a critical error.
+ * @see setupFirebaseAndroid
+ * @see setupFirebaseWeb
+ * @see userSession
  */
 async function setupFCM() {
     // [تحديث] إزالة التحقق من fcmInitialized للسماح بإعادة التهيئة عند تحديث الصفحة
@@ -94,6 +98,10 @@ async function registerServiceWorker() {
  * @function setupFirebaseAndroid
  * @async
  * @returns {Promise<void>}
+ * @throws {Error} - If `waitForFcmKey` or `sendTokenToServer` encounters an error.
+ * @see waitForFcmKey
+ * @see sendTokenToServer
+ * @see userSession
  */
 async function setupFirebaseAndroid() {
     console.log("[Android FCM] تهيئة FCM للاندرويد...");
@@ -134,6 +142,11 @@ async function setupFirebaseAndroid() {
  * @function setupFirebaseWeb
  * @async
  * @returns {Promise<void>}
+ * @throws {Error} - If Firebase libraries fail to load, permissions are denied, or token operations fail.
+ * @see registerServiceWorker
+ * @see addNotificationLog
+ * @see sendTokenToServer
+ * @see userSession
  */
 async function setupFirebaseWeb() {
     console.log("[Web FCM] تهيئة FCM للويب...");

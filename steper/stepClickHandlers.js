@@ -23,10 +23,21 @@ import {
  * @function addStepClickListeners
  * @description تقوم هذه الدالة بإضافة مستمعي أحداث النقر (Event Listeners) لجميع عناصر الخطوات في الصفحة.
  * عند النقر، تقوم بالتحقق من الصلاحيات ثم فتح النافذة المنبثقة المناسبة.
- * 
+ *
  * @param {object} data - بيانات التحكم الكاملة (Control Data).
  * @param {Array<object>} ordersData - بيانات الطلبات.
  * @param {boolean} isBuyerReviewModificationLocked - حالة خاصة تحدد ما إذا كان تعديل المراجعة مقفلاً (مثلاً لأن الطلب قد شُحن).
+ * @returns {void}
+ * @throws {Error} If there is an error adding click listeners or handling step clicks.
+ * @see isStepAllowedForCurrentUser
+ * @see showUnauthorizedAlert
+ * @see showProductKeysAlert
+ * @see showUnselectedProductsAlert
+ * @see showDeliveryConfirmationAlert
+ * @see showReturnedProductsAlert
+ * @see showSellerConfirmationProductsAlert
+ * @see showSellerRejectedProductsAlert
+ * @see showShippingInfoAlert
  */
 export function addStepClickListeners(
     data,
