@@ -284,7 +284,7 @@
   <div id="index-contact-container"></div>
   <div id="index-notifications-container"></div>
   <div id="index-salesMovement-container"></div>
-<div id="index-orderPhoto-container"></div>
+  <div id="index-orderPhoto-container"></div>
   <!---region main javaScript files---->
   <script src="js/auth.js" id="index-script-auth-js"></script>
   <!-- ملف الإعدادات العامة للمشروع (مثل baseURL) -->
@@ -415,7 +415,7 @@
                 false
               );
             }
-          } 
+          }
         });
 
       // [Step 5.9] Bind "Notifications" button.
@@ -426,8 +426,8 @@
       document
         .getElementById("index-notifications-btn")
         .addEventListener("click", () => {
-          if( showLoginAlert()){
-          mainLoader("./notification/page/notifications.html", "index-notifications-container", 0, undefined, "showHomeIcon", true);
+          if (showLoginAlert()) {
+            mainLoader("./notification/page/notifications.html", "index-notifications-container", 0, undefined, "showHomeIcon", true);
           }
         });
 
@@ -444,30 +444,30 @@
       document
         .getElementById("index-cart-btn")
         .addEventListener("click", () => {
-          if(showLoginAlert()){
-          const container = document.getElementById(
-            "index-cardPackage-container"
-          );
-          if (container.innerHTML == "") {
-            mainLoader(
-              "./pages/cardPackage.html",
-              "index-cardPackage-container",
-              0,
-              undefined,
-              "showHomeIcon",
-              true
+          if (showLoginAlert()) {
+            const container = document.getElementById(
+              "index-cardPackage-container"
             );
-          } else {
-            mainLoader(
-              "./pages/cardPackage.html",
-              "index-cardPackage-container",
-              0,
-              undefined,
-              "showHomeIcon",
-              false
-            );
+            if (container.innerHTML == "") {
+              mainLoader(
+                "./pages/cardPackage.html",
+                "index-cardPackage-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                true
+              );
+            } else {
+              mainLoader(
+                "./pages/cardPackage.html",
+                "index-cardPackage-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                false
+              );
+            }
           }
-        }
         });
 
       // [Step 5.6] Bind "Gifts" button.
@@ -478,10 +478,11 @@
       document
         .getElementById("index-gifts-btn")
         .addEventListener("click", () => {
-          if(showLoginAlert()){
-          handleProtectedLinkClick("./pages/gifts.html")
-        }}
-      );
+          if (showLoginAlert()) {
+            handleProtectedLinkClick("./pages/gifts.html")
+          }
+        }
+        );
 
 
 
@@ -603,12 +604,12 @@
        */
       const addProductBtn = document.getElementById("dash-add-product-btn");
       if (addProductBtn) {
-        addProductBtn.addEventListener("click", 
-        function() {
-          if (showLoginAlert()) {
-            showAddProductModal();
-          }
-        });
+        addProductBtn.addEventListener("click",
+          function () {
+            if (showLoginAlert()) {
+              showAddProductModal();
+            }
+          });
       }
       // [Step 5.8] Bind "My Products" button.
       /**
@@ -625,35 +626,35 @@
          * @async
          */
         viewMyProductsBtn.addEventListener("click", async () => {
-          if(showLoginAlert()){
-          console.log(myProducts);
-          const container = document.getElementById(
-            "index-myProducts-container"
-          );
-          if (container.innerHTML == "") {
-            mainLoader(
-              "pages/product2Me.html",
-              "index-myProducts-container",
-              0,
-              undefined,
-              "showHomeIcon",
-              true
+          if (showLoginAlert()) {
+            console.log(myProducts);
+            const container = document.getElementById(
+              "index-myProducts-container"
             );
-          }
-          else {
-            mainLoader(
-              "pages/product2Me.html",
-              "index-myProducts-container",
-              0,
-              undefined,
-              "showHomeIcon",
-              false
-            );
-          }
+            if (container.innerHTML == "") {
+              mainLoader(
+                "pages/product2Me.html",
+                "index-myProducts-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                true
+              );
+            }
+            else {
+              mainLoader(
+                "pages/product2Me.html",
+                "index-myProducts-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                false
+              );
+            }
 
-        }
+          }
         });
-      
+
       }
       //#endregion
 
