@@ -435,7 +435,7 @@
 
   .contact_legal-tab {
     flex: 1;
-    padding: 12px 20px;
+    padding: 10px;
     background: linear-gradient(135deg, var(--primary-color-light), var(--bg-color-white));
     border: 2px solid var(--primary-color);
     border-radius: 8px;
@@ -445,11 +445,18 @@
     color: var(--primary-color);
     position: relative;
     display: flex;
+    flex-direction: column;
+    /* Icon above text */
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 5px;
     transform: scale(1);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .contact_legal-tab span {
+    font-size: 0.8rem;
+    /* Smaller text */
   }
 
   .contact_legal-tab:active {
@@ -482,7 +489,8 @@
   }
 
   .contact_legal-tab i {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
+    /* Slightly larger icon */
   }
 
   .contact_legal-iframe-container {
@@ -719,6 +727,14 @@
             <i class="fas fa-briefcase" id="contact_services_title_icon"></i>
             <span id="contact_services_title_text">خدماتنا ومنتجاتنا</span>
           </button>
+          <button class="contact_legal-tab" id="contact_legal_tab_privacy" data-tab="privacy">
+            <i class="fas fa-shield-alt" id="contact_legal_icon_privacy"></i>
+            <span id="contact_legal_text_privacy">سياسة الخصوصية</span>
+          </button>
+          <button class="contact_legal-tab" id="contact_legal_tab_delete" data-tab="delete">
+            <i class="fas fa-user-times" id="contact_legal_icon_delete"></i>
+            <span id="contact_legal_text_delete">حذف البيانات</span>
+          </button>
         </div>
         <div class="contact_legal-iframe-container" id="contact_form_services_container">
           <!-- Contact Form -->
@@ -814,6 +830,11 @@
               </div>
             </div>
           </div>
+          <!-- Legal Iframes -->
+          <iframe id="contact_legal_iframe_privacy" class="contact_legal-iframe contact_tab_content"
+            data-src="../privacy.html" title="سياسة الخصوصية" loading="lazy" data-content="privacy"></iframe>
+          <iframe id="contact_legal_iframe_delete" class="contact_legal-iframe contact_tab_content"
+            data-src="../delete-account.html" title="حذف الحساب" loading="lazy" data-content="delete"></iframe>
         </div>
       </div>
     </div>
@@ -821,25 +842,6 @@
     <!-- Footer -->
     <footer class="contact_footer" id="contact_footer">
       <div class="contact_container" id="contact_footer_container">
-        <!-- Legal Pages Section -->
-        <div class="contact_legal-section" id="contact_legal_section">
-          <div class="contact_legal-tabs" id="contact_legal_tabs">
-            <button class="contact_legal-tab" id="contact_legal_tab_privacy" data-tab="privacy">
-              <i class="fas fa-shield-alt" id="contact_legal_icon_privacy"></i>
-              <span id="contact_legal_text_privacy">سياسة الخصوصية</span>
-            </button>
-            <button class="contact_legal-tab" id="contact_legal_tab_delete" data-tab="delete">
-              <i class="fas fa-user-times" id="contact_legal_icon_delete"></i>
-              <span id="contact_legal_text_delete">حذف البيانات</span>
-            </button>
-          </div>
-          <div class="contact_legal-iframe-container" id="contact_legal_iframe_container">
-            <iframe id="contact_legal_iframe_privacy" class="contact_legal-iframe contact_hidden"
-              data-src="../privacy.html" title="سياسة الخصوصية" loading="lazy"></iframe>
-            <iframe id="contact_legal_iframe_delete" class="contact_legal-iframe contact_hidden"
-              data-src="../delete-account.html" title="حذف الحساب" loading="lazy"></iframe>
-          </div>
-        </div>
 
         <div class="contact_footer-content" id="contact_footer_content">
           <div class="contact_footer-column" id="contact_footer_column_1">
@@ -899,83 +901,101 @@
         console.error("خطأ في تهيئة قسم الأسئلة الشائعة:", error);
       }
 
-      // Form and Services Tabs Functionality
+      // Form and Services Tabs Functionality (Unified for all 4 tabs)
       /**
-       * @description Initializes tabbing logic between Contact Form and Services sections.
+       * @description Initializes tabbing logic between Contact Form, Services, and Legal sections.
        */
       try {
-        const contact_formServicesSection = document.getElementById("contact_form_services_section");
-        const contact_formTitle = document.getElementById("contact_form_title");
-        const contact_servicesTitle = document.getElementById("contact_services_title");
-        const contact_formDiv = document.getElementById("contact_form_div");
-        const contact_servicesSection = document.getElementById("contact_services_section");
+        const contact_section = document.getElementById("contact_form_services_section");
+        const contact_tabs = document.querySelectorAll(".contact_legal-tab");
 
-        const contact_tabs = [contact_formTitle, contact_servicesTitle];
         const contact_contents = {
-          form: contact_formDiv,
-          services: contact_servicesSection
+          form: document.getElementById("contact_form_div"),
+          services: document.getElementById("contact_services_section"),
+          privacy: document.getElementById("contact_legal_iframe_privacy"),
+          delete: document.getElementById("contact_legal_iframe_delete")
         };
 
         contact_tabs.forEach((contact_tab) => {
-          if (contact_tab) {
-            contact_tab.addEventListener("click", () => {
-              try {
-                const contact_tabName = contact_tab.getAttribute("data-tab");
-                const contact_isActive = contact_tab.classList.contains("contact_active");
+          contact_tab.addEventListener("click", () => {
+            try {
+              const contact_tabName = contact_tab.getAttribute("data-tab");
+              const contact_isActive = contact_tab.classList.contains("contact_active");
 
-                // If clicking the same active tab, collapse the section
-                if (contact_isActive && contact_formServicesSection && contact_formServicesSection.classList.contains("contact_expanded")) {
-                  // Remove active class from clicked tab
-                  contact_tab.classList.remove("contact_active");
-
-                  // Hide all contents
-                  Object.values(contact_contents).forEach((contact_content) => {
-                    if (contact_content) {
-                      contact_content.classList.remove("contact_tab_visible");
-                    }
-                  });
-
-                  // Collapse section
-                  contact_formServicesSection.classList.remove("contact_expanded");
-                  return;
-                }
-
-                // Expand section if not already expanded
-                if (contact_formServicesSection && !contact_formServicesSection.classList.contains("contact_expanded")) {
-                  contact_formServicesSection.classList.add("contact_expanded");
-                }
-
-                // Remove active class from all tabs
-                contact_tabs.forEach((contact_t) => {
-                  if (contact_t) {
-                    contact_t.classList.remove("contact_active");
-                  }
-                });
-
-                // Add active class to clicked tab
-                contact_tab.classList.add("contact_active");
+              // If clicking the same active tab, collapse the section
+              if (contact_isActive && contact_section && contact_section.classList.contains("contact_expanded")) {
+                // Remove active class from clicked tab
+                contact_tab.classList.remove("contact_active");
 
                 // Hide all contents
                 Object.values(contact_contents).forEach((contact_content) => {
                   if (contact_content) {
                     contact_content.classList.remove("contact_tab_visible");
+                    // For iframes, also hide via class if they use it
+                    if (contact_content.classList.contains("contact_legal-iframe")) {
+                      contact_content.classList.add("contact_hidden");
+                      contact_content.classList.remove("contact_visible");
+                    }
                   }
                 });
 
-                // Show selected content
-                if (contact_contents[contact_tabName]) {
+                // Collapse section
+                contact_section.classList.remove("contact_expanded");
+                return;
+              }
+
+              // Expand section if not already expanded
+              if (contact_section && !contact_section.classList.contains("contact_expanded")) {
+                contact_section.classList.add("contact_expanded");
+              }
+
+              // Remove active class from all tabs
+              contact_tabs.forEach((contact_t) => {
+                contact_t.classList.remove("contact_active");
+              });
+
+              // Add active class to clicked tab
+              contact_tab.classList.add("contact_active");
+
+              // Hide all contents
+              Object.values(contact_contents).forEach((contact_content) => {
+                if (contact_content) {
+                  contact_content.classList.remove("contact_tab_visible");
+                  if (contact_content.classList.contains("contact_legal-iframe")) {
+                    contact_content.classList.add("contact_hidden");
+                    contact_content.classList.remove("contact_visible");
+                  }
+                }
+              });
+
+              // Show selected content
+              if (contact_contents[contact_tabName]) {
+                const selectedContent = contact_contents[contact_tabName];
+
+                // If it's an iframe, handle lazy loading
+                if (selectedContent.tagName === 'IFRAME') {
+                  if (!selectedContent.src && selectedContent.hasAttribute("data-src")) {
+                    selectedContent.src = selectedContent.getAttribute("data-src");
+                  }
                   setTimeout(() => {
-                    contact_contents[contact_tabName].classList.add("contact_tab_visible");
+                    selectedContent.classList.remove("contact_hidden");
+                    selectedContent.classList.add("contact_visible");
+                    selectedContent.classList.add("contact_tab_visible");
+                  }, 100);
+                } else {
+                  // Normal div content
+                  setTimeout(() => {
+                    selectedContent.classList.add("contact_tab_visible");
                   }, 100);
                 }
-              } catch (error) {
-                console.error("خطأ في تبديل علامات التبويب:", error);
               }
-            });
-          }
+            } catch (error) {
+              console.error("خطأ في تبديل علامات التبويب:", error);
+            }
+          });
         });
       } catch (error) {
-        console.error("خطأ في تهيئة علامات تبويب النموذج/الخدمات:", error);
+        console.error("خطأ في تهيئة علامات التبويب الموحدة:", error);
       }
 
       // Form Submission
@@ -1075,89 +1095,6 @@
           });
       } catch (error) {
         console.error("خطأ في إعداد مراقب التمرير:", error);
-      }
-
-      // Legal Pages Tabs Functionality
-      /**
-       * @description Initializes tabbing logic for Legal Pages (Privacy, Delete Account).
-       * Handles iframe visibility and lazy loading.
-       */
-      try {
-        const contact_legalSection = document.getElementById("contact_legal_section");
-        const contact_legalTabs = document.querySelectorAll(".contact_legal-tab");
-        const contact_legalIframes = {
-          privacy: document.getElementById("contact_legal_iframe_privacy"),
-          delete: document.getElementById("contact_legal_iframe_delete")
-        };
-        const contact_legalIframeContainer = document.getElementById("contact_legal_iframe_container");
-
-        contact_legalTabs.forEach((contact_tab) => {
-          contact_tab.addEventListener("click", () => {
-            try {
-              const contact_tabName = contact_tab.getAttribute("data-tab");
-              const contact_isActive = contact_tab.classList.contains("contact_active");
-
-              // If clicking the same active tab, collapse the section
-              if (contact_isActive && contact_legalSection && contact_legalSection.classList.contains("contact_expanded")) {
-                // Remove active class from clicked tab
-                contact_tab.classList.remove("contact_active");
-
-                // Hide all iframes
-                Object.values(contact_legalIframes).forEach((contact_iframe) => {
-                  if (contact_iframe) {
-                    contact_iframe.classList.remove("contact_visible");
-                    contact_iframe.classList.add("contact_hidden");
-                  }
-                });
-
-                // Collapse section
-                contact_legalSection.classList.remove("contact_expanded");
-                return;
-              }
-
-              // Expand section if not already expanded
-              if (contact_legalSection && !contact_legalSection.classList.contains("contact_expanded")) {
-                contact_legalSection.classList.add("contact_expanded");
-              }
-
-              // Remove active class from all tabs
-              contact_legalTabs.forEach((contact_t) => {
-                contact_t.classList.remove("contact_active");
-              });
-
-              // Add active class to clicked tab
-              contact_tab.classList.add("contact_active");
-
-              // Hide all iframes
-              Object.values(contact_legalIframes).forEach((contact_iframe) => {
-                if (contact_iframe) {
-                  contact_iframe.classList.remove("contact_visible");
-                  contact_iframe.classList.add("contact_hidden");
-                }
-              });
-
-              // Show selected iframe and load src if not already loaded
-              if (contact_legalIframes[contact_tabName]) {
-                const contact_selectedIframe = contact_legalIframes[contact_tabName];
-
-                // Load src from data-src if not already set
-                if (!contact_selectedIframe.src && contact_selectedIframe.hasAttribute("data-src")) {
-                  contact_selectedIframe.src = contact_selectedIframe.getAttribute("data-src");
-                }
-
-                // Show iframe with slight delay for smooth animation
-                setTimeout(() => {
-                  contact_selectedIframe.classList.remove("contact_hidden");
-                  contact_selectedIframe.classList.add("contact_visible");
-                }, 200);
-              }
-            } catch (error) {
-              console.error("خطأ في تبديل علامات التبويب القانونية:", error);
-            }
-          });
-        });
-      } catch (error) {
-        console.error("خطأ في إعداد الصفحات القانونية:", error);
       }
 
       insertUniqueSnapshot("../pages/header.html", "header-container101", 100);
