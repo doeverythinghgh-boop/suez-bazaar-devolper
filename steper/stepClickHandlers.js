@@ -12,6 +12,7 @@ import {
     showUnselectedProductsAlert,
     showDeliveryConfirmationAlert,
     showReturnedProductsAlert,
+    showBuyerConfirmedProductsAlert,
 } from "./buyerPopups.js";
 import {
     showSellerConfirmationProductsAlert,
@@ -72,8 +73,11 @@ export function addStepClickListeners(
 
                     case "step-confirmed":
                         // Confirmation Step: For seller to confirm product availability
-                        if (userType === "seller" || userType === "admin")
+                        if (userType === "buyer") {
+                            showBuyerConfirmedProductsAlert(data, ordersData);
+                        } else if (userType === "seller" || userType === "admin") {
                             showSellerConfirmationProductsAlert(data, ordersData);
+                        }
                         break;
 
                     case "step-shipped":

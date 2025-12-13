@@ -421,3 +421,58 @@ export function showReturnedProductsAlert(data, ordersData) {
         console.error("Error in showReturnedProductsAlert:", returnedAlertError);
     }
 }
+
+/**
+ * @function showBuyerConfirmedProductsAlert
+ * @description Displays products that have been confirmed by the seller.
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
+ */
+export function showBuyerConfirmedProductsAlert(data, ordersData) {
+    try {
+        const userId = data.currentUser.idUser;
+        const userType = data.currentUser.type;
+
+        // Find confirmed items (Status >= CONFIRMED)
+        const confirmedKeys = ordersData.flatMap(order =>
+            order.order_items.filter(item => {
+                // Visibility check
+                if (userType === "buyer" && order.user_key !== userId) return false;
+
+                // Check status
+                const status = loadItemStatus(item.product_key);
+                // We consider "Confirmed" and any subsequent state (Shipped, Delivered) as "Confirmed" in the past tense.
+                return [ITEM_STATUS.CONFIRMED, ITEM_STATUS.SHIPPED, ITEM_STATUS.DELIVERED].includes(status);
+            }).map(i => i.product_key)
+        );
+
+        let contentHtml;
+        if (confirmedKeys.length > 0) {
+            const itemsHtml = confirmedKeys.map((key) => {
+                const productName = getProductName(key, ordersData);
+                const status = loadItemStatus(key);
+                return `<li id="confirmed-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span>${productName} <small style="color:green">(${status})</small></span>
+                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
+                    </li>`;
+            }).join("");
+            contentHtml = `<div id="confirmed-products-container"><p>Products confirmed by seller:</p><ul id="confirmed-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
+        } else {
+            contentHtml = '<p id="no-confirmed-items-message">No confirmed products yet.</p>';
+        }
+
+        Swal.fire({
+            title: "Confirmed Products",
+            html: contentHtml,
+            icon: confirmedKeys.length > 0 ? "success" : "info",
+            confirmButtonText: "Okay",
+            customClass: { popup: "fullscreen-swal" },
+            didOpen: () => {
+                attachLogButtonListeners();
+            }
+        });
+
+    } catch (error) {
+        console.error("Error in showBuyerConfirmedProductsAlert:", error);
+    }
+}
