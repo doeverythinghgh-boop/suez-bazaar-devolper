@@ -45,5 +45,36 @@
     );
     loaderElement.style.display = "none";
 
+    // Step 5: Fetch and display application version
+    try {
+      // Remove existing footer if any to avoid duplicates
+      const existingFooter = document.getElementById('app-footer');
+      if (existingFooter) {
+        existingFooter.remove();
+      }
+
+      const versionResponse = await fetch('version.json');
+      if (versionResponse.ok) {
+        const versionData = await versionResponse.json();
+        const footer = document.createElement('div');
+        footer.id = 'app-footer';
+        footer.style.cssText = 'text-align: center; padding: 20px; font-size: 0.85rem; color: #888; width: 100%; border-top: 1px solid #eee; margin-top: 40px; background-color: #fafafa; font-family: sans-serif;';
+
+        // Creating a clean, professional display
+        const versionText = document.createElement('span');
+        versionText.innerHTML = `&copy; 2024 Bazaar App <span style="margin: 0 8px;">•</span> v${versionData.version_code}`;
+        versionText.style.fontWeight = '400';
+
+        footer.appendChild(versionText);
+
+        // Append to the main container wrapper if possible, otherwise body
+        // Trying to find a main content wrapper to keep it contained
+        const mainWrapper = document.getElementById('loader-container')?.parentNode || document.body;
+        mainWrapper.appendChild(footer);
+      }
+    } catch (error) {
+      console.error('Failed to load version info:', error);
+    }
+
   } main();
 </script>
