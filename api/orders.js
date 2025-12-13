@@ -144,7 +144,13 @@ export default async function handler(request) {
       for (const item of items) {
         statements.push({
           sql: "INSERT INTO order_items (order_key, product_key, quantity, seller_key, note) VALUES (?, ?, ?, ?, ?)",
-          args: [order_key, item.product_key, item.quantity, item.seller_key, item.note],
+          args: [
+            order_key,
+            item.product_key,
+            item.quantity,
+            item.seller_key || null, // Ensure undefined is null
+            item.note || ""          // Ensure undefined is empty string
+          ],
         });
       }
 
@@ -160,7 +166,12 @@ export default async function handler(request) {
 
     } catch (error) {
       console.error('[API: /api/orders] فشل فادح في إنشاء الطلب:', error);
-      return new Response(JSON.stringify({ error: 'حدث خطأ في الخادم أثناء إنشاء الطلب.' }), {
+      // Return detailed error message for debugging
+      return new Response(JSON.stringify({
+        error: 'حدث خطأ في الخادم أثناء إنشاء الطلب.',
+        details: error.message,
+        stack: error.stack
+      }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
