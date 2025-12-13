@@ -1,193 +1,224 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<style>
+    body {
+        font-family: 'Tajawal', sans-serif;
+        background: #f8f9fa;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-height: 100vh;
+    }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>صور الطلب الخاص</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css">
-    <style>
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: #f8f9fa;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+    .orderPh_gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        width: 100%;
+        max-width: 1000px;
+    }
 
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
-        }
+    .orderPh_gallery-item {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .gallery-item {
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            position: relative;
-            aspect-ratio: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+    .orderPh_gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.3s;
+    }
 
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            transition: transform 0.3s;
-        }
+    .orderPh_gallery-item:hover img {
+        transform: scale(1.05);
+        cursor: pointer;
+    }
 
-        .gallery-item:hover img {
-            transform: scale(1.05);
-            cursor: pointer;
-        }
+    .orderPh_loader {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 50px;
+    }
 
-        .loader {
-            font-size: 1.2rem;
-            color: #666;
-            margin-top: 50px;
-        }
+    .orderPh_error-msg {
+        color: var(--danger-color, red);
+        font-weight: bold;
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
 
-        .error-msg {
-            color: var(--danger-color, red);
-            font-weight: bold;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .close-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 1rem;
-            z-index: 1000;
-            transition: background 0.3s;
-        }
-
-        .close-btn:hover {
-            background: rgba(0, 0, 0, 0.8);
-        }
-    </style>
-</head>
 
 <body>
 
-    <button class="close-btn" onclick="window.close()">إغلاق <i class="fas fa-times"></i></button>
+
 
     <h2 style="color: #333; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">صور الطلب
         الخاص</h2>
 
-    <div class="gallery" id="gallery">
+    <div class="orderPh_gallery" id="orderPh_gallery">
         <!-- Images will be injected here -->
     </div>
 
-    <div id="status" class="loader"><i class="fas fa-spinner fa-spin"></i> جاري البحث عن الصور وتحميلها...</div>
+    <div id="orderPh_status" class="orderPh_loader"><i class="fas fa-spinner fa-spin"></i> <span>جاري البحث عن الصور
+            وتحميلها...</span>
+    </div>
 
     <script>
+        /**
+         * @file orderPhoto.html
+         * @description صفحة عرض صور الطلب الخاص من R2 Bucket
+         */
+
         // R2 Bucket Public URL
-        const R2_BASE_URL = 'https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev';
+        const orderPh_R2_BASE_URL = 'https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev';
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const params = new URLSearchParams(window.location.search);
-            // Get keys from URL
-            const u = params.get('u'); // User Key
-            const s = params.get('s'); // Seller Key
-            const p = params.get('p'); // Product Key
-            const o = params.get('o'); // Order Key
-
-            const gallery = document.getElementById('gallery');
-            const status = document.getElementById('status');
-
-            if (!u || !s || !p || !o) {
-                status.innerHTML = '<div class="error-msg">بيانات الطلب غير مكتملة (المفاتيح ناقصة). لا يمكن عرض الصور.</div>';
-                return;
-            }
-
-            console.log(`[OrderPhoto] البحث عن الصور بالنمط: ${u}_${s}_${p}_${o}_{index}`);
-
-            const indices = [1, 2, 3, 4];
-            const promises = [];
-
-            // Try to find images for each index
-            for (const i of indices) {
-                promises.push(findImage(u, s, p, o, i));
-            }
-
+        /**
+         * @function orderPh_main
+         * @description الدالة الرئيسية لتحميل وعرض صور الطلب
+         * @async
+         * @returns {Promise<void>}
+         */
+        async function orderPh_main() {
             try {
-                const results = await Promise.all(promises);
-                gallery.innerHTML = '';
+                // Extract parameters from the script's own URL (the one passed to mainLoader)
+                // When loaded via mainLoader, the URL with parameters is in the script tag src or in a data attribute
+                // We'll use a different approach: get params from the current page URL
+                const orderPh_currentScript = document.currentScript || document.querySelector('script[src*="orderPhoto"]');
+                let orderPh_params = new URLSearchParams(window.location.search);
 
-                let foundAny = false;
-                results.forEach(imgUrl => {
-                    if (imgUrl) {
-                        foundAny = true;
-                        const div = document.createElement('div');
-                        div.className = 'gallery-item';
-                        // On click, open image in new tab for full view
-                        div.innerHTML = `<img src="${imgUrl}" onclick="window.open(this.src, '_blank')" title="اضغط للتكبير" loading="lazy">`;
-                        gallery.appendChild(div);
-                    }
-                });
+                // If no params in window.location, try to extract from the page URL that was loaded
+                // The mainLoader passes the full URL, so we need to parse it from the fetch request
+                // Since we can't access that directly, we'll use a global variable approach
 
-                if (!foundAny) {
-                    status.innerHTML = '<div class="error-msg" style="color:#777;">لا توجد صور محفوظة لهذا الطلب.</div>';
-                } else {
-                    status.style.display = 'none';
+                // Get keys from URL
+                let orderPh_u = orderPh_params.get('u'); // User Key
+                let orderPh_s = orderPh_params.get('s'); // Seller Key
+                let orderPh_p = orderPh_params.get('p'); // Product Key
+                let orderPh_o = orderPh_params.get('o'); // Order Key
+
+                // If params not in window.location.search, check if they were passed via a global variable
+                if (!orderPh_u && window.orderPhotoParams) {
+                    orderPh_u = window.orderPhotoParams.u;
+                    orderPh_s = window.orderPhotoParams.s;
+                    orderPh_p = window.orderPhotoParams.p;
+                    orderPh_o = window.orderPhotoParams.o;
                 }
 
-            } catch (e) {
-                console.error(e);
-                status.innerHTML = '<div class="error-msg">حدث خطأ أثناء تحميل الصور.</div>';
+                const orderPh_gallery = document.getElementById('orderPh_gallery');
+                const orderPh_status = document.getElementById('orderPh_status');
+
+                console.log('[OrderPhoto] Parameters:', { u: orderPh_u, s: orderPh_s, p: orderPh_p, o: orderPh_o });
+
+                if (!orderPh_u || !orderPh_s || !orderPh_p || !orderPh_o) {
+                    orderPh_status.innerHTML = '<div class="orderPh_error-msg">بيانات الطلب غير مكتملة (المفاتيح ناقصة). لا يمكن عرض الصور.</div>';
+                    return;
+                }
+
+                console.log(`[OrderPhoto] البحث عن الصور بالنمط: ${orderPh_u}_${orderPh_s}_${orderPh_p}_${orderPh_o}_{index}`);
+
+                const orderPh_indices = [1, 2, 3, 4];
+                const orderPh_promises = [];
+
+                // Try to find images for each index
+                for (const orderPh_i of orderPh_indices) {
+                    orderPh_promises.push(orderPh_findImage(orderPh_u, orderPh_s, orderPh_p, orderPh_o, orderPh_i));
+                }
+
+                try {
+                    const orderPh_results = await Promise.all(orderPh_promises);
+                    orderPh_gallery.innerHTML = '';
+
+                    let orderPh_foundAny = false;
+                    orderPh_results.forEach(orderPh_imgUrl => {
+                        if (orderPh_imgUrl) {
+                            orderPh_foundAny = true;
+                            const orderPh_div = document.createElement('div');
+                            orderPh_div.className = 'orderPh_gallery-item';
+                            // On click, open image in new tab for full view
+                            orderPh_div.innerHTML = `<img src="${orderPh_imgUrl}" loading="lazy">`;
+                            orderPh_gallery.appendChild(orderPh_div);
+                        }
+                    });
+
+                    if (!orderPh_foundAny) {
+                        orderPh_status.innerHTML = '<div class="orderPh_error-msg" style="color:#777;">لا توجد صور محفوظة لهذا الطلب.</div>';
+                    } else {
+                        orderPh_status.style.display = 'none';
+                    }
+
+                } catch (orderPh_e) {
+                    console.error('[OrderPhoto] خطأ في تحميل الصور:', orderPh_e);
+                    orderPh_status.innerHTML = '<div class="orderPh_error-msg">حدث خطأ أثناء تحميل الصور.</div>';
+                }
+            } catch (orderPh_error) {
+                console.error('[OrderPhoto] خطأ في الدالة الرئيسية:', orderPh_error);
+                const orderPh_status = document.getElementById('orderPh_status');
+                if (orderPh_status) {
+                    orderPh_status.innerHTML = '<div class="orderPh_error-msg">حدث خطأ غير متوقع.</div>';
+                }
             }
-        });
+        }
 
-        // Function to probe for image existence using Image object (bypasses CORS for checking)
-        function findImage(u, s, p, o, index) {
+        /**
+         * @function orderPh_findImage
+         * @description Function to probe for image existence using Image object (bypasses CORS for checking)
+         * @param {string} orderPh_u - User Key
+         * @param {string} orderPh_s - Seller Key
+         * @param {string} orderPh_p - Product Key
+         * @param {string} orderPh_o - Order Key
+         * @param {number} orderPh_index - Image index
+         * @returns {Promise<string|null>} - Promise resolving to image URL or null
+         */
+        function orderPh_findImage(orderPh_u, orderPh_s, orderPh_p, orderPh_o, orderPh_index) {
             return new Promise((resolve) => {
-                const baseName = `${u}_${s}_${p}_${o}_${index}`;
-                // Common extensions to check (case-sensitive on R2)
-                const extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'JPG', 'JPEG', 'PNG', 'WEBP', 'GIF', 'BMP'];
+                try {
+                    const orderPh_baseName = `${orderPh_u}_${orderPh_s}_${orderPh_p}_${orderPh_o}_${orderPh_index}`;
+                    // Common extensions to check (case-sensitive on R2)
+                    const orderPh_extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'JPG', 'JPEG', 'PNG', 'WEBP', 'GIF', 'BMP'];
 
-                let checkedCount = 0;
-                let foundUrl = null;
+                    let orderPh_checkedCount = 0;
+                    let orderPh_foundUrl = null;
 
-                // We try all extensions. The first one that loads wins.
-                // If multiple exist (unlikely), we just take the first one that triggers onload.
-                extensions.forEach(ext => {
-                    const url = `${R2_BASE_URL}/${baseName}.${ext}`;
-                    const img = new Image();
-                    img.onload = () => {
-                        if (!foundUrl) {
-                            foundUrl = url;
-                            resolve(url);
-                        }
-                    };
-                    img.onerror = () => {
-                        checkedCount++;
-                        if (checkedCount === extensions.length && !foundUrl) {
-                            resolve(null); // All failed
-                        }
-                    };
-                    img.src = url;
-                });
+                    // We try all extensions. The first one that loads wins.
+                    // If multiple exist (unlikely), we just take the first one that triggers onload.
+                    orderPh_extensions.forEach(orderPh_ext => {
+                        const orderPh_url = `${orderPh_R2_BASE_URL}/${orderPh_baseName}.${orderPh_ext}`;
+                        const orderPh_img = new Image();
+                        orderPh_img.onload = () => {
+                            if (!orderPh_foundUrl) {
+                                orderPh_foundUrl = orderPh_url;
+                                resolve(orderPh_url);
+                            }
+                        };
+                        orderPh_img.onerror = () => {
+                            orderPh_checkedCount++;
+                            if (orderPh_checkedCount === orderPh_extensions.length && !orderPh_foundUrl) {
+                                resolve(null); // All failed
+                            }
+                        };
+                        orderPh_img.src = orderPh_url;
+                    });
+                } catch (orderPh_error) {
+                    console.error('[OrderPhoto] خطأ في البحث عن الصورة:', orderPh_error);
+                    resolve(null);
+                }
             });
+        }
+
+        // main function 
+        try {
+            orderPh_main();
+        } catch (orderPh_error) {
+            console.error('[OrderPhoto] خطأ في تشغيل الدالة الرئيسية:', orderPh_error);
         }
     </script>
 </body>
-
-</html>

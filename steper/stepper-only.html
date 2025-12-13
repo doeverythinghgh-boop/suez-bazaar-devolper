@@ -164,7 +164,12 @@
 
                     link.onclick = (e) => {
                         e.preventDefault();
-                        window.open(`../pages/orderPhoto.html?u=${u}&s=${s}&p=${p}&o=${o}`, '_blank');
+                        // Set parameters in parent window for orderPhoto.html to access
+                        window.parent.orderPhotoParams = { u, s, p, o };
+                        //index-orderPhoto-container
+                        window.parent.mainLoader(`../pages/orderPhoto.html?u=${u}&s=${s}&p=${p}&o=${o}`, "index-orderPhoto-container", 0, undefined, "showHomeIcon", true);
+
+
                     };
 
                     linkContainer.style.display = 'block';
