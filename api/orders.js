@@ -107,7 +107,7 @@ export default async function handler(request) {
     try {
       console.log('[API: /api/orders] بدء معالجة طلب إنشاء طلب جديد...');
       const { order_key, user_key, total_amount, items } = await request.json();
-      console.log('[API: /api/orders] البيانات المستلمة:', { order_key, user_key, total_amount, items_count: items.length });
+      console.log('[API: /api/orders] البيانات المستلمة:', { order_key, user_key, total_amount, items_count: items?.length });
 
       // التحقق من وجود البيانات الأساسية
       // التحقق من وجود البيانات الأساسية
