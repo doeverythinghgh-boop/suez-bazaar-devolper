@@ -1,24 +1,24 @@
 /**
  * @file dataFetchers.js
- * @description وحدة جلب البيانات (Data Fetching Module).
- * يحتوي هذا الملف على الدوال المسؤولة عن جلب البيانات الأساسية للتطبيق من ملفات JSON المحلية.
- * يتم استخدام `fetch` API لجلب البيانات بشكل غير متزامن.
+ * @description Data Fetching Module.
+ * This file contains functions responsible for fetching basic application data from local JSON files (or configured objects).
+ * It uses `fetch` API (or direct resolution) to retrieve data asynchronously.
  */
 
 import { appDataControl, ordersData } from "./config.js";
 
 /**
  * @function fetchControlData
- * @description تقوم هذه الدالة بإرجاع بيانات التحكم من ملف الإعدادات مباشرة.
- * تم استبدال جلب ملف `control.json` باستخدام المتغير `appDataControl` من `config.js`.
+ * @description Returns control data directly from the configuration file.
+ * Replaced fetching `control.json` with using the `appDataControl` variable from `config.js`.
  *
- * @returns {Promise<Object>} وعد (Promise) يتم حله (resolves) بكائن بيانات التحكم.
+ * @returns {Promise<Object>} A Promise that resolves with the control data object.
  * @throws {Error} - If there is an error resolving the promise with `appDataControl`.
  * @see appDataControl
  */
 export function fetchControlData() {
     try {
-        // إرجاع البيانات مباشرة كـ Promise للحفاظ على توافق الواجهة مع الكود الحالي
+        // Return data directly as a Promise to maintain interface compatibility with existing code
         return Promise.resolve(appDataControl);
     } catch (error) {
         console.error("Error in fetchControlData:", error);
@@ -28,16 +28,16 @@ export function fetchControlData() {
 
 /**
  * @function fetchOrdersData
- * @description تقوم هذه الدالة بإرجاع بيانات الطلبات من ملف الإعدادات مباشرة.
- * تم استبدال جلب ملف `orders_.json` باستخدام المتغير `ordersData` من `config.js`.
+ * @description Returns orders data directly from the configuration file.
+ * Replaced fetching `orders_.json` with using the `ordersData` variable from `config.js`.
  *
- * @returns {Promise<Object>} وعد (Promise) يتم حله بكائن بيانات الطلبات (مصفوفة).
+ * @returns {Promise<Object>} A Promise that resolves with the orders data object (array).
  * @throws {Error} - If there is an error resolving the promise with `ordersData`.
  * @see ordersData
  */
 export function fetchOrdersData() {
     try {
-        // إرجاع البيانات مباشرة كـ Promise
+        // Return data directly as a Promise
         return Promise.resolve(ordersData);
     } catch (error) {
         console.error("Error in fetchOrdersData:", error);

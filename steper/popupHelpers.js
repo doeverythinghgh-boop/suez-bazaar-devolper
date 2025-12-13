@@ -1,13 +1,15 @@
 /**
  * @file popupHelpers.js
- * @description دوال مساعدة للنوافذ المنبثقة (Popup Helpers).
- * يحتوي هذا الملف على منطق مشترك يستخدم في النوافذ المنبثقة المختلفة،
- * وأهمها منطق تفعيل المراحل والتحقق من التسلسل الصحيح للخطوات.
+ * @description Popup Helpers Module.
+ * This file contains common logic used across different popups,
+ * primarily the logic for step activation and verifying proper step sequence.
  */
 
 import {
     saveStepState,
     loadStepState,
+    getAllItemsStatus,
+    ITEM_STATUS
 } from "./stateManagement.js";
 import {
     updateCurrentStepFromState,
@@ -15,18 +17,18 @@ import {
 
 /**
  * @function addStatusToggleListener
- * @description تضيف مستمع حدث (Event Listener) لمربع اختيار "تفعيل المرحلة" في النوافذ المنبثقة.
- * هذه الدالة تحتوي على المنطق الجوهري للتحكم في تدفق المراحل (Workflow Control).
+ * @description Adds an Event Listener for the "Activate Step" checkbox in popups.
+ * This function contains the core logic for Workflow Control.
  * 
- * تقوم بما يلي:
- * 1. الاستماع لتغيير حالة الـ checkbox.
- * 2. التحقق من أن الانتقال للمرحلة الجديدة مسموح به (يجب أن يكون بالتسلسل).
- * 3. عرض رسائل تحذير إذا حاول المستخدم تخطي مراحل.
- * 4. طلب تأكيد نهائي من المستخدم قبل التفعيل.
- * 5. حفظ الحالة الجديدة وتحديث الواجهة عند التأكيد.
+ * It does the following:
+ * 1. Listens for changes to the checkbox.
+ * 2. Checks if the transition to the new step is allowed (must be sequential).
+ * 3. Shows warning messages if the user tries to skip steps.
+ * 4. Requests final confirmation from the user before activation.
+ * 5. Saves the new state and updates the UI upon confirmation.
  * 
- * @param {object} controlData - بيانات التحكم التي تحتوي على تعريف الخطوات.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} controlData - Control data containing step definitions.
+ * @param {Array<object>} ordersData - Orders data.
  * @returns {void}
  * @throws {Error} - If there is an error adding the event listener or processing the step activation logic.
  * @see saveStepState
@@ -44,7 +46,7 @@ export function addStatusToggleListener(controlData, ordersData) {
                 const checkboxElement = e.target;
                 const stepIdToActivate = checkboxElement.dataset.stepId;
 
-                // الحصول على كائن المرحلة الحالية من البيانات
+                // Get current step object from data
                 const currentStep = controlData.steps.find(
                     (s) => s.id === stepIdToActivate
                 );
@@ -54,14 +56,14 @@ export function addStatusToggleListener(controlData, ordersData) {
                     return;
                 }
 
-                // تعريف المراحل الأساسية التي يجب أن تسير بترتيب صارم
+                // Define basic steps that must follow a strict order
                 const basicSteps = ["step-review", "step-confirmed", "step-shipped", "step-delivered"];
-                // المراحل النهائية/الفرعية (لا تخضع لنفس قواعد الترتيب الصارم بالضرورة، لكن هنا للذكر)
+                // Final/Sub-steps (do not necessarily follow the same strict order rules, but listed here for reference)
                 const finalSteps = ["step-cancelled", "step-rejected", "step-returned"];
 
-                // التحقق من منطق التسلسل للمراحل الأساسية
+                // Check sequence logic for basic steps
                 if (basicSteps.includes(stepIdToActivate)) {
-                    // الحصول على رقم المرحلة النشطة حالياً من التخزين
+                    // Get current active step number from storage
                     const savedCurrentStep = loadStepState("current_step");
                     let currentActiveStepNo = 0;
 
@@ -71,7 +73,7 @@ export function addStatusToggleListener(controlData, ordersData) {
 
                     const requestedStepNo = parseInt(currentStep.no);
 
-                    // القاعدة: يجب أن تكون المرحلة المطلوبة هي (المرحلة الحالية + 1)
+                    // Rule: The requested step must be (current step + 1)
                     if (requestedStepNo !== currentActiveStepNo + 1) {
                         let errorMessage = "";
 
@@ -81,7 +83,7 @@ export function addStatusToggleListener(controlData, ordersData) {
                             errorMessage = `يجب تفعيل المراحل بالترتيب. المرحلة التالية المتاحة هي رقم ${currentActiveStepNo + 1}.`;
                         }
 
-                        // عرض رسالة خطأ ومنع التفعيل
+                        // Show error message and prevent activation
                         Swal.fire({
                             title: "تنبيه",
                             text: errorMessage,
@@ -90,12 +92,12 @@ export function addStatusToggleListener(controlData, ordersData) {
                             customClass: { popup: "fullscreen-swal" },
                         });
 
-                        checkboxElement.checked = false; // إلغاء التحديد
+                        checkboxElement.checked = false; // Uncheck
                         return;
                     }
                 }
 
-                // إذا اجتاز التحقق، اطلب تأكيد المستخدم النهائي
+                // If check passes, request final user confirmation
                 Swal.fire({
                     title: "تأكيد تفعيل المرحلة",
                     text: "بمجرد تفعيل هذه المرحلة، لا يمكنك التراجع. هل أنت متأكد؟",
@@ -108,80 +110,80 @@ export function addStatusToggleListener(controlData, ordersData) {
                     customClass: { popup: "fullscreen-swal" },
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        // تنفيذ التفعيل
+                        // Execute activation
                         const stepToActivate = controlData.steps.find(
                             (s) => s.id === stepIdToActivate
                         );
                         if (stepToActivate) {
-                            // حفظ الحالة الجديدة
+                            // Save new state
                             saveStepState("current_step", {
                                 stepId: stepToActivate.id,
                                 stepNo: stepToActivate.no,
                                 status: "active",
                             });
 
-                            // إرسال الإشعارات للأطراف المعنية
+                            // Send notifications to relevant parties
                             sendStepActivationNotifications(stepToActivate, controlData, ordersData);
 
-                            // تحديث الواجهة فوراً
+                            // Update UI immediately
                             updateCurrentStepFromState(controlData, ordersData);
-                            Swal.close(); // إغلاق النافذة المنبثقة
+                            Swal.close(); // Close popup
                         }
                     } else {
-                        // إذا ألغى المستخدم، تراجع عن تحديد الـ checkbox
+                        // If user cancels, revert checkbox selection
                         checkboxElement.checked = false;
                     }
                 });
             }
         });
     } catch (listenerError) {
-        console.error("خطأ في addStatusToggleListener:", listenerError);
+        console.error("Error in addStatusToggleListener:", listenerError);
     }
 }
 
 /**
  * @function sendStepActivationNotifications
- * @description دالة مساعدة لإرسال الإشعارات عند تفعيل مرحلة جديدة.
- * تقوم باستخراج البيانات اللازمة من ordersData واستدعاء دالة الإشعارات الرئيسية.
+ * @description Helper function to send notifications when a new step is activated.
+ * Extracts necessary data from ordersData and calls the main notification function.
  * 
- * @param {object} stepToActivate - كائن المرحلة المفعلة.
- * @param {object} controlData - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} stepToActivate - The activated step object.
+ * @param {object} controlData - Control data.
+ * @param {Array<object>} ordersData - Orders data.
  */
 function sendStepActivationNotifications(stepToActivate, controlData, ordersData) {
     try {
-        // التحقق من توفر الدالة (قد لا تكون محملة في بعض الحالات)
+        // Check function availability (optimistically)
         if (typeof notifyOnStepActivation !== 'function') {
-            console.warn('[Notifications] دالة notifyOnStepActivation غير متاحة. تأكد من تحميل notificationTools.js');
+            console.warn('[Notifications] notifyOnStepActivation function is not available. Ensure notificationTools.js is loaded.');
             return;
         }
 
-        // استخراج البيانات من ordersData
+        // Extract data from ordersData
         let buyerKey = '';
         let deliveryKeys = [];
-        let sellerKeys = []; // تعريف مصفوفة مفاتيح البائعين
+        let sellerKeys = []; // Array of seller keys
         let orderId = '';
         let userName = '';
 
         if (ordersData && ordersData.length > 0) {
-            // استخراج مفتاح المشتري من أول طلب
+            // Extract buyer key from first order
             const firstOrder = ordersData[0];
             buyerKey = firstOrder.user_key || '';
             orderId = firstOrder.id || firstOrder.order_id || '';
 
-            // استخراج اسم المستخدم الحالي
+            // Extract current user name
             if (controlData.currentUser) {
                 userName = controlData.currentUser.name || controlData.currentUser.idUser || '';
             }
 
-            // استخراج مفاتيح خدمات التوصيل ومفاتيح البائعين
+            // Extract delivery keys and seller keys
             const deliveryKeysSet = new Set();
-            const sellerKeysSet = new Set(); // مجموعة لتخزين مفاتيح البائعين الفريدة
+            const sellerKeysSet = new Set(); // Set to store unique seller keys
 
             ordersData.forEach(order => {
                 if (order.order_items && Array.isArray(order.order_items)) {
                     order.order_items.forEach(item => {
-                        // استخراج مفتاح خدمة التوصيل
+                        // Extract delivery key
                         if (item.supplier_delivery && item.supplier_delivery.delivery_key) {
                             const deliveryKey = item.supplier_delivery.delivery_key;
                             if (Array.isArray(deliveryKey)) {
@@ -191,7 +193,7 @@ function sendStepActivationNotifications(stepToActivate, controlData, ordersData
                             }
                         }
 
-                        // استخراج مفتاح البائع
+                        // Extract seller key
                         if (item.seller_key) {
                             sellerKeysSet.add(item.seller_key);
                         }
@@ -200,43 +202,43 @@ function sendStepActivationNotifications(stepToActivate, controlData, ordersData
             });
 
             deliveryKeys = Array.from(deliveryKeysSet);
-            sellerKeys = Array.from(sellerKeysSet); // تحويل المجموعة إلى مصفوفة
+            sellerKeys = Array.from(sellerKeysSet); // Convert Set to Array
         }
 
-        // استدعاء دالة الإشعارات الرئيسية
+        // Call main notification function
         notifyOnStepActivation({
             stepId: stepToActivate.id,
             stepName: stepToActivate.name || stepToActivate.id,
             buyerKey: buyerKey,
             deliveryKeys: deliveryKeys,
-            sellerKeys: sellerKeys, // تمرير مفاتيح البائعين
+            sellerKeys: sellerKeys, // Pass seller keys
             orderId: orderId,
             userName: userName
         });
 
-        console.log(`[Notifications] تم استدعاء دالة الإشعارات للمرحلة: ${stepToActivate.name || stepToActivate.id}`);
+        console.log(`[Notifications] Notification function called for step: ${stepToActivate.name || stepToActivate.id}`);
 
-        // إرسال إشعارات المراحل الفرعية إذا وجدت
+        // Send sub-step notifications if any
         sendSubStepNotifications(stepToActivate, controlData, ordersData);
 
     } catch (error) {
-        console.error('[Notifications] خطأ في sendStepActivationNotifications:', error);
+        console.error('[Notifications] Error in sendStepActivationNotifications:', error);
     }
 }
 
 /**
  * @function sendSubStepNotifications
- * @description إرسال إشعارات للمراحل الفرعية (ملغي، مرفوض، مرتجع) بعد تأكيد المرحلة الرئيسية.
+ * @description Sends notifications for sub-steps (cancelled, rejected, returned) after confirming the main step.
  * 
- * @param {object} stepToActivate - كائن المرحلة المفعلة.
- * @param {object} controlData - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} stepToActivate - The activated step object.
+ * @param {object} controlData - Control data.
+ * @param {Array<object>} ordersData - Orders data.
  */
 function sendSubStepNotifications(stepToActivate, controlData, ordersData) {
     try {
-        // التحقق من توفر الدالة
+        // Check function availability
         if (typeof notifyOnSubStepActivation !== 'function') {
-            return; // الدالة غير متوفرة، تجاهل
+            return; // Function not available, ignore
         }
 
         const stepId = stepToActivate.id;
@@ -245,7 +247,7 @@ function sendSubStepNotifications(stepToActivate, controlData, ordersData) {
         let orderId = '';
         let userName = '';
 
-        // استخراج البيانات الأساسية
+        // Extract basic data
         if (ordersData && ordersData.length > 0) {
             const firstOrder = ordersData[0];
             buyerKey = firstOrder.user_key || '';
@@ -255,7 +257,7 @@ function sendSubStepNotifications(stepToActivate, controlData, ordersData) {
                 userName = controlData.currentUser.name || controlData.currentUser.idUser || '';
             }
 
-            // استخراج مفاتيح البائعين من جميع المنتجات
+            // Extract seller keys from all products
             const sellerKeysSet = new Set();
             ordersData.forEach(order => {
                 if (order.order_items && Array.isArray(order.order_items)) {
@@ -269,12 +271,19 @@ function sendSubStepNotifications(stepToActivate, controlData, ordersData) {
             sellerKeys = Array.from(sellerKeysSet);
         }
 
-        // حسب المرحلة الرئيسية المفعلة، تحقق من وجود مراحل فرعية
+        // Check Items Status
+        const itemsMap = getAllItemsStatus();
+        const allItems = Object.values(itemsMap);
+
+        const hasCancelled = allItems.some(i => i.status === ITEM_STATUS.CANCELLED);
+        const hasRejected = allItems.some(i => i.status === ITEM_STATUS.REJECTED);
+        const hasReturned = allItems.some(i => i.status === ITEM_STATUS.RETURNED);
+
+        // Depending on the activated main step, check for sub-steps
         if (stepId === 'step-review') {
-            // بعد تفعيل "مراجعة"، تحقق من وجود منتجات ملغاة
-            const reviewState = loadStepState('step-review');
-            if (reviewState && reviewState.unselectedKeys && reviewState.unselectedKeys.length > 0) {
-                console.log('[Notifications] تم اكتشاف منتجات ملغاة، إرسال إشعارات...');
+            // After activating "Review", check for cancelled products
+            if (hasCancelled) {
+                console.log('[Notifications] Cancelled products detected, sending notifications...');
                 notifyOnSubStepActivation({
                     stepId: 'step-cancelled',
                     stepName: 'ملغي',
@@ -284,10 +293,9 @@ function sendSubStepNotifications(stepToActivate, controlData, ordersData) {
                 });
             }
         } else if (stepId === 'step-confirmed') {
-            // بعد تفعيل "تأكيد"، تحقق من وجود منتجات مرفوضة
-            const confirmedState = loadStepState('step-confirmed');
-            if (confirmedState && confirmedState.deselectedKeys && confirmedState.deselectedKeys.length > 0) {
-                console.log('[Notifications] تم اكتشاف منتجات مرفوضة، إرسال إشعارات...');
+            // After activating "Confirmed", check for rejected products
+            if (hasRejected) {
+                console.log('[Notifications] Rejected products detected, sending notifications...');
                 notifyOnSubStepActivation({
                     stepId: 'step-rejected',
                     stepName: 'مرفوض',
@@ -297,10 +305,9 @@ function sendSubStepNotifications(stepToActivate, controlData, ordersData) {
                 });
             }
         } else if (stepId === 'step-delivered') {
-            // بعد تفعيل "تسليم"، تحقق من وجود منتجات مرتجعة
-            const deliveredState = loadStepState('step-delivered');
-            if (deliveredState && deliveredState.returnedKeys && deliveredState.returnedKeys.length > 0) {
-                console.log('[Notifications] تم اكتشاف منتجات مرتجعة، إرسال إشعارات...');
+            // After activating "Delivered", check for returned products
+            if (hasReturned) {
+                console.log('[Notifications] Returned products detected, sending notifications...');
                 notifyOnSubStepActivation({
                     stepId: 'step-returned',
                     stepName: 'مرتجع',
@@ -312,7 +319,6 @@ function sendSubStepNotifications(stepToActivate, controlData, ordersData) {
         }
 
     } catch (error) {
-        console.error('[Notifications] خطأ في sendSubStepNotifications:', error);
+        console.error('[Notifications] Error in sendSubStepNotifications:', error);
     }
 }
-

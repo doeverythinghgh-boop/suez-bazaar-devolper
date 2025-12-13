@@ -1,16 +1,16 @@
 /**
  * @file stateManagement.js
- * @description وحدة إدارة الحالة (State Management) باستخدام LocalStorage.
- * تم تحديثها لتجميع جميع البيانات في مفتاح واحد 'stepper_app_data'.
- * يوفر هذا الملف دوال مساعدة لحفظ واسترجاع البيانات من تخزين المتصفح المحلي.
+ * @description State Management Module using LocalStorage.
+ * Updated to consolidate all data into a single key 'stepper_app_data'.
+ * This file provides helper functions to save and retrieve data from browser local storage.
  */
 
 import { updateGlobalStepperAppData, globalStepperAppData, ordersData } from "./config.js";
 
 /**
  * @function getAppKey
- * @description إنشاء مفتاح تخزين فريد لكل طلب بناءً على order_key.
- * @returns {string} - مفتاح التخزين الديناميكي.
+ * @description Generates a unique storage key for each order based on order_key.
+ * @returns {string} - The dynamic storage key.
  * @throws {Error} - If `ordersData` is not available or empty, it returns a default key, logging a warning.
  */
 function getAppKey() {
@@ -23,8 +23,8 @@ function getAppKey() {
 
 /**
  * @function getAppState
- * @description استرجاع حالة التطبيق الكاملة من LocalStorage.
- * @returns {object} كائن الحالة الكامل (يحتوي على steps و dates).
+ * @description Retrieves the full application state from LocalStorage.
+ * @returns {object} The full state object (containing steps and dates).
  * @throws {Error} - If there is an error parsing the stored state from LocalStorage.
  * @see getAppKey
  */
@@ -43,8 +43,8 @@ function getAppState() {
 
 /**
  * @function saveAppState
- * @description حفظ حالة التطبيق الكاملة في LocalStorage وتحديث المتغير العام.
- * @param {object} state - كائن الحالة الكامل.
+ * @description Saves the full application state to LocalStorage and updates the global variable.
+ * @param {object} state - The full state object.
  * @returns {void}
  * @throws {Error} - If there is an error saving the state to LocalStorage.
  * @see getAppKey
@@ -55,7 +55,7 @@ function saveAppState(state) {
     try {
         localStorage.setItem(getAppKey(), JSON.stringify(state));
         console.log("  [State] saveAppState: State saved. Now updating global variable.");
-        // تحديث المتغير العام في config.js
+        // Update global variable in config.js
         updateGlobalStepperAppData(state);
     } catch (e) {
         console.error("Failed to save app state:", e);
@@ -64,8 +64,8 @@ function saveAppState(state) {
 
 /**
  * @function initializeState
- * @description تهيئة الحالة الأولية إذا لم تكن موجودة.
- * يجب استدعاؤها عند بدء التطبيق.
+ * @description Initializes the initial state if it doesn't exist.
+ * Should be called when the application starts.
  * @returns {void}
  * @throws {Error} - If there is an error during state initialization or cleanup.
  * @see getAppState
@@ -74,28 +74,28 @@ function saveAppState(state) {
  * @see updateGlobalStepperAppData
  */
 export function initializeState() {
-    // 1. التحقق من المتغير العام أولاً
-    // ملاحظة: globalStepperAppData يتم استيراده من config.js، ولكن بما أننا في نفس السياق (modules)،
-    // فإننا نعتمد على القيمة التي قد تكون عُينت قبل استدعاء هذه الدالة.
-    // ومع ذلك، في هيكلية ES modules، المتغيرات المستوردة تكون read-only bindings.
-    // للوصول إلى القيمة الحالية، نحتاج للتأكد من أننا نستخدم المتغير المستورد.
-    // في هذا الملف، نحن نستورد updateGlobalStepperAppData فقط، لذا سنحتاج لاستيراد globalStepperAppData أيضًا.
+    // 1. Check global variable first
+    // Note: globalStepperAppData is imported from config.js, but since we are in the same context (modules),
+    // we rely on the value that might have been set before calling this function.
+    // However, in ES modules structure, imported variables are read-only bindings.
+    // To access the current value, we need to ensure we are using the imported variable.
+    // In this file, we import updateGlobalStepperAppData only, so we would need to import globalStepperAppData too.
 
     console.log("🚀 [State] initializeState: Starting state initialization.");
-    // لكن انتظر، globalStepperAppData معرف في config.js كـ var ويتم تصديره.
-    // سنقوم بتعديل الاستيراد في الأعلى ليشمل globalStepperAppData.
+    // Wait, globalStepperAppData is defined in config.js as var and exported.
+    // We will modify the import above to include globalStepperAppData.
 
     let state;
 
     if (globalStepperAppData && Object.keys(globalStepperAppData).length > 0) {
         console.log("Found initial globalStepperAppData, using it:", globalStepperAppData);
         state = { ...globalStepperAppData }; // Use a copy to avoid mutation issues
-        // حفظ الحالة الموجودة في المتغير العام إلى LocalStorage لضمان التزامن
+        // Save existing state in global variable to LocalStorage to ensure synchronization
         saveAppState(state);
     } else {
         console.log("  [State] initializeState: No initial globalStepperAppData found, loading from LocalStorage.");
         state = getAppState();
-        // تحديث المتغير العام بالقيمة الحالية عند البدء
+        // Update global variable with current value at startup
         updateGlobalStepperAppData(state);
     }
 
@@ -114,14 +114,14 @@ export function initializeState() {
         saveAppState(state);
     }
 
-    // تنظيف المفاتيح القديمة
+    // Cleanup legacy keys
     cleanupLegacyKeys();
     console.log("✅ [State] initializeState: Initialization complete.");
 }
 
 /**
  * @function cleanupLegacyKeys
- * @description إزالة المفاتيح القديمة التي كانت تستخدم قبل التجميع.
+ * @description Removes legacy keys that were used before consolidation.
  * @returns {void}
  * @throws {Error} - If there is an error accessing LocalStorage during cleanup.
  */
@@ -139,7 +139,7 @@ function cleanupLegacyKeys() {
             "step-returned_state"
         ];
 
-        // إزالة مفاتيح التواريخ القديمة
+        // Remove legacy date keys
         const stepIds = [
             "step-review", "step-confirmed", "step-shipped", "step-delivered",
             "step-cancelled", "step-rejected", "step-returned"
@@ -160,10 +160,10 @@ function cleanupLegacyKeys() {
 
 /**
  * @function saveStepState
- * @description حفظ حالة خطوة معينة داخل الكائن المجمع.
+ * @description Saves the state of a specific step within the aggregated object.
  *
- * @param {string} stepId - المعرف الفريد للخطوة.
- * @param {object} state - كائن البيانات الذي يحتوي على حالة الخطوة.
+ * @param {string} stepId - The unique ID of the step.
+ * @param {object} state - The data object containing the step state.
  * @returns {void}
  * @throws {Error} - If there is an error saving the step state.
  * @see getAppState
@@ -180,10 +180,10 @@ export function saveStepState(stepId, state) {
 
 /**
  * @function loadStepState
- * @description استرجاع حالة خطوة معينة من الكائن المجمع.
+ * @description Retrieves the state of a specific step from the aggregated object.
  *
- * @param {string} stepId - المعرف الفريد للخطوة.
- * @returns {object|null} - تعيد كائن الحالة إذا وجد، أو null.
+ * @param {string} stepId - The unique ID of the step.
+ * @returns {object|null} - Returns the state object if found, or null.
  * @throws {Error} - If there is an error loading the step state.
  * @see getAppState
  */
@@ -196,10 +196,10 @@ export function loadStepState(stepId) {
 
 /**
  * @function saveStepDate
- * @description حفظ تاريخ تفعيل خطوة معينة.
+ * @description Saves the activation date of a specific step.
  *
- * @param {string} stepId - المعرف الفريد للخطوة.
- * @param {string} dateStr - نص التاريخ المنسق.
+ * @param {string} stepId - The unique ID of the step.
+ * @param {string} dateStr - The formatted date string.
  * @returns {void}
  * @throws {Error} - If there is an error saving the step date.
  * @see getAppState
@@ -216,10 +216,10 @@ export function saveStepDate(stepId, dateStr) {
 
 /**
  * @function loadStepDate
- * @description استرجاع تاريخ تفعيل خطوة معينة.
+ * @description Load the date of a specific step activation.
  *
- * @param {string} stepId - المعرف الفريد للخطوة.
- * @returns {string|null} - نص التاريخ أو null.
+ * @param {string} stepId - The unique ID of the step.
+ * @returns {string|null} - The date string or null.
  * @throws {Error} - If there is an error loading the step date.
  * @see getAppState
  */
@@ -228,4 +228,64 @@ export function loadStepDate(stepId) {
     const appState = getAppState();
     console.log(`  [State] loadStepDate: Found date for '${stepId}':`, (appState.dates && appState.dates[stepId]) || null);
     return (appState.dates && appState.dates[stepId]) || null;
+}
+
+// Added constants for item status to avoid magic strings
+export const ITEM_STATUS = {
+    PENDING: "pending",
+    CONFIRMED: "confirmed",
+    SHIPPED: "shipped",
+    DELIVERED: "delivered",
+    RETURNED: "returned",
+    CANCELLED: "cancelled",
+    REJECTED: "rejected"
+};
+
+/**
+ * @function saveItemStatus
+ * @description Save the status of a specific item (product) within the order.
+ *
+ * @param {string} productKey - The unique key of the product.
+ * @param {string} status - The new status (e.g., 'confirmed', 'shipped').
+ * @returns {void}
+ */
+export function saveItemStatus(productKey, status) {
+    console.log(`💾 [State] saveItemStatus: Saving status for item '${productKey}': ${status}`);
+    const appState = getAppState();
+
+    if (!appState.items) appState.items = {};
+
+    // Update status
+    if (!appState.items[productKey]) {
+        appState.items[productKey] = { status: status, history: [] };
+    } else {
+        appState.items[productKey].status = status;
+    }
+
+    saveAppState(appState);
+}
+
+/**
+ * @function loadItemStatus
+ * @description Load the status of a specific item.
+ *
+ * @param {string} productKey - The unique key of the product.
+ * @returns {string|null} - The current status or 'pending' if not found (default).
+ */
+export function loadItemStatus(productKey) {
+    const appState = getAppState();
+    if (appState.items && appState.items[productKey]) {
+        return appState.items[productKey].status;
+    }
+    return "pending"; // Default status
+}
+
+/**
+ * @function getAllItemsStatus
+ * @description Get all items status map.
+ * @returns {object} - Map of productKey -> item data.
+ */
+export function getAllItemsStatus() {
+    const appState = getAppState();
+    return appState.items || {};
 }

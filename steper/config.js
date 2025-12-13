@@ -1,24 +1,39 @@
 /**
  * @file config.js
- * @description ملف الإعدادات والثوابت للمشروع.
- * يحتوي هذا الملف على القيم الثابتة التي تستخدم في جميع أنحاء التطبيق، مثل معرفات المسؤولين (Admins).
- * الغرض منه هو تجميع الإعدادات في مكان واحد لسهولة التعديل والإدارة.
+ * @description Configuration and constants file for the project.
+ * This file contains constant values used throughout the application, such as Admin IDs.
+ * Its purpose is to centralize settings in one place for easy modification and management.
  */
 
 /**
  * @constant {string[]} ADMIN_IDS
- * @description قائمة معرفات المستخدمين الذين يمتلكون صلاحيات المسؤول (Admin).
- * يتم استخدام هذه القائمة للتحقق مما إذا كان المستخدم الحالي مسؤولاً أم لا.
+ * @description List of user IDs that possess Admin privileges.
+ * This list is used to check if the current user is an admin or not.
  * @example
- * // للتحقق مما إذا كان المستخدم admin:
+ * // To check if the user is admin:
  * if (ADMIN_IDS.includes(userId)) { ... }
  */
 export var ADMIN_IDS = ["dl14v1k7", "682dri6b"];
 
 /**
+ * @constant {object} ITEM_STATUS
+ * @description Standard status constants for order items.
+ * Used to track the progress of individual products within an order.
+ */
+export const ITEM_STATUS = {
+    PENDING: "pending",
+    CONFIRMED: "confirmed",
+    SHIPPED: "shipped",
+    DELIVERED: "delivered",
+    CANCELLED: "cancelled",
+    REJECTED: "rejected",
+    RETURNED: "returned"
+};
+
+/**
  * @constant {object} appDataControl
- * @description كائن التحكم المركزي الذي يحل محل control.json.
- * يحتوي على بيانات المستخدم الحالي، تعريف المستخدمين، والخطوات.
+ * @description Central control object that replaces control.json.
+ * Contains current user data, user definitions, and steps.
  */
 export var appDataControl = {
     currentUser: {
@@ -103,7 +118,7 @@ export var appDataControl = {
 
 /**
  * @constant {Array<object>} ordersData
- * @description بيانات الطلبات التي تحل محل orders_.json.
+ * @description Orders data that replaces orders_.json.
  */
 export var ordersData = [
     {
@@ -157,37 +172,37 @@ export var ordersData = [
 
 /**
  * @var {object|null} globalStepperAppData
- * @description متغير عام يحمل نسخة من بيانات التطبيق (stepper_app_data).
- * يتم تحديثه تلقائياً عند تغيير الحالة.
+ * @description Global variable holding a copy of the application data (stepper_app_data).
+ * Updated automatically when state changes.
  */
 export var globalStepperAppData = null;
 
 /**
  * @var {string} baseURL
- * @description عنوان URL الأساسي للـ API.
- * يتم تحديثه من النافذة الأم إذا كان متوفراً.
+ * @description Base URL for the API.
+ * Updated from the parent window if available.
  */
 export var baseURL = '';
 
 /**
  * @var {string} order_status
- * @description حالة الطلب الحالية.
- * يتم تحديثه من النافذة الأم إذا كان متوفراً.
+ * @description Current order status.
+ * Updated from the parent window if available.
  */
 export var order_status = '';
 
 /**
  * @constant {Promise<void>} initializationPromise
- * @description وعد (Promise) يتم حله عندما تنتهي دالة `initializeFromParent` من عملها.
- * هذا يضمن أن أي كود يعتمد على البيانات المهيأة من الصفحة الأم لن يعمل إلا بعد اكتمال التهيئة.
+ * @description Promise that resolves when `initializeFromParent` function finishes its work.
+ * This ensures that any code depending on data initialized from the parent page will only run after initialization is complete.
  */
 let resolveInitialization;
 export const initializationPromise = new Promise(resolve => { resolveInitialization = resolve; });
 
 /**
  * @function updateGlobalStepperAppData
- * @description دالة لتحديث المتغير العام globalStepperAppData وطباعة القيمة الجديدة.
- * @param {object} newData - البيانات الجديدة.
+ * @description Function to update the global variable globalStepperAppData and print the new value.
+ * @param {object} newData - The new data.
  * @returns {void}
  * @throws {Error} - If a critical error occurs during the fetch request to update the server.
  * @see baseURL
@@ -221,8 +236,8 @@ export function updateGlobalStepperAppData(newData) {
 
 /**
  * @function initializeFromParent
- * @description تهيئة البيانات من window.parent.globalStepperAppData إذا كانت متوفرة.
- * يتم تحديث idUser و ordersData بالقيم الحقيقية.
+ * @description Initializes data from window.parent.globalStepperAppData if available.
+ * Updates idUser and ordersData with real values.
  * @returns {void}
  * @throws {Error} - If a critical error occurs during initialization from the parent window.
  * @see window.parent.globalStepperAppData
@@ -235,45 +250,45 @@ export function updateGlobalStepperAppData(newData) {
 (function initializeFromParent() {
     console.log("🚀 [Config] initializeFromParent: Starting initialization from parent window...");
     try {
-        // التحقق من وجود بيانات من النافذة الأم
+        // Check for data from parent window
         if (window.parent && window.parent.globalStepperAppData) {
             const parentData = window.parent.globalStepperAppData;
 
             console.log('  [Config] initializeFromParent: Found data in parent window.', parentData);
 
-            // تحديث idUser
+            // Update idUser
             if (parentData.idUser) {
                 appDataControl.currentUser.idUser = parentData.idUser;
                 console.log(`    [Config] initializeFromParent: Updated idUser to: ${parentData.idUser}`);
             }
 
-            // تحديث ordersData
+            // Update ordersData
             if (parentData.ordersData && Array.isArray(parentData.ordersData)) {
-                ordersData.length = 0; // مسح البيانات الافتراضية
-                ordersData.push(...parentData.ordersData); // إضافة البيانات الحقيقية
+                ordersData.length = 0; // Clear default data
+                ordersData.push(...parentData.ordersData); // Add real data
                 console.log('    [Config] initializeFromParent: Updated ordersData.', ordersData);
             }
 
-            // تحديث baseURL
+            // Update baseURL
             if (parentData.baseURL) {
                 baseURL = parentData.baseURL;
                 console.log(`    [Config] initializeFromParent: Updated baseURL to: ${baseURL}`);
             }
 
-            // تحديث order_status من أول طلب في ordersData
+            // Update order_status from the first order in ordersData
             if (parentData.ordersData && parentData.ordersData.length > 0 && parentData.ordersData[0].order_status) {
                 let rawStatus = parentData.ordersData[0].order_status;
                 console.log('    [Config] initializeFromParent: Found raw order_status.', rawStatus);
-                // التحقق مما إذا كانت البيانات نص JSON وتحويلها
+                // Check if data is a JSON string and parse it
                 if (typeof rawStatus === 'string' && rawStatus.trim().startsWith('{')) {
                     console.log('      [Config] initializeFromParent: order_status is a JSON string, attempting to parse...');
                     try {
-                        // إذا كان نص JSON، قم بتحويله إلى كائن
+                        // If it is a JSON string, convert it to an object
                         globalStepperAppData = JSON.parse(rawStatus);
                         console.log('      [Config] initializeFromParent: Successfully parsed and updated globalStepperAppData.', globalStepperAppData);
                     } catch (e) {
                         console.error('      ❌ [Config] initializeFromParent: Failed to parse order_status JSON string.', e);
-                        // في حالة الفشل، استخدم القيمة كما هي (كسلوك احتياطي)
+                        // In case of failure, use value as is (fallback behavior)
                         globalStepperAppData = rawStatus;
                     }
                 }
@@ -287,7 +302,7 @@ export function updateGlobalStepperAppData(newData) {
         console.error('❌ [Config] initializeFromParent: A critical error occurred during initialization.', error);
         console.log('  [Config] initializeFromParent: Falling back to default values due to error.');
     } finally {
-        // في كل الحالات (نجاح أو فشل)، قم بحل الوعد للإشارة إلى أن التهيئة قد انتهت
+        // In all cases (success or failure), resolve the promise to indicate that initialization is finished
         if (resolveInitialization) {
             console.log('🏁 [Config] initializeFromParent: Initialization routine finished. Resolving promise.');
             resolveInitialization();

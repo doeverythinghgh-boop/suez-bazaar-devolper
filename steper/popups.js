@@ -1,15 +1,15 @@
 /**
  * @file popups.js
- * @description ملف تجميع وإعادة تصدير (Barrel File) للنوافذ المنبثقة.
- * الغرض من هذا الملف هو تبسيط استيراد الدوال في الملفات الأخرى.
- * بدلاً من استيراد كل دالة من ملفها الخاص، يمكن استيرادها جميعاً من هذا الملف.
- * هذا يحافظ أيضاً على التوافق مع الكود القديم إذا كان يعتمد على ملف واحد.
+ * @description Barrel File for Popups.
+ * The purpose of this file is to simplify importing functions in other files.
+ * Instead of importing each function from its own file, they can all be imported from here.
+ * This also maintains compatibility with legacy code if it relied on a single file.
  */
 
-// إعادة تصدير الدوال المساعدة - Re-export helper functions
+// Re-export helper functions
 export { addStatusToggleListener } from "./popupHelpers.js";
 
-// إعادة تصدير نوافذ المشتري - Re-export buyer popups
+// Re-export buyer popups
 export {
     showProductKeysAlert,
     showUnselectedProductsAlert,
@@ -17,7 +17,7 @@ export {
     showReturnedProductsAlert,
 } from "./buyerPopups.js";
 
-// إعادة تصدير نوافذ البائع - Re-export seller popups
+// Re-export seller popups
 export {
     showSellerConfirmationProductsAlert,
     showSellerRejectedProductsAlert,

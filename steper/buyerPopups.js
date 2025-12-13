@@ -12,13 +12,16 @@
 import {
     saveStepState,
     loadStepState,
+    saveItemStatus,
+    loadItemStatus,
+    ITEM_STATUS
 } from "./stateManagement.js";
 import { determineCurrentStepId } from "./roleAndStepDetermination.js";
 import {
-    updateCurrentStepFromState,
-    createStepStatusFooter,
+    updateCurrentStepFromState
+    // createStepStatusFooter -- We will implement custom footers
 } from "./uiUpdates.js";
-import { addStatusToggleListener } from "./popupHelpers.js";
+// import { addStatusToggleListener } from "./popupHelpers.js"; -- Not used for granular control
 
 /**
  * Helper to get product name from orders data.
@@ -54,26 +57,12 @@ function attachLogButtonListeners() {
 /**
  * @function showProductKeysAlert
  * @description Displays a popup for the buyer to review products and select what they want to order.
- * This is the first step in the process (Review Step).
- *
- * Logic includes:
- * 1. Filtering products based on user type (Buyer sees their products, Seller sees theirs, etc.).
- * 2. Checking lock status (if order is shipped, review modification is not allowed).
- * 3. Creating checkboxes for each product.
- * 4. Handling selection changes (deselecting a product requires confirmation).
+ * This updates the status of items to 'cancelled' if deselected.
  *
  * @param {object} data - Control Data.
  * @param {Array<object>} ordersData - Orders Data.
- * @param {boolean} isModificationLocked - Is modification locked (e.g., because stage moved past review).
+ * @param {boolean} isModificationLocked - Is modification locked.
  * @returns {void}
- * @throws {Error} - If an error occurs during alert display or product key processing.
- * @see loadStepState
- * @see getProductName
- * @see determineCurrentStepId
- * @see createStepStatusFooter
- * @see addStatusToggleListener
- * @see saveStepState
- * @see updateCurrentStepFromState
  */
 export function showProductKeysAlert(data, ordersData, isModificationLocked) {
     try {
@@ -82,177 +71,111 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
 
         // 1. Determine products to display based on user type
         let productKeys;
-
         if (userType === "buyer") {
-            // Buyer sees all their products in all orders
-            const currentUserOrders = ordersData.filter(
-                (order) => order.user_key === userId
-            );
-            productKeys = currentUserOrders.flatMap((order) =>
-                order.order_items.map((item) => item.product_key)
-            );
+            // Buyer sees their own products
+            const currentUserOrders = ordersData.filter((order) => order.user_key === userId);
+            productKeys = currentUserOrders.flatMap((order) => order.order_items.map((item) => item.product_key));
         } else if (userType === "seller") {
-            // Seller sees only products they act for
+            // Seller sees products assigned to them
             productKeys = ordersData.flatMap((order) =>
-                order.order_items
-                    .filter((item) => item.seller_key === userId)
-                    .map((item) => item.product_key)
+                order.order_items.filter((item) => item.seller_key === userId).map((item) => item.product_key)
             );
         } else if (userType === "courier") {
-            // Courier sees only products assigned to them for delivery
+            // Courier sees products assigned to them for delivery
             productKeys = ordersData.flatMap((order) =>
-                order.order_items
-                    .filter((item) => {
-                        const deliveryKey = item.supplier_delivery?.delivery_key;
-                        if (!deliveryKey) return false;
-
-                        // Support delivery_key as string or array
-                        if (Array.isArray(deliveryKey)) {
-                            return deliveryKey.includes(userId);
-                        } else {
-                            return deliveryKey === userId;
-                        }
-                    })
-                    .map((item) => item.product_key)
+                order.order_items.filter((item) => {
+                    const deliveryKey = item.supplier_delivery?.delivery_key;
+                    if (!deliveryKey) return false;
+                    if (Array.isArray(deliveryKey)) return deliveryKey.includes(userId);
+                    return deliveryKey === userId;
+                }).map((item) => item.product_key)
             );
         } else if (userType === "admin") {
-            // Admin sees everything
-            productKeys = ordersData.flatMap((order) =>
-                order.order_items.map((item) => item.product_key)
-            );
+            // Admin sees all products
+            productKeys = ordersData.flatMap((order) => order.order_items.map((item) => item.product_key));
         } else {
             productKeys = [];
         }
 
-        // Retrieve previous state (if selected before)
-        const previousState = loadStepState("step-review");
-        const previouslySelectedKeys = previousState
-            ? previousState.selectedKeys
-            : null;
+        // Determine if UI is locked based on item status
+        // If ANY item is beyond pending, we might want to lock interaction for safety, 
+        // OR just disable specific items.
+        // For simplicity, sticking to the passed lock flag + checking if item is confirmed/shipped.
 
-        // Check if shipping stage is already activated (modification lock)
-        const currentStepState = loadStepState("current_step");
-        const isShippedActivated = currentStepState && parseInt(currentStepState.stepNo) >= 3;
-
-        // Determine if UI is locked (view only)
-        // Locked if: Explicit lock passed, shipped, or user is not buyer (because only buyer reviews and decides)
-        // EXCEPTION: Admin is never locked out by userType, only by stage progression or explicit lock
-        const isLocked = isModificationLocked || isShippedActivated || (userType !== "buyer" && userType !== "admin");
+        const isOverallLocked = isModificationLocked || (userType !== "buyer" && userType !== "admin");
 
         // Create HTML for checkboxes
-        let checkboxes = productKeys
-            .map(
-                (productKey) => {
-                    const productName = getProductName(productKey, ordersData);
-                    return `<div class="checkbox-item" id="review-item-${productKey}" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+        let checkboxes = productKeys.map((productKey) => {
+            const productName = getProductName(productKey, ordersData);
+            const status = loadItemStatus(productKey);
+
+            // Check logic: Item is checked if it's NOT cancelled.
+            const isChecked = status !== ITEM_STATUS.CANCELLED;
+
+            // Disable if item has moved beyond pending
+            const isItemLocked = isOverallLocked || (status !== ITEM_STATUS.PENDING && status !== ITEM_STATUS.CANCELLED);
+
+            return `<div class="checkbox-item" id="review-item-${productKey}" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                   <div style="display: flex; align-items: center;">
-                    <input type="checkbox" id="review-checkbox-${productKey}" name="productKeys" value="${productKey}" ${previouslySelectedKeys === null ||
-                            previouslySelectedKeys.includes(productKey)
-                            ? "checked" // Default all checked if no previous state
-                            : ""
-                        } ${isLocked ? "disabled" : ""}>
-                    <label for="review-checkbox-${productKey}" style="margin-right: 8px;">${productName}</label>
+                    <input type="checkbox" id="review-checkbox-${productKey}" name="productKeys" value="${productKey}" 
+                        ${isChecked ? "checked" : ""} 
+                        ${isItemLocked ? "disabled" : ""}>
+                    <label for="review-checkbox-${productKey}" style="margin-right: 8px;">${productName} <small>(${status})</small></label>
                   </div>
                   <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
               </div>`;
-                }
-            )
-            .join("");
-
-        const currentStep = determineCurrentStepId(data);
+        }).join("");
 
         // Display popup using SweetAlert2
         Swal.fire({
-            title: isLocked ? "View Products" : "Select Products:",
+            title: isOverallLocked ? "View Products" : "Select Products:",
             html: `<div id="buyer-review-products-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">${checkboxes}</div>`,
-            // Footer varies based on lock status
-            footer: isLocked
-                ? (userType !== "buyer"
-                    ? "View only - modifications can only be made by the buyer."
-                    : "Selections cannot be modified because the order is in an advanced stage.")
-                : createStepStatusFooter("step-review", currentStep),
+            footer: isOverallLocked
+                ? "View only - modifications restricted."
+                : '<button id="btn-save-review" class="swal2-confirm swal2-styled" style="background-color: #28a745;">Save Selections</button>',
             cancelButtonText: "Close",
             focusConfirm: false,
-            allowOutsideClick: !isLocked,
+            allowOutsideClick: !isOverallLocked,
             showConfirmButton: false,
             showCancelButton: true,
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
-                attachLogButtonListeners(); // Attach listeners
+                attachLogButtonListeners();
 
-                // Add listeners only if window is editable
-                if (!isLocked) {
-                    addStatusToggleListener(data, ordersData); // To activate stage
+                if (!isOverallLocked) {
+                    const saveBtn = document.getElementById('btn-save-review');
+                    if (saveBtn) {
+                        saveBtn.addEventListener('click', () => {
+                            const container = document.getElementById("buyer-review-products-container");
+                            const checkboxes = container.querySelectorAll('input[name="productKeys"]');
+                            let changed = false;
 
-                    // Listen for product selection changes
-                    const container = document.getElementById(
-                        "buyer-review-products-container"
-                    );
-                    container.addEventListener("change", (e) => {
-                        if (e.target.name === "productKeys") {
-                            const checkbox = e.target;
-                            const wasChecked = previouslySelectedKeys === null || previouslySelectedKeys.includes(checkbox.value);
-
-                            // If product deselected (checked to unchecked)
-                            if (wasChecked && !checkbox.checked) {
-                                // Show additional confirmation message to prevent accidental deselection
-                                Swal.fire({
-                                    title: "Confirm Cancellation",
-                                    text: "Are you sure you want to cancel this product?",
-                                    icon: "warning",
-                                    showCancelButton: true,
-                                    confirmButtonColor: "#d33",
-                                    cancelButtonColor: "#3085d6",
-                                    confirmButtonText: "Yes, Cancel",
-                                    cancelButtonText: "Undo",
-                                    customClass: { popup: "fullscreen-swal" },
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        // User confirmed cancellation, save new state
-                                        const selectedKeys = Array.from(
-                                            container.querySelectorAll(
-                                                'input[name="productKeys"]:checked'
-                                            )
-                                        ).map((cb) => cb.value);
-                                        const unselectedKeys = productKeys.filter(
-                                            (key) => !selectedKeys.includes(key)
-                                        );
-                                        saveStepState("step-review", {
-                                            selectedKeys: selectedKeys,
-                                            unselectedKeys: unselectedKeys,
-                                        });
-                                        console.log("Auto-saving review state:", {
-                                            selectedKeys,
-                                            unselectedKeys,
-                                        });
-                                        updateCurrentStepFromState(data, ordersData);
-                                    } else {
-                                        // User cancelled, revert checkbox to checked
-                                        checkbox.checked = true;
+                            checkboxes.forEach(cb => {
+                                if (!cb.disabled) {
+                                    const newStatus = cb.checked ? ITEM_STATUS.PENDING : ITEM_STATUS.CANCELLED;
+                                    const currentStatus = loadItemStatus(cb.value);
+                                    if (currentStatus !== newStatus) {
+                                        saveItemStatus(cb.value, newStatus);
+                                        changed = true;
                                     }
+                                }
+                            });
+
+                            if (changed) {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Updated',
+                                    text: 'Product selections updated.',
+                                    timer: 1500,
+                                    showConfirmButton: false
+                                }).then(() => {
+                                    updateCurrentStepFromState(data, ordersData);
                                 });
                             } else {
-                                // Product selected (unchecked to checked), save directly
-                                const selectedKeys = Array.from(
-                                    container.querySelectorAll(
-                                        'input[name="productKeys"]:checked'
-                                    )
-                                ).map((cb) => cb.value);
-                                const unselectedKeys = productKeys.filter(
-                                    (key) => !selectedKeys.includes(key)
-                                );
-                                saveStepState("step-review", {
-                                    selectedKeys: selectedKeys,
-                                    unselectedKeys: unselectedKeys,
-                                });
-                                console.log("Auto-saving review state:", {
-                                    selectedKeys,
-                                    unselectedKeys,
-                                });
-                                updateCurrentStepFromState(data, ordersData);
+                                Swal.close();
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             },
         });
@@ -263,24 +186,32 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
 
 /**
  * @function showUnselectedProductsAlert
- * @description Displays a popup with products cancelled (unselected) by the buyer in the review step.
- * This popup appears when clicking on the "Cancelled" step.
- *
- * @param {object} data - Control Data.
- * @param {Array<object>} ordersData - Orders Data.
- * @returns {void}
- * @throws {Error} - If an error occurs displaying the alert for unselected products.
- * @see loadStepState
- * @see getProductName
+ * @description Displays products cancelled (status = CANCELLED).
  */
 export function showUnselectedProductsAlert(data, ordersData) {
     try {
-        const reviewState = loadStepState("step-review");
-        const unselectedKeys = reviewState ? reviewState.unselectedKeys : [];
+        const userId = data.currentUser.idUser;
+        const userType = data.currentUser.type;
+
+        // Find cancelled items
+        // Filter based on visibility permissions
+        const cancelledKeys = ordersData.flatMap(order =>
+            order.order_items.filter(item => {
+                // Check visibility
+                const isOwner = userType === "admin" || (userType === "buyer" && order.user_key === userId) || (userType === "seller" && item.seller_key === sellerId);
+                // Note: Courier usually doesn't care about cancelled items unless they were assigned? 
+                // Simplified visibility check:
+                if (userType === "buyer" && order.user_key !== userId) return false;
+                if (userType === "seller" && item.seller_key !== userId) return false;
+
+                const status = loadItemStatus(item.product_key);
+                return status === ITEM_STATUS.CANCELLED;
+            }).map(i => i.product_key)
+        );
 
         let contentHtml;
-        if (unselectedKeys.length > 0) {
-            const itemsHtml = unselectedKeys
+        if (cancelledKeys.length > 0) {
+            const itemsHtml = cancelledKeys
                 .map((key) => {
                     const productName = getProductName(key, ordersData);
                     return `<li id="cancelled-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
@@ -291,14 +222,13 @@ export function showUnselectedProductsAlert(data, ordersData) {
                 .join("");
             contentHtml = `<ul id="cancelled-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul>`;
         } else {
-            contentHtml =
-                '<p id="no-cancelled-items-message">The buyer has not cancelled any products.</p>';
+            contentHtml = '<p id="no-cancelled-items-message">No cancelled products.</p>';
         }
 
         Swal.fire({
             title: "Cancelled Products",
             html: contentHtml,
-            icon: unselectedKeys.length > 0 ? "info" : "success",
+            icon: cancelledKeys.length > 0 ? "info" : "success",
             confirmButtonText: "Okay",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
@@ -306,94 +236,45 @@ export function showUnselectedProductsAlert(data, ordersData) {
             }
         });
     } catch (unselectedAlertError) {
-        console.error(
-            "Error in showUnselectedProductsAlert:",
-            unselectedAlertError
-        );
+        console.error("Error in showUnselectedProductsAlert:", unselectedAlertError);
     }
 }
 
 /**
  * @function showDeliveryConfirmationAlert
  * @description Displays a popup for the buyer to confirm receipt of products.
- * Shows only products confirmed by the seller.
- *
- * @param {object} data - Control Data.
- * @param {Array<object>} ordersData - Orders Data.
- * @returns {void}
- * @throws {Error} - If an error occurs displaying the alert for delivery confirmation.
- * @see loadStepState
- * @see getProductName
- * @see determineCurrentStepId
- * @see createStepStatusFooter
- * @see addStatusToggleListener
- * @see updateCurrentStepFromState
+ * Shows products that are SHIPPED (ready for delivery) or DELIVERED.
  */
 export function showDeliveryConfirmationAlert(data, ordersData) {
     try {
-        const sellerConfirmedState = loadStepState("step-confirmed");
-        let productsToDeliver;
+        const userId = data.currentUser.idUser;
+        const userType = data.currentUser.type;
 
-        if (sellerConfirmedState) {
-            // Take only products approved by seller
-            productsToDeliver = sellerConfirmedState.selectedKeys;
-        } else {
-            // Fallback logic: If no confirmation state, assume everything buyer requested is ready
-            const userId = data.currentUser.idUser;
-            const userType = data.currentUser.type;
+        // Filter products: Must be SHIPPED or DELIVERED
+        // If Buyer: All their shipped items
+        // If Courier: Items they are delivering
+        // If Admin: All
 
-            let allProductKeys;
+        const productsToDeliver = ordersData.flatMap(order =>
+            order.order_items.filter(item => {
+                const status = loadItemStatus(item.product_key);
+                if (status !== ITEM_STATUS.SHIPPED && status !== ITEM_STATUS.DELIVERED) return false;
 
-            if (userType === "buyer") {
-                allProductKeys = ordersData.flatMap(order => order.order_items.map(item => item.product_key));
-            } else if (userType === "courier") {
-                allProductKeys = ordersData.flatMap(order =>
-                    order.order_items
-                        .filter(item => {
-                            const deliveryKey = item.supplier_delivery?.delivery_key;
-                            if (!deliveryKey) return false;
-                            if (Array.isArray(deliveryKey)) {
-                                return deliveryKey.includes(userId);
-                            } else {
-                                return deliveryKey === userId;
-                            }
-                        })
-                        .map(item => item.product_key)
-                );
-            } else if (userType === "admin") {
-                // Admin sees all products
-                allProductKeys = ordersData.flatMap(order => order.order_items.map(item => item.product_key));
-            } else {
-                allProductKeys = [];
-            }
-
-            const uniqueAllProducts = [...new Set(allProductKeys)];
-
-            // Filter by buyer selection (if exists)
-            const buyerReviewState = loadStepState("step-review");
-            const buyerSelectedKeys = buyerReviewState
-                ? buyerReviewState.selectedKeys
-                : null;
-
-            productsToDeliver = uniqueAllProducts.filter(key =>
-                buyerSelectedKeys === null || buyerSelectedKeys.includes(key)
-            );
-        }
-
-        const deliveryState = loadStepState("step-delivered");
-        const previouslyDeliveredKeys = deliveryState
-            ? deliveryState.deliveredKeys
-            : null;
-
-        // Check if delivery stage is already activated (moved past it)
-        // Assume delivery step is step 4 (Review=1, Confirmed=2, Shipped=3, Delivered=4)
-        const currentStepState = loadStepState("current_step");
-        const isDeliveredActivated = currentStepState && parseInt(currentStepState.stepNo) >= 4;
+                if (userType === "buyer") return order.user_key === userId;
+                if (userType === "courier") {
+                    const dKey = item.supplier_delivery?.delivery_key;
+                    if (Array.isArray(dKey)) return dKey.includes(userId);
+                    return dKey === userId;
+                }
+                if (userType === "seller") return item.seller_key === userId; // Sellers can view too?
+                return true; // Admin
+            })
+        );
 
         if (productsToDeliver.length === 0) {
             Swal.fire({
                 title: "No products to confirm receipt for",
-                text: "The seller must confirm the products first.",
+                text: "Waiting for products to be shipped.",
                 icon: "info",
                 confirmButtonText: "Okay",
                 customClass: { popup: "fullscreen-swal" },
@@ -401,61 +282,49 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
             return;
         }
 
-        const checkboxesHtml = productsToDeliver
-            .map((productKey) => {
-                const isChecked =
-                    previouslyDeliveredKeys !== null
-                        ? previouslyDeliveredKeys.includes(productKey)
-                        : true;
-                const productName = getProductName(productKey, ordersData);
+        const checkboxesHtml = productsToDeliver.map((item) => {
+            const status = loadItemStatus(item.product_key);
+            const isDelivered = status === ITEM_STATUS.DELIVERED;
+            const productName = item.product_name;
 
-                return `<div class="checkbox-item" id="delivery-item-${productKey}" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            return `<div class="checkbox-item" id="delivery-item-${item.product_key}" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                           <div style="display: flex; align-items: center;">
-                              <input type="checkbox" id="delivery-checkbox-${productKey}" name="deliveryProductKeys" value="${productKey}" ${isChecked ? "checked" : ""
-                    } ${isDeliveredActivated ? "disabled" : ""}>
-                              <label for="delivery-checkbox-${productKey}" style="margin-right: 8px;">${productName}</label>
+                              <input type="checkbox" id="delivery-checkbox-${item.product_key}" name="deliveryProductKeys" value="${item.product_key}" 
+                                ${isDelivered ? "checked" : ""} 
+                                style="margin-right: 8px;">
+                              <label for="delivery-checkbox-${item.product_key}">${productName}</label>
                           </div>
-                          <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
+                          <button type="button" class="btn-show-key" data-key="${item.product_key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
                       </div>`;
-            })
-            .join("");
+        }).join("");
 
         const currentStep = determineCurrentStepId(data);
 
-        // Extract User Info
-        let userInfoHtml = "";
-        const processedUserKeys = new Set();
+        // Extract User Info (Unique buyers in this list)
+        // ... (User info display logic similar to before, simplified)
         const userDetails = [];
-
-        productsToDeliver.forEach(productKey => {
-            for (const order of ordersData) {
-                const item = order.order_items.find(i => i.product_key === productKey);
-                if (item) {
-                    // Check if we already processed this user for this view to avoid duplicates
-                    // Assuming user_key identifies the user unique info set
-                    if (!processedUserKeys.has(order.user_key)) {
-                        processedUserKeys.add(order.user_key);
-                        userDetails.push({
-                            name: order.user_name || "N/A",
-                            phone: order.user_phone || "N/A",
-                            address: order.user_address || "N/A"
-                        });
-                    }
-                    break;
-                }
+        const seenUsers = new Set();
+        productsToDeliver.forEach(item => {
+            // We need to find the order for this item to get user info. 
+            // Ideally we shouldn't iterate all orders again, but it's safe for small data.
+            const parentOrder = ordersData.find(o => o.order_items.includes(item));
+            if (parentOrder && !seenUsers.has(parentOrder.user_key)) {
+                seenUsers.add(parentOrder.user_key);
+                userDetails.push({
+                    name: parentOrder.user_name || "N/A",
+                    phone: parentOrder.user_phone || "N/A",
+                    address: parentOrder.user_address || "N/A"
+                });
             }
         });
 
-        if (userDetails.length > 0) {
-            userInfoHtml = userDetails.map(user => `
-                <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 1em; color: #333; border-bottom: 1px solid #eee; padding-bottom: 4px;">Customer Information</h4>
-                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>Name:</strong> ${user.name}</p>
-                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>Phone:</strong> <a href="tel:${user.phone}" style="color: #007bff; text-decoration: none;">${user.phone}</a></p>
-                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>Address:</strong> ${user.address}</p>
-                </div>
-            `).join("");
-        }
+        const userInfoHtml = userDetails.map(user => `
+             <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right;">
+                <p><strong>Name:</strong> ${user.name}</p>
+                <p><strong>Phone:</strong> ${user.phone}</p>
+                <p><strong>Address:</strong> ${user.address}</p>
+            </div>
+        `).join("");
 
         Swal.fire({
             title: "Confirm Product Receipt",
@@ -463,93 +332,85 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
                     ${userInfoHtml}
                     ${checkboxesHtml}
                    </div>`,
-            footer: isDeliveredActivated
-                ? "Selections cannot be modified because the stage is already active."
-                : createStepStatusFooter("step-delivered", currentStep),
+            footer: '<button id="btn-save-delivery" class="swal2-confirm swal2-styled" style="background-color: #28a745;">Confirm Receipt</button>',
             cancelButtonText: "Cancel",
             showConfirmButton: false,
             showCancelButton: true,
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
-                if (productsToDeliver.length > 0 && !isDeliveredActivated) {
-                    addStatusToggleListener(data, ordersData);
-                    const container = document.getElementById(
-                        "delivery-confirmation-container"
-                    );
-                    container.addEventListener("change", (e) => {
-                        if (e.target.name === "deliveryProductKeys") {
-                            const deliveredKeys = Array.from(
-                                container.querySelectorAll(
-                                    'input[name="deliveryProductKeys"]:checked'
-                                )
-                            ).map((cb) => cb.value);
+                document.getElementById('btn-save-delivery')?.addEventListener('click', () => {
+                    const checkboxes = document.querySelectorAll('input[name="deliveryProductKeys"]');
+                    let changed = false;
+                    checkboxes.forEach(cb => {
+                        const currentStatus = loadItemStatus(cb.value);
+                        const isChecked = cb.checked;
 
-                            // Products not checked are considered returned
-                            const returnedKeys = productsToDeliver.filter(
-                                (key) => !deliveredKeys.includes(key)
-                            );
-
-                            saveStepState("step-delivered", {
-                                deliveredKeys: deliveredKeys,
-                                returnedKeys: returnedKeys,
-                            });
-                            console.log("Auto-saving delivery state:", {
-                                deliveredKeys,
-                                returnedKeys,
-                            });
-                            updateCurrentStepFromState(data, ordersData);
+                        if (isChecked && currentStatus === ITEM_STATUS.SHIPPED) {
+                            saveItemStatus(cb.value, ITEM_STATUS.DELIVERED);
+                            changed = true;
+                        } else if (!isChecked && currentStatus === ITEM_STATUS.DELIVERED) {
+                            saveItemStatus(cb.value, ITEM_STATUS.SHIPPED); // Undo delivery
+                            changed = true;
                         }
                     });
-                }
+
+                    if (changed) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Updated',
+                            text: 'Delivery status updated.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            updateCurrentStepFromState(data, ordersData);
+                        });
+                    } else {
+                        Swal.close();
+                    }
+                });
             },
         });
     } catch (deliveryAlertError) {
-        console.error(
-            "Error in showDeliveryConfirmationAlert:",
-            deliveryAlertError
-        );
+        console.error("Error in showDeliveryConfirmationAlert:", deliveryAlertError);
     }
 }
 
 /**
  * @function showReturnedProductsAlert
- * @description Displays a popup with products returned (not accepted in delivery step).
- *
- * @param {object} data - Control Data.
- * @param {Array<object>} ordersData - Orders Data.
- * @returns {void}
- * @throws {Error} - If an error occurs displaying the alert for returned products.
- * @see loadStepState
- * @see getProductName
+ * @description Displays products returned (status = RETURNED).
  */
 export function showReturnedProductsAlert(data, ordersData) {
     try {
-        const deliveryState = loadStepState("step-delivered");
-        const returnedKeys = deliveryState ? deliveryState.returnedKeys : [];
+        const userId = data.currentUser.idUser;
+        const userType = data.currentUser.type;
+
+        const returnedKeys = ordersData.flatMap(order =>
+            order.order_items.filter(item => {
+                // Visibility checks...
+                const status = loadItemStatus(item.product_key);
+                return status === ITEM_STATUS.RETURNED;
+            }).map(i => i.product_key)
+        );
 
         let contentHtml;
-
-        if (returnedKeys && returnedKeys.length > 0) {
-            const itemsHtml = returnedKeys
-                .map((key) => {
-                    const productName = getProductName(key, ordersData || []); // Handle potential missing ordersData gracefully or fix caller
-                    return `<li id="returned-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+        if (returnedKeys.length > 0) {
+            const itemsHtml = returnedKeys.map((key) => {
+                const productName = getProductName(key, ordersData);
+                return `<li id="returned-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <span>${productName}</span>
                          <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
                     </li>`;
-                })
-                .join("");
-            contentHtml = `<div id="returned-products-container"><p>The following products have been marked for return:</p><ul id="returned-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
+            }).join("");
+            contentHtml = `<div id="returned-products-container"><p>Returned products:</p><ul id="returned-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
         } else {
-            contentHtml =
-                '<p id="no-returned-items-message">No products have been marked for return.</p>';
+            contentHtml = '<p id="no-returned-items-message">No returned products.</p>';
         }
 
         Swal.fire({
             title: "Returned Products",
             html: contentHtml,
-            icon: returnedKeys && returnedKeys.length > 0 ? "warning" : "success",
+            icon: returnedKeys.length > 0 ? "warning" : "success",
             confirmButtonText: "Okay",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
