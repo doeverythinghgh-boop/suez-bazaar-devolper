@@ -17,8 +17,8 @@
  * @function logout
  * @returns {Promise<void>} - A Promise that resolves when the async logout process is complete.
  * @async
- * @throws {Error} - If `clearAndNavigateToLogin` fails.
- * @see clearAndNavigateToLogin
+ * @throws {Error} - If `signOutAndClear` fails.
+ * @see signOutAndClear
  */
 async function logout() {
   // [Step 1] Show a confirmation popup to the user before logging out using SweetAlert.
@@ -35,7 +35,7 @@ async function logout() {
     // [Step 2] Use `preConfirm` to execute the async logout process.
     // This ensures the popup stays open showing the loader until the process completes.
     preConfirm: async () => {
-      await clearAndNavigateToLogin();
+      await signOutAndClear();
     },
     // [Step 3] Prevent closing the popup by clicking outside during loading.
     allowOutsideClick: () => !Swal.isLoading(),
@@ -82,7 +82,7 @@ function clearMainContainers() {
  * 3. Clear all browser data (localStorage, etc.).
  * 4. Redirect user to login page.
  * @async
- * @function clearAndNavigateToLogin
+ * @function signOutAndClear
  * @returns {Promise<void>}
  * @throws {Error} - If `onUserLoggedOutAndroid`, `clearAllBrowserData`, `clearMainContainers`, `setUserNameInIndexBar`, `checkImpersonationMode`, or `mainLoader` fails.
  * @see onUserLoggedOutAndroid
@@ -92,7 +92,7 @@ function clearMainContainers() {
  * @see checkImpersonationMode
  * @see mainLoader
  */
-async function clearAndNavigateToLogin() {
+async function signOutAndClear() {
   const fcmToken = localStorage.getItem("fcm_token") || localStorage.getItem("android_fcm_key");
 
   // 1. Notify Android interface (if exists)
@@ -133,7 +133,7 @@ async function clearAndNavigateToLogin() {
   setUserNameInIndexBar();
   checkImpersonationMode();
   // [Step 1] Call `mainLoader` to load login page content into the main user container.
-  console.log("[Auth] دخلنا دالة clearAndNavigateToLogin . جاري تحميل صفحة تسجيل الدخول...");
+  console.log("[Auth] دخلنا دالة signOutAndClear . جاري تحميل صفحة تسجيل الدخول...");
   await mainLoader(
     "pages/login.html",
     "index-user-container",

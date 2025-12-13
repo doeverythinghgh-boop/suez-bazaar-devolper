@@ -226,11 +226,19 @@ function getCartTotalPrice() {
 }
 
 /**
- * @description Calculates total savings from discounts.
+ * @description يحسب إجمالي التوفير من الخصومات.
  * @function getCartTotalSavings
- * @returns {number} - Total savings.
- * @see getCart
+ * @returns {number} - إجمالي التوفير.
  */
+function getCartTotalSavings() {
+  const cart = getCart();
+  return cart.reduce((total, item) => {
+    if (item.original_price && item.original_price > item.price) {
+      return total + (item.original_price - item.price) * item.quantity;
+    }
+    return total;
+  }, 0);
+}
 
 /**
  * @description Finds a product in the cart.
@@ -282,4 +290,5 @@ function updateCartBadge() {
 window.addEventListener("cartUpdated", updateCartBadge);
 
 // Update badge on page load
-document.addEventListener("DOMContentLoaded", updateCartBadge);
+//document.addEventListener("DOMContentLoaded", updateCartBadge);
+updateCartBadge();

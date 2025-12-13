@@ -695,11 +695,8 @@
                 const deleteResult = await deleteUser(userSession.user_key);
 
                 if (deleteResult && !deleteResult.error) {
-                    localStorage.clear();
-                    sessionStorage.clear();
-                    await clearAllBrowserData();
+                    await signOutAndClear();
                     await Swal.fire("تم الحذف", "تم حذف حسابك بنجاح.", "success");
-                    // Redirect user after deletion
                 } else {
                     await Swal.fire("خطأ", `فشل حذف الحساب: ${deleteResult.error || "خطأ غير معروف."}`, "error");
                 }

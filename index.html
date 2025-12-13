@@ -444,6 +444,7 @@
       document
         .getElementById("index-cart-btn")
         .addEventListener("click", () => {
+          if(showLoginAlert()){
           const container = document.getElementById(
             "index-cardPackage-container"
           );
@@ -466,6 +467,7 @@
               false
             );
           }
+        }
         });
 
       // [Step 5.6] Bind "Gifts" button.
@@ -475,9 +477,11 @@
        */
       document
         .getElementById("index-gifts-btn")
-        .addEventListener("click", () =>
+        .addEventListener("click", () => {
+          if(showLoginAlert()){
           handleProtectedLinkClick("./pages/gifts.html")
-        );
+        }}
+      );
 
 
 
@@ -599,9 +603,13 @@
        */
       const addProductBtn = document.getElementById("dash-add-product-btn");
       if (addProductBtn) {
-        addProductBtn.addEventListener("click", showAddProductModal);
+        addProductBtn.addEventListener("click", 
+        function() {
+          if (showLoginAlert()) {
+            showAddProductModal();
+          }
+        });
       }
-
       // [Step 5.8] Bind "My Products" button.
       /**
        * @constant {HTMLElement} viewMyProductsBtn
@@ -617,6 +625,7 @@
          * @async
          */
         viewMyProductsBtn.addEventListener("click", async () => {
+          if(showLoginAlert()){
           console.log(myProducts);
           const container = document.getElementById(
             "index-myProducts-container"
@@ -642,8 +651,9 @@
             );
           }
 
-
+        }
         });
+      
       }
       //#endregion
 
