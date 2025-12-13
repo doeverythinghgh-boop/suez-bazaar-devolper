@@ -1,16 +1,16 @@
 /**
  * @file api/tokens.js
- * @description نقطة النهاية (API Endpoint) لإدارة توكنات إشعارات Firebase (FCM).
+ * @description API Endpoint for managing Firebase Cloud Messaging (FCM) tokens.
  *
- * هذا الملف يعمل كواجهة خلفية (Serverless Function على Vercel) ويتولى العمليات المتعلقة بتوكنات FCM:
- * - POST: حفظ أو تحديث توكن FCM لمستخدم معين في جدول `user_tokens` باستخدام `ON CONFLICT`.
- * - DELETE: حذف توكن FCM لمستخدم معين (يُستخدم عند تسجيل الخروج).
- * - OPTIONS: معالجة طلبات CORS Preflight.
+ * This file acts as a backend (Serverless Function on Vercel) and handles FCM token operations:
+ * - POST: Save or update an FCM token for a specific user in the `user_tokens` table using `ON CONFLICT`.
+ * - DELETE: Delete an FCM token for a specific user (used when logging out).
+ * - OPTIONS: Handle CORS Preflight requests.
  */
 import { createClient } from "@libsql/client/web";
 
 /**
- * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @description Configuration to set the function as a Vercel Edge Function.
  * @type {object}
  * @const
  */
@@ -19,7 +19,7 @@ export const config = {
 };
 
 /**
- * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @description CORS headers to allow requests from any origin.
  * @type {object}
  * @const
  */
@@ -30,14 +30,14 @@ const corsHeaders = {
 };
 
 /**
- * @description نقطة نهاية API لإدارة توكنات Firebase Cloud Messaging (FCM).
- *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
- *   وطلبات `GET` لجلب توكنات المستخدمين بناءً على `user_key`،
- *   وطلبات `POST` لحفظ أو تحديث توكن FCM لمستخدم معين،
- *   وطلبات `DELETE` لحذف توكن FCM لمستخدم.
+ * @description API endpoint for managing Firebase Cloud Messaging (FCM) tokens.
+ *   Handles `OPTIONS` (preflight) requests for CORS,
+ *   and `GET` requests to fetch user tokens based on `user_key`,
+ *   and `POST` requests to save or update an FCM token for a specific user,
+ *   and `DELETE` requests to delete an FCM token for a user.
  * @function handler
- * @param {Request} request - كائن طلب HTTP الوارد.
- * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @param {Request} request - Incoming HTTP request object.
+ * @returns {Promise<Response>} - Promise containing the HTTP response object.
  * @async
  * @throws {Response} - Returns an HTTP response with an error status (400, 405, 500) if validation fails or an unexpected error occurs during database operations.
  * @see createClient
@@ -53,15 +53,16 @@ export default async function handler(request) {
   }
 
   try {
-// -----------------------------------------------------
-    // ✅ الجزء الجديد: معالجة طلب GET لجلب التوكنات
+    // -----------------------------------------------------
+    // -----------------------------------------------------
+    // ✅ New Part: Handle GET request to fetch tokens
     // -----------------------------------------------------
     if (request.method === "GET") {
       console.log("[API: /api/tokens] Received GET request to fetch tokens.");
-      
-      // تحليل الـ URL لاستخراج query parameters
+
+      // Parse URL to extract query parameters
       const url = new URL(request.url);
-      const userKeysQuery = url.searchParams.get("userKeys"); // جلب المفاتيح المرسلة في الرابط
+      const userKeysQuery = url.searchParams.get("userKeys"); // Fetch keys sent in the link
 
       if (!userKeysQuery) {
         return new Response(
@@ -69,26 +70,26 @@ export default async function handler(request) {
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      
-      // تحويل سلسلة المفاتيح (مفصولة بفواصل) إلى مصفوفة
+
+      // Convert comma-separated keys string to an array
       const userKeys = userKeysQuery.split(',');
-      
-      // بناء استعلام SQL لجلب التوكنات للمفاتيح المحددة
-      // نستخدم علامات الاستفهام (?) كـ placeholders ونمرر userKeys كمصفوفة للـ args
+
+      // Build SQL query to fetch tokens for specified keys
+      // Use question marks (?) as placeholders and pass userKeys as array to args
       const placeholders = userKeys.map(() => '?').join(',');
       const sqlQuery = `SELECT fcm_token FROM user_tokens WHERE user_key IN (${placeholders})`;
 
       console.log(`[API: /api/tokens] Fetching tokens for ${userKeys.length} users.`);
-      
+
       const result = await db.execute({
         sql: sqlQuery,
-        args: userKeys, // تمرير المصفوفة هنا
+        args: userKeys, // Pass the array here
       });
 
-      // استخلاص التوكنات من نتائج قاعدة البيانات
+      // Extract tokens from database results
       const tokens = result.rows.map(row => row.fcm_token);
-      
-      // إعادة التوكنات كمصفوفة في استجابة JSON
+
+      // Return tokens as array in JSON response
       return new Response(
         JSON.stringify({ success: true, tokens: tokens }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -109,12 +110,12 @@ export default async function handler(request) {
       }
 
       console.log(`[API: /api/tokens] Saving token for user_key: ${user_key}`);
-      
-      // ✅ إصلاح: استخدام معاملة (transaction) لضمان الموثوقية.
-      // 1. نحذف أي سجل قديم لهذا المستخدم لضمان عدم وجود توكنات قديمة.
-      // 2. نحذف أي سجل قديم لهذا التوكن إذا كان مسجلاً لمستخدم آخر (حالة نادرة).
-      // 3. نضيف السجل الجديد.
-      // هذا يضمن أن كل مستخدم لديه توكن واحد فقط، وكل توكن مرتبط بمستخدم واحد فقط.
+
+      // ✅ Fix: Use transaction to ensure reliability.
+      // 1. Delete any old record for this user to ensure no old tokens exist.
+      // 2. Delete any old record for this token if registered to another user (rare case).
+      // 3. Add the new record.
+      // This ensures each user has only one token, and each token is linked to only one user.
       const tx = await db.transaction("write");
       try {
         await tx.execute({ sql: "DELETE FROM user_tokens WHERE user_key = ?", args: [user_key] });
@@ -126,7 +127,7 @@ export default async function handler(request) {
         await tx.commit();
       } catch (err) {
         await tx.rollback();
-        throw err; // سيتم التقاط هذا الخطأ في كتلة catch الرئيسية
+        throw err; // This error will be caught in the main catch block
       }
 
       console.log(`[API: /api/tokens] Successfully saved token for user_key: ${user_key}`);
@@ -137,7 +138,7 @@ export default async function handler(request) {
     }
 
     if (request.method === "DELETE") {
-      const { user_key } = await request.json(); // نكتفي بـ user_key فقط
+      const { user_key } = await request.json(); // We only need user_key
 
       if (!user_key) {
         return new Response(
@@ -147,7 +148,7 @@ export default async function handler(request) {
       }
 
       await db.execute({
-        sql: "DELETE FROM user_tokens WHERE user_key = ?", // حذف أي توكن مرتبط بهذا المستخدم
+        sql: "DELETE FROM user_tokens WHERE user_key = ?", // Delete any token associated with this user
         args: [user_key],
       });
 

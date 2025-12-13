@@ -192,12 +192,6 @@ async function setupFirebaseWeb() {
         // البيانات قد تكون في notification أو data حسب نوع الرسالة
         const data = payload.notification || payload.data || {};
 
-        /*Swal.fire({
-            icon: "info",
-            title: data.title,
-            text: data.body,
-            confirmButtonText: "موافق",
-        });*/
 
         if (typeof addNotificationLog === "function") {
             addNotificationLog({

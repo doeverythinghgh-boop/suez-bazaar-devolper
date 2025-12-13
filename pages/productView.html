@@ -577,13 +577,7 @@
 
         } catch (error) {
             console.error("productView_viewDetails - خطأ عام في عرض التفاصيل:", error);
-            // Alert user using SweetAlert2
-            Swal.fire({
-                icon: "error",
-                title: "خطأ!",
-                text: "حدث خطأ أثناء تحميل تفاصيل المنتج. يرجى المحاولة مرة أخرى لاحقاً.",
-                customClass: { popup: 'fullscreen-swal' },
-            });
+        
         }
     }
 

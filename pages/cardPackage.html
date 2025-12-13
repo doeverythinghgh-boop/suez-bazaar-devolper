@@ -7,7 +7,7 @@
 
 
 
-    /* تخطيط السلة */
+    /* Cart Layout */
     .cartPage_cart-layout {
         display: grid;
         grid-template-columns: 1fr 350px;
@@ -20,14 +20,14 @@
         }
     }
 
-    /* عناصر السلة */
+    /* Cart Items */
     .cartPage_cart-items {
         display: flex;
         flex-direction: column;
         gap: 20px;
     }
 
-    /* تعديل عنصر السلة ليكون جدول */
+    /* Modify cart item to be a table */
     .cartPage_cart-item {
         background: var(--bg-color-white);
         border-radius: var(--border-radius);
@@ -177,7 +177,7 @@
         color: var(--bg-color-white);
     }
 
-    /* ملاحظات المنتج */
+    /* Product Notes */
     .cartPage_cart-item-note {
         margin-top: 5px;
         padding-top: 5px;
@@ -229,7 +229,7 @@
         background: var(--dark-blue);
     }
 
-    /* ملخص السلة */
+    /* Cart Summary */
     .cartPage_cart-summary {
         background: var(--bg-color-white);
         border-radius: var(--border-radius);
@@ -322,7 +322,7 @@
         color: var(--bg-color-white);
     }
 
-    /* حالة السلة الفارغة */
+    /* Empty Cart State */
     .cartPage_empty-cart {
         text-align: center;
         padding: 60px 20px;
@@ -367,7 +367,7 @@
         transform: translateY(-3px);
     }
 
-    /* زر العودة */
+    /* Back Button */
     .cartPage_back-button {
         display: inline-flex;
         align-items: center;
@@ -383,7 +383,7 @@
         gap: 12px;
     }
 
-    /* التحميل */
+    /* Loading */
     .cartPage_loading {
         text-align: center;
         padding: 40px;
@@ -396,7 +396,7 @@
         color: var(--primary-color);
     }
 
-    /* نافذة تعديل الملاحظة */
+    /* Edit Note Modal */
     .cartPage_note-modal {
         display: none;
         position: fixed;
@@ -481,7 +481,7 @@
         cursor: pointer;
     }
 
-    /* تصميم متجاوب إضافي */
+    /* Additional Responsive Design */
     @media (max-width: 576px) {
 
 
@@ -501,9 +501,9 @@
     <div id="header-container10" style="height: 70px;margin-left: 20px;margin-right: 20px;"></div>
     <div class="cartPage_container" id="cartPage_mainContainer">
 
-        <!-- محتوى السلة -->
+        <!-- Cart Content -->
         <div class="cartPage_cart-layout" id="cartPage_cartLayout">
-            <!-- عناصر السلة (يتم تعبئتها بواسطة JavaScript) -->
+            <!-- Cart Items (Populated by JavaScript) -->
             <div class="cartPage_cart-items" id="cartPage_cartItemsContainer">
                 <div class="cartPage_loading" id="cartPage_loadingIndicator">
                     <i class="fas fa-spinner fa-spin"></i>
@@ -511,7 +511,7 @@
                 </div>
             </div>
 
-            <!-- ملخص السلة -->
+            <!-- Cart Summary -->
             <div class="cartPage_cart-summary" id="cartPage_cartSummary">
                 <h2 id="cartPage_summaryTitle"><i class="fas fa-receipt"></i> ملخص الطلب</h2>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowCount">
@@ -541,7 +541,7 @@
             </div>
         </div>
 
-        <!-- حالة السلة الفارغة (مخفي افتراضيًا) -->
+        <!-- Empty Cart State (Hidden by default) -->
         <div class="cartPage_empty-cart" id="cartPage_emptyCart" style="display: none;">
             <div class="cartPage_empty-cart-icon" id="cartPage_emptyCartIcon">
                 <i class="fas fa-shopping-cart"></i>
@@ -558,7 +558,7 @@
 
     </div>
 
-    <!-- نافذة تعديل الملاحظة -->
+    <!-- Edit Note Modal -->
     <div class="cartPage_note-modal" id="cartPage_noteModal">
         <div class="cartPage_note-modal-content" id="cartPage_noteModalContent">
             <div class="cartPage_note-modal-header" id="cartPage_noteModalHeader">
@@ -575,7 +575,7 @@
         </div>
     </div>
 
-    <!-- ✅ جديد: رسالة نجاح طلب الصور -->
+    <!-- ✅ New: Photo Order Success Message -->
     <div id="cartPage_photoOrderMessage"
         style="display:none; background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin:20px; border:1px solid #c3e6cb; position:relative; text-align:right;">
         <strong><i class="fas fa-check-circle"></i> تم استلام طلبك الخاص بالصور!</strong>
@@ -586,117 +586,116 @@
 
 
     <script>
-        
-async function sendOrder2Excution() {
-  // 1. جلب البيانات
-  const cart = getCart();
 
-  // 2. التحقق من الجلسة (إصلاح الشرط المعكوس)
-  if (!userSession || userSession.user_key == "guest_user") {
-    Swal.fire({
-      title: "مطلوب التسجيل",
-      text: "لإتمام عملية الشراء، يجب عليك تسجيل الدخول أو إنشاء حساب جديد.",
-      icon: "info",
-      showCancelButton: true,
-      confirmButtonText: "تسجيل الدخول",
-      cancelButtonText: "إلغاء",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        mainLoader(
-          "./pages/login.html",
-          "index-user-container",
-          0,
-          undefined,
-          "hiddenLoginIcon",
-          true
-        );
-      }
-    });
-    return;
-  }
+        async function sendOrder2Excution() {
+            // 1. Fetch Data
+            const cart = getCart();
 
-  // 3. التحقق من السلة
-  if (cart.length === 0) {
-    Swal.fire("السلة فارغة", "لا توجد منتجات في السلة لإتمام الشراء.", "info");
-    return;
-  }
+            // 2. Check Session (Fix inverted condition)
+            if (!userSession || userSession.user_key == "guest_user") {
+                Swal.fire({
+                    title: "مطلوب التسجيل",
+                    text: "لإتمام عملية الشراء، يجب عليك تسجيل الدخول أو إنشاء حساب جديد.",
+                    icon: "info",
+                    showCancelButton: true,
+                    confirmButtonText: "تسجيل الدخول",
+                    cancelButtonText: "إلغاء",
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        mainLoader(
+                            "./pages/login.html",
+                            "index-user-container",
+                            0,
+                            undefined,
+                            "hiddenLoginIcon",
+                            true
+                        );
+                    }
+                });
+                return;
+            }
 
-  // 4. حساب المبلغ الإجمالي وإنشاء مفتاح الطلب
-  const totalAmount = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const orderKey = generateOrderKey();
+            // 3. Check Cart
+            if (cart.length === 0) {
+                Swal.fire("السلة فارغة", "لا توجد منتجات في السلة لإتمام الشراء.", "info");
+                return;
+            }
 
-  // 5. بناء بيانات الطلب (إزالة التكرار)
-  const orderData = {
-    order_key: orderKey,
-    user_key: userSession.user_key,
-    total_amount: totalAmount,
-    items: cart.map((item) => ({
-      product_key: item.product_key,
-      quantity: item.quantity,
-      seller_key: item.seller_key,
-      note: item.note || "",
-    })),
-  };
-  console.log("[Checkout] جاري إرسال بيانات الطلب:", orderData);
+            // 4. Calculate Total Amount and Generate Order Key
+            const totalAmount = cart.reduce(
+                (sum, item) => sum + item.price * item.quantity,
+                0
+            );
+            const orderKey = generateOrderKey();
 
-  // 6. إظهار رسالة تأكيد
-  const result = await Swal.fire({
-    title: "تأكيد الطلب",
-    text: `المبلغ الإجمالي هو ${totalAmount.toFixed(2)} جنيه. هل تريد المتابعة؟`,
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "نعم، أرسل الطلب!",
-    cancelButtonText: "إلغاء",
-    showLoaderOnConfirm: true,
-    preConfirm: async () => {
-      try {
-        const response = await createOrder(orderData);
-        console.log("[Checkout] الاستجابة من الخادم:", response);
-        return response;
-      } catch (error) {
-        Swal.showValidationMessage(`فشل الطلب: ${error.message || error}`);
-        return null;
-      }
-    },
-    allowOutsideClick: () => !Swal.isLoading(),
-  });
+            // 5. Build Order Data (Remove Duplication)
+            const orderData = {
+                order_key: orderKey,
+                user_key: userSession.user_key,
+                total_amount: totalAmount,
+                items: cart.map((item) => ({
+                    product_key: item.product_key,
+                    quantity: item.quantity,
+                    seller_key: item.seller_key,
+                    note: item.note || "",
+                })),
+            };
+            console.log("[Checkout] جاري إرسال بيانات الطلب:", orderData);
 
-  // 7. معالجة النتيجة
-  if (result.isConfirmed && result.value && !result.value.error) {
-    const createdOrderKey = result.value.order_key;
-    console.log(`[Checkout] تم إنشاء الطلب بنجاح: ${createdOrderKey}`);
+            // 6. Show Confirmation Message
+            const result = await Swal.fire({
+                title: "تأكيد الطلب",
+                text: `المبلغ الإجمالي هو ${totalAmount.toFixed(2)} جنيه. هل تريد المتابعة؟`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "نعم، أرسل الطلب!",
+                cancelButtonText: "إلغاء",
+                showLoaderOnConfirm: true,
+                preConfirm: async () => {
+                    try {
+                        const response = await createOrder(orderData);
+                        console.log("[Checkout] الاستجابة من الخادم:", response);
+                        return response;
+                    } catch (error) {
+                        Swal.showValidationMessage(`فشل الطلب: ${error.message || error}`);
+                        return null;
+                    }
+                },
+                allowOutsideClick: () => !Swal.isLoading(),
+            });
 
-    // 8. إرسال الإشعارات باستخدام الدالة الجديدة
-    if (typeof handlePurchaseNotifications === 'function') {
-      const finalOrderForNotify = { ...orderData, id: createdOrderKey };
-      handlePurchaseNotifications(finalOrderForNotify)
-        .catch(err => console.error('[Checkout] خطأ في إرسال الإشعارات:', err));
-    } else {
-      console.warn('[Checkout] دالة handlePurchaseNotifications غير متوفرة');
-    }
+            // 7. Process Result
+            if (result.isConfirmed && result.value && !result.value.error) {
+                const createdOrderKey = result.value.order_key;
+                console.log(`[Checkout] تم إنشاء الطلب بنجاح: ${createdOrderKey}`);
 
-    // 9. تنظيف السلة وإظهار رسالة النجاح
-    clearCart();
-    await Swal.fire({
-      title: "تم إتمام طلبك بنجاح! 🎉",
-      text: `رقم الطلب: #${createdOrderKey}`,
-      icon: "success",
-      confirmButtonText: "حسناً"
-    });
+                // 8. Send Notifications using the new function
+                if (typeof handlePurchaseNotifications === 'function') {
+                    const finalOrderForNotify = { ...orderData, id: createdOrderKey };
+                    handlePurchaseNotifications(finalOrderForNotify)
+                        .catch(err => console.error('[Checkout] خطأ في إرسال الإشعارات:', err));
+                } else {
+                    console.warn('[Checkout] دالة handlePurchaseNotifications غير متوفرة');
+                }
 
-  } else if (result.value && result.value.error) {
-    console.error("[Checkout] فشل إنشاء الطلب:", result.value.error);
-    Swal.fire("حدث خطأ", `فشل إرسال الطلب: ${result.value.error}`, "error");
-  }
-}
+                // 9. Clear Cart and Show Success Message
+                clearCart();
+                await Swal.fire({
+                    title: "تم إتمام طلبك بنجاح! 🎉",
+                    text: `رقم الطلب: #${createdOrderKey}`,
+                    icon: "success",
+                    confirmButtonText: "حسناً"
+                });
 
-        // المتغيرات العامة
+            } else if (result.value && result.value.error) {
+                console.error("حدث خطأ", `فشل إرسال الطلب: ${result.value.error}`, "error");
+            }
+        }
+
+        // Global Variables
         let cartPage_currentProductKeyForNote = '';
 
-        // تهيئة الصفحة
+        // Page Initialization
         try {
             cartPage_loadCart();
             cartPage_setupEventListeners();
@@ -704,7 +703,7 @@ async function sendOrder2Excution() {
             console.error('حدث خطأ أثناء تهيئة الصفحة:', error);
         }
 
-        // تحميل السلة وعرضها
+        // Load and Display Cart
         function cartPage_loadCart() {
             try {
                 const cartPage_cart = getCart();
@@ -800,7 +799,7 @@ async function sendOrder2Excution() {
             }
         }
 
-        // تحديث ملخص السلة
+        // Update Cart Summary
         function cartPage_updateCartSummary() {
             try {
                 const cartPage_itemCount = getCartItemCount();
@@ -817,10 +816,10 @@ async function sendOrder2Excution() {
             }
         }
 
-        // إعداد مستمعي الأحداث
+        // Setup Event Listeners
         function cartPage_setupEventListeners() {
             try {
-                // حدث تحديث السلة
+                // Cart Updated Event
                 window.addEventListener('cartUpdated', function () {
                     try {
                         cartPage_loadCart();
@@ -829,12 +828,12 @@ async function sendOrder2Excution() {
                     }
                 });
 
-                // مستمع الأحداث للعناصر الديناميكية
+                // Event Listener for Dynamic Elements
                 document.addEventListener('click', function (e) {
                     try {
                         const cartPage_target = e.target;
 
-                        // زيادة الكمية
+                        // Increase Quantity
                         if (cartPage_target.classList.contains('cartPage_plus')) {
                             const cartPage_productKey = cartPage_target.dataset.productKey;
                             const cartPage_cart = getCart();
@@ -845,7 +844,7 @@ async function sendOrder2Excution() {
                             }
                         }
 
-                        // تقليل الكمية
+                        // Decrease Quantity
                         if (cartPage_target.classList.contains('cartPage_minus')) {
                             const cartPage_productKey = cartPage_target.dataset.productKey;
                             const cartPage_cart = getCart();
@@ -856,7 +855,7 @@ async function sendOrder2Excution() {
                             }
                         }
 
-                        // حذف المنتج
+                        // Remove Product
                         if (cartPage_target.classList.contains('cartPage_remove-btn') || cartPage_target.closest('.cartPage_remove-btn')) {
                             const cartPage_productKey = (cartPage_target.closest('.cartPage_remove-btn') || cartPage_target).dataset.productKey;
                             const cartPage_cart = getCart();
@@ -881,7 +880,7 @@ async function sendOrder2Excution() {
                             }
                         }
 
-                        // تعديل الملاحظة
+                        // Edit Note
                         if (cartPage_target.classList.contains('cartPage_edit-note-btn') || cartPage_target.closest('.cartPage_edit-note-btn')) {
                             const cartPage_productKey = (cartPage_target.closest('.cartPage_edit-note-btn') || cartPage_target).dataset.productKey;
                             const cartPage_cart = getCart();
@@ -896,7 +895,7 @@ async function sendOrder2Excution() {
                     }
                 });
 
-                // تحديث الكمية عند تغيير المدخل
+                // Update Quantity on Input Change
                 document.addEventListener('blur', function (e) {
                     try {
                         if (e.target.classList.contains('cartPage_quantity-input')) {
@@ -921,9 +920,9 @@ async function sendOrder2Excution() {
                     } catch (error) {
                         console.error('حدث خطأ أثناء تغيير الكمية:', error);
                     }
-                }, true); // استخدام true لتفعيل "event capturing"
+                }, true); // Use true to enable "event capturing"
 
-                // تفريغ السلة
+                // Clear Cart
                 document.getElementById('cartPage_clearCartBtn').addEventListener('click', function () {
                     Swal.fire({
                         title: 'هل أنت متأكد؟',
@@ -937,32 +936,32 @@ async function sendOrder2Excution() {
                     }).then((result) => {
                         if (result.isConfirmed) {
                             clearCart();
-                            // عرض رسالة نجاح بعد التفريغ
-                            Swal.fire('تم التفريغ!', 'تم تفريغ سلة المشتريات بنجاح.', 'success');
+                            // Show success message after clearing
+                            Swal.fire('تم التفريغ!', 'تم تفريغ سلة المشتريات .', 'success');
                         }
                     });
                 });
 
-                // إتمام الشراء
+                // Checkout
                 document.getElementById('cartPage_checkoutBtn').addEventListener('click', async function () {
                     try {
                         const cartPage_cart = getCart();
                         if (cartPage_cart.length === 0) {
                             return;
                         }
-                        // منطق إتمام الشراء هنا
+                        // Checkout Logic Here
                         await sendOrder2Excution();
                     } catch (error) {
                         console.error('حدث خطأ أثناء إتمام الشراء:', error);
                     }
                 });
 
-                // إدارة نافذة الملاحظة
+                // Manage Note Modal
                 document.getElementById('cartPage_closeNoteModal').addEventListener('click', cartPage_closeNoteModal);
                 document.getElementById('cartPage_cancelNoteBtn').addEventListener('click', cartPage_closeNoteModal);
                 document.getElementById('cartPage_saveNoteBtn').addEventListener('click', cartPage_saveNote);
 
-                // إغلاق نافذة الملاحظة بالنقر خارجها
+                // Close Note Modal on Click Outside
                 document.getElementById('cartPage_noteModal').addEventListener('click', function (e) {
                     try {
                         if (e.target === this) {
@@ -977,7 +976,7 @@ async function sendOrder2Excution() {
             }
         }
 
-        // فتح نافذة تعديل الملاحظة
+        // Open Note Modal
         function cartPage_openNoteModal(cartPage_productKey, cartPage_currentNote) {
             try {
                 cartPage_currentProductKeyForNote = cartPage_productKey;
@@ -988,7 +987,7 @@ async function sendOrder2Excution() {
             }
         }
 
-        // إغلاق نافذة تعديل الملاحظة
+        // Close Note Modal
         function cartPage_closeNoteModal() {
             try {
                 document.getElementById('cartPage_noteModal').style.display = 'none';
@@ -998,7 +997,7 @@ async function sendOrder2Excution() {
             }
         }
 
-        // حفظ الملاحظة
+        // Save Note
         function cartPage_saveNote() {
             try {
                 const cartPage_note = document.getElementById('cartPage_noteTextarea').value.trim();

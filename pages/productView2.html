@@ -722,12 +722,7 @@
 
         } catch (error) {
             console.error("productView_viewDetails - خطأ:", error);
-            Swal.fire({
-                icon: "error",
-                title: "خطأ",
-                text: "حدث خطأ أثناء عرض المنتج.",
-                customClass: { popup: 'fullscreen-swal' },
-            });
+
         }
     }
 
@@ -800,13 +795,13 @@
         // If it's an image that the browser can decode, it will be compressed/converted.
 
         if (productView_orderImages.length + files.length > MAX_ORDER_IMAGES) {
-            Swal.fire('Warning', `Maximum allowed images is ${MAX_ORDER_IMAGES}`, 'warning');
+            Swal.fire('تنبيه', `الحد الأقصى هو ${MAX_ORDER_IMAGES} صور`, 'warning');
             return;
         }
 
         // Processing
         Swal.fire({
-            title: 'Processing Images...',
+            title: 'جاري معالجة الصور...',
             didOpen: () => Swal.showLoading(),
             allowOutsideClick: false
         });
@@ -826,8 +821,8 @@
                 productView_orderImages.push(processedBlob);
                 productView_createPreview(processedBlob);
             } catch (err) {
-                console.error("Error processing file", file.name, err);
-                Swal.fire('Error', `Failed to process file: ${file.name}`, 'error');
+                console.error("خطأ في معالجة الملف", file.name, err);
+
             }
         }
 
@@ -880,13 +875,13 @@
     async function productView_sendOrder() {
         // Validation
         if (!userSession) {
-            Swal.fire('Alert', 'You must login first', 'warning');
+            Swal.fire('تنبيه', 'يجب تسجيل الدخول أولاً', 'warning');
             return;
         }
 
         const note = productView_orderEls.note.value.trim();
         if (productView_orderImages.length === 0 && !note) {
-            Swal.fire('Alert', 'Please add a note or at least one photo', 'warning');
+            Swal.fire('تنبيه', 'يرجى إضافة ملاحظة أو صورة واحدة على الأقل', 'warning');
             return;
         }
 
@@ -900,8 +895,8 @@
 
         // Show loading
         Swal.fire({
-            title: 'Sending...',
-            html: 'Please wait while we upload images and create the order',
+            title: 'جاري الإرسال...',
+            html: 'يرجى الانتظار بينما نقوم برفع الصور وإنشاء الطلب',
             allowOutsideClick: false,
             didOpen: () => Swal.showLoading()
         });
@@ -970,9 +965,9 @@
 
             Swal.fire({
                 icon: 'success',
-                title: 'Sent Successfully',
-                html: `Images uploaded and order created.<br><small style="color:#777">Uploaded files:<br>${uploadedFileNames.join('<br>')}</small>`,
-                confirmButtonText: 'OK'
+                title: 'تم الإرسال بنجاح',
+                html: `تم رفع الصور وإنشاء الطلب.<br><small style="color:#777">الملفات المرفوعة:<br>${uploadedFileNames.join('<br>')}</small>`,
+                confirmButtonText: 'حسناً'
             }).then(() => {
                 const modal = document.getElementById('productView_modal_content');
                 if (modal && modal.parentElement) {
@@ -982,7 +977,7 @@
 
         } catch (error) {
             console.error(error);
-            Swal.fire('Error', 'An error occurred during submission: ' + error.message, 'error');
+    
         }
     }
 

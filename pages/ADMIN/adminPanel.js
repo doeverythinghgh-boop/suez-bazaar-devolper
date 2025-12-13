@@ -1,12 +1,12 @@
 /**
  * @file pages/ADMIN/adminPanel.js
- * @description هذا الملف يدير واجهة لوحة تحكم المسؤول، ويتعامل مع جلب بيانات المستخدمين،
- * عرضها في جدول، وإدارة علاقات البائعين والموزعين، بالإضافة إلى وظائف تسجيل الدخول كـ (Impersonation) وإرسال الإشعارات.
+ * @description This file manages the admin control panel interface, handling user data fetching,
+ * displaying it in a table, managing seller and distributor relations, as well as functions for Impersonation login and sending notifications.
  */
 /**
- * @description دالة غير متزامنة لجلب جميع بيانات المستخدمين الأساسية من API الخادم.
- * تعالج البيانات لتضمين حالة البائع والتوصيل بناءً على `suppliers_deliveries`.
- * @returns {Promise<Array<object>>} مصفوفة من كائنات المستخدمين بعد معالجة البيانات.
+ * @description Asynchronously fetches all basic user data from the server API.
+ * Processes the data to include seller and delivery status based on `suppliers_deliveries`.
+ * @returns {Promise<Array<object>>} Array of processed user objects.
  * @async
  * @throws {Error} - If there is a network error or the API response indicates failure.
  * @see baseURL
@@ -14,40 +14,40 @@
  * @see api/suppliers-deliveries
  */
 async function getAllUsers_() {
-    console.log('[getAllUsers_] بدء عملية جلب جميع بيانات المستخدمين...');
+    console.log('[getAllUsers_] Starting fetching all users data...');
 
     try {
-        console.log('[getAllUsers_] جاري إرسال طلب GET إلى /api/users...');
+        console.log('[getAllUsers_] Sending GET request to /api/users...');
 
-        // إرسال طلب GET إلى نقطة النهاية المحددة
+        // Send GET request to the specified endpoint
         const response = await fetch(`${baseURL}/api/users`);
 
-        console.log(`[getAllUsers_] تم استلام استجابة من الخادم، رمز الحالة: ${response.status}`);
+        console.log(`[getAllUsers_] Response received from server, status code: ${response.status}`);
 
-        // التحقق من نجاح الطلب (الحالة بين 200 و 299)
+        // Check if request was successful (Status between 200 and 299)
         if (!response.ok) {
-            console.error(`[getAllUsers_] فشل استلام البيانات من الخادم، رمز الخطأ: ${response.status}`);
-            throw new Error(`فشل استجابة الخادم: ${response.status}`);
+            console.error(`[getAllUsers_] Failed to receive data from server, error code: ${response.status}`);
+            throw new Error(`Server response failed: ${response.status}`);
         }
 
-        console.log('[getAllUsers_] جاري تحويل الاستجابة إلى تنسيق JSON...');
+        console.log('[getAllUsers_] Converting response to JSON...');
 
-        // تحويل البيانات الواردة من الخادم إلى كائنات JavaScript
+        // Convert received data from server to JavaScript objects
         const rawUsersData = await response.json();
 
-        console.log(`[getAllUsers_] تم تحويل البيانات بنجاح، عدد المستخدمين الخام: ${rawUsersData.length}`);
+        console.log(`[getAllUsers_] Data converted successfully, raw user count: ${rawUsersData.length}`);
 
-        // معالجة البيانات: تحويل كل مستخدم إلى الصيغة المطلوبة
-        console.log('[getAllUsers_] بدء معالجة البيانات وتنظيفها...');
+        // Process data: Convert each user to the required format
+        console.log('[getAllUsers_] Starting data processing and cleaning...');
 
-        // استخراج جميع user_keys للتحقق من الحالة دفعة واحدة
+        // Extract all user_keys to check status in bulk
         const userKeys = rawUsersData.map(user => user.user_key);
 
-        // خريطة لتخزين النتائج لسهولة الوصول
+        // Map to store results for easy access
         const deliveryStatusMap = {};
 
         try {
-            console.log('[getAllUsers_] جاري التحقق من حالة التوصيل للمستخدمين...');
+            console.log('[getAllUsers_] Checking delivery status for users...');
             const statusResponse = await fetch(`${baseURL}/api/suppliers-deliveries`, {
                 method: 'POST',
                 headers: {
@@ -67,12 +67,12 @@ async function getAllUsers_() {
                     };
                 });
 
-                console.log('[getAllUsers_] تم استلام حالات التوصيل بنجاح');
+                console.log('[getAllUsers_] Delivery statuses received successfully');
             } else {
-                console.warn(`[getAllUsers_] فشل التحقق من حالة التوصيل: ${statusResponse.status}`);
+                console.warn(`[getAllUsers_] Failed to check delivery status: ${statusResponse.status}`);
             }
         } catch (statusError) {
-            console.error('[getAllUsers_] خطأ أثناء جلب حالة التوصيل:', statusError);
+            console.error('[getAllUsers_] Error fetching delivery status:', statusError);
         }
 
         const processedUsers = rawUsersData.map((user, index) => {
@@ -85,26 +85,26 @@ async function getAllUsers_() {
                 Address: user.Address,
                 Password: user.Password,
                 hasFCMToken: !!user.fcm_token,
-                tokenPlatform: user.platform ? user.platform : "لا يوجد",
+                tokenPlatform: user.platform ? user.platform : "None",
                 isSeller: status.isSeller,
                 isDelivery: status.isDelivery
             };
             return processedUser;
         });
 
-        console.log(`[getAllUsers_] اكتملت المعالجة، المستخدمون المعالجون:`, processedUsers);
+        console.log(`[getAllUsers_] Processing complete, processed users:`, processedUsers);
         return processedUsers;
 
     } catch (error) {
-        console.error('[getAllUsers_] حدث خطأ غير متوقع أثناء تنفيذ الدالة:', error);
-        throw new Error(`فشلت عملية جلب بيانات المستخدمين: ${error.message}`);
+        console.error('[getAllUsers_] Unexpected error occurred during function execution:', error);
+        throw new Error(`Failed to fetch user data: ${error.message}`);
     }
 }
 
 /**
- * @description تقوم بتعبئة جدول المستخدمين بالبيانات التي تم جلبها.
+ * @description Populates the users table with the fetched data.
  * @function populateUsersTable
- * @param {Array<object>} users - مصفوفة تحتوي على كائنات المستخدمين.
+ * @param {Array<object>} users - Array containing user objects.
  * @returns {void}
  * @throws {Error} - If DOM elements are not found or an error occurs during HTML manipulation.
  * @see showRelationsModal
@@ -114,7 +114,7 @@ async function getAllUsers_() {
 function populateUsersTable(users) {
     const tbody = document.getElementById('admin-panel-users-tbody');
     if (!tbody) {
-        console.error('[populateUsersTable] لم يتم العثور على عنصر tbody للجدول.');
+        console.error('[populateUsersTable] Table tbody element not found.');
         return;
     }
 
@@ -171,8 +171,8 @@ function populateUsersTable(users) {
 }
 
 /**
- * @description الدالة الرئيسية التي يتم تنفيذها عند تحميل الصفحة لتهيئة لوحة تحكم المسؤول.
- * تقوم بجلب بيانات المستخدمين، وتعبئة الجدول، وإعداد مستمعي الأحداث لزر النسخ.
+ * @description Main function executed on page load to initialize the admin panel.
+ * Fetches user data, populates the table, and sets up click-to-copy event listeners.
  * @function initializeAdminPanel
  * @returns {Promise<void>}
  * @async
@@ -201,7 +201,7 @@ async function initializeAdminPanel() {
         loader.style.display = 'none';
         tableContainer.style.display = 'block';
 
-        // ✅ إضافة ميزة النسخ عند النقر (Click to Copy)
+        // ✅ Add Click to Copy Feature
         const tbody = document.getElementById('admin-panel-users-tbody');
         if (tbody) {
             tbody.onclick = function (e) {
@@ -252,7 +252,7 @@ async function initializeAdminPanel() {
         }
 
     } catch (error) {
-        console.error('[initializeAdminPanel] فشلت عملية تهيئة لوحة التحكم:', error);
+        console.error('[initializeAdminPanel] Failed to initialize admin panel:', error);
         loader.style.display = 'none';
         errorContainer.innerHTML = `<p>حدث خطأ أثناء تحميل بيانات المستخدمين.</p><p><small>${error.message}</small></p>`;
         const mainContainer = document.querySelector('.admin-panel-container');
@@ -262,9 +262,9 @@ async function initializeAdminPanel() {
 
 /**
  * @function showRelationsModal
- * @description عرض نافذة إدارة العلاقات للمستخدم (بائعين أو موزعين).
- * @param {string} userKey - مفتاح المستخدم.
- * @param {string} username - اسم المستخدم.
+ * @description Displays the relations management modal for a user (sellers or distributors).
+ * @param {string} userKey - User Key.
+ * @param {string} username - Username.
  * @returns {Promise<void>}
  * @async
  * @throws {Error} - If fetching relations data fails.
@@ -313,17 +313,17 @@ async function showRelationsModal(userKey, username) {
         });
 
     } catch (error) {
-        Swal.fire('خطأ', 'حدث خطأ أثناء جلب البيانات: ' + error.message, 'error');
+        console.error('Error fetching relations data:', error);
     }
 }
 
 /**
  * @function createRelationsListHtml
- * @description إنشاء HTML لقائمة العلاقات.
- * @param {Array<object>} list - قائمة العلاقات.
- * @param {string} currentUserKey - مفتاح المستخدم الحالي.
- * @param {string} currentRoleContext - سياق الدور الحالي ('seller' أو 'delivery').
- * @returns {string} كود HTML للقائمة.
+ * @description Creates HTML for the relations list.
+ * @param {Array<object>} list - List of relations.
+ * @param {string} currentUserKey - Current User Key.
+ * @param {string} currentRoleContext - Current role context ('seller' or 'delivery').
+ * @returns {string} HTML code for the list.
  * @see handleToggleRelation
  */
 function createRelationsListHtml(list, currentUserKey, currentRoleContext) {
@@ -355,8 +355,8 @@ function createRelationsListHtml(list, currentUserKey, currentRoleContext) {
 
 /**
  * @function handleAddRelation
- * @description معالجة إضافة علاقة جديدة بين المستخدمين.
- * @param {string} currentUserKey - مفتاح المستخدم صاحب النافذة.
+ * @description Handles adding a new relation between users.
+ * @param {string} currentUserKey - User key of the modal owner.
  * @returns {Promise<void>}
  */
 window.handleAddRelation = async (currentUserKey) => {
@@ -399,7 +399,7 @@ window.handleAddRelation = async (currentUserKey) => {
         });
 
     } catch (error) {
-        Swal.fire('خطأ', error.message, 'error');
+        console.error('Error adding relation:', error);
     }
 };
 /**
@@ -410,11 +410,11 @@ window.handleAddRelation = async (currentUserKey) => {
 
 /**
  * @function handleToggleRelation
- * @description معالجة تبديل حالة العلاقة (تفعيل/تعطيل).
- * @param {string} sellerKey - مفتاح البائع.
- * @param {string} deliveryKey - مفتاح الموزع.
- * @param {boolean} newStatus - الحالة الجديدة المطلوب تعيينها.
- * @param {string} modalOwnerKey - مفتاح المستخدم صاحب النافذة (لإعادة التحديث).
+ * @description Handles toggling relation status (enable/disable).
+ * @param {string} sellerKey - Seller Key.
+ * @param {string} deliveryKey - Distributor Key.
+ * @param {boolean} newStatus - New status to set.
+ * @param {string} modalOwnerKey - Key of the modal owner (for refreshing).
  * @returns {Promise<void>}
  */
 window.handleToggleRelation = async (sellerKey, deliveryKey, newStatus, modalOwnerKey) => {
@@ -440,7 +440,7 @@ window.handleToggleRelation = async (sellerKey, deliveryKey, newStatus, modalOwn
         showRelationsModal(modalOwnerKey, title);
 
     } catch (error) {
-        Swal.fire('خطأ', 'فشل تغيير الحالة', 'error');
+        console.error('Error updating relation:', error);
     }
 };
 /**
@@ -451,9 +451,9 @@ window.handleToggleRelation = async (sellerKey, deliveryKey, newStatus, modalOwn
 
 /**
  * @function loginAsUser
- * @description تسجيل الدخول كمسؤول باسم مستخدم آخر (Impersonation).
- * يقوم هذا بتبديل الجلسة الحالية بجلسة المستخدم المحدد.
- * @param {string} targetUserKey - مفتاح المستخدم المستهدف.
+ * @description Impersonation login as another user.
+ * @description Swaps the current session with the specified user's session.
+ * @param {string} targetUserKey - Target User Key.
  * @returns {Promise<void>}
  */
 window.loginAsUser = async (targetUserKey) => {
@@ -467,35 +467,35 @@ window.loginAsUser = async (targetUserKey) => {
             }
         });
 
-        // 1. جلب بيانات المستخدم المستهدف للتحقق أولاً
+        // 1. Fetch target user data to verify first
         const response = await fetch(`${baseURL}/api/users`);
         const allUsers = await response.json();
         const targetUser = allUsers.find(u => u.user_key === targetUserKey);
 
         if (!targetUser) throw new Error('المستخدم غير موجود');
 
-        // 2. الاحتفاظ بجلسة المسؤول الأصلية في الذاكرة المؤقتة
-        // إذا كنا بالفعل في وضع الانتحال، نستخدم الجلسة الأصلية المحفوظة، وإلا نستخدم المستخدم الحالي كـ "أصل"
+        // 2. Keep the original admin session in local storage
+        // If we are already impersonating, use the saved original session, otherwise use the current user as "original"
         const currentSession = JSON.parse(localStorage.getItem('loggedInUser'));
         const existingOriginalSession = JSON.parse(localStorage.getItem('originalAdminSession'));
         const originalAdminSession = existingOriginalSession || currentSession;
 
         if (!originalAdminSession) throw new Error('لا يوجد جلسة مسؤول صالحة للحفظ');
 
-        // 3. تنفيذ عملية تسجيل الخروج الكاملة (تنظيف المتصفح)
-        // نستخدم الدالة الموجودة في tools.js أو auth.js لمسح كل شيء
+        // 3. Perform full logout (browser cleanup)
+        // Use the function from tools.js or auth.js to clear everything
         console.log('[Impersonation] Cleaning browser data...');
         if (typeof clearAllBrowserData === 'function') {
             await clearAllBrowserData();
         } else {
-            // fallback إذا لم تكن الدالة متاحة
+            // fallback if function is not available
             localStorage.clear();
         }
 
-        // 4. استعادة جلسة المسؤول في localStorage (لكي يظهر الزر لاحقاً)
+        // 4. Restore admin session in localStorage (so button appears later)
         localStorage.setItem('originalAdminSession', JSON.stringify(originalAdminSession));
 
-        // 5. إعداد وحفظ جلسة المستخدم الجديد
+        // 5. Setup and save new user session
         const newUserSession = {
             user_key: targetUser.user_key,
             username: targetUser.username,
@@ -506,17 +506,12 @@ window.loginAsUser = async (targetUserKey) => {
         };
         localStorage.setItem('loggedInUser', JSON.stringify(newUserSession));
 
-        // 6. إعادة توجيه كاملة لضمان تحميل النظام بالبيانات الجديدة
+        // 6. Full redirect to ensure system loads with new data
         console.log('[Impersonation] Redirecting to home as new user...');
         window.location.href = 'index.html';
 
     } catch (error) {
         console.error(error);
-        Swal.fire({
-            icon: 'error',
-            title: 'خطأ',
-            text: 'فشل تبديل المستخدم: ' + error.message
-        });
     }
 };
 /**
@@ -528,8 +523,8 @@ window.loginAsUser = async (targetUserKey) => {
 
 /**
  * @function sendAdminNotification
- * @description إرسال إشعار فوري للمستخدم من لوحة التحكم.
- * @param {string} userKey - مفتاح المستخدم المستهدف.
+ * @description Sends an instant notification to a user from the admin panel.
+ * @param {string} userKey - Target User Key.
  * @returns {Promise<void>}
  */
 window.sendAdminNotification = async (userKey) => {
@@ -576,7 +571,7 @@ window.sendAdminNotification = async (userKey) => {
 
     } catch (error) {
         console.error(error);
-        Swal.fire('خطأ', 'فشل الإرسال: ' + error.message, 'error');
+    
     }
 };
 /**

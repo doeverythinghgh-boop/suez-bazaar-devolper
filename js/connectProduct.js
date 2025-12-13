@@ -100,16 +100,36 @@ async function getProductsByCategory(mainCatId, subCatId) {
 
 /**
  * @description Fetches all products added by a specific user (seller) from the API.
+ *   Optionally filters by search term and categories on the server side.
  * @function getProductsByUser
  * @param {string} userKey - Unique key of the user (`user_key`) whose products we want to fetch.
+ * @param {object} [filters={}] - Optional filters object containing:
+ *   - {string} searchName - Search term to filter by product name
+ *   - {string} MainCategory - Main category ID to filter by
+ *   - {string} SubCategory - Sub category ID to filter by
  * @returns {Promise<Array<Object>|null>} - Promise containing an array of product objects, or `null` on failure.
  * @async
  * @throws {Error} - If `apiFetch` encounters a network error or the API returns an error.
  * @see apiFetch
  */
-async function getProductsByUser(userKey) {
+async function getProductsByUser(userKey, filters = {}) {
   try {
-    const data = await apiFetch(`/api/products?user_key=${userKey}`);
+    // Build query parameters
+    const params = new URLSearchParams();
+    params.append('user_key', userKey);
+
+    // Add optional search filters
+    if (filters.searchName) {
+      params.append('searchTerm', filters.searchName);
+    }
+    if (filters.MainCategory) {
+      params.append('MainCategory', filters.MainCategory);
+    }
+    if (filters.SubCategory) {
+      params.append('SubCategory', filters.SubCategory);
+    }
+
+    const data = await apiFetch(`/api/products?${params.toString()}`);
     return data.error ? null : data;
   } catch (error) {
     console.error("%c[getProductsByUser] failed:", "color: red;", error);

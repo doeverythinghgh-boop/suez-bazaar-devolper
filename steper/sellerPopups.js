@@ -467,6 +467,6 @@ export function showShippingInfoAlert(data, ordersData) {
             },
         });
     } catch (shippingAlertError) {
-        console.error("Error in showShippingInfoAlert:", shippingAlertError);
+        console.error("خطأ في showShippingInfoAlert:", shippingAlertError);
     }
 }

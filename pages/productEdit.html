@@ -440,7 +440,7 @@
 
             if (!productSession) {
                 console.error('%c[ProductForm] productSession not found!', 'color: red;');
-                Swal.fire('Error!', 'Product data not found.', 'error');
+            
                 return;
             } else {
                 console.log('%c[ProductForm] productSession found!', 'color: green;');
@@ -901,7 +901,7 @@
                     };
                 } catch (err) {
                     console.error("Error accessing camera: ", err);
-                    Swal.fire('خطأ!', 'تعذر الوصول للكاميرا. يرجى التأكد من منح الصلاحيات.', 'error');
+        
                     cameraModalContainer.style.display = 'none';
                 }
             }

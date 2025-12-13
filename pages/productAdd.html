@@ -741,7 +741,7 @@
 
             } catch (error) {
                 console.error('[ImageUploader] خطأ حرج:', error);
-                Swal.fire('خطأ', 'حدث خطأ أثناء معالجة الصور', 'error');
+
             } finally {
                 window.isProcessingFiles = false;
             }
@@ -904,11 +904,11 @@
                 // Fallback attempt
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Camera Issue',
-                    text: 'Try opening camera via another method',
+                    title: 'مشكلة في الكاميرا',
+                    text: 'حاول فتح الكاميرا بطريقة أخرى',
                     showCancelButton: true,
-                    confirmButtonText: 'Pick from Gallery',
-                    cancelButtonText: 'Cancel'
+                    confirmButtonText: 'اختر من المعرض',
+                    cancelButtonText: 'إلغاء'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         pickFilesBtn.click();
@@ -976,7 +976,7 @@
                 };
             } catch (err) {
                 console.error("Error accessing camera: ", err);
-                Swal.fire('Error!', 'Could not access the camera. Please make sure permissions are granted.', 'error');
+            
                 cameraModalContainer.style.display = 'none';
             }
         }
@@ -1119,7 +1119,7 @@
 
             } catch (error) {
                 console.error('%c[ProductForm] Submission failed with critical error:', 'color: red; font-weight: bold;', error);
-                Swal.fire('Error!', `Failed to save product: ${error.message}`, 'error');
+                
             }
         });
 

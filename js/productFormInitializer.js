@@ -1,38 +1,38 @@
 /**
  * @file js/productFormInitializer.js
- * @description يحتوي هذا الملف على المنطق الكامل لتهيئة نموذج إضافة/تعديل المنتج.
- *   يشمل ذلك تهيئة الوحدات، تحميل الفئات، تعبئة النموذج في وضع التعديل، وإعداد مستمعي الأحداث.
+ * @description Contains the logic for initializing the product add/edit form.
+ *   This includes initializing modules, loading categories, populating the form in edit mode, and setting up event listeners.
  */
 
 /**
- * @description تحديث الوضع الموسع للنموذج بناءً على الوضع الأساسي والفئة المحددة
+ * @description Update the extended mode of the form based on the base mode and selected category.
  * @function productUpdateExtendedMode
- * @returns {string} - الوضع الموسع الحالي
+ * @returns {string} - Current extended mode.
  */
 function productUpdateExtendedMode() {
   const form = document.getElementById('add-product-form');
   if (!form) return '';
 
-  const baseMode = form.dataset.mode; // 'add' أو 'edit'
+  const baseMode = form.dataset.mode; // 'add' or 'edit'
   const mainCategorySelect = document.getElementById('main-category');
   const mainCategory = mainCategorySelect ? mainCategorySelect.value : '';
 
   let extendedMode = baseMode;
 
-  // تحديد إذا كانت فئة الخدمات
-  if (mainCategory === SERVICE_CATEGORY_NoPrice_ID) {
+  // Determine if it is a service category
+  if (mainCategorySelect.value === SERVICE_CATEGORY_NoPrice_ID) {
     extendedMode = baseMode + 'InServiceCategory';
   }
 
-  // تحديث الخاصية
+  // Update the property
   form.dataset.extendedMode = extendedMode;
 
 
-  // تحديث لون خلفية النموذج
+  // Update form background color
   productUpdateModalBackground(extendedMode);
 
 
-  // تسجيل التغيير للمطور
+  // Log change for developer
   console.log(`%c[ProductForm] 🎯 Extended Mode: ${extendedMode}`,
     'color: purple; font-weight: bold; font-size: 14px;');
 
@@ -40,9 +40,9 @@ function productUpdateExtendedMode() {
 }
 
 /**
- * @description تسجيل الحالة الحالية للنموذج للمطور
+ * @description Log the current state of the form for the developer.
  * @function productLogCurrentState
- * @param {string} action - وصف الإجراء الحالي
+ * @param {string} action - Description of the current action.
  * @returns {void}
  */
 function productLogCurrentState(action = 'State Update') {
@@ -61,31 +61,31 @@ function productLogCurrentState(action = 'State Update') {
 }
 
 /**
- * @description الدالة الرئيسية لتهيئة نموذج إضافة/تعديل المنتج. تقوم بتنظيف الحالات السابقة،
- *   وتهيئة الوحدات المطلوبة (مثل وحدة رفع الصور)، وتحميل الفئات، وإعداد مستمعي الأحداث،
- *   وتعبئة النموذج بالبيانات الموجودة مسبقًا في حالة التعديل.
+ * @description Main function to initialize the product add/edit form. Cleans up previous states,
+ *   initializes required modules (like image upload module), loads categories, sets up event listeners,
+ *   and populates the form with existing data in edit mode.
  * @function productInitializeAddProductForm
  * @async
- * @param {object|null} [editProductData=null] - كائن يحتوي على بيانات المنتج للتعديل. إذا كان `null`، يتم تهيئة النموذج لإضافة منتج جديد.
- * @returns {Promise<boolean>} - وعد (Promise) يُرجع `true` إذا تمت التهيئة بنجاح، و`false` بخلاف ذلك.
+ * @param {object|null} [editProductData=null] - Object containing product data for editing. If `null`, initializes form for adding a new product.
+ * @returns {Promise<boolean>} - Promise returning `true` if initialization is successful, `false` otherwise.
  * @see productInitializeModules
  * @see productPopulateEditForm
  */
 async function productInitializeAddProductForm(editProductData = null) {
   console.log('%c[ProductForm] Initializing form...', 'color: blue;');
 
-  // تنظيف الوحدة السابقة أولاً
+  // Clean up previous module first
   if (window.productModule && window.productModule.cleanup) {
     window.productModule.cleanup();
   }
 
-  // ⭐⭐ الإصلاح: إعادة تعيين النص والعنوان أولاً ⭐⭐
+  // ⭐⭐ Fix: Reset text and title first ⭐⭐
   const titleElement = document.getElementById('addProductTitle');
   const submitButton = document.querySelector('.add-product-modal__submit-container .btn');
 
   const isEditMode = editProductData !== null;
 
-  // ⭐⭐ تحديد النص بناءً على الوضع الحقيقي ⭐⭐
+  // ⭐⭐ Determine text based on real mode ⭐⭐
   if (titleElement) {
     titleElement.innerHTML = isEditMode
       ? '<i class="fas fa-edit"></i> تعديل المنتج'
@@ -96,7 +96,7 @@ async function productInitializeAddProductForm(editProductData = null) {
     submitButton.textContent = isEditMode ? 'حفظ التعديلات' : 'اضف المنتج الآن';
   }
 
-  // تهيئة وحدات JavaScript أولاً
+  // Initialize JavaScript modules first
   if (!productInitializeModules()) {
     console.error('Failed to initialize product modules');
     return false;
@@ -115,7 +115,7 @@ async function productInitializeAddProductForm(editProductData = null) {
   images.length = 0;
   window.productModule.originalImageNames = [];
 
-  // ⭐⭐ التحديث: استخدام isEditMode بدلاً من إعادة التعيين ⭐⭐
+  // ⭐⭐ Update: Use isEditMode instead of resetting ⭐⭐
   form.dataset.mode = isEditMode ? 'edit' : 'add';
   console.log(`[ProductForm] Mode: ${form.dataset.mode}`);
 
@@ -124,7 +124,7 @@ async function productInitializeAddProductForm(editProductData = null) {
     console.log(`[ProductForm] Editing product with key: ${editProductData.product_key}`);
   }
 
-  // ... بقية الكود بدون تغيير ...
+  // ... rest of the code unchanged ...
   try {
     console.log('[ProductForm] Loading categories from ../shared/list.json');
     const response = await fetch("../shared/list.json");
@@ -132,7 +132,7 @@ async function productInitializeAddProductForm(editProductData = null) {
     const data = await response.json();
     const categories = data.categories;
 
-    // تعبئة الفئات الرئيسية
+    // Populate main categories
     mainCategorySelect.innerHTML = '<option value="" selected disabled>-- اختر الفئة الرئيسية --</option>';
     categories.forEach((category) => {
       const option = new Option(category.title, category.id);
@@ -140,7 +140,7 @@ async function productInitializeAddProductForm(editProductData = null) {
     });
     console.log('%c[ProductForm] Main categories loaded successfully.', 'color: green;');
 
-    // إعداد مستمع تغيير الفئة الرئيسية
+    // Setup main category change listener
     const mainCategoryHandler = productHandleMainCategoryChange(categories);
     mainCategorySelect.removeEventListener('change', mainCategoryHandler);
     mainCategorySelect.addEventListener("change", mainCategoryHandler);
@@ -151,15 +151,15 @@ async function productInitializeAddProductForm(editProductData = null) {
     return false;
   }
 
-  // إذا كان في وضع التعديل، تعبئة البيانات
+  // If in edit mode, populate data
   if (isEditMode) {
     productPopulateEditForm(editProductData);
   } else {
-    // ⭐⭐ الإصلاح: تنظيف الحقول في وضع الإضافة ⭐⭐
+    // ⭐⭐ Fix: Clean fields in add mode ⭐⭐
     productResetFormFields();
   }
 
-  // تحديث الحالة الموسعة بعد التهيئة
+  // Update extended mode after initialization
   setTimeout(() => {
     productUpdateExtendedMode();
     productLogCurrentState('Form Initialized');
@@ -174,8 +174,8 @@ async function productInitializeAddProductForm(editProductData = null) {
 }
 
 /**
- * @description تقوم بإعادة تعيين حقول نموذج المنتج إلى حالتها الافتراضية.
- *   تُستخدم عند فتح النموذج في وضع "إضافة منتج جديد" لضمان عدم وجود بيانات متبقية من عمليات سابقة.
+ * @description Resets the product form fields to their default state.
+ *   Used when opening the form in "Add New Product" mode to ensure no residual data from previous operations.
  * @function productResetFormFields
  * @returns {void}
  */
@@ -200,7 +200,7 @@ function productResetFormFields() {
     }
   });
 
-  // إعادة تعيين الفئات
+  // Reset categories
   const mainCategorySelect = document.getElementById('main-category');
   const subCategorySelect = document.getElementById('sub-category');
   const subCategoryGroup = document.getElementById('sub-category-group');
@@ -220,7 +220,7 @@ function productResetFormFields() {
     subCategoryGroup.style.display = 'none';
   }
 
-  // إعادة تعيين نوع الخدمة
+  // Reset service type
   const serviceTypeOptions = document.getElementById('service-type-options');
   const serviceTypeRadios = document.querySelectorAll('input[name="serviceType"]');
 
@@ -233,7 +233,7 @@ function productResetFormFields() {
     radio.required = false;
   });
 
-  // إعادة تعيين الصور
+  // Reset images
   if (window.productModule && window.productModule.images) {
     window.productModule.images.length = 0;
     window.productModule.originalImageNames = [];
@@ -246,16 +246,16 @@ function productResetFormFields() {
 }
 
 /**
- * @description تقوم بتهيئة جميع وحدات JavaScript المطلوبة لنموذج المنتج،
- *   وبشكل أساسي وحدة رفع الصور (`productModule`).
+ * @description Initializes all required JavaScript modules for the product form,
+ *   primarily the image upload module (`productModule`).
  * @function productInitializeModules
- * @returns {boolean} - `true` إذا تمت تهيئة جميع الوحدات بنجاح، و`false` بخلاف ذلك.
+ * @returns {boolean} - `true` if all modules are initialized successfully, `false` otherwise.
  * @see window.productModule.init
  */
 function productInitializeModules() {
   console.log('[ProductForm] Initializing all modules...');
 
-  // تهيئة وحدة المنتج
+  // Initialize product module
   if (window.productModule && window.productModule.init) {
     if (!window.productModule.init()) {
       console.error('Failed to initialize product module');
@@ -270,12 +270,12 @@ function productInitializeModules() {
 }
 
 /**
- * @description دالة مصنعية (Factory Function) تُرجع معالج حدث لتغيير الفئة الرئيسية.
- *   يقوم المعالج بتحديث قائمة الفئات الفرعية وإظهار/إخفاء حقول السعر والكمية ونوع الخدمة
- *   بناءً على الفئة الرئيسية المحددة.
+ * @description Factory Function returning a handler for the main category change event.
+ *   The handler updates the sub-category list and shows/hides price, quantity, and service type fields
+ *   based on the selected main category.
  * @function productHandleMainCategoryChange
- * @param {Array<object>} categories - مصفوفة من كائنات الفئات التي تم جلبها من `list.json`.
- * @returns {function(Event): void} - دالة معالج الحدث `onchange` التي سيتم ربطها بقائمة الفئات الرئيسية.
+ * @param {Array<object>} categories - Array of category objects fetched from `list.json`.
+ * @returns {function(Event): void} - Event handler function `onchange` to be attached to the main category list.
  * @see SERVICE_CATEGORY_NoPrice_ID
  */
 function productHandleMainCategoryChange(categories) {
@@ -291,11 +291,11 @@ function productHandleMainCategoryChange(categories) {
 
     if (!subCategorySelect || !subCategoryGroup) return;
 
-    // إعادة تعيين الفئات الفرعية
+    // Reset sub-categories
     subCategorySelect.innerHTML = '<option value="">-- اختر الفئة الفرعية --</option>';
     subCategorySelect.disabled = true;
 
-    // إظهار/إخفاء حقول السعر والكمية
+    // Show/hide price and quantity fields
     if (priceQuantityRow && quantityInput && priceInput && serviceTypeOptions) {
       if (selectedCategoryId === SERVICE_CATEGORY_NoPrice_ID) {
         priceQuantityRow.style.display = 'none';
@@ -319,7 +319,7 @@ function productHandleMainCategoryChange(categories) {
 
     if (!selectedCategoryId) {
       subCategoryGroup.style.display = "none";
-      // تحديث الحالة الموسعة
+      // Update extended mode
       productUpdateExtendedMode();
       return;
     }
@@ -337,24 +337,24 @@ function productHandleMainCategoryChange(categories) {
       subCategoryGroup.style.display = "none";
     }
 
-    // تحديث الحالة الموسعة بعد معالجة التغيير
+    // Update extended mode after handling change
     productUpdateExtendedMode();
     productLogCurrentState('Category Changed');
   };
 }
 
 /**
- * @description تقوم بتعبئة حقول النموذج ببيانات المنتج الموجودة عند فتح النموذج في وضع التعديل.
- *   يشمل ذلك تحديث عنوان النموذج، تعبئة الحقول النصية، الأسعار، الفئات، والصور الحالية.
+ * @description Populates form fields with existing product data when opening the form in edit mode.
+ *   Includes updating form title, filling text fields, prices, categories, and current images.
  * @function productPopulateEditForm
- * @param {object} editProductData - كائن يحتوي على بيانات المنتج المراد تعديله.
+ * @param {object} editProductData - Object containing product data to edit.
  * @returns {void}
  * @see window.productModule.createPreviewItem
  */
 function productPopulateEditForm(editProductData) {
   console.log('[ProductForm] Populating form with existing product data.');
 
-  // تحديث العنوان وزر الإرسال
+  // Update title and submit button
   const titleElement = document.getElementById('addProductTitle');
   const submitButton = document.querySelector('.add-product-modal__submit-container .btn');
 
@@ -365,13 +365,13 @@ function productPopulateEditForm(editProductData) {
     submitButton.textContent = 'حفظ التعديلات';
   }
 
-  // تعبئة الحقول النصية
+  // Populate text fields
   document.getElementById('product-name').value = editProductData.productName || '';
   document.getElementById('product-description').value = editProductData.product_description || '';
   document.getElementById('seller-message').value = editProductData.user_message || '';
   document.getElementById('product-notes').value = editProductData.user_note || '';
 
-  // تعبئة السعر والكمية
+  // Populate price and quantity
   const isServiceCategory = editProductData.MainCategory == SERVICE_CATEGORY_NoPrice_ID;
   const quantityInput = document.getElementById('product-quantity');
   const priceInput = document.getElementById('product-price');
@@ -385,7 +385,7 @@ function productPopulateEditForm(editProductData) {
     originalPriceInput.value = editProductData.original_price || '';
   }
 
-  // تعبئة نوع الخدمة
+  // Populate service type
   const serviceTypeOptions = document.getElementById('service-type-options');
   const serviceTypeRadioInputs = document.querySelectorAll('input[name="serviceType"]');
   if (isServiceCategory && editProductData.serviceType > 0 && serviceTypeOptions) {
@@ -398,7 +398,7 @@ function productPopulateEditForm(editProductData) {
     });
   }
 
-  // تعبئة الصور
+  // Populate images
   if (editProductData.ImageName) {
     console.log('[ProductForm] Loading existing images:', editProductData.ImageName);
     const imageNames = editProductData.ImageName.split(',');
@@ -419,7 +419,7 @@ function productPopulateEditForm(editProductData) {
     });
   }
 
-  // تعبئة الفئات
+  // Populate categories
   const mainCatId = editProductData.MainCategory;
   const subCatId = editProductData.SubCategory;
   const mainCategorySelect = document.getElementById('main-category');
@@ -436,7 +436,7 @@ function productPopulateEditForm(editProductData) {
     }, 100);
   }
 
-  // تحديث الحالة الموسعة بعد تعبئة البيانات
+  // Update extended mode after populating data
   setTimeout(() => {
     productUpdateExtendedMode();
     productLogCurrentState('Edit Form Populated');
@@ -444,9 +444,9 @@ function productPopulateEditForm(editProductData) {
 }
 
 /**
- * @description تقوم بإعداد عدادات الأحرف للحقول النصية (مثل اسم المنتج والوصف)
- *   وتربط مستمعي الأحداث (`input`, `blur`) لتوفير تحقق فوري من صحة البيانات (real-time validation)
- *   أثناء إدخال المستخدم للبيانات.
+ * @description Sets up character counters for text fields (like product name and description)
+ *   and binds event listeners (`input`, `blur`) to provide real-time validation
+ *   as the user inputs data.
  * @function productSetupCharacterCounters
  * @returns {void}
  * @see productQuickValidateField
@@ -469,7 +469,7 @@ function productSetupCharacterCounters() {
         const maxLength = element.maxLength;
         counter.textContent = `${currentLength} / ${maxLength}`;
 
-        // التحقق في الوقت الفعلي
+        // Real-time validation
         if (currentLength > 0) {
           productQuickValidateField(element);
         } else {
@@ -477,24 +477,24 @@ function productSetupCharacterCounters() {
         }
       });
 
-      // التحقق عند فقدان التركيز
+      // Validate on blur
       element.addEventListener('blur', () => {
         productQuickValidateField(element);
       });
 
-      // تشغيل الحدث مرة واحدة لتحديث القيمة الأولية
+      // Trigger event once to update initial value
       element.dispatchEvent(new Event('input'));
     }
   });
 
-  // إعداد مستمعي الأحداث لحقول الأرقام مع التحقق
+  // Setup event listeners for number fields with validation
   productSetupNumberFields();
 }
 
 /**
- * @description تقوم بإعداد مستمعي الأحداث لحقول الأرقام (الكمية والسعر) لضمان قبول الأرقام فقط،
- *   وتطبيع الأرقام الهندية، وتوفير تحقق فوري من صحة البيانات.
- *   كما أنها تتحقق من أن السعر الأصلي (قبل الخصم) أكبر من السعر الحالي.
+ * @description Sets up event listeners for number fields (Quantity and Price) to ensure only digits are accepted,
+ *   normalize Hindi digits, and provide real-time validation.
+ *   Also checks that the original price (before discount) is greater than the current price.
  * @function productSetupNumberFields
  * @returns {void}
  * @see productNormalizeDigits
@@ -552,7 +552,7 @@ function productSetupNumberFields() {
       }
       originalPriceInput.value = value;
 
-      // التحقق من أن السعر الأصلي أكبر من السعر الحالي
+      // Validate that original price is greater than current price
       const priceInput = document.getElementById('product-price');
       if (originalPriceInput.value && priceInput && priceInput.value) {
         const originalPrice = parseFloat(originalPriceInput.value);
@@ -568,7 +568,7 @@ function productSetupNumberFields() {
     });
   }
 
-  // التحقق من الفئات عند التغيير
+  // Validate categories on change
   const mainCategorySelect = document.getElementById('main-category');
   const subCategorySelect = document.getElementById('sub-category');
 
@@ -587,16 +587,16 @@ function productSetupNumberFields() {
 
 
 /**
- * @description تحديث لون خلفية النموذج بناءً على الوضع الموسع.
- *   يتم تطبيق خلفية خاصة عندما يكون المنتج في فئة الخدمات.
+ * @description Update the modal background color based on the extended mode.
+ *   A specific background is applied when the product is in the service category.
  * @function productUpdateModalBackground
- * @param {string} extendedMode - الوضع الموسع الحالي (مثل 'addInServiceCategory').
+ * @param {string} extendedMode - Current extended mode (e.g., 'addInServiceCategory').
  * @returns {void}
  */
 function productUpdateModalBackground(extendedMode) {
   console.group('%c[ProductForm] 🎨 Background Update - Targeting Correct Element', 'color: orange; font-weight: bold;');
 
-  // العنصر الصحيح هو .add-product-modal فقط
+  // The correct element is .add-product-modal only
   const targetElement = document.querySelector('.add-product-modal');
 
   if (!targetElement) {
@@ -607,7 +607,7 @@ function productUpdateModalBackground(extendedMode) {
 
   console.log('%c[ProductForm] 🎨 Found correct target element:', 'color: green;', targetElement);
 
-  // حفظ الخلفية الأصلية إذا لم يتم حفظها
+  // Save original background if not saved
   if (!targetElement.dataset.originalBackground) {
     const computedStyle = window.getComputedStyle(targetElement);
     const originalBackground = computedStyle.backgroundColor || computedStyle.background;
@@ -621,10 +621,10 @@ function productUpdateModalBackground(extendedMode) {
   const isServiceMode = extendedMode === 'addInServiceCategory' || extendedMode === 'editInServiceCategory';
 
   if (isServiceMode) {
-    // تطبيق خلفية الخدمات على العنصر الصحيح فقط
+    // Apply service background to the correct element only
     console.log('%c[ProductForm] 🎨 APPLYING SERVICE BACKGROUND TO .add-product-modal', 'color: green; font-weight: bold;');
 
-    // طريقة مباشرة وقوية
+    // Direct and strong method
     targetElement.style.backgroundColor = serviceBackground;
     targetElement.style.background = serviceBackground;
     targetElement.classList.add('service-category-active');
@@ -632,7 +632,7 @@ function productUpdateModalBackground(extendedMode) {
     console.log('%c[ProductForm] 🎨 Service background applied to correct element', 'color: green;');
 
   } else {
-    // إعادة الخلفية الأصلية
+    // Restore original background
     console.log('%c[ProductForm] 🎨 RESTORING ORIGINAL BACKGROUND', 'color: blue; font-weight: bold;');
 
     const originalBackground = targetElement.dataset.originalBackground;
@@ -643,7 +643,7 @@ function productUpdateModalBackground(extendedMode) {
     console.log('%c[ProductForm] 🎨 Original background restored to correct element', 'color: blue;');
   }
 
-  // فحص نهائي
+  // Final check
   const finalStyle = window.getComputedStyle(targetElement);
   console.log('%c[ProductForm] 🎨 Final background of .add-product-modal:', 'color: teal;', finalStyle.backgroundColor);
   console.groupEnd();
@@ -652,15 +652,15 @@ function productUpdateModalBackground(extendedMode) {
 
 
 /**
- * @description إعادة تعيين لون خلفية النموذج إلى حالته الأصلية.
- *   يتم استدعاؤها عند إغلاق النموذج لضمان عدم تأثر الفتح التالي.
+ * @description Reset the modal background color to its original state.
+ *   Called when closing the modal to ensure the next open is not affected.
  * @function productResetModalBackground
  * @returns {void}
  */
 function productResetModalBackground() {
   console.log('%c[ProductForm] 🎨 RESET Background - Targeting .add-product-modal only', 'color: red; font-weight: bold;');
 
-  // استهدف فقط .add-product-modal
+  // Target only .add-product-modal
   const targetElement = document.querySelector('.add-product-modal');
 
   if (!targetElement) {
@@ -670,19 +670,19 @@ function productResetModalBackground() {
 
   console.log('%c[ProductForm] 🎨 Resetting only .add-product-modal element', 'color: orange;');
 
-  // إعادة الخلفية الأصلية
+  // Restore original background
   if (targetElement.dataset.originalBackground) {
     targetElement.style.backgroundColor = targetElement.dataset.originalBackground;
     targetElement.style.background = targetElement.dataset.originalBackground;
     console.log('%c[ProductForm] 🎨 Restored original background:', 'color: green;', targetElement.dataset.originalBackground);
   } else {
-    // إذا لم تكن الخلفية الأصلية محفوظة، إعادة تعيين
+    // If original background not saved, reset
     targetElement.style.removeProperty('background-color');
     targetElement.style.removeProperty('background');
     console.log('%c[ProductForm] 🎨 Removed background properties', 'color: green;');
   }
 
-  // إزالة الكلاسات
+  // Remove classes
   targetElement.classList.remove('service-category-active');
   targetElement.classList.remove('service-category-mode');
 
@@ -695,7 +695,7 @@ function productResetModalBackground() {
 
 
 /**
- * @description فحص وتصحيح الخلفية الحالية
+ * @description Check and correct the current background.
  * @function productDebugBackground
  * @returns {void}
  */
@@ -724,7 +724,7 @@ function productDebugBackground() {
 }
 
 /**
- * @description إعداد مستمع حدث لزر إغلاق النموذج
+ * @description Setup event listener for the form close button.
  * @function productSetupCloseButtonListener
  * @returns {void}
  */
@@ -733,14 +733,14 @@ function productSetupCloseButtonListener() {
   const modalContainer = document.querySelector('.add-product-modal');
 
   if (closeButton) {
-    // إزالة أي مستمعين سابقين لمنع التكرار
+    // Remove any previous listeners to prevent duplicates
     closeButton.removeEventListener('click', productHandleCloseButton);
     closeButton.addEventListener('click', productHandleCloseButton);
     console.log('%c[ProductForm] 🔒 Close button listener setup', 'color: gray;');
   }
 
   if (modalContainer) {
-    // أيضًا نستمع لأي حدث إغلاق خارجي
+    // Also listen for any external close event
     modalContainer.removeEventListener('close', productHandleCloseButton);
     modalContainer.addEventListener('close', productHandleCloseButton);
   }
@@ -749,20 +749,20 @@ function productSetupCloseButtonListener() {
 
 
 /**
- * @description معالج حدث النقر على زر إغلاق النموذج.
- *   يضمن إعادة تعيين خلفية النموذج إلى حالتها الأصلية.
+ * @description Event handler for clicking the form close button.
+ *   Ensures resetting the form background to its original state.
  * @function productHandleCloseButton
  */
 function productHandleCloseButton() {
   console.log('%c[ProductForm] 🔒 Close button - RESETTING .add-product-modal ONLY', 'color: red; font-weight: bold;');
 
-  // إعادة تعيين فورية للعنصر الصحيح فقط
+  // Immediate reset for the correct element only
   setTimeout(() => {
     if (typeof productResetModalBackground === 'function') {
       productResetModalBackground();
     }
 
-    // تنظيف إضافي مضمون
+    // Guaranteed additional cleanup
     const modalElement = document.querySelector('.add-product-modal');
     if (modalElement) {
       modalElement.style.cssText = '';
@@ -776,7 +776,7 @@ function productHandleCloseButton() {
 
 
 
-// جعل الدالة متاحة عالميًا
+// Make the function globally available
 window.productInitializeAddProductForm = productInitializeAddProductForm;
 window.productUpdateExtendedMode = productUpdateExtendedMode;
 window.productLogCurrentState = productLogCurrentState;

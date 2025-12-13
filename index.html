@@ -419,11 +419,11 @@
             // If not logged in, show a confirmation modal.
             Swal.fire({
               icon: "info",
-              title: "Login Required",
-              text: "To view your sales and products, please log in first.",
+              title: "تسجيل الدخول مطلوب",
+              text: "لعرض مبيعاتك ومنتجاتك، يرجى تسجيل الدخول أولاً.",
               showCancelButton: true,
-              confirmButtonText: "Log In",
-              cancelButtonText: "Cancel",
+              confirmButtonText: "تسجيل الدخول",
+              cancelButtonText: "إلغاء",
             }).then((result) => {
               if (result.isConfirmed) {
                 // If confirmed, redirect to login page.

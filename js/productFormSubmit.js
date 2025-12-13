@@ -113,9 +113,9 @@ async function productProcessFormSubmission() {
     console.error('%c[ProductForm] Submission failed with critical error:', 'color: red; font-weight: bold;', error);
 
     if (typeof Swal !== 'undefined') {
-      Swal.fire('خطأ!', `فشل في حفظ المنتج: ${error.message}`, 'error');
+      console.error('خطأ!', `فشل في حفظ المنتج: ${error.message}`, 'error');
     } else {
-      alert(`فشل في حفظ المنتج: ${error.message}`);
+      console.error(`فشل في حفظ المنتج: ${error.message}`);
     }
   }
 }

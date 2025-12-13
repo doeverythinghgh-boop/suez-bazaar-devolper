@@ -121,12 +121,7 @@
     position: relative;
   }
 
-  /* Adjust password input padding to make space for the icon */
-  .login_password-wrapper input[type="password"],
-  .login_password-wrapper input[type="text"] {
-    /* تم إلغاء هذه القاعدة هنا لأنها متعارضة مع #login_password وسأعتمد على id فقط */
-    /* padding-left: 40px; */
-  }
+
 
   /* أيقونات حقول الإدخال (في حالة رقم الهاتف) */
   .login_form-group .fa-phone,
@@ -370,13 +365,7 @@
     } catch (error) {
       console.error("🚫 Error in loadPage function:", error);
       // Show generic error to user using SweetAlert2.
-      if (typeof Swal !== "undefined") {
-        Swal.fire({
-          icon: "error",
-          title: "Page Load Error",
-          text: "Please try again later.",
-        });
-      }
+
     }
   }
 
@@ -504,8 +493,8 @@
 
         // Show loading popup.
         Swal.fire({
-          title: "Logging in...",
-          text: "Please wait a moment.",
+          title: "جاري تسجيل الدخول...",
+          text: "يرجى الانتظار لحظة.",
           allowOutsideClick: false,
           didOpen: () => {
             // Show loading spinner.
@@ -522,9 +511,7 @@
 
         // 5. Handle verification result.
         if (verificationResult && !verificationResult.error) {
-          console.log(
-            "[Login Page] Login successful. Calling handleLoginSuccess..."
-          );
+
           login_handleLoginSuccess(verificationResult);
         } else {
           // Verification failed.
@@ -543,14 +530,7 @@
     } catch (error) {
       console.error("🚫 Error in login_handleSubmit:", error);
       // Close loading popup and show error.
-      if (typeof Swal !== "undefined") {
-        Swal.close();
-        Swal.fire({
-          icon: "error",
-          title: "Login Failed",
-          text: "An unexpected error occurred during login.",
-        });
-      }
+
     }
   }
 
@@ -585,18 +565,18 @@
 
       // 3. Show welcome message and redirect to home.
       Swal.fire({
-        title: `🎉 Welcome, ${userSession.username}! 🎉`,
+        title: `🎉 مرحباً بك، ${userSession.username}! 🎉`,
         html: `
-        <p style="font-size: 1.1rem; color: #333;">You are now ready for a unique shopping experience!</p>
+        <p style="font-size: 1.1rem; color: #333;">أنت الآن جاهز لتجربة تسوق فريدة!</p>
         <div style="text-align: right; margin-top: 20px; padding-right: 15px; font-size: 1rem;">
-          <p style="margin-bottom: 10px;">🛍️ Browse thousands of products easily.</p>
-          <p style="margin-bottom: 10px;">💰 Enjoy exclusive discounts and offers.</p>
-          <p>✨ Discover what's new in Suez Bazaar.</p>
+          <p style="margin-bottom: 10px;">🛍️ تصفح آلاف المنتجات بسهولة.</p>
+          <p style="margin-bottom: 10px;">💰 استمتع بخصومات وعروض حصرية.</p>
+          <p>✨ اكتشف ما هو جديد في سوق السويس.</p>
         </div>
       `,
         icon: "success",
         allowOutsideClick: false, // Prevent closing on click outside
-        confirmButtonText: "Start Shopping Now!",
+        confirmButtonText: "ابدأ التسوق الآن!",
         confirmButtonColor: "#3b82f6",
         customClass: { popup: 'fullscreen-swal' }, // Apply custom style
       }).then((result) => {
@@ -609,7 +589,7 @@
       });
 
     } catch (error) {
-      console.error("🚫 Error in login_handleLoginSuccess function:", error);
+      console.error("🚫 خطأ في دالة login_handleLoginSuccess:", error);
     }
   }
 

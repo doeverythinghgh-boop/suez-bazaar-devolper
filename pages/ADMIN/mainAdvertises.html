@@ -521,12 +521,12 @@
          */
         function removeImage(id) {
             Swal.fire({
-                title: 'Delete Image?',
-                text: "It will not be deleted from the server until you click 'Publish'.",
+                title: 'حذف الصورة؟',
+                text: "لن يتم حذفها من الخادم حتى تضغط على 'نشر'.",
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No'
+                confirmButtonText: 'نعم',
+                cancelButtonText: 'لا'
             }).then(res => {
                 if (res.isConfirmed) {
                     const idx = images.findIndex(x => x.id === id);
@@ -545,7 +545,7 @@
          */
         async function handleNewFiles(fileList) {
             if (images.length + fileList.length > MAX_FILES) {
-                Swal.fire('Alert', `Maximum limit is ${MAX_FILES} images.`, 'warning');
+                Swal.fire('Alert', `الحد الأقصى هو ${MAX_FILES} صورة.`, 'warning');
                 return;
             }
 
@@ -686,7 +686,7 @@
                     }, 'image/jpeg', 0.9);
                 };
             } catch (e) {
-                Swal.fire('Error', 'Camera access denied', 'error');
+                console.error(e);
                 els.cameraModal.style.display = 'none';
             }
         }
@@ -770,7 +770,7 @@
 
             } catch (err) {
                 console.error(err);
-                Swal.fire('خطأ', 'حدث خطأ أثناء النشر: ' + err.message, 'error');
+            
             }
         };
 

@@ -154,6 +154,6 @@ async function showAddProductModal() {
 
   } catch (error) {
     console.error("خطأ في عرض نافذة إضافة المنتج:", error);
-    Swal.fire("خطأ", "حدث خطأ أثناء محاولة عرض النافذة.", "error");
+  
   }
 }
