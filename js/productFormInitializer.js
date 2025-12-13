@@ -497,7 +497,7 @@ function productSetupCharacterCounters() {
  *   Also checks that the original price (before discount) is greater than the current price.
  * @function productSetupNumberFields
  * @returns {void}
- * @see productNormalizeDigits
+ * @see normalizeDigits
  * @see productQuickValidateField
  */
 function productSetupNumberFields() {
@@ -507,7 +507,7 @@ function productSetupNumberFields() {
 
   if (quantityInput) {
     quantityInput.addEventListener('input', () => {
-      let value = productNormalizeDigits(quantityInput.value);
+      let value = normalizeDigits(quantityInput.value);
       quantityInput.value = value.replace(/[^0-9]/g, '');
       if (quantityInput.value) {
         productQuickValidateField(quantityInput);
@@ -523,7 +523,7 @@ function productSetupNumberFields() {
 
   if (priceInput) {
     priceInput.addEventListener('input', () => {
-      let value = productNormalizeDigits(priceInput.value);
+      let value = normalizeDigits(priceInput.value);
       value = value.replace(/[^0-9.]/g, '');
       const parts = value.split('.');
       if (parts.length > 2) {
@@ -544,7 +544,7 @@ function productSetupNumberFields() {
 
   if (originalPriceInput) {
     originalPriceInput.addEventListener('input', () => {
-      let value = productNormalizeDigits(originalPriceInput.value);
+      let value = normalizeDigits(originalPriceInput.value);
       value = value.replace(/[^0-9.]/g, '');
       const parts = value.split('.');
       if (parts.length > 2) {

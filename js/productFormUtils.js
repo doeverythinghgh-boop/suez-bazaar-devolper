@@ -9,28 +9,6 @@
 const SERVICE_CATEGORY_BACKGROUND = 'radial-gradient(circle, #f6f9fc, #0e4a9aff, #182b48ff, #000101ff)';
 
 
-/**
- * @description Converts Eastern Arabic (Hindi) and Persian digits in a string to Western Arabic (English) digits.
- *   Used to normalize user-input numbers before processing.
- * @function productNormalizeDigits
- * @param {string} str - String that may contain Hindi or Persian digits.
- * @returns {string} - String after converting all digits to English format.
- */
-function productNormalizeDigits(str) {
-  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
-  const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
-  let output = '';
-  for (let char of str) {
-    if (arabicDigits.includes(char)) {
-      output += arabicDigits.indexOf(char);
-    } else if (persianDigits.includes(char)) {
-      output += persianDigits.indexOf(char);
-    } else {
-      output += char;
-    }
-  }
-  return output;
-}
 
 /**
  * @description Sanitizes Arabic text by removing excess whitespace from the beginning and end,
