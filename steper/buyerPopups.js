@@ -147,7 +147,7 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
                         } ${isLocked ? "disabled" : ""}>
                     <label for="review-checkbox-${productKey}" style="margin-right: 8px;">${productName}</label>
                   </div>
-                  <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">key</button>
+                  <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
               </div>`;
                 }
             )
@@ -279,7 +279,7 @@ export function showUnselectedProductsAlert(data, ordersData) {
                     const productName = getProductName(key, ordersData);
                     return `<li id="cancelled-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <span>${productName}</span>
-                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">key</button>
+                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
                     </li>`;
                 })
                 .join("");
@@ -406,7 +406,7 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
                     } ${isDeliveredActivated ? "disabled" : ""}>
                               <label for="delivery-checkbox-${productKey}" style="margin-right: 8px;">${productName}</label>
                           </div>
-                          <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">key</button>
+                          <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
                       </div>`;
             })
             .join("");
@@ -533,7 +533,7 @@ export function showReturnedProductsAlert(data, ordersData) {
                     const productName = getProductName(key, ordersData || []); // Handle potential missing ordersData gracefully or fix caller
                     return `<li id="returned-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <span>${productName}</span>
-                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">key</button>
+                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
                     </li>`;
                 })
                 .join("");

@@ -202,7 +202,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
         const currentStep = determineCurrentStepId(data);
 
         Swal.fire({
-            title: "تأكيد المنتجات (بائع):",
+            title: "تأكيد المنتجات",
             html: `<div id="seller-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">
                     ${contentHtml}
                    </div>`,
@@ -286,7 +286,7 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
                     const productName = getProductName(key, ordersData);
                     return `<li id="rejected-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <span>${productName}</span>
-                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">key</button>
+                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
                     </li>`;
                 })
                 .join("");
@@ -423,7 +423,7 @@ export function showShippingInfoAlert(data, ordersData) {
             }
 
             // إضافة زر Key بجانب اسم المنتج
-            const keyButton = `<button type="button" class="btn-show-key" data-key="${productKey}" style="float:left; padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; margin-right: 5px;">key</button>`;
+            const keyButton = `<button type="button" class="btn-show-key" data-key="${productKey}" style="float:left; padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; margin-right: 5px;">المنتج</button>`;
 
             return `
                 <tr>
