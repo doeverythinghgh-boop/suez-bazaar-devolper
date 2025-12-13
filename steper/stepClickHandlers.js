@@ -1,8 +1,8 @@
 /**
  * @file stepClickHandlers.js
- * @description وحدة معالجة نقرات الخطوات (Step Click Handlers).
- * هذا الملف مسؤول عن ربط أحداث النقر (Click Events) بعناصر الخطوات في الواجهة.
- * يحدد ماذا يحدث عند النقر على كل خطوة بناءً على نوع المستخدم وصلاحياته.
+ * @description Step Click Handlers Module.
+ * This file is responsible for binding click events to step elements in the UI.
+ * It determines what happens when each step is clicked based on user type and permissions.
  */
 
 import { isStepAllowedForCurrentUser } from "./roleAndStepDetermination.js";
@@ -21,12 +21,12 @@ import {
 
 /**
  * @function addStepClickListeners
- * @description تقوم هذه الدالة بإضافة مستمعي أحداث النقر (Event Listeners) لجميع عناصر الخطوات في الصفحة.
- * عند النقر، تقوم بالتحقق من الصلاحيات ثم فتح النافذة المنبثقة المناسبة.
+ * @description Adds click event listeners to all step elements in the page.
+ * Upon clicking, it checks permissions and then opens the appropriate popup.
  *
- * @param {object} data - بيانات التحكم الكاملة (Control Data).
- * @param {Array<object>} ordersData - بيانات الطلبات.
- * @param {boolean} isBuyerReviewModificationLocked - حالة خاصة تحدد ما إذا كان تعديل المراجعة مقفلاً (مثلاً لأن الطلب قد شُحن).
+ * @param {object} data - Full Control Data.
+ * @param {Array<object>} ordersData - Orders data.
+ * @param {boolean} isBuyerReviewModificationLocked - Special flag indicating if review modification is locked (e.g., because order is shipped).
  * @returns {void}
  * @throws {Error} If there is an error adding click listeners or handling step clicks.
  * @see isStepAllowedForCurrentUser
@@ -45,7 +45,7 @@ export function addStepClickListeners(
     isBuyerReviewModificationLocked
 ) {
     try {
-        // تحديد جميع العناصر التي تحمل الكلاس .step-item
+        // Select all elements with class .step-item
         const stepItems = document.querySelectorAll(".step-item");
 
         stepItems.forEach((stepItem) => {
@@ -53,16 +53,16 @@ export function addStepClickListeners(
                 const stepId = stepItem.id;
                 const userType = data.currentUser.type;
 
-                // 1. التحقق الأمني: هل المستخدم مسموح له بفتح هذه الخطوة؟
+                // 1. Security Check: Is the user allowed to open this step?
                 if (!isStepAllowedForCurrentUser(stepId, data)) {
-                    showUnauthorizedAlert(); // عرض رسالة خطأ
-                    return; // إيقاف التنفيذ فوراً
+                    showUnauthorizedAlert(); // Show error message
+                    return; // Stop execution immediately
                 }
 
-                // 2. التوجيه: فتح النافذة المناسبة بناءً على معرف الخطوة ونوع المستخدم
+                // 2. Routing: Open the appropriate window based on step ID and user type
                 switch (stepId) {
                     case "step-review":
-                        // خطوة المراجعة: تعرض المنتجات للمراجعة
+                        // Review Step: Shows products for review
                         showProductKeysAlert(
                             data,
                             ordersData,
@@ -71,35 +71,35 @@ export function addStepClickListeners(
                         break;
 
                     case "step-confirmed":
-                        // خطوة التأكيد: خاصة بالبائع لتأكيد توفر المنتجات
-                        if (userType === "seller")
+                        // Confirmation Step: For seller to confirm product availability
+                        if (userType === "seller" || userType === "admin")
                             showSellerConfirmationProductsAlert(data, ordersData);
                         break;
 
                     case "step-shipped":
-                        // خطوة الشحن: للبائع أو الساعي لعرض ما تم شحنه
-                        if (userType === "seller" || userType === "courier")
+                        // Shipping Step: For seller or courier to view shipped items
+                        if (userType === "seller" || userType === "courier" || userType === "admin")
                             showShippingInfoAlert(data, ordersData);
                         break;
 
                     case "step-cancelled":
-                        // خطوة الإلغاء: تعرض المنتجات التي ألغاها المشتري
+                        // Cancellation Step: Shows products cancelled by the buyer
                         showUnselectedProductsAlert(data, ordersData);
                         break;
 
                     case "step-rejected":
-                        // خطوة الرفض: تعرض المنتجات التي رفضها البائع
+                        // Rejection Step: Shows products rejected by the seller
                         showSellerRejectedProductsAlert(data, ordersData);
                         break;
 
                     case "step-delivered":
-                        // خطوة التسليم: للمشتري لتأكيد الاستلام أو الساعي للمتابعة
-                        if (userType === "buyer" || userType === "courier")
+                        // Delivery Step: For buyer to confirm receipt or courier to follow up
+                        if (userType === "buyer" || userType === "courier" || userType === "admin")
                             showDeliveryConfirmationAlert(data, ordersData);
                         break;
 
                     case "step-returned":
-                        // خطوة الإرجاع: تعرض المنتجات التي تم إرجاعها
+                        // Return Step: Shows returned products
                         showReturnedProductsAlert(data, ordersData);
                         break;
                 }

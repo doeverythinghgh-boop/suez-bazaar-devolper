@@ -1,11 +1,11 @@
 /**
  * @file sellerPopups.js
- * @description نوافذ البائع المنبثقة (Seller Popups).
- * يحتوي هذا الملف على جميع الدوال المسؤولة عن عرض النوافذ المنبثقة الخاصة بالبائع.
- * تشمل هذه النوافذ:
- * - تأكيد المنتجات (الموافقة على الطلب).
- * - عرض المنتجات المرفوضة.
- * - عرض معلومات الشحن.
+ * @description Seller Popups Module.
+ * This file contains all functions responsible for displaying seller-specific popups.
+ * These popups include:
+ * - Product Confirmation (Order Approval).
+ * - Viewing Rejected Products.
+ * - Viewing Shipping Information.
  */
 
 import {
@@ -52,16 +52,16 @@ function attachLogButtonListeners() {
 
 /**
  * @function showSellerConfirmationProductsAlert
- * @description تعرض نافذة للبائع لتأكيد توفر المنتجات التي طلبها المشتري.
- * هذه هي الخطوة الثانية (Confirmed Step).
+ * @description Displays a popup for the seller to confirm product availability.
+ * This is the second step (Confirmed Step).
  *
- * المنطق يشمل:
- * 1. عرض فقط المنتجات التي تخص هذا البائع والتي قام المشتري باختيارها.
- * 2. السماح للبائع بإلغاء تحديد المنتجات (رفضها) إذا لم تكن متوفرة.
- * 3. حفظ حالة التأكيد (المقبول والمرفوض).
+ * Logic includes:
+ * 1. Displaying only products belonging to this seller that were selected by the buyer.
+ * 2. Allowing the seller to deselect (reject) products if unavailable.
+ * 3. Saving the confirmation state (selected and deselected).
  *
- * @param {object} data - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
  * @returns {void}
  * @throws {Error} - If there is an error displaying the alert or processing product confirmations.
  * @see saveStepState
@@ -74,11 +74,14 @@ function attachLogButtonListeners() {
 export function showSellerConfirmationProductsAlert(data, ordersData) {
     try {
         const sellerId = data.currentUser.idUser;
+        const userType = data.currentUser.type;
 
-        // تجميع منتجات البائع مع معلومات التوصيل
+        // Group seller products with delivery info
+        // If user is Admin, show all products in the order
+        // If seller, show only their products
         const sellerOwnedProducts = ordersData.flatMap((order) =>
             order.order_items
-                .filter((item) => item.seller_key === sellerId)
+                .filter((item) => userType === "admin" || item.seller_key === sellerId)
                 .map((item) => {
                     const deliveryData = item.supplier_delivery;
                     let parsedDeliveryData = [];
@@ -110,14 +113,14 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
                 })
         );
 
-        // إزالة التكرار
+        // Remove duplicates
         const uniqueSellerProducts = Array.from(
             new Map(sellerOwnedProducts.map((p) => [p.product_key, p])).values()
         );
 
-        // الحصول على اختيارات المشتري
+        // Get buyer selections
         const buyerReviewState = loadStepState("step-review");
-        // إذا لم يكن هناك حالة مراجعة (لم يقم المشتري بالحفظ)، نعتبر أن جميع المنتجات مقبولة مبدئياً
+        // If no review state (buyer hasn't saved), assume all products are accepted initially
         const buyerSelectedKeys = buyerReviewState
             ? buyerReviewState.selectedKeys
             : null;
@@ -127,11 +130,11 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
             ? sellerConfirmedState.selectedKeys
             : null;
 
-        // التحقق مما إذا كانت مرحلة التأكيد مفعلة بالفعل (تم الانتقال لما بعدها)
+        // Check if confirmation stage is already activated (moved past it)
         const currentStepState = loadStepState("current_step");
         const isConfirmedActivated = currentStepState && parseInt(currentStepState.stepNo) >= 2;
 
-        // تصفية المنتجات لعرض فقط ما طلبه المشتري
+        // Filter products to show only what buyer requested
         const displayableProducts = uniqueSellerProducts.filter((p) =>
             buyerSelectedKeys === null || buyerSelectedKeys.includes(p.product_key)
         );
@@ -141,7 +144,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
         if (displayableProducts.length === 0) {
             contentHtml = "<p>لا توجد منتجات مشتركة مع اختيارات المشتري لتأكيدها.</p>";
         } else {
-            // إنشاء جدول موحد يحتوي على الـ checkboxes ومعلومات التوصيل
+            // Create unified table containing checkboxes and delivery info
             const tableRows = displayableProducts.map(product => {
                 const isChecked =
                     previouslySellerSelectedKeys !== null
@@ -151,7 +154,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
                 const agentNames = product.delivery_info.map(d => d.name).join("<br>");
                 const agentPhones = product.delivery_info.map(d => d.phone).join("<br>");
 
-                // إنشاء checkbox + label + key button
+                // Create checkbox + label + key button
                 const checkboxCell = `
                     <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
                         <div style="display: flex; align-items: center;">
@@ -234,7 +237,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
                                 )
                             ).map((cb) => cb.value);
 
-                            // المنتجات غير المحددة تعتبر مرفوضة
+                            // Unselected products are considered rejected
                             const sellerDeselectedKeys = displayableProducts
                                 .map((p) => p.product_key)
                                 .filter((key) => !sellerSelectedKeys.includes(key));
@@ -243,7 +246,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
                                 selectedKeys: sellerSelectedKeys,
                                 deselectedKeys: sellerDeselectedKeys,
                             });
-                            console.log("الحفظ التلقائي لحالة تأكيد البائع:", {
+                            console.log("Auto-saving seller confirmation state:", {
                                 selectedKeys: sellerSelectedKeys,
                                 deselectedKeys: sellerDeselectedKeys,
                             });
@@ -255,7 +258,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
         });
     } catch (sellerConfirmAlertError) {
         console.error(
-            "خطأ في showSellerConfirmationProductsAlert:",
+            "Error in showSellerConfirmationProductsAlert:",
             sellerConfirmAlertError
         );
     }
@@ -263,11 +266,11 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
 
 /**
  * @function showSellerRejectedProductsAlert
- * @description تعرض نافذة بالمنتجات التي قام البائع برفضها (إلغاء تحديدها) في مرحلة التأكيد.
- * تظهر عند النقر على خطوة "مرفوض".
+ * @description Displays a popup with products rejected (deselected) by the seller during the confirmation step.
+ * Appears when clicking on the "Rejected" step.
  *
- * @param {object} data - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
  * @returns {void}
  * @throws {Error} - If there is an error displaying the alert for rejected products.
  * @see loadStepState
@@ -312,7 +315,7 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
         });
     } catch (rejectedAlertError) {
         console.error(
-            "خطأ في showSellerRejectedProductsAlert:",
+            "Error in showSellerRejectedProductsAlert:",
             rejectedAlertError
         );
     }
@@ -320,12 +323,12 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
 
 /**
  * @function showShippingInfoAlert
- * @description تعرض نافذة بالمنتجات التي تم شحنها.
- * تظهر هذه النافذة في خطوة "شُحن".
- * تعرض فقط المنتجات التي تم تأكيدها من قبل البائع.
+ * @description Displays a popup with products that have been shipped.
+ * Appears in the "Shipped" step.
+ * Shows only products confirmed by the seller.
  *
- * @param {object} data - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
  * @returns {void}
  * @throws {Error} - If there is an error displaying the shipping information alert.
  * @see loadStepState
@@ -342,7 +345,7 @@ export function showShippingInfoAlert(data, ordersData) {
         if (sellerConfirmedState) {
             confirmedKeys = sellerConfirmedState.selectedKeys;
         } else {
-            // إذا لم يكن هناك حالة محفوظة، نفترض أن جميع المنتجات المتاحة هي مؤكدة
+            // If no state saved, assume all available products are confirmed
             const userId = data.currentUser.idUser;
             const userType = data.currentUser.type;
 
@@ -368,11 +371,16 @@ export function showShippingInfoAlert(data, ordersData) {
                         })
                         .map((item) => item.product_key)
                 );
+            } else if (userType === "admin") {
+                // Admin sees all products
+                userOwnedProducts = ordersData.flatMap((order) =>
+                    order.order_items.map((item) => item.product_key)
+                );
             } else {
                 userOwnedProducts = [];
             }
 
-            // إزالة التكرار
+            // Remove duplicates
             const uniqueUserProducts = [...new Set(userOwnedProducts)];
 
             const buyerReviewState = loadStepState("step-review");
@@ -396,12 +404,12 @@ export function showShippingInfoAlert(data, ordersData) {
             return;
         }
 
-        // إعداد بيانات الجدول
+        // Prepare table data
         const tableRows = confirmedKeys.map(productKey => {
             const productName = getProductName(productKey, ordersData);
             let deliveryInfo = { names: '-', phones: '-' };
 
-            // البحث عن تفاصيل التوصيل للمنتج
+            // Find delivery details for product
             for (const order of ordersData) {
                 const item = order.order_items.find(i => i.product_key === productKey);
                 if (item && item.supplier_delivery) {
@@ -419,11 +427,11 @@ export function showShippingInfoAlert(data, ordersData) {
                         const key = Array.isArray(deliveryData.delivery_key) ? deliveryData.delivery_key.join(", ") : deliveryData.delivery_key;
                         deliveryInfo.names = key;
                     }
-                    break; // وجدنا المنتج، نكتفي بأول تطابق (أو يمكن تحسينه إذا كان المنتج مكرر بطريقة ما)
+                    break; // Found product, take first match (or improve if product is duplicated somehow)
                 }
             }
 
-            // إضافة زر Key بجانب اسم المنتج
+            // Add Key button next to product name
             const keyButton = `<button type="button" class="btn-show-key" data-key="${productKey}" style="float:left; padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; margin-right: 5px;">المنتج</button>`;
 
             return `
@@ -468,6 +476,6 @@ export function showShippingInfoAlert(data, ordersData) {
             },
         });
     } catch (shippingAlertError) {
-        console.error("خطأ في showShippingInfoAlert:", shippingAlertError);
+        console.error("Error in showShippingInfoAlert:", shippingAlertError);
     }
 }

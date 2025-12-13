@@ -13,7 +13,7 @@
  * // للتحقق مما إذا كان المستخدم admin:
  * if (ADMIN_IDS.includes(userId)) { ... }
  */
-export var ADMIN_IDS = ["xx1", "xx2"];
+export var ADMIN_IDS = ["dl14v1k7", "682dri6b"];
 
 /**
  * @constant {object} appDataControl

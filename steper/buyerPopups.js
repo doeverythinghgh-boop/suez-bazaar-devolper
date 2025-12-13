@@ -1,12 +1,12 @@
 /**
  * @file buyerPopups.js
- * @description نوافذ المشتري المنبثقة (Buyer Popups).
- * يحتوي هذا الملف على جميع الدوال المسؤولة عن عرض النوافذ المنبثقة (Modals) الخاصة بالمشتري.
- * تشمل هذه النوافذ:
- * - مراجعة المنتجات واختيارها.
- * - عرض المنتجات الملغاة.
- * - تأكيد استلام المنتجات.
- * - عرض المنتجات المرتجعة.
+ * @description Buyer Popups Module.
+ * This file contains all functions responsible for displaying buyer-specific modals.
+ * These popups include:
+ * - Reviewing and selecting products.
+ * - Viewing cancelled products.
+ * - Confirming product receipt (Delivery).
+ * - Viewing returned products.
  */
 
 import {
@@ -45,7 +45,7 @@ function attachLogButtonListeners() {
         button.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation(); // Prevent toggling the checkbox/row
-            console.log('مفتاح المنتج (زر):', button.dataset.key);
+            console.log('Product Key (Button):', button.dataset.key);
             localStorage.setItem('productKeyFromStepReview', button.dataset.key);
         });
     });
@@ -53,18 +53,18 @@ function attachLogButtonListeners() {
 
 /**
  * @function showProductKeysAlert
- * @description تعرض نافذة للمشتري لمراجعة المنتجات وتحديد ما يريد طلبه منها.
- * هذه هي الخطوة الأولى في العملية (Review Step).
+ * @description Displays a popup for the buyer to review products and select what they want to order.
+ * This is the first step in the process (Review Step).
  *
- * المنطق يشمل:
- * 1. تصفية المنتجات بناءً على نوع المستخدم (المشتري يرى منتجاته، البائع يرى منتجاته، إلخ).
- * 2. التحقق من حالة القفل (إذا تم شحن الطلب، لا يمكن تعديل المراجعة).
- * 3. إنشاء مربعات اختيار (Checkboxes) لكل منتج.
- * 4. التعامل مع تغييرات الاختيار (إلغاء منتج يتطلب تأكيداً).
+ * Logic includes:
+ * 1. Filtering products based on user type (Buyer sees their products, Seller sees theirs, etc.).
+ * 2. Checking lock status (if order is shipped, review modification is not allowed).
+ * 3. Creating checkboxes for each product.
+ * 4. Handling selection changes (deselecting a product requires confirmation).
  *
- * @param {object} data - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
- * @param {boolean} isModificationLocked - هل التعديل مقفل (مثلاً لأن المرحلة تجاوزت المراجعة).
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
+ * @param {boolean} isModificationLocked - Is modification locked (e.g., because stage moved past review).
  * @returns {void}
  * @throws {Error} - If an error occurs during alert display or product key processing.
  * @see loadStepState
@@ -80,11 +80,11 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
         const userId = data.currentUser.idUser;
         const userType = data.currentUser.type;
 
-        // 1. تحديد المنتجات التي يجب عرضها حسب نوع المستخدم
+        // 1. Determine products to display based on user type
         let productKeys;
 
         if (userType === "buyer") {
-            // المشتري يرى جميع منتجاته في جميع الطلبات
+            // Buyer sees all their products in all orders
             const currentUserOrders = ordersData.filter(
                 (order) => order.user_key === userId
             );
@@ -92,21 +92,21 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
                 order.order_items.map((item) => item.product_key)
             );
         } else if (userType === "seller") {
-            // البائع يرى فقط المنتجات التي يبيعها هو
+            // Seller sees only products they act for
             productKeys = ordersData.flatMap((order) =>
                 order.order_items
                     .filter((item) => item.seller_key === userId)
                     .map((item) => item.product_key)
             );
         } else if (userType === "courier") {
-            // الساعي يرى فقط المنتجات الموكلة إليه للتوصيل
+            // Courier sees only products assigned to them for delivery
             productKeys = ordersData.flatMap((order) =>
                 order.order_items
                     .filter((item) => {
                         const deliveryKey = item.supplier_delivery?.delivery_key;
                         if (!deliveryKey) return false;
 
-                        // دعم delivery_key كـ string أو array
+                        // Support delivery_key as string or array
                         if (Array.isArray(deliveryKey)) {
                             return deliveryKey.includes(userId);
                         } else {
@@ -115,25 +115,31 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
                     })
                     .map((item) => item.product_key)
             );
+        } else if (userType === "admin") {
+            // Admin sees everything
+            productKeys = ordersData.flatMap((order) =>
+                order.order_items.map((item) => item.product_key)
+            );
         } else {
             productKeys = [];
         }
 
-        // استرجاع الحالة السابقة (إذا كان قد تم الاختيار من قبل)
+        // Retrieve previous state (if selected before)
         const previousState = loadStepState("step-review");
         const previouslySelectedKeys = previousState
             ? previousState.selectedKeys
             : null;
 
-        // التحقق مما إذا كانت مرحلة الشحن مفعلة بالفعل (قفل التعديل)
+        // Check if shipping stage is already activated (modification lock)
         const currentStepState = loadStepState("current_step");
         const isShippedActivated = currentStepState && parseInt(currentStepState.stepNo) >= 3;
 
-        // تحديد ما إذا كانت الواجهة مقفلة (للعرض فقط)
-        // تقفل إذا: تم تمرير قفل صريح، أو تم الشحن، أو المستخدم ليس مشترياً (لأن المشتري فقط هو من يراجع ويقرر)
-        const isLocked = isModificationLocked || isShippedActivated || userType !== "buyer";
+        // Determine if UI is locked (view only)
+        // Locked if: Explicit lock passed, shipped, or user is not buyer (because only buyer reviews and decides)
+        // EXCEPTION: Admin is never locked out by userType, only by stage progression or explicit lock
+        const isLocked = isModificationLocked || isShippedActivated || (userType !== "buyer" && userType !== "admin");
 
-        // إنشاء HTML لمربعات الاختيار
+        // Create HTML for checkboxes
         let checkboxes = productKeys
             .map(
                 (productKey) => {
@@ -142,12 +148,12 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
                   <div style="display: flex; align-items: center;">
                     <input type="checkbox" id="review-checkbox-${productKey}" name="productKeys" value="${productKey}" ${previouslySelectedKeys === null ||
                             previouslySelectedKeys.includes(productKey)
-                            ? "checked" // افتراضياً الكل محدد إذا لم يكن هناك حالة سابقة
+                            ? "checked" // Default all checked if no previous state
                             : ""
                         } ${isLocked ? "disabled" : ""}>
                     <label for="review-checkbox-${productKey}" style="margin-right: 8px;">${productName}</label>
                   </div>
-                  <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
+                  <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
               </div>`;
                 }
             )
@@ -155,17 +161,17 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
 
         const currentStep = determineCurrentStepId(data);
 
-        // عرض النافذة باستخدام SweetAlert2
+        // Display popup using SweetAlert2
         Swal.fire({
-            title: isLocked ? "عرض المنتجات" : "اختر المنتجات:",
+            title: isLocked ? "View Products" : "Select Products:",
             html: `<div id="buyer-review-products-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">${checkboxes}</div>`,
-            // التذييل يختلف حسب حالة القفل
+            // Footer varies based on lock status
             footer: isLocked
                 ? (userType !== "buyer"
-                    ? "عرض فقط - لا يمكن التعديل إلا من قبل المشتري."
-                    : "لا يمكن تعديل الاختيارات لأن الطلب في مرحلة متقدمة.")
+                    ? "View only - modifications can only be made by the buyer."
+                    : "Selections cannot be modified because the order is in an advanced stage.")
                 : createStepStatusFooter("step-review", currentStep),
-            cancelButtonText: "إغلاق",
+            cancelButtonText: "Close",
             focusConfirm: false,
             allowOutsideClick: !isLocked,
             showConfirmButton: false,
@@ -174,11 +180,11 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
             didOpen: () => {
                 attachLogButtonListeners(); // Attach listeners
 
-                // إضافة المستمعين فقط إذا كانت النافذة قابلة للتعديل
+                // Add listeners only if window is editable
                 if (!isLocked) {
-                    addStatusToggleListener(data, ordersData); // لتفعيل المرحلة
+                    addStatusToggleListener(data, ordersData); // To activate stage
 
-                    // الاستماع لتغييرات اختيار المنتجات
+                    // Listen for product selection changes
                     const container = document.getElementById(
                         "buyer-review-products-container"
                     );
@@ -187,22 +193,22 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
                             const checkbox = e.target;
                             const wasChecked = previouslySelectedKeys === null || previouslySelectedKeys.includes(checkbox.value);
 
-                            // إذا تم إلغاء تحديد منتج (من checked إلى unchecked)
+                            // If product deselected (checked to unchecked)
                             if (wasChecked && !checkbox.checked) {
-                                // عرض رسالة تأكيد إضافية لمنع الإلغاء بالخطأ
+                                // Show additional confirmation message to prevent accidental deselection
                                 Swal.fire({
-                                    title: "تأكيد الإلغاء",
-                                    text: "هل أنت متأكد من إلغاء هذا المنتج؟",
+                                    title: "Confirm Cancellation",
+                                    text: "Are you sure you want to cancel this product?",
                                     icon: "warning",
                                     showCancelButton: true,
                                     confirmButtonColor: "#d33",
                                     cancelButtonColor: "#3085d6",
-                                    confirmButtonText: "نعم، قم بالإلغاء",
-                                    cancelButtonText: "تراجع",
+                                    confirmButtonText: "Yes, Cancel",
+                                    cancelButtonText: "Undo",
                                     customClass: { popup: "fullscreen-swal" },
                                 }).then((result) => {
                                     if (result.isConfirmed) {
-                                        // المستخدم أكد الإلغاء، احفظ الحالة الجديدة
+                                        // User confirmed cancellation, save new state
                                         const selectedKeys = Array.from(
                                             container.querySelectorAll(
                                                 'input[name="productKeys"]:checked'
@@ -215,18 +221,18 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
                                             selectedKeys: selectedKeys,
                                             unselectedKeys: unselectedKeys,
                                         });
-                                        console.log("الحفظ التلقائي لحالة المراجعة:", {
+                                        console.log("Auto-saving review state:", {
                                             selectedKeys,
                                             unselectedKeys,
                                         });
                                         updateCurrentStepFromState(data, ordersData);
                                     } else {
-                                        // المستخدم ألغى، أعد الـ checkbox إلى checked
+                                        // User cancelled, revert checkbox to checked
                                         checkbox.checked = true;
                                     }
                                 });
                             } else {
-                                // تم تحديد منتج (من unchecked إلى checked)، احفظ مباشرة
+                                // Product selected (unchecked to checked), save directly
                                 const selectedKeys = Array.from(
                                     container.querySelectorAll(
                                         'input[name="productKeys"]:checked'
@@ -239,7 +245,7 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
                                     selectedKeys: selectedKeys,
                                     unselectedKeys: unselectedKeys,
                                 });
-                                console.log("الحفظ التلقائي لحالة المراجعة:", {
+                                console.log("Auto-saving review state:", {
                                     selectedKeys,
                                     unselectedKeys,
                                 });
@@ -251,17 +257,17 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
             },
         });
     } catch (reviewAlertError) {
-        console.error("خطأ في showProductKeysAlert:", reviewAlertError);
+        console.error("Error in showProductKeysAlert:", reviewAlertError);
     }
 }
 
 /**
  * @function showUnselectedProductsAlert
- * @description تعرض نافذة بالمنتجات التي قام المشتري بإلغائها (عدم تحديدها) في خطوة المراجعة.
- * تظهر هذه النافذة عند النقر على خطوة "ملغي".
+ * @description Displays a popup with products cancelled (unselected) by the buyer in the review step.
+ * This popup appears when clicking on the "Cancelled" step.
  *
- * @param {object} data - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
  * @returns {void}
  * @throws {Error} - If an error occurs displaying the alert for unselected products.
  * @see loadStepState
@@ -279,21 +285,21 @@ export function showUnselectedProductsAlert(data, ordersData) {
                     const productName = getProductName(key, ordersData);
                     return `<li id="cancelled-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <span>${productName}</span>
-                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
+                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
                     </li>`;
                 })
                 .join("");
             contentHtml = `<ul id="cancelled-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul>`;
         } else {
             contentHtml =
-                '<p id="no-cancelled-items-message">المشتري لم يلغي طلب اي من المنتجات.</p>';
+                '<p id="no-cancelled-items-message">The buyer has not cancelled any products.</p>';
         }
 
         Swal.fire({
-            title: "المنتجات التي تم الغائها",
+            title: "Cancelled Products",
             html: contentHtml,
             icon: unselectedKeys.length > 0 ? "info" : "success",
-            confirmButtonText: "حسنًا",
+            confirmButtonText: "Okay",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -301,7 +307,7 @@ export function showUnselectedProductsAlert(data, ordersData) {
         });
     } catch (unselectedAlertError) {
         console.error(
-            "خطأ في showUnselectedProductsAlert:",
+            "Error in showUnselectedProductsAlert:",
             unselectedAlertError
         );
     }
@@ -309,11 +315,11 @@ export function showUnselectedProductsAlert(data, ordersData) {
 
 /**
  * @function showDeliveryConfirmationAlert
- * @description تعرض نافذة للمشتري لتأكيد استلام المنتجات.
- * تظهر فقط المنتجات التي تم تأكيدها من قبل البائع.
+ * @description Displays a popup for the buyer to confirm receipt of products.
+ * Shows only products confirmed by the seller.
  *
- * @param {object} data - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
  * @returns {void}
  * @throws {Error} - If an error occurs displaying the alert for delivery confirmation.
  * @see loadStepState
@@ -329,10 +335,10 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
         let productsToDeliver;
 
         if (sellerConfirmedState) {
-            // نأخذ فقط المنتجات التي وافق عليها البائع
+            // Take only products approved by seller
             productsToDeliver = sellerConfirmedState.selectedKeys;
         } else {
-            // منطق احتياطي: إذا لم يكن هناك حالة تأكيد، نفترض أن كل ما طلبه المشتري جاهز
+            // Fallback logic: If no confirmation state, assume everything buyer requested is ready
             const userId = data.currentUser.idUser;
             const userType = data.currentUser.type;
 
@@ -354,13 +360,16 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
                         })
                         .map(item => item.product_key)
                 );
+            } else if (userType === "admin") {
+                // Admin sees all products
+                allProductKeys = ordersData.flatMap(order => order.order_items.map(item => item.product_key));
             } else {
                 allProductKeys = [];
             }
 
             const uniqueAllProducts = [...new Set(allProductKeys)];
 
-            // فلترة حسب اختيار المشتري (إذا وجد)
+            // Filter by buyer selection (if exists)
             const buyerReviewState = loadStepState("step-review");
             const buyerSelectedKeys = buyerReviewState
                 ? buyerReviewState.selectedKeys
@@ -376,17 +385,17 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
             ? deliveryState.deliveredKeys
             : null;
 
-        // التحقق مما إذا كانت مرحلة التسليم مفعلة بالفعل (تم الانتقال لما بعدها)
+        // Check if delivery stage is already activated (moved past it)
+        // Assume delivery step is step 4 (Review=1, Confirmed=2, Shipped=3, Delivered=4)
         const currentStepState = loadStepState("current_step");
-        // نفترض أن خطوة التسليم هي الخطوة رقم 4 (بناءً على الترتيب المنطقي: مراجعة=1، تأكيد=2، شحن=3، تسليم=4)
         const isDeliveredActivated = currentStepState && parseInt(currentStepState.stepNo) >= 4;
 
         if (productsToDeliver.length === 0) {
             Swal.fire({
-                title: "لا توجد منتجات لتأكيد استلامها",
-                text: "يجب أن يؤكد البائع المنتجات أولاً.",
+                title: "No products to confirm receipt for",
+                text: "The seller must confirm the products first.",
                 icon: "info",
-                confirmButtonText: "حسنًا",
+                confirmButtonText: "Okay",
                 customClass: { popup: "fullscreen-swal" },
             });
             return;
@@ -406,7 +415,7 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
                     } ${isDeliveredActivated ? "disabled" : ""}>
                               <label for="delivery-checkbox-${productKey}" style="margin-right: 8px;">${productName}</label>
                           </div>
-                          <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
+                          <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
                       </div>`;
             })
             .join("");
@@ -440,24 +449,24 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
         if (userDetails.length > 0) {
             userInfoHtml = userDetails.map(user => `
                 <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right;">
-                    <h4 style="margin: 0 0 8px 0; font-size: 1em; color: #333; border-bottom: 1px solid #eee; padding-bottom: 4px;">معلومات العميل</h4>
-                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>الاسم:</strong> ${user.name}</p>
-                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>الهاتف:</strong> <a href="tel:${user.phone}" style="color: #007bff; text-decoration: none;">${user.phone}</a></p>
-                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>العنوان:</strong> ${user.address}</p>
+                    <h4 style="margin: 0 0 8px 0; font-size: 1em; color: #333; border-bottom: 1px solid #eee; padding-bottom: 4px;">Customer Information</h4>
+                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>Name:</strong> ${user.name}</p>
+                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>Phone:</strong> <a href="tel:${user.phone}" style="color: #007bff; text-decoration: none;">${user.phone}</a></p>
+                    <p style="margin: 3px 0; font-size: 0.9em;"><strong>Address:</strong> ${user.address}</p>
                 </div>
             `).join("");
         }
 
         Swal.fire({
-            title: "تأكيد استلام المنتجات",
+            title: "Confirm Product Receipt",
             html: `<div id="delivery-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">
                     ${userInfoHtml}
                     ${checkboxesHtml}
                    </div>`,
             footer: isDeliveredActivated
-                ? "لا يمكن تعديل الاختيارات لأن المرحلة مفعلة بالفعل."
+                ? "Selections cannot be modified because the stage is already active."
                 : createStepStatusFooter("step-delivered", currentStep),
-            cancelButtonText: "إلغاء",
+            cancelButtonText: "Cancel",
             showConfirmButton: false,
             showCancelButton: true,
             customClass: { popup: "fullscreen-swal" },
@@ -476,7 +485,7 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
                                 )
                             ).map((cb) => cb.value);
 
-                            // المنتجات التي لم يتم تحديدها تعتبر مرتجعة
+                            // Products not checked are considered returned
                             const returnedKeys = productsToDeliver.filter(
                                 (key) => !deliveredKeys.includes(key)
                             );
@@ -485,7 +494,7 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
                                 deliveredKeys: deliveredKeys,
                                 returnedKeys: returnedKeys,
                             });
-                            console.log("الحفظ التلقائي لحالة التسليم:", {
+                            console.log("Auto-saving delivery state:", {
                                 deliveredKeys,
                                 returnedKeys,
                             });
@@ -497,7 +506,7 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
         });
     } catch (deliveryAlertError) {
         console.error(
-            "خطأ في showDeliveryConfirmationAlert:",
+            "Error in showDeliveryConfirmationAlert:",
             deliveryAlertError
         );
     }
@@ -505,21 +514,15 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
 
 /**
  * @function showReturnedProductsAlert
- * @description تعرض نافذة بالمنتجات التي تم إرجاعها (لم يتم استلامها في خطوة التسليم).
+ * @description Displays a popup with products returned (not accepted in delivery step).
  *
- * @param {object} data - بيانات التحكم.
- * @param {Array<object>} ordersData - بيانات الطلبات.
+ * @param {object} data - Control Data.
+ * @param {Array<object>} ordersData - Orders Data.
  * @returns {void}
  * @throws {Error} - If an error occurs displaying the alert for returned products.
  * @see loadStepState
  * @see getProductName
  */
-// NOTE: I am adding ordersData here because I need it for the name look up.
-// It seems the original function signature was (data). I need to check where it is called.
-// However, since I am editing the file, I can just grab it if it's available or passed.
-// Wait, the callers need to pass it. I should check `stepClickHandlers.js` later or assume it is available or pass it.
-// Looking at `stepClickHandlers.js` (not visible here but usually pass data, ordersData).
-// I will assume I need to update the signature and ensure callers pass it.
 export function showReturnedProductsAlert(data, ordersData) {
     try {
         const deliveryState = loadStepState("step-delivered");
@@ -533,28 +536,27 @@ export function showReturnedProductsAlert(data, ordersData) {
                     const productName = getProductName(key, ordersData || []); // Handle potential missing ordersData gracefully or fix caller
                     return `<li id="returned-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                         <span>${productName}</span>
-                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">المنتج</button>
+                         <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
                     </li>`;
                 })
                 .join("");
-            contentHtml = `<div id="returned-products-container"><p>المنتجات التالية تم تحديدها للإرجاع:</p><ul id="returned-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
+            contentHtml = `<div id="returned-products-container"><p>The following products have been marked for return:</p><ul id="returned-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
         } else {
             contentHtml =
-                '<p id="no-returned-items-message">لم يتم تحديد أي منتجات للإرجاع.</p>';
+                '<p id="no-returned-items-message">No products have been marked for return.</p>';
         }
 
         Swal.fire({
-            title: "المنتجات المرتجعة",
+            title: "Returned Products",
             html: contentHtml,
             icon: returnedKeys && returnedKeys.length > 0 ? "warning" : "success",
-            confirmButtonText: "حسنًا",
+            confirmButtonText: "Okay",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
             }
         });
     } catch (returnedAlertError) {
-        console.error("خطأ في showReturnedProductsAlert:", returnedAlertError);
+        console.error("Error in showReturnedProductsAlert:", returnedAlertError);
     }
 }
-
