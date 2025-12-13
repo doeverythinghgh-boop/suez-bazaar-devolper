@@ -140,7 +140,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
                             المنتج
                         </button>
                     </div>
-                `;
+    `;
 
                 return `
                     <tr id="seller-confirmation-item-${product.product_key}">
@@ -149,32 +149,32 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
                         <td style="padding: 8px; border: 1px solid #ddd;">${agentNames || '-'}</td>
                         <td style="padding: 8px; border: 1px solid #ddd;">${agentPhones || '-'}</td>
                     </tr>
-                `;
+    `;
             }).join("");
 
             contentHtml = `
                 <div style="min-width: 100%; width: max-content;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9em;">
-                        <thead>
-                            <tr style="background-color: #f2f2f2;">
-                                <th style="padding: 8px; border: 1px solid #ddd;">المنتج (حدد للتأكيد)</th>
-                                <th style="padding: 8px; border: 1px solid #ddd;">ملاحظات</th>
-                                <th style="padding: 8px; border: 1px solid #ddd;">مندوب التوصيل</th>
-                                <th style="padding: 8px; border: 1px solid #ddd;">رقم الهاتف</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${tableRows}
-                        </tbody>
-                    </table>
+        <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9em;">
+            <thead>
+                <tr style="background-color: #f2f2f2;">
+                    <th style="padding: 8px; border: 1px solid #ddd;">المنتج (حدد للتأكيد)</th>
+                    <th style="padding: 8px; border: 1px solid #ddd;">ملاحظات</th>
+                    <th style="padding: 8px; border: 1px solid #ddd;">مندوب التوصيل</th>
+                    <th style="padding: 8px; border: 1px solid #ddd;">رقم الهاتف</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableRows}
+            </tbody>
+        </table>
                 </div>
-            `;
+    `;
         }
 
         Swal.fire({
             title: "تأكيد المنتجات",
             html: `<div id="seller-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%; max-height: 300px; overflow: auto;">
-                    ${contentHtml}
+    ${contentHtml}
                    </div>`,
             footer: '<button id="btn-save-confirmation" class="swal2-confirm swal2-styled" style="background-color: #28a745;">حفظ التغييرات</button>',
             cancelButtonText: "إغلاق",
@@ -331,13 +331,13 @@ export function showShippingInfoAlert(data, ordersData) {
             }
 
             const checkbox = `
-                <input type="checkbox" 
-                       name="shippingProductKeys" 
+                <input type="checkbox"
+                       name="shippingProductKeys"
                        value="${item.product_key}" 
                        ${isShipped ? "checked" : ""} 
                        ${isDisabled ? "disabled" : ""}
                        style="margin-left: 5px;">
-            `;
+    `;
 
             const keyButton = `<button type="button" class="btn-show-key" data-key="${item.product_key}" style="float:left; padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; margin-right: 5px;">المنتج</button>`;
 
@@ -349,7 +349,7 @@ export function showShippingInfoAlert(data, ordersData) {
                     <td style="padding: 8px; border: 1px solid #ddd;">${deliveryInfo.names}</td>
                     <td style="padding: 8px; border: 1px solid #ddd;">${deliveryInfo.phones}</td>
                 </tr>
-            `;
+    `;
         }).join("");
 
         const tableHtml = `
@@ -368,7 +368,7 @@ export function showShippingInfoAlert(data, ordersData) {
                     </tbody>
                 </table>
             </div>
-        `;
+    `;
 
         Swal.fire({
             title: "شحن المنتجات",
