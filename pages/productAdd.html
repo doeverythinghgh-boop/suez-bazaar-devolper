@@ -1056,7 +1056,7 @@
 
             try {
                 // Generate unique product serial
-                const productSerial = generateProductSerial();
+                const productSerial = generateSerial();
 
                 // 1. Upload images sequentially
                 const uploadedImageUrls = [];
@@ -1122,19 +1122,7 @@
             }
         });
 
-        /**
-         * @function generateProductSerial
-         * @description Generates a unique 6-character alphanumeric serial for the product.
-         * @returns {string} Product serial.
-         */
-        function generateProductSerial() {
-            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-            let serial = "";
-            for (let i = 0; i < 6; i++) {
-                serial += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return serial;
-        }
+    
 
 
 

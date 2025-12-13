@@ -904,7 +904,7 @@
             console.log("بدء إرسال الطلب...");
 
             // 2. Generate Order Key (Serial) - For Database PK only
-            const order_key = generateOrderSerial();
+            const order_key = generateSerial();
 
             // 3. Upload Images
             const uploadedFileNames = [];
@@ -980,19 +980,7 @@
         }
     }}
 
-    /**
-     * @function generateOrderSerial
-     * @description Generates a random alphanumeric serial for the order.
-     * @returns {string} Random 6-character string.
-     */
-    function generateOrderSerial() {
-        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-        let serial = "";
-        for (let i = 0; i < 6; i++) {
-            serial += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return serial;
-    }
+    
 
 
     // ==============================================

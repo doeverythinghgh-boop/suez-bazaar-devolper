@@ -236,36 +236,7 @@
     if (register_password) register_password.value = "";
     if (register_address) register_address.value = "";
 
-    /**
-     * @function register_generateSerialNumber
-     * @description Generates a unique serial number consisting of 4 random lowercase letters and 4 random digits. The characters are key shuffled to increase randomness.
-     * @returns {string} A random 8-character string acting as a user key.
-     */
-    function register_generateSerialNumber() {
-      const letters = "abcdefghijklmnopqrstuvwxyz";
-      const digits = "0123456789";
-      let chars = [];
-
-      // 1. Add 4 random lowercase letters.
-      for (let i = 0; i < 4; i++) {
-        chars.push(letters.charAt(Math.floor(Math.random() * letters.length)));
-      }
-
-      // 2. Add 4 random digits.
-      for (let i = 0; i < 4; i++) {
-        chars.push(digits.charAt(Math.floor(Math.random() * digits.length)));
-      }
-
-      // 3. Shuffle the array to ensure randomness.
-      for (let i = chars.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [chars[i], chars[j]] = [chars[j], chars[i]]; // Swap elements.
-      }
-
-      // 4. Join the array to form the final string.
-      return chars.join("");
-    }
-
+  
     // Add input event listener to sanitize phone number in real-time.
     if (register_phone) {
       register_phone.addEventListener("input", function (e) {
@@ -405,7 +376,7 @@
           console.log("[تسجيل] تم إلغاء تأكيد كلمة المرور من قبل المستخدم.");
           return;
         }
-        const register_userKey = register_generateSerialNumber(); // 🔑 Generate unique serial number (user_key)
+        const register_userKey = generateSerial(); // 🔑 Generate unique serial number (user_key)
         console.log(`[تسجيل] تم توليد user_key جديد: ${register_userKey}`);
         const register_newUser = {
           username: register_username.value.trim(),

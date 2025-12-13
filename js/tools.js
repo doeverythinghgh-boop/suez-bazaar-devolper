@@ -501,4 +501,17 @@ function showLoginAlert() {
   return true;
 }
 
+ /**
+         * @function generateSerial
+         * @description Generates a unique 6-character alphanumeric serial.
+         * @returns {string} Serial.
+         */
+        function generateSerial() {
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            let serial = "";
+            for (let i = 0; i < 6; i++) {
+                serial += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return serial;
+        }
 

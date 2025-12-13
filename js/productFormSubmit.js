@@ -61,7 +61,6 @@ async function productHandleFormSubmit(e) {
  * @async
  * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة عند الاكتمال.
  * @throws {Error} - إذا فشلت أي خطوة حرجة في العملية (مثل رفع الصور أو الحفظ في قاعدة البيانات).
- * @see productGenerateProductSerial
  * @see productHandleImageDeletion
  * @see productUploadImages
  * @see productPrepareProductData
