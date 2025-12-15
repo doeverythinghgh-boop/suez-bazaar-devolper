@@ -86,7 +86,11 @@ export function getRejectedProducts(ordersData, sellerId, userType) {
 
     return ordersData.flatMap(order =>
         order.order_items.filter(item => {
-            const isOwner = userType === "admin" || item.seller_key == sellerId;
+            let isOwner = false;
+            if (userType === 'admin') isOwner = true;
+            else if (userType === 'seller') isOwner = item.seller_key == sellerId;
+            else if (userType === 'buyer') isOwner = order.user_key == sellerId; // sellerId param is actually userId
+
             const status = loadItemStatus(item.product_key);
             return isOwner && status === ITEM_STATUS.REJECTED;
         })

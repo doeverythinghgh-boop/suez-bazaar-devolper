@@ -36,8 +36,42 @@ import {
 } from "./buyerUi.js";
 
 // Import reused Logic and UI from Seller modules
-import { getShippableProducts } from "./sellerLogic.js";
-import { generateShippingTableHtml } from "./sellerUi.js";
+import { getShippableProducts, getRejectedProducts } from "./sellerLogic.js";
+import { generateShippingTableHtml, generateRejectedListHtml } from "./sellerUi.js";
+
+// ... existing code ...
+
+/**
+ * Displays products rejected by the seller to the buyer (Read-Only).
+ * @function showBuyerRejectedProductsAlert
+ * @param {object} data
+ * @param {Array<object>} ordersData
+ */
+export function showBuyerRejectedProductsAlert(data, ordersData) {
+    try {
+        const userId = data.currentUser.idUser;
+        const userType = data.currentUser.type;
+
+        const rejectedProducts = getRejectedProducts(ordersData, userId, userType);
+
+        // Use seller UI generator as it fits the need
+        const htmlContent = generateRejectedListHtml(rejectedProducts);
+
+        Swal.fire({
+            title: "Rejected Products",
+            html: htmlContent,
+            icon: "error", // Use error icon for rejected
+            confirmButtonText: "Close",
+            customClass: { popup: "fullscreen-swal" },
+            didOpen: () => {
+                attachLogButtonListeners();
+            }
+        });
+
+    } catch (error) {
+        console.error("Error in showBuyerRejectedProductsAlert:", error);
+    }
+}
 
 // =============================================================================
 // EVENT HANDLERS (Controller Layer)
