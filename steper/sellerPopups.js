@@ -176,7 +176,7 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
 
         Swal.fire({
             title: "المنتجات المرفوضة",
-            html: htmlContent,
+            html: `<div id="seller-rejected-container">${htmlContent}</div>`,
             icon: rejectedProducts.length > 0 ? "info" : "success",
             confirmButtonText: "حسنًا",
             customClass: { popup: "fullscreen-swal" },
@@ -212,7 +212,7 @@ export function showShippingInfoAlert(data, ordersData) {
 
         Swal.fire({
             title: "شحن المنتجات",
-            html: htmlContent,
+            html: `<div id="seller-shipping-container">${htmlContent}</div>`,
             footer: '<button id="btn-save-shipping" class="swal2-confirm swal2-styled" style="background-color: #007bff;">تحديث حالة الشحن</button>',
             confirmButtonText: "إغلاق",
             showConfirmButton: false,
