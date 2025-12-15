@@ -24,9 +24,59 @@
     margin-bottom: 30px;
   }
 
+  /* Search Input Container - matches search.html */
+  .p2m-input-container {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border: 1px solid var(--border-color-input);
+    border-radius: 50px;
+    overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: var(--bg-color-light);
+    flex-grow: 1;
+  }
+
+  .p2m-input-container:focus-within {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color-light);
+  }
+
+  .p2m-input-icon {
+    font-style: normal;
+    font-weight: bold;
+    color: var(--primary-color);
+    font-size: 1rem;
+    transition: color 0.3s ease;
+    padding-right: 20px;
+  }
+
+  .p2m-input-icon.fa-search::before {
+    content: "txt";
+    font-family: "Tajawal", sans-serif;
+  }
+
+  .p2m-input-icon.fa-search {
+    font-family: "Font Awesome 5 Free";
+  }
+
+  .p2m-input-container:focus-within .p2m-input-icon {
+    color: var(--primary-color);
+  }
+
+  .p2m-input-container input {
+    flex-grow: 1;
+    border: none;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    outline: none;
+    background-color: transparent;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: "Tajawal", sans-serif;
+  }
+
   .p2m-form-group {
-    flex: 1;
-    min-width: 200px;
     position: relative;
     display: flex;
     align-items: center;
@@ -76,22 +126,42 @@
   }
 
   .p2m-search-btn {
+    flex-shrink: 0;
     background: transparent;
     color: var(--primary-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 50px;
-    padding: 12px 25px;
-    font-size: 16px;
+    border: 1px solid var(--border-color-input);
     cursor: pointer;
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: var(--shadow-interactive);
     font-family: "Tajawal", sans-serif;
   }
 
   .p2m-search-btn:active {
     transform: scale(0.98);
+  }
+
+  /* Pulse animation for search button */
+  @keyframes p2m-pulse-animation {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.7);
+    }
+    70% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(0, 123, 255, 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 123, 255, 0);
+    }
+  }
+
+  .p2m-search-btn.is-pulsing {
+    animation: p2m-pulse-animation 1.5s infinite;
   }
 
   /* Products Grid */
@@ -235,10 +305,6 @@
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 15px;
     }
-
-    .p2m-product-actions {
-      flex-direction: column;
-    }
   }
 
   @media (max-width: 480px) {
@@ -248,45 +314,55 @@
   }
 </style>
 
-<div class="p2m-products-container">
+<div class="p2m-products-container" id="p2m-products-container">
 
   <!-- Search and Filter Bar -->
-  <div class="p2m-search-container">
-    <table style="width: 100%; border-spacing: 10px; table-layout: fixed">
-      <tbody>
+  <div class="p2m-search-container" id="p2m-search-container">
+    <table id="p2m-search-table" style="width: 100%; border-spacing: 10px; table-layout: fixed">
+      <tbody id="p2m-search-tbody">
         <!-- First Row: Main and Sub Categories -->
-        <tr>
-          <td>
-            <div class="p2m-form-group">
-              <i class="fas fa-layer-group p2m-filter-icon"></i>
+        <tr id="p2m-filters-row">
+          <td id="p2m-main-category-cell">
+            <div class="p2m-form-group" id="p2m-main-category-group">
+              <i class="fas fa-layer-group p2m-filter-icon" id="p2m-main-category-icon"></i>
               <select class="p2m-form-select" id="main-category-filter" aria-label="الفئة الرئيسية">
-                <option value="">جميع الفئات</option>
+                <option value="" id="p2m-main-category-default">كل الاسواق الرئيسية</option>
               </select>
             </div>
           </td>
-          <td>
-            <div class="p2m-form-group">
-              <i class="fas fa-tags p2m-filter-icon"></i>
+          <td id="p2m-sub-category-cell">
+            <div class="p2m-form-group" id="p2m-sub-category-group">
+              <i class="fas fa-tags p2m-filter-icon" id="p2m-sub-category-icon"></i>
               <select class="p2m-form-select" id="sub-category-filter" aria-label="الفئة الفرعية">
-                <option value="">جميع الفئات الفرعية</option>
+                <option value="" id="p2m-sub-category-default">كل الاسواق الفرعية</option>
               </select>
             </div>
           </td>
         </tr>
         <!-- Second Row: Search Field -->
-        <tr>
-          <td colspan="2">
-            <div class="p2m-form-group">
-              <i class="fas fa-search p2m-filter-icon"></i>
-              <input type="text" class="p2m-form-input" id="search-input" placeholder="اكتب اسم المنتج الذي تبحث عنه..." autocomplete="off" />
+        <tr id="p2m-search-input-row">
+          <td colspan="2" id="p2m-search-input-cell">
+            <div class="p2m-input-container" id="p2m-input-container" style="padding-right: 0px">
+              <i class="fas fa-search p2m-input-icon" id="p2m-search-icon" aria-hidden="true"></i>
+              <input type="search" id="search-input" placeholder="اكتب اسم المنتج الذي تبحث عنه..." autocomplete="off" />
             </div>
           </td>
         </tr>
-        <!-- Third Row: Search Button -->
-        <tr>
-          <td colspan="2">
+        <!-- Third Row: Sort Filter and Search Button -->
+        <tr id="p2m-action-row">
+          <td id="p2m-sort-cell">
+            <div class="p2m-form-group" id="p2m-sort-group">
+              <i class="fas fa-sort-amount-down p2m-filter-icon" id="p2m-sort-icon"></i>
+              <select class="p2m-form-select" id="sort-filter" aria-label="ترتيب حسب">
+                <option value="default" id="p2m-sort-default">الترتيب الافتراضي</option>
+                <option value="price-asc" id="p2m-sort-price-asc">الأقل سعراً</option>
+                <option value="price-desc" id="p2m-sort-price-desc">الأعلى سعراً</option>
+              </select>
+            </div>
+          </td>
+          <td id="p2m-search-btn-cell">
             <button type="button" class="p2m-search-btn" id="search-btn" aria-label="بحث" style="width: 100%; height: 50px; border-radius: 50px">
-              <i class="fas fa-search"></i>
+              <i class="fas fa-search" id="p2m-search-btn-icon"></i>
             </button>
           </td>
         </tr>
@@ -301,15 +377,15 @@
 
   <!-- Loading State -->
   <div class="p2m-loading-state" id="loading-state" style="display: none">
-    <i class="fas fa-spinner fa-spin"></i>
-    <p>جاري تحميل المنتجات...</p>
+    <i class="fas fa-spinner fa-spin" id="p2m-loading-icon"></i>
+    <p id="p2m-loading-text">جاري تحميل المنتجات...</p>
   </div>
 
   <!-- Empty State -->
   <div class="p2m-empty-state" id="empty-state" style="display: none">
-    <i class="fas fa-box-open"></i>
-    <p>لا توجد منتجات لعرضها</p>
-    <p>قم بإضافة منتجك الأول للبدء</p>
+    <i class="fas fa-box-open" id="p2m-empty-icon"></i>
+    <p id="p2m-empty-text-1">لا توجد منتجات لعرضها</p>
+    <p id="p2m-empty-text-2">قم بإضافة منتجك الأول للبدء</p>
   </div>
 </div>
 
@@ -373,13 +449,24 @@
 
   /**
    * @function renderProducts
-   * @description Renders the list of products into the grid.
+   * @description Renders the list of products into the grid with optional sorting.
    * @param {Array} products - Array of product objects.
    */
   function renderProducts(products) {
     productsGrid.innerHTML = "";
 
-    products.forEach((product) => {
+    // Apply sorting based on sort filter
+    const sortFilter = document.getElementById("sort-filter");
+    const sortValue = sortFilter ? sortFilter.value : "default";
+    let sortedProducts = [...products];
+
+    if (sortValue === "price-asc") {
+      sortedProducts.sort((a, b) => parseFloat(a.product_price) - parseFloat(b.product_price));
+    } else if (sortValue === "price-desc") {
+      sortedProducts.sort((a, b) => parseFloat(b.product_price) - parseFloat(a.product_price));
+    }
+
+    sortedProducts.forEach((product) => {
       const card = createProductCard(product);
       productsGrid.appendChild(card);
     });
@@ -642,6 +729,17 @@
   // Initialize immediately (not waiting for DOMContentLoaded since page is loaded via mainLoader)
   // Load category filters on page load
   loadCategoryFilters();
+
+  // Sort filter change event
+  const sortFilter = document.getElementById("sort-filter");
+  if (sortFilter) {
+    sortFilter.addEventListener("change", () => {
+      // Re-render current products with new sort
+      if (myProducts && myProducts.length > 0) {
+        renderProducts(myProducts);
+      }
+    });
+  }
 
   // Search Event - only load products when search button is clicked
   const searchBtn = document.getElementById("search-btn");
