@@ -18,10 +18,10 @@
   <!-- ✅ Link variables file for usage in internal styles -->
   <link rel="stylesheet" href="style/variables.css" />
   <script src="pages/category/categoryModal.js"></script>
-  <script src="/js/cloudFileManager.js"></script>
-  <script src="/js/cardPackage.js"></script>
+  <script src="js/cloudFileManager.js"></script>
+  <script src="js/cardPackage.js"></script>
 
-  <script src="/js/forms.js"></script>
+  <script src="js/forms.js"></script>
 
   <!-- ربط ملف الأنماط الخارجي -->
   <style>
@@ -341,7 +341,7 @@
 
       // [Step 0] Load notification configurations from server (Single Source of Truth)
       try {
-        const response = await fetch('/notification_config.json');
+        const response = await fetch('notification_config.json');
         if (response.ok) {
           window.globalNotificationConfig = await response.json();
           console.log('✅ تم تحميل إعدادات الإشعارات من السيرفر بنجاح:', window.globalNotificationConfig);
