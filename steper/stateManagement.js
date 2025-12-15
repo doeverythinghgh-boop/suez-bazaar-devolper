@@ -5,6 +5,14 @@
  */
 
 import { updateGlobalStepperAppData, globalStepperAppData, ordersData } from "./config.js";
+import { updateServerItemStatus } from "./dataFetchers.js";
+
+// Keys for LocalStorage
+const STORAGE_KEYS = {
+    ITEMS: "stepper_items",
+    STEPS: "stepper_steps",
+    DATES: "stepper_dates"
+};
 
 /**
  * Generates a unique storage key based on the current order context.
