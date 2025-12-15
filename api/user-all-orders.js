@@ -26,16 +26,16 @@ export const config = { runtime: 'edge' };
  * @see createClient
  */
 export default async function handler(request) {
-/**
- * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
- * @type {object}
- * @const
- */
-/**
- * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
- * @type {object}
- * @const
- */
+  /**
+   * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+   * @type {object}
+   * @const
+   */
+  /**
+   * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+   * @type {object}
+   * @const
+   */
   const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
@@ -298,8 +298,23 @@ export default async function handler(request) {
     const ordersData = orders.map(order => {
       const items = itemsByOrder[order.order_key] || [];
 
+      // Parse order_status to check for item-level statuses key#time#json
+      let itemStatuses = {};
+      const statusStr = order.order_status || "";
+      const parts = statusStr.split('#');
+      if (parts.length >= 3) {
+        const jsonStr = parts.slice(2).join('#');
+        try {
+          itemStatuses = JSON.parse(jsonStr);
+        } catch (e) {
+          // Ignore parse errors
+        }
+      }
+
       const formattedItems = items.map(item => {
         const deliveries = activeDeliveries[item.seller_key] || [];
+        // Use server status if available, otherwise default will be handled by frontend
+        const serverStatus = itemStatuses[item.product_key] || null;
 
         return {
           product_key: item.product_key,
@@ -307,7 +322,8 @@ export default async function handler(request) {
           quantity: item.quantity,
           seller_key: item.seller_key,
           note: item.note,
-          supplier_delivery: deliveries // مصفوفة حتى لو كانت فارغة
+          item_status: serverStatus, // PASSING THE STATUS HERE
+          supplier_delivery: deliveries
         };
       });
 
@@ -319,7 +335,7 @@ export default async function handler(request) {
         user_address: order.user_address,
         order_status: order.order_status,
         created_at: order.created_at,
-        total_amount: order.total_amount, // Added missing field
+        total_amount: order.total_amount,
         order_items: formattedItems
       };
     });

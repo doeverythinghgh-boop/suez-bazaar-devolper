@@ -149,18 +149,34 @@ export function loadStepDate(stepId) {
 }
 
 /**
- * Saves the status of a specific item (product).
- * @param {string} productKey 
- * @param {string} status 
+ * Updates the status of a specific item.
+ * @param {string} productKey
+ * @param {string} status
  */
 export function saveItemStatus(productKey, status) {
-    const appState = getAppState();
-    if (!appState.items[productKey]) {
-        appState.items[productKey] = { status: status, history: [] };
-    } else {
-        appState.items[productKey].status = status;
+    const currentState = globalStepperAppData;
+
+    // Update Local State
+    if (!currentState.items) currentState.items = {};
+    currentState.items[productKey] = {
+        status: status,
+        timestamp: new Date().toISOString()
+    };
+    updateGlobalStepperAppData(currentState);
+
+    // Persist to LocalStorage
+    localStorage.setItem(STORAGE_KEYS.ITEMS, JSON.stringify(currentState.items));
+
+    // Sync to Server
+    // Find order key for this product
+    if (ordersData) {
+        const order = ordersData.find(o => o.order_items.some(i => i.product_key === productKey));
+        if (order) {
+            updateServerItemStatus(order.order_key, productKey, status);
+        } else {
+            console.warn(`[State] Could not find order for product ${productKey} to sync server.`);
+        }
     }
-    saveAppState(appState);
 }
 
 /**
