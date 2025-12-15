@@ -8,11 +8,7 @@ import { updateGlobalStepperAppData, globalStepperAppData, ordersData } from "./
 import { updateServerItemStatus } from "./dataFetchers.js";
 
 // Keys for LocalStorage
-const STORAGE_KEYS = {
-    ITEMS: "stepper_items",
-    STEPS: "stepper_steps",
-    DATES: "stepper_dates"
-};
+// REMOVED LEGACY STORAGE_KEYS
 
 /**
  * Generates a unique storage key based on the current order context.
@@ -85,7 +81,7 @@ export function initializeState() {
             if (order.order_items) {
                 order.order_items.forEach(item => {
                     // Developer Log: Tracing Status
-                    console.log(`[State] 🔍 Checking item ${item.product_key}. Server Status: ${item.item_status}, Local Status: ${savedItems[item.product_key]?.status}`);
+                    // console.log(`[State] 🔍 Checking item ${item.product_key}. Server Status: ${item.item_status}, Local Status: ${savedItems[item.product_key]?.status}`);
 
                     // If server has a status for this item, use it.
                     if (item.item_status) {
@@ -101,10 +97,8 @@ export function initializeState() {
                                 timestamp: new Date().toISOString()
                             };
                         } else {
-                            console.log(`[State] ✅ Local and Server match for ${item.product_key}: ${item.item_status}`);
+                            // Match found
                         }
-                    } else {
-                        console.log(`[State] ℹ️ No Server Status for ${item.product_key}. Keeping Local: ${savedItems[item.product_key]?.status}`);
                     }
                 });
             }
@@ -127,6 +121,9 @@ export function initializeState() {
 function cleanupLegacyKeys() {
     try {
         const keysToRemove = [
+            "stepper_items",
+            "stepper_steps",
+            "stepper_dates", // The legacy keys we just deprecated
             "current_step_state",
             "step-review_state",
             "step-confirmed_state",
