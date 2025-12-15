@@ -160,7 +160,7 @@ async function showAddProductModal() {
       console.log('تم الاختيار:', result.mainId, result.subId);
       mainCategorySelectToAdd = result.mainId; // Main category selected when adding product
       subCategorySelectToAdd = result.subId; // Sub category selected when adding product
-      productAddSetType();
+      productAddSetType(true);
     }
 
 
