@@ -619,6 +619,45 @@
             font-size: 13px;
         }
     }
+
+    /* Refresh Button Style */
+    .salesMovement_refreshBtn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 15px;
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .salesMovement_refreshBtn:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .salesMovement_refreshBtn:active {
+        transform: translateY(0);
+    }
+
+    .salesMovement_refreshIcon {
+        font-size: 18px;
+        transition: transform 0.5s ease;
+    }
+
+    .salesMovement_refreshBtn:hover .salesMovement_refreshIcon {
+        transform: rotate(180deg);
+    }
 </style>
 
 
@@ -648,6 +687,11 @@
                     </td>
                 </tr>
             </table>
+            
+            <button id="salesMovement_refreshButton" class="salesMovement_refreshBtn">
+                <span class="salesMovement_refreshIcon">↻</span>
+                <span>تحديث البيانات</span>
+            </button>
         </div>
 
         <!-- Orders display container -->
@@ -914,6 +958,35 @@
             });
         } catch (salesMovement_error) {
             console.error('حدث خطأ في إعداد مستمعي الأحداث:', salesMovement_error);
+        }
+
+        // زر التحديث
+        const salesMovement_refreshBtn = document.getElementById('salesMovement_refreshButton');
+        if (salesMovement_refreshBtn) {
+            salesMovement_refreshBtn.addEventListener('click', function() {
+                try {
+                    const selectedRadio = document.querySelector('input[name="salesMovement_userType"]:checked');
+                    if (selectedRadio) {
+                        console.log('🔄 تحديث البيانات يدويًا...');
+                        
+                        // إضافة تأثير بصري (لف الأيقونة)
+                        const icon = this.querySelector('.salesMovement_refreshIcon');
+                        if(icon) icon.style.transform = 'rotate(360deg)';
+                        
+                        salesMovement_fetchOrders(selectedRadio.value);
+
+                        // إعادة ضبط الأيقونة بعد وقت قصير
+                        setTimeout(() => {
+                            if(icon) icon.style.transform = '';
+                        }, 500);
+                    } else {
+                         // Default fallback if nothing selected
+                         salesMovement_fetchOrders('buyer');
+                    }
+                } catch (error) {
+                    console.error('خطأ في زر التحديث:', error);
+                }
+            });
         }
 
         // تحميل الاختيار المحفوظ عند تحميل الصفحة
