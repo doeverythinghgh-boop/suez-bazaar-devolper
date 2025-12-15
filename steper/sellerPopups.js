@@ -268,8 +268,11 @@ export function showSellerDeliveryConfirmationAlert(data, ordersData) {
             return;
         }
 
-        const userDetails = getUserDetailsForDelivery(productsToDeliver, ordersData);
-        const userInfoHtml = generateDeliveryUserInfoHtml(userDetails);
+        let userInfoHtml = "";
+        if (userType !== 'seller') {
+            const userDetails = getUserDetailsForDelivery(productsToDeliver, ordersData);
+            userInfoHtml = generateDeliveryUserInfoHtml(userDetails);
+        }
         const checkboxesHtml = generateDeliveryItemsHtml(productsToDeliver);
 
         Swal.fire({
