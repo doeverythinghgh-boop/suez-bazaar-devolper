@@ -71,6 +71,7 @@ function handleReviewSave(data, ordersData) {
             const newStatus = cb.checked ? ITEM_STATUS.PENDING : ITEM_STATUS.CANCELLED;
             const currentStatus = loadItemStatus(cb.value);
             if (currentStatus !== newStatus) {
+                console.log(`[BuyerPopups] Saving status for ${cb.value}: ${currentStatus} -> ${newStatus}`);
                 saveItemStatus(cb.value, newStatus);
                 changed = true;
             }
