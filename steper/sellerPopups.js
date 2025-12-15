@@ -15,8 +15,8 @@ import {
     updateCurrentStepFromState
 } from "./uiUpdates.js";
 import {
-    getServerConfirmationLockStatus,
-    updateServerConfirmationLock
+    saveConfirmationLock,
+    getConfirmationLockStatus
 } from "./dataFetchers.js";
 
 // Import Logic and UI modules
@@ -140,7 +140,7 @@ function handleConfirmationSave(data, ordersData) {
                 // Lock the confirmation on server
                 if (ordersData && ordersData.length > 0) {
                     const orderKey = ordersData[0].order_key;
-                    updateServerConfirmationLock(orderKey, true).then(() => {
+                    saveConfirmationLock(orderKey, true).then(() => {
                         console.log('[SellerPopups] Confirmation permanently locked for order:', orderKey);
                     });
                 }
@@ -213,16 +213,16 @@ function handleShippingSave(data, ordersData) {
  * @param {object} data - Control Data.
  * @param {Array<object>} ordersData - Orders Data.
  */
-export async function showSellerConfirmationProductsAlert(data, ordersData) {
+export function showSellerConfirmationProductsAlert(data, ordersData) {
     try {
         const products = getConfirmationProducts(ordersData, data.currentUser.idUser, data.currentUser.type);
         const htmlContent = generateConfirmationTableHtml(products, ordersData);
 
-        // Check lock status from server
+        // Check lock status from local ordersData
         let isLocked = false;
         if (ordersData && ordersData.length > 0) {
             const orderKey = ordersData[0].order_key;
-            isLocked = await getServerConfirmationLockStatus(orderKey);
+            isLocked = getConfirmationLockStatus(ordersData, orderKey);
         }
 
         // Determine if editing is allowed
