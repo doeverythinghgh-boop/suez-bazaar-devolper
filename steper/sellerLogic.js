@@ -16,6 +16,15 @@ import { ITEM_STATUS } from "./config.js";
 export function parseDeliveryInfo(deliveryData) {
     if (!deliveryData) return [];
 
+    // Case 1: Standard Array of Objects (New API format)
+    if (Array.isArray(deliveryData) && deliveryData.length > 0 && deliveryData[0].delivery_name) {
+        return deliveryData.map(d => ({
+            name: d.delivery_name || d.delivery_key || 'Unknown',
+            phone: d.delivery_phone || 'N/A'
+        }));
+    }
+
+    // Case 2: Legacy Object with Arrays (Old format or Fallback)
     const names = deliveryData.delivery_name;
     const phones = deliveryData.delivery_phone;
 
