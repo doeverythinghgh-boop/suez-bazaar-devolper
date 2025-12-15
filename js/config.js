@@ -23,6 +23,7 @@ const allowedHosts = [
   "bazaar-bk1.pages.dev",
   "appassets.androidplatform.net",
   "doeverythinghgh-boop.github.io",
+  "bazaar-neon-three.vercel.app",
 ];
 
 // ✅ Improvement: Simplify baseURL determination logic using an array.
