@@ -73,41 +73,44 @@ export function initializeState() {
             dates: storedState.dates || {}
         };
         console.log("🔄 [State] Merged Global Data causing sync update.");
-
-        // Detailed merge logic for item statuses
-        // Detailed merge logic for item statuses
-        const savedItems = state.items; // Reference to the items object in the merged state
-        if (ordersData) {
-            ordersData.forEach(order => {
-                if (order.order_items) {
-                    order.order_items.forEach(item => {
-                        // Developer Log: Tracing Status
-                        console.log(`[State] 🔍 Checking item ${item.product_key}. Server Status: ${item.item_status}, Local Status: ${savedItems[item.product_key]?.status}`);
-
-                        // If server has a status for this item, use it.
-                        if (item.item_status) {
-                            const currentLocal = savedItems[item.product_key];
-                            if (!currentLocal || currentLocal.status !== item.item_status) {
-                                console.log(`[State] ⚠️ Overwriting Local (${currentLocal?.status}) with Server (${item.item_status}) for ${item.product_key}`);
-                                savedItems[item.product_key] = {
-                                    status: item.item_status,
-                                    timestamp: new Date().toISOString()
-                                };
-                            } else {
-                                console.log(`[State] ✅ Local and Server match for ${item.product_key}: ${item.item_status}`);
-                            }
-                        } else {
-                            console.log(`[State] ℹ️ No Server Status for ${item.product_key}. Keeping Local: ${savedItems[item.product_key]?.status}`);
-                        }
-                    });
-                }
-            });
-        }
-        saveAppState(state); // Sync valid global state to storage
     } else {
         state = storedState;
         updateGlobalStepperAppData(state); // Sync storage to global variable
     }
+
+    // Detailed merge logic for item statuses (Run ALWAYS if ordersData exists)
+    const savedItems = state.items || {}; // Ensure items object exists
+    if (ordersData) {
+        ordersData.forEach(order => {
+            if (order.order_items) {
+                order.order_items.forEach(item => {
+                    // Developer Log: Tracing Status
+                    console.log(`[State] 🔍 Checking item ${item.product_key}. Server Status: ${item.item_status}, Local Status: ${savedItems[item.product_key]?.status}`);
+
+                    // If server has a status for this item, use it.
+                    if (item.item_status) {
+                        const currentLocal = savedItems[item.product_key];
+                        // Prefer Server status if local is missing or pending/default, OR if we strictly trust server.
+                        // For now, let's strictly trust server timestamp if it exists? 
+                        // Actually, logic: if server has status, and it differs from local, assume server is newer or correct 
+                        // (since we just fetched it).
+                        if (!currentLocal || currentLocal.status !== item.item_status) {
+                            console.log(`[State] ⚠️ Overwriting Local (${currentLocal?.status}) with Server (${item.item_status}) for ${item.product_key}`);
+                            savedItems[item.product_key] = {
+                                status: item.item_status,
+                                timestamp: new Date().toISOString()
+                            };
+                        } else {
+                            console.log(`[State] ✅ Local and Server match for ${item.product_key}: ${item.item_status}`);
+                        }
+                    } else {
+                        console.log(`[State] ℹ️ No Server Status for ${item.product_key}. Keeping Local: ${savedItems[item.product_key]?.status}`);
+                    }
+                });
+            }
+        });
+    }
+    state.items = savedItems; // Update state with modified items
 
     // Ensure structure integirty
     if (!state.steps) state.steps = {};
