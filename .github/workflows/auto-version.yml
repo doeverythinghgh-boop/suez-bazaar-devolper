@@ -1,0 +1,67 @@
+name: Auto Version Update
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'version.json'
+
+jobs:
+  update-version:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Increment version
+        run: |
+          # Read current version.json
+          CURRENT_VERSION=$(node -pe "JSON.parse(require('fs').readFileSync('version.json', 'utf8')).version_code")
+          echo "Current version: $CURRENT_VERSION"
+          
+          # Split version into parts (major.minor.patch)
+          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
+          MAJOR=${VERSION_PARTS[0]}
+          MINOR=${VERSION_PARTS[1]}
+          PATCH=${VERSION_PARTS[2]}
+          
+          # Increment patch version
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
+          echo "New version: $NEW_VERSION"
+          
+          # Get current timestamp in ISO format
+          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          # Update version.json with new version and timestamp
+          cat > version.json << EOF
+          {
+            "version_code": "$NEW_VERSION",
+            "notes": "Auto-updated version",
+            "last_updated": "$TIMESTAMP"
+          }
+          EOF
+          
+          echo "Updated version.json successfully"
+          cat version.json
+      
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Commit and push changes
+        run: |
+          git add version.json
+          NEW_VERSION=$(node -pe "JSON.parse(require('fs').readFileSync('version.json', 'utf8')).version_code")
+          git commit -m "🤖 Auto-increment version to $NEW_VERSION"
+          git push
