@@ -53,13 +53,67 @@ export async function updateServerItemStatus(orderKey, productKey, status) {
  * Uses a special key "__confirmation_locked__" in the order_status JSON.
  * @param {string} orderKey - The order key
  * @param {boolean} isLocked - Lock status (true = locked, false = unlocked)
+ * @param {Array<object>} ordersData - Orders data to update locally
  * @returns {Promise<void>}
  */
-export async function saveConfirmationLock(orderKey, isLocked) {
+export async function saveConfirmationLock(orderKey, isLocked, ordersData) {
     // Use the special key "__confirmation_locked__" as product_key
     const lockValue = isLocked ? "locked" : "unlocked";
     await updateServerItemStatus(orderKey, "__confirmation_locked__", lockValue);
+
+    // Update local ordersData immediately to reflect the lock
+    updateLocalOrderStatus(orderKey, "__confirmation_locked__", lockValue, ordersData);
+
     console.log(`[DataFetchers] Confirmation lock ${lockValue} for order: ${orderKey}`);
+}
+
+/**
+ * Updates the local ordersData order_status to include a new item status.
+ * This ensures the UI reflects changes immediately without server fetch.
+ * @param {string} orderKey - The order key
+ * @param {string} productKey - The product key (or special key like "__confirmation_locked__")
+ * @param {string} status - The new status value
+ * @param {Array<object>} ordersData - Orders data array to update
+ */
+function updateLocalOrderStatus(orderKey, productKey, status, ordersData) {
+    if (!ordersData || ordersData.length === 0) return;
+
+    const order = ordersData.find(o => o.order_key === orderKey);
+    if (!order) return;
+
+    // Parse existing order_status
+    let currentStatusStr = order.order_status || "0#";
+    let parts = currentStatusStr.split('#');
+
+    if (parts.length < 2) {
+        parts = [currentStatusStr, new Date().toISOString()];
+    }
+
+    let stepId = parts[0];
+    let timestamp = parts[1];
+    let jsonStr = parts.slice(2).join('#');
+
+    let itemStatuses = {};
+    if (jsonStr) {
+        try {
+            itemStatuses = JSON.parse(jsonStr);
+        } catch (e) {
+            console.warn("[DataFetchers] Failed to parse order_status JSON:", e);
+            itemStatuses = {};
+        }
+    }
+
+    // Update the item status
+    itemStatuses[productKey] = status;
+
+    // Reconstruct order_status
+    const newJsonStr = JSON.stringify(itemStatuses);
+    const newStatusStr = `${stepId}#${timestamp}#${newJsonStr}`;
+
+    // Update the order object in place
+    order.order_status = newStatusStr;
+
+    console.log(`[DataFetchers] Updated local ordersData for ${orderKey}: ${productKey} = ${status}`);
 }
 
 /**

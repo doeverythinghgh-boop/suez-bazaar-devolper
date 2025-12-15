@@ -137,10 +137,10 @@ function handleConfirmationSave(data, ordersData) {
             });
 
             if (changed) {
-                // Lock the confirmation on server
+                // Lock the confirmation on server and update local data
                 if (ordersData && ordersData.length > 0) {
                     const orderKey = ordersData[0].order_key;
-                    saveConfirmationLock(orderKey, true).then(() => {
+                    saveConfirmationLock(orderKey, true, ordersData).then(() => {
                         console.log('[SellerPopups] Confirmation permanently locked for order:', orderKey);
                     });
                 }
