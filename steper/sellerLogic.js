@@ -106,7 +106,7 @@ export function getShippableProducts(ordersData, sellerId, userType) {
 
     return ordersData.flatMap((order) =>
         order.order_items
-            .filter((item) => userType === "admin" || (userType === "seller" && item.seller_key === sellerId) || (userType === "courier"))
+            .filter((item) => userType === "admin" || (userType === "seller" && item.seller_key === sellerId) || (userType === "courier") || (userType === "buyer"))
             .filter((item) => {
                 const status = loadItemStatus(item.product_key);
                 return status === ITEM_STATUS.CONFIRMED || status === ITEM_STATUS.SHIPPED || status === ITEM_STATUS.DELIVERED;

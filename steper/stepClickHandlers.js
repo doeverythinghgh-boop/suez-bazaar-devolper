@@ -18,6 +18,7 @@ import {
     showSellerRejectedProductsAlert,
     showShippingInfoAlert,
 } from "./sellerPopups.js";
+import { showBuyerShippingInfoAlert } from "./buyerPopups.js";
 
 /**
  * Attaches click event listeners to all step indicators.
@@ -73,7 +74,9 @@ function handleStepClick(stepId, controlData, ordersData, isBuyerLocked) {
             break;
 
         case "step-shipped":
-            if (["seller", "courier", "admin"].includes(userType)) {
+            if (userType === "buyer") {
+                showBuyerShippingInfoAlert(controlData, ordersData);
+            } else if (["seller", "courier", "admin"].includes(userType)) {
                 showShippingInfoAlert(controlData, ordersData);
             }
             break;

@@ -141,22 +141,21 @@
 
     // User Permissions definition - static configuration
     const DEFAULT_USERS = [
-        {
-            type: "buyer",
-            allowedSteps: ["step-review", "step-confirmed", "step-delivered", "step-cancelled", "step-returned"]
+        type: "buyer",
+        allowedSteps: ["step-review", "step-confirmed", "step-shipped", "step-delivered", "step-cancelled", "step-returned"]
         },
-        {
-            type: "seller",
+    {
+        type: "seller",
             allowedSteps: ["step-review", "step-confirmed", "step-shipped", "step-rejected", "step-cancelled"]
-        },
-        {
-            type: "courier",
+    },
+    {
+        type: "courier",
             allowedSteps: ["step-shipped", "step-delivered"]
-        },
-        {
-            type: "admin",
+    },
+    {
+        type: "admin",
             allowedSteps: ["step-review", "step-confirmed", "step-shipped", "step-delivered", "step-cancelled", "step-rejected", "step-returned"]
-        }
+    }
     ];
 
     document.addEventListener('DOMContentLoaded', () => {

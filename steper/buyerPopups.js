@@ -35,6 +35,10 @@ import {
     generateConfirmedListHtml
 } from "./buyerUi.js";
 
+// Import reused Logic and UI from Seller modules
+import { getShippableProducts } from "./sellerLogic.js";
+import { generateShippingTableHtml } from "./sellerUi.js";
+
 // =============================================================================
 // EVENT HANDLERS (Controller Layer)
 // =============================================================================
@@ -318,5 +322,38 @@ export function showBuyerConfirmedProductsAlert(data, ordersData) {
 
     } catch (error) {
         console.error("Error in showBuyerConfirmedProductsAlert:", error);
+    }
+}
+/**
+ * Displays products appearing in the shipping stage (Confirmed/Shipped) for the buyer (Read-Only).
+ * @function showBuyerShippingInfoAlert
+ * @param {object} data
+ * @param {Array<object>} ordersData
+ */
+export function showBuyerShippingInfoAlert(data, ordersData) {
+    try {
+        const userId = data.currentUser.idUser;
+        const userType = data.currentUser.type;
+
+        const shippableProducts = getShippableProducts(ordersData, userId, userType);
+        const htmlContent = generateShippingTableHtml(shippableProducts);
+
+        Swal.fire({
+            title: "Shipping Products",
+            html: htmlContent,
+            icon: "info",
+            confirmButtonText: "Close",
+            customClass: { popup: "fullscreen-swal" },
+            didOpen: () => {
+                attachLogButtonListeners();
+                // Disable all inputs to make it read-only
+                const popup = Swal.getPopup();
+                const inputs = popup.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => input.disabled = true);
+            }
+        });
+
+    } catch (error) {
+        console.error("Error in showBuyerShippingInfoAlert:", error);
     }
 }
