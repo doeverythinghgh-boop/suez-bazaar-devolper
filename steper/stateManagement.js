@@ -52,12 +52,22 @@ function saveAppState(state) {
 export function initializeState() {
     console.log("🚀 [State] Initializing...");
     let state;
+    const storedState = getAppState();
 
     if (globalStepperAppData && Object.keys(globalStepperAppData).length > 0) {
-        state = { ...globalStepperAppData };
+        // MERGE: Keep stored items/steps/dates, update control/orders from global
+        state = {
+            ...storedState,
+            ...globalStepperAppData,
+            // Explicitly preserve state objects if they exist in storage, otherwise init
+            items: storedState.items || {},
+            steps: storedState.steps || {},
+            dates: storedState.dates || {}
+        };
+        console.log("🔄 [State] Merged Global Data causing sync update.");
         saveAppState(state); // Sync valid global state to storage
     } else {
-        state = getAppState();
+        state = storedState;
         updateGlobalStepperAppData(state); // Sync storage to global variable
     }
 
