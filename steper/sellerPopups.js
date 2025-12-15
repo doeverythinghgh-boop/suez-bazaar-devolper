@@ -259,10 +259,10 @@ export function showSellerDeliveryConfirmationAlert(data, ordersData) {
 
         if (productsToDeliver.length === 0) {
             Swal.fire({
-                title: "No delivered/shipped products",
-                text: "No products in delivery stage.",
+                title: "لا توجد منتجات تم توصيلها/شحنها",
+                text: "لا توجد منتجات في مرحلة التوصيل.",
                 icon: "info",
-                confirmButtonText: "Close",
+                confirmButtonText: "إغلاق",
                 customClass: { popup: "fullscreen-swal" },
             });
             return;
@@ -273,13 +273,13 @@ export function showSellerDeliveryConfirmationAlert(data, ordersData) {
         const checkboxesHtml = generateDeliveryItemsHtml(productsToDeliver);
 
         Swal.fire({
-            title: "Confirm Product Receipt (Read-Only)",
-            html: `<div id="delivery-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">
+            title: "تأكيد استلام المنتجات (قراءة فقط)",
+            html: `<div id="seller-delivery-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">
                     ${userInfoHtml}
                     ${checkboxesHtml}
                    </div>`,
             icon: "info",
-            confirmButtonText: "Close",
+            confirmButtonText: "إغلاق",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -309,10 +309,10 @@ export function showSellerReturnedProductsAlert(data, ordersData) {
         const htmlContent = generateReturnedListHtml(returnedKeys, ordersData); // Reusing Buyer UI for list gen
 
         Swal.fire({
-            title: "Returned Products (Read-Only)",
-            html: htmlContent,
+            title: "المنتجات المرتجعة (قراءة فقط)",
+            html: `<div id="seller-returned-container">${htmlContent}</div>`,
             icon: returnedKeys.length > 0 ? "warning" : "success",
-            confirmButtonText: "Close",
+            confirmButtonText: "إغلاق",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();

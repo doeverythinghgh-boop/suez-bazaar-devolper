@@ -58,10 +58,10 @@ export function showBuyerRejectedProductsAlert(data, ordersData) {
         const htmlContent = generateRejectedListHtml(rejectedProducts);
 
         Swal.fire({
-            title: "Rejected Products",
-            html: htmlContent,
+            title: "المنتجات المرفوضة",
+            html: `<div id="buyer-rejected-container">${htmlContent}</div>`,
             icon: "error", // Use error icon for rejected
-            confirmButtonText: "Close",
+            confirmButtonText: "إغلاق",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -119,8 +119,8 @@ function handleReviewSave(data, ordersData) {
     if (changed) {
         Swal.fire({
             icon: 'success',
-            title: 'Updated',
-            text: 'Product selections updated.',
+            title: 'تم التحديث',
+            text: 'تم تحديث اختيار المنتجات.',
             timer: 1500,
             showConfirmButton: false
         }).then(() => {
@@ -156,8 +156,8 @@ function handleDeliverySave(data, ordersData) {
     if (changed) {
         Swal.fire({
             icon: 'success',
-            title: 'Updated',
-            text: 'Delivery status updated.',
+            title: 'تم التحديث',
+            text: 'تم تحديث حالة التوصيل.',
             timer: 1500,
             showConfirmButton: false
         }).then(() => {
@@ -195,12 +195,12 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
         const htmlContent = generateReviewListHtml(productKeys, ordersData, isOverallLocked);
 
         Swal.fire({
-            title: isOverallLocked ? "View Products" : "Select Products:",
+            title: isOverallLocked ? "عرض المنتجات" : "اختر المنتجات:",
             html: `<div id="buyer-review-products-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">${htmlContent}</div>`,
             footer: isOverallLocked
-                ? "View only - modifications restricted."
-                : '<button id="btn-save-review" class="swal2-confirm swal2-styled" style="background-color: #28a745;">Save Selections</button>',
-            cancelButtonText: "Close",
+                ? "للمشاهدة فقط - التعديلات مقيدة."
+                : '<button id="btn-save-review" class="swal2-confirm swal2-styled" style="background-color: #28a745;">حفظ الاختيارات</button>',
+            cancelButtonText: "إغلاق",
             focusConfirm: false,
             allowOutsideClick: !isOverallLocked,
             showConfirmButton: false,
@@ -235,10 +235,10 @@ export function showUnselectedProductsAlert(data, ordersData) {
         const htmlContent = generateCancelledListHtml(cancelledKeys, ordersData);
 
         Swal.fire({
-            title: "Cancelled Products",
-            html: htmlContent,
+            title: "المنتجات الملغاة",
+            html: `<div id="cancelled-products-container">${htmlContent}</div>`,
             icon: cancelledKeys.length > 0 ? "info" : "success",
-            confirmButtonText: "Okay",
+            confirmButtonText: "حسنًا",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -264,10 +264,10 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
 
         if (productsToDeliver.length === 0) {
             Swal.fire({
-                title: "No products to confirm receipt for",
-                text: "Waiting for products to be shipped.",
+                title: "لا توجد منتجات لتأكيد استلامها",
+                text: "بانتظار شحن المنتجات.",
                 icon: "info",
-                confirmButtonText: "Okay",
+                confirmButtonText: "حسنًا",
                 customClass: { popup: "fullscreen-swal" },
             });
             return;
@@ -278,13 +278,13 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
         const checkboxesHtml = generateDeliveryItemsHtml(productsToDeliver);
 
         Swal.fire({
-            title: "Confirm Product Receipt",
+            title: "تأكيد استلام المنتجات",
             html: `<div id="delivery-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">
                     ${userInfoHtml}
                     ${checkboxesHtml}
                    </div>`,
-            footer: '<button id="btn-save-delivery" class="swal2-confirm swal2-styled" style="background-color: #28a745;">Confirm Receipt</button>',
-            cancelButtonText: "Cancel",
+            footer: '<button id="btn-save-delivery" class="swal2-confirm swal2-styled" style="background-color: #28a745;">تأكيد الاستلام</button>',
+            cancelButtonText: "إلغاء",
             showConfirmButton: false,
             showCancelButton: true,
             customClass: { popup: "fullscreen-swal" },
@@ -315,10 +315,10 @@ export function showReturnedProductsAlert(data, ordersData) {
         const htmlContent = generateReturnedListHtml(returnedKeys, ordersData);
 
         Swal.fire({
-            title: "Returned Products",
-            html: htmlContent,
+            title: "المنتجات المرتجعة",
+            html: `<div id="buyer-returned-container">${htmlContent}</div>`,
             icon: returnedKeys.length > 0 ? "warning" : "success",
-            confirmButtonText: "Okay",
+            confirmButtonText: "حسنًا",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -344,10 +344,10 @@ export function showBuyerConfirmedProductsAlert(data, ordersData) {
         const htmlContent = generateConfirmedListHtml(confirmedKeys, ordersData);
 
         Swal.fire({
-            title: "Confirmed Products",
-            html: htmlContent,
+            title: "المنتجات المؤكدة",
+            html: `<div id="buyer-confirmed-container">${htmlContent}</div>`,
             icon: confirmedKeys.length > 0 ? "success" : "info",
-            confirmButtonText: "Okay",
+            confirmButtonText: "حسنًا",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -373,10 +373,10 @@ export function showBuyerShippingInfoAlert(data, ordersData) {
         const htmlContent = generateShippingTableHtml(shippableProducts);
 
         Swal.fire({
-            title: "Shipping Products",
-            html: htmlContent,
+            title: "منتجات قيد الشحن",
+            html: `<div id="buyer-shipping-container">${htmlContent}</div>`,
             icon: "info",
-            confirmButtonText: "Close",
+            confirmButtonText: "إغلاق",
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
