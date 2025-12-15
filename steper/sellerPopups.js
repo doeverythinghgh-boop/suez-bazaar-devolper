@@ -14,6 +14,10 @@ import { ITEM_STATUS } from "./config.js";
 import {
     updateCurrentStepFromState
 } from "./uiUpdates.js";
+import {
+    getServerConfirmationLockStatus,
+    updateServerConfirmationLock
+} from "./dataFetchers.js";
 
 // Import Logic and UI modules
 import {
@@ -50,38 +54,112 @@ function attachLogButtonListeners() {
 
 /**
  * Handles the save action for confirmation.
+ * Shows a confirmation dialog before permanently saving changes.
  * @function handleConfirmationSave
  * @param {object} data
  * @param {Array<object>} ordersData
  */
 function handleConfirmationSave(data, ordersData) {
     const checkboxes = document.querySelectorAll('input[name="sellerProductKeys"]');
-    let changed = false;
+
+    // Collect accepted and rejected products
+    const acceptedProducts = [];
+    const rejectedProducts = [];
 
     checkboxes.forEach(cb => {
-        if (!cb.disabled) {
-            const newStatus = cb.checked ? ITEM_STATUS.CONFIRMED : ITEM_STATUS.REJECTED;
-            const currentStatus = loadItemStatus(cb.value);
-            if (currentStatus !== newStatus && (currentStatus === ITEM_STATUS.PENDING || currentStatus === ITEM_STATUS.CONFIRMED || currentStatus === ITEM_STATUS.REJECTED)) {
-                saveItemStatus(cb.value, newStatus);
-                changed = true;
-            }
+        const productName = cb.getAttribute('data-product-name') || cb.value;
+        if (cb.checked) {
+            acceptedProducts.push(productName);
+        } else {
+            rejectedProducts.push(productName);
         }
     });
 
-    if (changed) {
-        Swal.fire({
-            icon: 'success',
-            title: 'تم الحفظ',
-            text: 'تم تحديث حالة المنتجات بنجاح.',
-            timer: 1500,
-            showConfirmButton: false
-        }).then(() => {
-            updateCurrentStepFromState(data, ordersData);
+    // Build HTML for confirmation dialog
+    let htmlContent = '<div style="text-align: right; direction: rtl;">';
+
+    // Accepted products section
+    if (acceptedProducts.length > 0) {
+        htmlContent += '<div style="margin-bottom: 20px;">';
+        htmlContent += '<h3 style="color: #28a745; margin-bottom: 10px;">✅ المنتجات المقبولة (' + acceptedProducts.length + '):</h3>';
+        htmlContent += '<ul style="list-style: none; padding: 0;">';
+        acceptedProducts.forEach(name => {
+            htmlContent += '<li style="padding: 5px; background: #d4edda; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
         });
-    } else {
-        Swal.close();
+        htmlContent += '</ul></div>';
     }
+
+    // Rejected products section
+    if (rejectedProducts.length > 0) {
+        htmlContent += '<div style="margin-bottom: 20px;">';
+        htmlContent += '<h3 style="color: #dc3545; margin-bottom: 10px;">❌ المنتجات المرفوضة (' + rejectedProducts.length + '):</h3>';
+        htmlContent += '<ul style="list-style: none; padding: 0;">';
+        rejectedProducts.forEach(name => {
+            htmlContent += '<li style="padding: 5px; background: #f8d7da; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
+        });
+        htmlContent += '</ul></div>';
+    }
+
+    // Warning message
+    htmlContent += '<div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 5px; margin-top: 15px;">';
+    htmlContent += '<p style="margin: 0; font-weight: bold; color: #856404;">⚠️ تحذير هام:</p>';
+    htmlContent += '<p style="margin: 5px 0 0 0; color: #856404;">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
+    htmlContent += '</div>';
+
+    htmlContent += '</div>';
+
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'تأكيد الحفظ النهائي',
+        html: htmlContent,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'تأكيد الحفظ',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        customClass: { popup: 'fullscreen-swal' },
+        allowOutsideClick: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // User confirmed, proceed with saving
+            let changed = false;
+
+            checkboxes.forEach(cb => {
+                if (!cb.disabled) {
+                    const newStatus = cb.checked ? ITEM_STATUS.CONFIRMED : ITEM_STATUS.REJECTED;
+                    const currentStatus = loadItemStatus(cb.value);
+                    if (currentStatus !== newStatus && (currentStatus === ITEM_STATUS.PENDING || currentStatus === ITEM_STATUS.CONFIRMED || currentStatus === ITEM_STATUS.REJECTED)) {
+                        saveItemStatus(cb.value, newStatus);
+                        changed = true;
+                    }
+                }
+            });
+
+            if (changed) {
+                // Lock the confirmation on server
+                if (ordersData && ordersData.length > 0) {
+                    const orderKey = ordersData[0].order_key;
+                    updateServerConfirmationLock(orderKey, true).then(() => {
+                        console.log('[SellerPopups] Confirmation permanently locked for order:', orderKey);
+                    });
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم الحفظ بنجاح',
+                    text: 'تم حفظ التأكيد بشكل نهائي.',
+                    timer: 1500,
+                    showConfirmButton: false
+                }).then(() => {
+                    updateCurrentStepFromState(data, ordersData);
+                });
+            } else {
+                Swal.close();
+            }
+        }
+        // If cancelled, just close the dialog and do nothing
+    });
 }
 
 /**
@@ -130,21 +208,37 @@ function handleShippingSave(data, ordersData) {
 
 /**
  * Displays a popup for the seller to confirm product availability.
+ * Checks lock status first - sellers cannot edit if locked, admins can override.
  * @function showSellerConfirmationProductsAlert
  * @param {object} data - Control Data.
  * @param {Array<object>} ordersData - Orders Data.
  */
-export function showSellerConfirmationProductsAlert(data, ordersData) {
+export async function showSellerConfirmationProductsAlert(data, ordersData) {
     try {
         const products = getConfirmationProducts(ordersData, data.currentUser.idUser, data.currentUser.type);
         const htmlContent = generateConfirmationTableHtml(products, ordersData);
 
+        // Check lock status from server
+        let isLocked = false;
+        if (ordersData && ordersData.length > 0) {
+            const orderKey = ordersData[0].order_key;
+            isLocked = await getServerConfirmationLockStatus(orderKey);
+        }
+
+        // Determine if editing is allowed
+        const userType = data.currentUser.type;
+        const canEdit = userType === 'admin' || !isLocked;
+
+        console.log(`[SellerPopups] Opening confirmation | User: ${userType} | Locked: ${isLocked} | CanEdit: ${canEdit}`);
+
         Swal.fire({
-            title: "تأكيد المنتجات",
+            title: canEdit ? "تأكيد المنتجات" : "تأكيد المنتجات (قراءة فقط)",
             html: `<div id="seller-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%; max-height: 300px; overflow: auto;">
                     ${htmlContent}
                    </div>`,
-            footer: '<button id="btn-save-confirmation" class="swal2-confirm swal2-styled" style="background-color: #28a745;">حفظ التغييرات</button>',
+            footer: canEdit
+                ? '<button id="btn-save-confirmation" class="swal2-confirm swal2-styled" style="background-color: #28a745;">حفظ التغييرات</button>'
+                : '<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">🔒 تم قفل التأكيد بشكل دائم - لا يمكن التعديل</p>',
             cancelButtonText: "إغلاق",
             showConfirmButton: false,
             showCancelButton: true,
@@ -153,9 +247,22 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
-                document.getElementById('btn-save-confirmation')?.addEventListener('click', () => {
-                    handleConfirmationSave(data, ordersData);
-                });
+
+                if (canEdit) {
+                    document.getElementById('btn-save-confirmation')?.addEventListener('click', () => {
+                        handleConfirmationSave(data, ordersData);
+                    });
+                } else {
+                    // Disable all inputs for locked view
+                    const container = document.getElementById('seller-confirmation-container');
+                    if (container) {
+                        const inputs = container.querySelectorAll('input, textarea, select, button.btn-show-key');
+                        // Keep show-product buttons enabled but disable checkboxes
+                        container.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                            checkbox.disabled = true;
+                        });
+                    }
+                }
             },
         });
     } catch (error) {

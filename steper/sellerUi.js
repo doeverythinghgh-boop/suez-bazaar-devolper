@@ -25,7 +25,8 @@ export function generateCheckboxCell(productKey, productName, isChecked, isDisab
                 <input type="checkbox" 
                        id="seller-confirmation-checkbox-${productKey}" 
                        name="${inputName}" 
-                       value="${productKey}" 
+                       value="${productKey}"
+                       data-product-name="${productName}"
                        ${isChecked ? "checked" : ""} 
                        ${isDisabled ? "disabled" : ""}
                        style="margin-left: 8px;">

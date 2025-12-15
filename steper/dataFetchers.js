@@ -47,3 +47,56 @@ export async function updateServerItemStatus(orderKey, productKey, status) {
         console.error("[DataFetchers] Server Sync Failed:", e);
     }
 }
+
+/**
+ * Updates the seller confirmation lock status on the server.
+ * @param {string} orderKey - The order key
+ * @param {boolean} isLocked - Lock status (true = locked, false = unlocked)
+ * @returns {Promise<object>} Response from server
+ */
+export async function updateServerConfirmationLock(orderKey, isLocked) {
+    if (!window.globalStepperAppData || !window.globalStepperAppData.baseURL) {
+        console.warn("[DataFetchers] BaseURL not found, cannot update confirmation lock.");
+        return { success: false, error: "No baseURL" };
+    }
+    const baseURL = window.globalStepperAppData.baseURL;
+    try {
+        const response = await fetch(`${baseURL}/api/update-confirmation-lock`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_key: orderKey, is_locked: isLocked })
+        });
+        const result = await response.json();
+        console.log("[DataFetchers] Confirmation Lock Update Result:", result);
+        return result;
+    } catch (e) {
+        console.error("[DataFetchers] Confirmation Lock Update Failed:", e);
+        return { success: false, error: e.message };
+    }
+}
+
+/**
+ * Gets the seller confirmation lock status from the server.
+ * @param {string} orderKey - The order key
+ * @returns {Promise<boolean>} Lock status (true = locked, false = unlocked)
+ */
+export async function getServerConfirmationLockStatus(orderKey) {
+    if (!window.globalStepperAppData || !window.globalStepperAppData.baseURL) {
+        console.warn("[DataFetchers] BaseURL not found, cannot get confirmation lock status.");
+        return false;
+    }
+    const baseURL = window.globalStepperAppData.baseURL;
+    try {
+        const response = await fetch(`${baseURL}/api/get-confirmation-lock?order_key=${orderKey}`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        console.log("[DataFetchers] Confirmation Lock Status:", result);
+        return result.is_locked || false;
+    } catch (e) {
+        console.error("[DataFetchers] Get Confirmation Lock Status Failed:", e);
+        return false;
+    }
+}
+
