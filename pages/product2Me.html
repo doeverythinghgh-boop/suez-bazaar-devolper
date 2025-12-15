@@ -607,9 +607,12 @@
 
       product.MainCategory = result.mainId;
       product.SubCategory = result.subId;
-
       productSession = product;
-      mainLoader("./pages/productEdit.html", "index-product-container", 0, undefined, "showHomeIcon", true);
+      mainCategorySelectToAdd=result.mainId;
+      subCategorySelectToAdd=result.subId;
+
+    productAddSetType();
+
     }
   }
 
