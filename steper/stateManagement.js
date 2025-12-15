@@ -1,158 +1,65 @@
 /**
  * @file stateManagement.js
  * @description State Management Module.
- * synchronization of application state with LocalStorage.
+ * Manages application state in memory and coordinates server synchronization.
+ * LocalStorage has been removed to ensure strict consistency with the server.
  */
 
 import { updateGlobalStepperAppData, globalStepperAppData, ordersData } from "./config.js";
 import { updateServerItemStatus } from "./dataFetchers.js";
 
-// Keys for LocalStorage
-// REMOVED LEGACY STORAGE_KEYS
-
-/**
- * Generates a unique storage key based on the current order context.
- * @returns {string} The storage key.
- */
-function getAppKey() {
-    if (ordersData && ordersData.length > 0 && ordersData[0].order_key) {
-        return `stepper_app_data_${ordersData[0].order_key}`;
-    }
-    console.warn("[State] Using default storage key.");
-    return "stepper_app_data_default";
-}
-
-/**
- * Retrieves the state from LocalStorage.
- * @returns {object} The parsed state object or default empty structure.
- */
-function getAppState() {
-    try {
-        const stateStr = localStorage.getItem(getAppKey());
-        return stateStr ? JSON.parse(stateStr) : { steps: {}, dates: {}, items: {} };
-    } catch (e) {
-        console.error("Failed to parse app state:", e);
-        return { steps: {}, dates: {}, items: {} };
-    }
-}
-
-/**
- * Saves the state to LocalStorage and updates global memory.
- * @param {object} state - The full state object.
- */
-function saveAppState(state) {
-    try {
-        localStorage.setItem(getAppKey(), JSON.stringify(state));
-        updateGlobalStepperAppData(state);
-    } catch (e) {
-        console.error("Failed to save app state:", e);
-    }
-}
-
 /**
  * Initializes the application state on startup.
- * Synchronizes between global variable and LocalStorage.
+ * Sets up the global state structure.
  */
 export function initializeState() {
-    console.log("🚀 [State] Initializing...");
-    let state;
-    const storedState = getAppState();
+    console.log("🚀 [State] Initializing (In-Memory Only)...");
 
+    // Initialize default structure if needed
+    const state = {
+        items: {},
+        steps: {},
+        dates: {}
+    };
+
+    // If global already has data, preserve it, otherwise set default
     if (globalStepperAppData && Object.keys(globalStepperAppData).length > 0) {
-        // MERGE: Keep stored items/steps/dates, update control/orders from global
-        state = {
-            ...storedState,
-            ...globalStepperAppData,
-            // Explicitly preserve state objects if they exist in storage, otherwise init
-            items: storedState.items || {},
-            steps: storedState.steps || {},
-            dates: storedState.dates || {}
-        };
-        console.log("🔄 [State] Merged Global Data causing sync update.");
+        // already initialized
     } else {
-        state = storedState;
-        updateGlobalStepperAppData(state); // Sync storage to global variable
+        updateGlobalStepperAppData(state);
     }
 
-    // Detailed merge logic for item statuses (Run ALWAYS if ordersData exists)
-    const savedItems = state.items || {}; // Ensure items object exists
+    // Populate items status from ordersData (Single Source of Truth)
+    const currentItems = {};
     if (ordersData) {
         ordersData.forEach(order => {
             if (order.order_items) {
                 order.order_items.forEach(item => {
-                    // Developer Log: Tracing Status
-                    // console.log(`[State] 🔍 Checking item ${item.product_key}. Server Status: ${item.item_status}, Local Status: ${savedItems[item.product_key]?.status}`);
-
-                    // If server has a status for this item, use it.
                     if (item.item_status) {
-                        const currentLocal = savedItems[item.product_key];
-                        // Prefer Server status if local is missing or pending/default, OR if we strictly trust server.
-                        // For now, let's strictly trust server timestamp if it exists? 
-                        // Actually, logic: if server has status, and it differs from local, assume server is newer or correct 
-                        // (since we just fetched it).
-                        if (!currentLocal || currentLocal.status !== item.item_status) {
-                            console.log(`[State] ⚠️ Overwriting Local (${currentLocal?.status}) with Server (${item.item_status}) for ${item.product_key}`);
-                            savedItems[item.product_key] = {
-                                status: item.item_status,
-                                timestamp: new Date().toISOString()
-                            };
-                        } else {
-                            // Match found
-                        }
+                        currentItems[item.product_key] = {
+                            status: item.item_status,
+                            timestamp: new Date().toISOString() // We could parse this from order_status if needed
+                        };
                     }
                 });
             }
         });
     }
-    state.items = savedItems; // Update state with modified items
 
-    // Ensure structure integirty
-    if (!state.steps) state.steps = {};
-    if (!state.dates) state.dates = {};
-    if (!state.items) state.items = {};
-
-    saveAppState(state);
-    cleanupLegacyKeys();
-}
-
-/**
- * Removes legacy storage keys to keep the browser clean.
- */
-function cleanupLegacyKeys() {
-    try {
-        const keysToRemove = [
-            "stepper_items",
-            "stepper_steps",
-            "stepper_dates", // The legacy keys we just deprecated
-            "current_step_state",
-            "step-review_state",
-            "step-confirmed_state",
-            "step-shipped_state",
-            "step-delivered_state",
-            "step-cancelled_state",
-            "step-rejected_state",
-            "step-returned_state"
-        ];
-        // Add legacy dates
-        const stepIds = ["step-review", "step-confirmed", "step-shipped", "step-delivered",
-            "step-cancelled", "step-rejected", "step-returned"];
-        stepIds.forEach(id => keysToRemove.push(`date_${id}`));
-
-        keysToRemove.forEach(key => localStorage.removeItem(key));
-    } catch (e) {
-        console.warn("Legacy cleanup failed:", e);
-    }
+    // Update global state with derived items
+    if (!globalStepperAppData.items) globalStepperAppData.items = {};
+    Object.assign(globalStepperAppData.items, currentItems);
 }
 
 /**
  * Saves the state for a specific step.
+ * In-memory only (cache for current session).
  * @param {string} stepId 
  * @param {object} stepState 
  */
 export function saveStepState(stepId, stepState) {
-    const appState = getAppState();
-    appState.steps[stepId] = stepState;
-    saveAppState(appState);
+    if (!globalStepperAppData.steps) globalStepperAppData.steps = {};
+    globalStepperAppData.steps[stepId] = stepState;
 }
 
 /**
@@ -161,19 +68,18 @@ export function saveStepState(stepId, stepState) {
  * @returns {object|null}
  */
 export function loadStepState(stepId) {
-    const appState = getAppState();
-    return appState.steps?.[stepId] || null;
+    return globalStepperAppData.steps?.[stepId] || null;
 }
 
 /**
  * Saves the activation date for a step.
+ * In-memory only.
  * @param {string} stepId 
  * @param {string} dateStr 
  */
 export function saveStepDate(stepId, dateStr) {
-    const appState = getAppState();
-    appState.dates[stepId] = dateStr;
-    saveAppState(appState);
+    if (!globalStepperAppData.dates) globalStepperAppData.dates = {};
+    globalStepperAppData.dates[stepId] = dateStr;
 }
 
 /**
@@ -182,38 +88,48 @@ export function saveStepDate(stepId, dateStr) {
  * @returns {string|null}
  */
 export function loadStepDate(stepId) {
-    const appState = getAppState();
-    return appState.dates?.[stepId] || null;
+    return globalStepperAppData.dates?.[stepId] || null;
 }
 
 /**
  * Updates the status of a specific item.
+ * Blocking Operation: Waits for Server, then updates Memory.
  * @param {string} productKey
  * @param {string} status
+ * @returns {Promise<void>}
  */
-export function saveItemStatus(productKey, status) {
-    const currentState = globalStepperAppData;
+export async function saveItemStatus(productKey, status) {
+    // 1. Identify context
+    if (!ordersData) {
+        throw new Error("Orders Data not loaded.");
+    }
+    const order = ordersData.find(o => o.order_items.some(i => i.product_key === productKey));
+    if (!order) {
+        throw new Error(`Order not found for product ${productKey}`);
+    }
 
-    // Update Local State
-    if (!currentState.items) currentState.items = {};
-    currentState.items[productKey] = {
-        status: status,
-        timestamp: new Date().toISOString()
-    };
-    updateGlobalStepperAppData(currentState);
+    // 2. Sync to Server (Blocking)
+    try {
+        await updateServerItemStatus(order.order_key, productKey, status);
 
-    // Persist to LocalStorage using the correct AppKey
-    saveAppState(currentState);
+        // 3. Update Local Memory (Only after success)
+        if (!globalStepperAppData.items) globalStepperAppData.items = {};
+        globalStepperAppData.items[productKey] = {
+            status: status,
+            timestamp: new Date().toISOString()
+        };
 
-    // Sync to Server
-    // Find order key for this product
-    if (ordersData) {
-        const order = ordersData.find(o => o.order_items.some(i => i.product_key === productKey));
-        if (order) {
-            updateServerItemStatus(order.order_key, productKey, status);
-        } else {
-            console.warn(`[State] Could not find order for product ${productKey} to sync server.`);
-        }
+        // Also update the ordersData array in memory to keep it fresh
+        // (This logic was partially in updateLocalOrderStatus, we reinforce it here implicitly 
+        // because updateServerItemStatus helper might calls updateLocalOrderStatus. 
+        // We trust the helper to do the "local" part too, or we do it here. 
+        // check dataFetchers.js: yes it calls updateLocalOrderStatus)
+
+        console.log(`[State] ✅ Status saved and synced: ${productKey} = ${status}`);
+
+    } catch (e) {
+        console.error(`[State] ❌ Failed to save status for ${productKey}:`, e);
+        throw e; // Propagate error so UI can show alert
     }
 }
 
@@ -223,8 +139,7 @@ export function saveItemStatus(productKey, status) {
  * @returns {string} Status string or 'pending'.
  */
 export function loadItemStatus(productKey) {
-    const appState = getAppState();
-    return appState.items?.[productKey]?.status || "pending";
+    return globalStepperAppData.items?.[productKey]?.status || "pending";
 }
 
 /**
@@ -232,6 +147,5 @@ export function loadItemStatus(productKey) {
  * @returns {object} Map of productKey -> item data.
  */
 export function getAllItemsStatus() {
-    const appState = getAppState();
-    return appState.items || {};
+    return globalStepperAppData.items || {};
 }

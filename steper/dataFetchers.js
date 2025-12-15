@@ -32,7 +32,7 @@ export async function fetchOrdersData() {
 export async function updateServerItemStatus(orderKey, productKey, status) {
     if (!window.globalStepperAppData || !window.globalStepperAppData.baseURL) {
         console.warn("BaseURL not found, cannot sync to server.");
-        return;
+        return Promise.reject(new Error("BaseURL not found"));
     }
     const baseURL = window.globalStepperAppData.baseURL;
     try {
@@ -41,10 +41,17 @@ export async function updateServerItemStatus(orderKey, productKey, status) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ order_key: orderKey, product_key: productKey, status: status })
         });
+
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+
         const result = await response.json();
         console.log("[DataFetchers] Server Sync Result:", result);
+        return result;
     } catch (e) {
         console.error("[DataFetchers] Server Sync Failed:", e);
+        throw e; // Re-throw to allow caller to handle the failure
     }
 }
 

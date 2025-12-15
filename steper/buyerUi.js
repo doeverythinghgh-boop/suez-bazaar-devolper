@@ -142,17 +142,49 @@ export function generateReturnedListHtml(returnedKeys, ordersData) {
  */
 export function generateConfirmedListHtml(confirmedKeys, ordersData) {
     if (confirmedKeys.length === 0) {
-        return '<p id="no-confirmed-items-message">No confirmed products yet.</p>';
+        return '<p id="no-confirmed-items-message">لا توجد منتجات مؤكدة بعد.</p>';
     }
     const itemsHtml = confirmedKeys.map((key) => {
         const productName = getProductName(key, ordersData);
         const status = loadItemStatus(key);
+
+        // Find Item Delivery Info
+        let deliveryInfo = "";
+        const order = ordersData.find(o => o.order_items.some(i => i.product_key === key));
+        if (order) {
+            const item = order.order_items.find(i => i.product_key === key);
+            if (item && item.supplier_delivery) {
+                // Reuse logic similar to sellerLogic.js or simple inline fallback
+                const dData = item.supplier_delivery;
+                let name = "";
+                let phone = "";
+
+                if (Array.isArray(dData) && dData.length > 0 && dData[0].delivery_name) {
+                    name = dData[0].delivery_name;
+                    phone = dData[0].delivery_phone;
+                } else if (dData.delivery_name) {
+                    name = Array.isArray(dData.delivery_name) ? dData.delivery_name[0] : dData.delivery_name;
+                    phone = Array.isArray(dData.delivery_phone) ? dData.delivery_phone[0] : dData.delivery_phone;
+                }
+
+                if (name) {
+                    deliveryInfo = `<br><small style="color: #666;">المندوب: ${name} ${phone ? `(${phone})` : ''}</small>`;
+                }
+            }
+        }
+
         return `
-            <li id="confirmed-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                <span>${productName} <small style="color:green">(${status})</small></span>
-                <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">Product</button>
+            <li id="confirmed-item-${key}" style="border-bottom: 1px solid #eee; padding: 8px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                    <div style="flex-grow: 1;">
+                        <span style="font-weight: bold;">${productName}</span>
+                        ${deliveryInfo}
+                        <br><small style="color:green">الحالة: ${status}</small>
+                    </div>
+                    <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; margin-right: 5px;">Product</button>
+                </div>
             </li>
         `;
     }).join("");
-    return `<div id="confirmed-products-container"><p>Products confirmed by seller:</p><ul id="confirmed-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
+    return `<div id="confirmed-products-container"><p>المنتجات التي تم تأكيدها بواسطة البائع:</p><ul id="confirmed-products-list" style="list-style: none; padding: 0; margin-top: 10px;">${itemsHtml}</ul></div>`;
 }

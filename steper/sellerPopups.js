@@ -120,45 +120,63 @@ function handleConfirmationSave(data, ordersData) {
         cancelButtonColor: '#6c757d',
         customClass: { popup: 'fullscreen-swal' },
         allowOutsideClick: false
-    }).then((result) => {
+    }).then(async (result) => {
         if (result.isConfirmed) {
             // User confirmed, proceed with saving
-            let changed = false;
+            const updates = [];
 
             checkboxes.forEach(cb => {
                 if (!cb.disabled) {
                     const newStatus = cb.checked ? ITEM_STATUS.CONFIRMED : ITEM_STATUS.REJECTED;
                     const currentStatus = loadItemStatus(cb.value);
                     if (currentStatus !== newStatus && (currentStatus === ITEM_STATUS.PENDING || currentStatus === ITEM_STATUS.CONFIRMED || currentStatus === ITEM_STATUS.REJECTED)) {
-                        saveItemStatus(cb.value, newStatus);
-                        changed = true;
+                        updates.push({ key: cb.value, status: newStatus });
                     }
                 }
             });
 
-            if (changed) {
-                // Lock the confirmation on server and update local data
-                if (ordersData && ordersData.length > 0) {
-                    const orderKey = ordersData[0].order_key;
-                    saveConfirmationLock(orderKey, true, ordersData).then(() => {
+            if (updates.length > 0) {
+                // Show loading
+                Swal.fire({
+                    title: 'جاري الحفظ...',
+                    text: 'يتم حفظ التأكيد والقفل...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                try {
+                    // Save items first
+                    await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+
+                    // Then Lock
+                    if (ordersData && ordersData.length > 0) {
+                        const orderKey = ordersData[0].order_key;
+                        await saveConfirmationLock(orderKey, true, ordersData);
                         console.log('[SellerPopups] Confirmation permanently locked for order:', orderKey);
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم الحفظ بنجاح',
+                        text: 'تم حفظ التأكيد بشكل نهائي.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        updateCurrentStepFromState(data, ordersData);
+                    });
+                } catch (error) {
+                    console.error("Save failed", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'فشل الحفظ',
+                        text: 'حدث خطأ أثناء الاتصال بالسيرفر.',
+                        confirmButtonText: 'حسنًا'
                     });
                 }
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'تم الحفظ بنجاح',
-                    text: 'تم حفظ التأكيد بشكل نهائي.',
-                    timer: 1500,
-                    showConfirmButton: false
-                }).then(() => {
-                    updateCurrentStepFromState(data, ordersData);
-                });
             } else {
                 Swal.close();
             }
         }
-        // If cancelled, just close the dialog and do nothing
     });
 }
 
@@ -168,9 +186,9 @@ function handleConfirmationSave(data, ordersData) {
  * @param {object} data
  * @param {Array<object>} ordersData
  */
-function handleShippingSave(data, ordersData) {
+async function handleShippingSave(data, ordersData) {
     const checkboxes = document.querySelectorAll('input[name="shippingProductKeys"]');
-    let changed = false;
+    const updates = [];
 
     checkboxes.forEach(cb => {
         if (!cb.disabled) {
@@ -178,25 +196,40 @@ function handleShippingSave(data, ordersData) {
             const shouldBeShipped = cb.checked;
 
             if (shouldBeShipped && currentStatus === ITEM_STATUS.CONFIRMED) {
-                saveItemStatus(cb.value, ITEM_STATUS.SHIPPED);
-                changed = true;
+                updates.push({ key: cb.value, status: ITEM_STATUS.SHIPPED });
             } else if (!shouldBeShipped && currentStatus === ITEM_STATUS.SHIPPED) {
-                saveItemStatus(cb.value, ITEM_STATUS.CONFIRMED);
-                changed = true;
+                updates.push({ key: cb.value, status: ITEM_STATUS.CONFIRMED });
             }
         }
     });
 
-    if (changed) {
+    if (updates.length > 0) {
         Swal.fire({
-            icon: 'success',
-            title: 'تم التحديث',
-            text: 'تم تحديث حالة الشحن بنجاح.',
-            timer: 1500,
-            showConfirmButton: false
-        }).then(() => {
-            updateCurrentStepFromState(data, ordersData);
+            title: 'جاري الحفظ...',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
         });
+
+        try {
+            await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+
+            Swal.fire({
+                icon: 'success',
+                title: 'تم التحديث',
+                text: 'تم تحديث حالة الشحن بنجاح.',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                updateCurrentStepFromState(data, ordersData);
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'فشل الحفظ',
+                text: 'حدث خطأ أثناء الاتصال بالسيرفر.',
+                confirmButtonText: 'حسنًا'
+            });
+        }
     } else {
         Swal.close();
     }

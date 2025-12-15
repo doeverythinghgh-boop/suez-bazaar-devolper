@@ -98,34 +98,61 @@ function attachLogButtonListeners() {
  * @param {object} data
  * @param {Array<object>} ordersData
  */
-function handleReviewSave(data, ordersData) {
+/**
+ * Handles saving review changes.
+ * @function handleReviewSave
+ * @param {object} data
+ * @param {Array<object>} ordersData
+ */
+async function handleReviewSave(data, ordersData) {
     const container = document.getElementById("buyer-review-products-container");
     if (!container) return; // Guard clause
     const checkboxes = container.querySelectorAll('input[name="productKeys"]');
-    let changed = false;
+
+    const updates = [];
 
     checkboxes.forEach(cb => {
         if (!cb.disabled) {
             const newStatus = cb.checked ? ITEM_STATUS.PENDING : ITEM_STATUS.CANCELLED;
             const currentStatus = loadItemStatus(cb.value);
             if (currentStatus !== newStatus) {
-                console.log(`[BuyerPopups] Saving status for ${cb.value}: ${currentStatus} -> ${newStatus}`);
-                saveItemStatus(cb.value, newStatus);
-                changed = true;
+                updates.push({ key: cb.value, status: newStatus });
             }
         }
     });
 
-    if (changed) {
+    if (updates.length > 0) {
+        // Show loading state
         Swal.fire({
-            icon: 'success',
-            title: 'تم التحديث',
-            text: 'تم تحديث اختيار المنتجات.',
-            timer: 1500,
-            showConfirmButton: false
-        }).then(() => {
-            updateCurrentStepFromState(data, ordersData);
+            title: 'جاري الحفظ...',
+            text: 'برجاء الانتظار بينما يتم حفظ التغييرات.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
+
+        try {
+            // Execute all updates (Blocking)
+            await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+
+            Swal.fire({
+                icon: 'success',
+                title: 'تم التحديث',
+                text: 'تم تحديث اختيار المنتجات بنجاح.',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                updateCurrentStepFromState(data, ordersData);
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'فشل الحفظ',
+                text: 'حدث خطأ أثناء حفظ البيانات. برجاء المحاولة مرة أخرى.',
+                confirmButtonText: 'حسنًا'
+            });
+        }
     } else {
         Swal.close();
     }
@@ -137,32 +164,52 @@ function handleReviewSave(data, ordersData) {
  * @param {object} data
  * @param {Array<object>} ordersData
  */
-function handleDeliverySave(data, ordersData) {
+async function handleDeliverySave(data, ordersData) {
     const checkboxes = document.querySelectorAll('input[name="deliveryProductKeys"]');
-    let changed = false;
+    const updates = [];
+
     checkboxes.forEach(cb => {
         const currentStatus = loadItemStatus(cb.value);
         const isChecked = cb.checked;
 
         if (isChecked && currentStatus === ITEM_STATUS.SHIPPED) {
-            saveItemStatus(cb.value, ITEM_STATUS.DELIVERED);
-            changed = true;
+            updates.push({ key: cb.value, status: ITEM_STATUS.DELIVERED });
         } else if (!isChecked && currentStatus === ITEM_STATUS.DELIVERED) {
-            saveItemStatus(cb.value, ITEM_STATUS.SHIPPED); // Undo delivery
-            changed = true;
+            updates.push({ key: cb.value, status: ITEM_STATUS.SHIPPED }); // Undo
         }
     });
 
-    if (changed) {
+    if (updates.length > 0) {
+        // Show loading state
         Swal.fire({
-            icon: 'success',
-            title: 'تم التحديث',
-            text: 'تم تحديث حالة التوصيل.',
-            timer: 1500,
-            showConfirmButton: false
-        }).then(() => {
-            updateCurrentStepFromState(data, ordersData);
+            title: 'جاري الحفظ...',
+            text: 'برجاء الانتظار...',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+            }
         });
+
+        try {
+            await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+
+            Swal.fire({
+                icon: 'success',
+                title: 'تم التحديث',
+                text: 'تم تحديث حالة التوصيل.',
+                timer: 1500,
+                showConfirmButton: false
+            }).then(() => {
+                updateCurrentStepFromState(data, ordersData);
+            });
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'فشل الحفظ',
+                text: 'حدث خطأ أثناء حفظ البيانات.',
+                confirmButtonText: 'حسنًا'
+            });
+        }
     } else {
         Swal.close();
     }
