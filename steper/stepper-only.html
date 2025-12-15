@@ -165,10 +165,16 @@
             console.log("🔗 [StepperOnly] Found parent data, bridging...");
             const parentData = window.parent.globalStepperAppData;
 
+            // Bridge baseURL to internal window object for dataFetchers.js
+            window.globalStepperAppData = {
+                baseURL: parentData.baseURL
+            };
+
             const control = {
+                baseURL: parentData.baseURL, // Also add to control
                 currentUser: {
                     idUser: parentData.idUser,
-                    type: "unknown" // Will be determined by logic
+                    type: "unknown"
                 },
                 steps: DEFAULT_STEPS,
                 users: DEFAULT_USERS
