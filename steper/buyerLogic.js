@@ -40,20 +40,13 @@ export function getCancelledProducts(ordersData, userId, userType) {
         order.order_items.filter(item => {
             const status = loadItemStatus(item.product_key);
 
-            // Detailed Debugging
-            if (userType === "seller") {
-                console.log(`[BuyerLogic-Debug] Item: ${item.product_key} | SellerKey: '${item.seller_key}' | CurrentUser: '${userId}' | Type: ${userType} | Status: ${status}`);
-                console.log(`[BuyerLogic-Debug] Comparison '${item.seller_key}' != '${userId}' => ${item.seller_key != userId}`);
-            }
+            // Developer Log: Tracing Cancellation Logic
+            console.log(`[BuyerLogic] getCancelledProducts | Checking ${item.product_key} | Status: ${status} | User: ${userId} vs OrderUser: ${order.user_key}`);
 
             // Visibility check
             if (userType === "buyer" && order.user_key != userId) return false;
             if (userType === "seller" && item.seller_key != userId) return false;
 
-            // Debug log to trace cancelled items
-            if (status === ITEM_STATUS.CANCELLED) {
-                console.log(`[BuyerLogic] Found Cancelled Item for ${userType}:`, item.product_key);
-            }
             return status === ITEM_STATUS.CANCELLED;
         }).map(i => i.product_key)
     );
