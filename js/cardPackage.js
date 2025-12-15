@@ -290,5 +290,5 @@ function updateCartBadge() {
 window.addEventListener("cartUpdated", updateCartBadge);
 
 // Update badge on page load
-//document.addEventListener("DOMContentLoaded", updateCartBadge);
-updateCartBadge();
+document.addEventListener("DOMContentLoaded", updateCartBadge);
+// updateCartBadge();
