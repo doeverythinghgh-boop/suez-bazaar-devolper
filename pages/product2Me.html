@@ -1,117 +1,128 @@
 <style>
-  .products-container {
-    max-width: 1200px;
-    margin: 0 auto;
+  /* Container */
+  .p2m-products-container {
+    margin: 40px;
+    background-color: transparent;
+    animation: p2m-slide-down 0.5s ease-out forwards;
+    text-align: right;
   }
 
-  .page-header {
-    text-align: center;
-    color: white;
-    margin-bottom: 30px;
-  }
-
-  .page-header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  }
-
-  .page-header p {
-    font-size: 1.1rem;
-    opacity: 0.9;
-  }
-
-  /* Search Bar */
-  .search-container {
-    background: white;
-    border-radius: 15px;
-    padding: 20px;
-    margin-bottom: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-  }
-
-  .search-form {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 15px;
-    align-items: end;
-  }
-
-  @media (max-width: 768px) {
-    .search-form {
-      grid-template-columns: 1fr;
+  @keyframes p2m-slide-down {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
     }
   }
 
-  .form-group {
+  /* Search Container */
+  .p2m-search-container {
+    background: transparent;
+    margin-bottom: 30px;
+  }
+
+  .p2m-form-group {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
     display: flex;
-    flex-direction: column;
+    align-items: center;
   }
 
-  .form-label {
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: #2c3e50;
+  .p2m-filter-icon {
+    position: absolute;
+    right: 18px;
+    color: var(--primary-color);
+    pointer-events: none;
+    transition: color 0.3s ease;
   }
 
-  .form-input,
-  .form-select {
-    padding: 12px 15px;
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: all 0.3s ease;
+  .p2m-form-group:focus-within .p2m-filter-icon {
+    color: var(--primary-color);
   }
 
-  .form-input:focus,
-  .form-select:focus {
+  .p2m-form-input,
+  .p2m-form-select {
+    width: 100%;
+    padding: 12px 45px 12px 20px;
+    border: 1px solid var(--border-color-input);
+    border-radius: 50px;
+    background-color: var(--bg-color-light);
+    font-family: "Tajawal", sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-color-medium);
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .p2m-form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='var(--text-color-dark)' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: left 0.75rem center;
+    background-size: 16px 12px;
+  }
+
+  .p2m-form-input:focus,
+  .p2m-form-select:focus {
     outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color-light);
   }
 
-  .search-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
+  .p2m-search-btn {
+    background: transparent;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 50px;
     padding: 12px 25px;
     font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "Tajawal", sans-serif;
   }
 
-  .search-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+  .p2m-search-btn:active {
+    transform: scale(0.98);
   }
 
-  /* Cards Grid */
-  .products-grid {
+  /* Products Grid */
+  .p2m-products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
     margin-bottom: 40px;
   }
 
-  /* Card */
-  .product-card {
-    background: white;
-    border-radius: 15px;
+  /* Product Card */
+  .p2m-product-card {
+    background: var(--bg-color-white);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    box-shadow: var(--shadow-soft);
     cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    text-align: right;
   }
 
-  .product-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  .p2m-product-card:active {
+    transform: scale(0.98);
   }
 
-  .product-image {
+  .p2m-product-image {
     width: 100%;
-    height: 200px;
+    height: 160px;
     object-fit: cover;
     background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     display: flex;
@@ -121,34 +132,37 @@
     font-size: 3rem;
   }
 
-  .product-image img {
+  .p2m-product-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .product-content {
-    padding: 20px;
+  .p2m-product-content {
+    padding: 15px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
   }
 
-  .product-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 15px;
+  .p2m-product-name {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text-color-dark);
+    margin: 0 0 15px 0;
     line-height: 1.4;
   }
 
-  .product-actions {
+  .p2m-product-actions {
     display: flex;
     gap: 10px;
-    margin-top: 15px;
+    margin-top: auto;
   }
 
-  .btn {
+  .p2m-btn {
     flex: 1;
     padding: 10px 15px;
-    border: none;
+    border: 1px solid;
     border-radius: 8px;
     font-size: 14px;
     cursor: pointer;
@@ -157,204 +171,142 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    font-family: "Tajawal", sans-serif;
   }
 
-  .btn-edit {
-    background: #3498db;
-    color: white;
+  .p2m-btn-edit {
+    background: transparent;
+    color: #3498db;
+    border-color: #3498db;
   }
 
-  .btn-edit:hover {
-    background: #2980b9;
+  .p2m-btn-edit:active {
+    transform: scale(0.95);
+    background: rgba(52, 152, 219, 0.1);
   }
 
-  .btn-delete {
-    background: #e74c3c;
-    color: white;
+  .p2m-btn-delete {
+    background: transparent;
+    color: #e74c3c;
+    border-color: #e74c3c;
   }
 
-  .btn-delete:hover {
-    background: #c0392b;
+  .p2m-btn-delete:active {
+    transform: scale(0.95);
+    background: rgba(231, 76, 60, 0.1);
   }
 
   /* Loading and Empty States */
-  .loading-state,
-  .empty-state {
+  .p2m-loading-state,
+  .p2m-empty-state {
     text-align: center;
     padding: 60px 20px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: var(--bg-color-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
   }
 
-  .loading-state i {
+  .p2m-loading-state i {
     font-size: 3rem;
-    color: #667eea;
+    color: var(--primary-color);
     margin-bottom: 20px;
   }
 
-  .empty-state i {
+  .p2m-empty-state i {
     font-size: 4rem;
     color: #bdc3c7;
     margin-bottom: 20px;
   }
 
-  .loading-state p,
-  .empty-state p {
+  .p2m-loading-state p,
+  .p2m-empty-state p {
     font-size: 1.2rem;
     color: #7f8c8d;
     margin-bottom: 15px;
   }
 
-  /* Product Details Modal */
-  .product-modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-  }
-
-  .modal-content {
-    background: transparent;
-
-    max-width: 500px;
-    width: 100%;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  .modal-header {
-    padding: 20px;
-    border-bottom: 1px solid #e9ecef;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .modal-title {
-    font-size: 1.5rem;
-    color: #2c3e50;
-    font-weight: 600;
-  }
-
-  .modal-close {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    color: #7f8c8d;
-    cursor: pointer;
-  }
-
-  .modal-body {
-    padding: 20px;
-  }
-
-  .modal-image {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 4rem;
-  }
-
-  .modal-details {
-    display: grid;
-    gap: 15px;
-  }
-
-  .detail-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 0;
-    border-bottom: 1px solid #f8f9fa;
-  }
-
-  .detail-label {
-    font-weight: 600;
-    color: #2c3e50;
-  }
-
-  .detail-value {
-    color: #7f8c8d;
-    text-align: left;
-  }
-
   /* Responsive Design */
   @media (max-width: 768px) {
-    .products-grid {
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
+    .p2m-products-container {
+      margin: 20px;
     }
 
-    .page-header h1 {
-      font-size: 2rem;
+    .p2m-products-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 15px;
+    }
+
+    .p2m-product-actions {
+      flex-direction: column;
     }
   }
 
   @media (max-width: 480px) {
-    .products-grid {
+    .p2m-products-grid {
       grid-template-columns: 1fr;
-    }
-
-    .product-actions {
-      flex-direction: column;
     }
   }
 </style>
 
-<div class="products-container">
+<div class="p2m-products-container">
 
   <!-- Search and Filter Bar -->
-  <div class="search-container">
-    <form class="search-form" id="search-form">
-      <div class="form-group">
-        <label class="form-label">بحث بالاسم</label>
-        <input type="text" class="form-input" id="search-input" placeholder="ابحث باسم المنتج..." />
-      </div>
-      <div class="form-group">
-        <label class="form-label">الفئة الرئيسية</label>
-        <select class="form-select" id="main-category-filter">
-          <option value="">جميع الفئات</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">الفئة الفرعية</label>
-        <select class="form-select" id="sub-category-filter">
-          <option value="">جميع الفئات الفرعية</option>
-        </select>
-      </div>
-      <button type="submit" class="search-btn">
-        <i class="fas fa-search"></i> بحث
-      </button>
-    </form>
+  <div class="p2m-search-container">
+    <table style="width: 100%; border-spacing: 10px; table-layout: fixed">
+      <tbody>
+        <!-- First Row: Main and Sub Categories -->
+        <tr>
+          <td>
+            <div class="p2m-form-group">
+              <i class="fas fa-layer-group p2m-filter-icon"></i>
+              <select class="p2m-form-select" id="main-category-filter" aria-label="الفئة الرئيسية">
+                <option value="">جميع الفئات</option>
+              </select>
+            </div>
+          </td>
+          <td>
+            <div class="p2m-form-group">
+              <i class="fas fa-tags p2m-filter-icon"></i>
+              <select class="p2m-form-select" id="sub-category-filter" aria-label="الفئة الفرعية">
+                <option value="">جميع الفئات الفرعية</option>
+              </select>
+            </div>
+          </td>
+        </tr>
+        <!-- Second Row: Search Field -->
+        <tr>
+          <td colspan="2">
+            <div class="p2m-form-group">
+              <i class="fas fa-search p2m-filter-icon"></i>
+              <input type="text" class="p2m-form-input" id="search-input" placeholder="اكتب اسم المنتج الذي تبحث عنه..." autocomplete="off" />
+            </div>
+          </td>
+        </tr>
+        <!-- Third Row: Search Button -->
+        <tr>
+          <td colspan="2">
+            <button type="button" class="p2m-search-btn" id="search-btn" aria-label="بحث" style="width: 100%; height: 50px; border-radius: 50px">
+              <i class="fas fa-search"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- Cards Container -->
-  <div class="products-grid" id="products-grid">
+  <div class="p2m-products-grid" id="products-grid">
     <!-- Cards will be populated here via JS -->
   </div>
 
   <!-- Loading State -->
-  <div class="loading-state" id="loading-state" style="display: none">
+  <div class="p2m-loading-state" id="loading-state" style="display: none">
     <i class="fas fa-spinner fa-spin"></i>
     <p>جاري تحميل المنتجات...</p>
   </div>
 
   <!-- Empty State -->
-  <div class="empty-state" id="empty-state" style="display: none">
+  <div class="p2m-empty-state" id="empty-state" style="display: none">
     <i class="fas fa-box-open"></i>
     <p>لا توجد منتجات لعرضها</p>
     <p>قم بإضافة منتجك الأول للبدء</p>
@@ -374,7 +326,6 @@
   const productsGrid = document.getElementById("products-grid");
   const loadingState = document.getElementById("loading-state");
   const emptyState = document.getElementById("empty-state");
-  const searchForm = document.getElementById("search-form");
   const searchInput = document.getElementById("search-input");
   const mainCategoryFilter = document.getElementById("main-category-filter");
   const subCategoryFilter = document.getElementById("sub-category-filter");
@@ -442,7 +393,7 @@
    */
   function createProductCard(product) {
     const card = document.createElement("div");
-    card.className = "product-card";
+    card.className = "p2m-product-card";
     card.setAttribute("data-product-id", product.id);
 
     // Get the first image
@@ -459,20 +410,20 @@
         : product.productName;
 
     card.innerHTML = `
-                <div class="product-image">
+                <div class="p2m-product-image">
                     ${imageUrl
         ? `<img src="${imageUrl}" alt="${product.productName}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-box\\'></i>';" />`
         : '<i class="fas fa-box"></i>'
       }
                 </div>
-                <div class="product-content">
-                    <h3 class="product-name">${displayName}</h3>
-                    <div class="product-actions">
-                        <button class="btn btn-edit" onclick="editProduct(${product.id
+                <div class="p2m-product-content">
+                    <h3 class="p2m-product-name">${displayName}</h3>
+                    <div class="p2m-product-actions">
+                        <button class="p2m-btn p2m-btn-edit" onclick="editProduct(${product.id
       })">
                             <i class="fas fa-edit"></i> تعديل
                         </button>
-                        <button class="btn btn-delete" onclick="deleteProduct(${product.id
+                        <button class="p2m-btn p2m-btn-delete" onclick="deleteProduct(${product.id
       })">
                             <i class="fas fa-trash"></i> حذف
                         </button>
@@ -483,7 +434,7 @@
     // Add click event to show details
     card.addEventListener("click", (e) => {
       // Check that click was not on edit or delete buttons
-      if (!e.target.closest(".btn")) {
+      if (!e.target.closest(".p2m-btn")) {
         // Log product data to console instead of showing modal directly (as per logic)
         console.log(
           "%c[Developer] تم النقر على بطاقة المنتج. البيانات:",
@@ -693,10 +644,12 @@
   loadCategoryFilters();
 
   // Search Event - only load products when search button is clicked
-  searchForm.addEventListener("submit", function (e) {
-    e.preventDefault();
-    filterProducts();
-  });
+  const searchBtn = document.getElementById("search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", function () {
+      filterProducts();
+    });
+  }
 
   // Make functions globally available
   window.editProduct = editProduct;
