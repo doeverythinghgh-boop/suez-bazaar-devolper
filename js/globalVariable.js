@@ -117,31 +117,31 @@ function productAddSetType(editMode = false) {
       );
     }
 
+  }else{
+    if (productTypeToAdd == 2) {
+      mainLoader(
+        "./pages/productEdit2.html",
+        "index-product-container",
+        0,
+        undefined,
+        "showHomeIcon",
+        true
+      );
+    } else if (productTypeToAdd == 0) {
+      mainLoader(
+        "./pages/productEdit.html",
+        "index-product-container",
+        0,
+        undefined,
+        "showHomeIcon",
+        true
+      );
+    }
   }
 
 }
 
-/**
- * @description Directs the user to the edit product page, setting the product type based on the selected category.
- * @function productEditLayout
- * @returns {void}
- * @see mainLoader
- */
-function productEditLayout() {
-  if (mainCategorySelectToAdd == 6) {
-    productTypeToAdd = 2; // Product type: Service
-  } else {
-    // Product type: Default
-    mainLoader(
-      "./pages/productEdit.html",
-      "index-product-container",
-      0,
-      undefined,
-      "showHomeIcon",
-      true
-    );
-  }
-}
+
 
 /**
  * @description Displays a modal to select the main and sub-category before adding a new product.
