@@ -283,17 +283,27 @@
 
     /* Responsive Design */
     @media (max-width: 768px) {
+        .add-product-modal {
+            padding: 20px 15px;
+            border-radius: 12px;
+            margin: 10px;
+            width: auto;
+        }
+
+        .add-product-modal__title {
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+
         .add-product-modal__form-row {
             flex-direction: column;
             gap: 15px;
         }
 
-        .add-product-modal {
-            padding: 20px;
-        }
-
-        .add-product-modal__title {
-            font-size: 24px;
+        .add-product-modal__submit-container .btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
         }
     }
 
@@ -302,8 +312,22 @@
             justify-content: center;
         }
 
+        .add-product-modal__image-uploader {
+            padding: 15px 10px;
+        }
+
         .add-product-modal__previews {
-            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px;
+            font-size: 13px;
+        }
+        
+        .add-product-modal__label {
+            font-size: 14px;
         }
     }
 </style>
