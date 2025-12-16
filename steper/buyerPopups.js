@@ -37,10 +37,13 @@ import {
     generateSellerGroupedHtml
 } from "./buyerUi.js";
 
-// Import reused Logic and UI from Seller modules
 import { getShippableProducts, getRejectedProducts } from "./sellerLogic.js";
 import { generateShippingTableHtml, generateRejectedListHtml } from "./sellerUi.js";
 import { extractNotificationMetadata } from "./steperNotificationLogic.js";
+import {
+    saveDeliveryLock,
+    getDeliveryLockStatus
+} from "./dataFetchers.js";
 
 // ... existing code ...
 
@@ -179,74 +182,143 @@ async function handleReviewSave(data, ordersData) {
 
 /**
  * Handles saving delivery confirmation.
+ * Shows confirmation dialog before permanently locking.
  * @function handleDeliverySave
  * @param {object} data
  * @param {Array<object>} ordersData
  */
 async function handleDeliverySave(data, ordersData) {
     const checkboxes = document.querySelectorAll('input[name="deliveryProductKeys"]');
-    const updates = [];
+
+    // Collect delivered and not-delivered products
+    const deliveredProducts = [];
+    const notDeliveredProducts = [];
 
     checkboxes.forEach(cb => {
-        const currentStatus = loadItemStatus(cb.value);
-        const isChecked = cb.checked;
-
-        if (isChecked && currentStatus === ITEM_STATUS.SHIPPED) {
-            updates.push({ key: cb.value, status: ITEM_STATUS.DELIVERED });
-        } else if (!isChecked && currentStatus === ITEM_STATUS.DELIVERED) {
-            updates.push({ key: cb.value, status: ITEM_STATUS.SHIPPED }); // Undo
+        const productName = cb.getAttribute('data-product-name') || cb.value;
+        if (cb.checked) {
+            deliveredProducts.push(productName);
+        } else {
+            notDeliveredProducts.push(productName);
         }
     });
 
-    if (updates.length > 0) {
-        // Show loading state
-        Swal.fire({
-            title: 'جاري الحفظ...',
-            text: 'برجاء الانتظار...',
-            allowOutsideClick: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
+    // Build HTML for confirmation dialog
+    let htmlContent = '<div style="text-align: right; direction: rtl;">';
+
+    // Delivered products section
+    if (deliveredProducts.length > 0) {
+        htmlContent += '<div style="margin-bottom: 20px;">';
+        htmlContent += '<h3 style="color: #1abc9c; margin-bottom: 10px;">✅ المنتجات المستلمة (' + deliveredProducts.length + '):</h3>';
+        htmlContent += '<ul style="list-style: none; padding: 0;">';
+        deliveredProducts.forEach(name => {
+            htmlContent += '<li style="padding: 5px; background: #d5f4e6; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
         });
+        htmlContent += '</ul></div>';
+    }
 
-        try {
-            await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+    // Not delivered products section
+    if (notDeliveredProducts.length > 0) {
+        htmlContent += '<div style="margin-bottom: 20px;">';
+        htmlContent += '<h3 style="color: #666; margin-bottom: 10px;">⏳ المنتجات غير المستلمة (' + notDeliveredProducts.length + '):</h3>';
+        htmlContent += '<ul style="list-style: none; padding: 0;">';
+        notDeliveredProducts.forEach(name => {
+            htmlContent += '<li style="padding: 5px; background: #f0f0f0; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
+        });
+        htmlContent += '</ul></div>';
+    }
 
-            Swal.fire({
-                icon: 'success',
-                title: 'تم التحديث',
-                text: 'تم تحديث حالة التوصيل.',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                updateCurrentStepFromState(data, ordersData);
+    // Warning message
+    htmlContent += '<div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 5px; margin-top: 15px;">';
+    htmlContent += '<p style="margin: 0; font-weight: bold; color: #856404;">⚠️ تحذير هام:</p>';
+    htmlContent += '<p style="margin: 5px 0 0 0; color: #856404;">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
+    htmlContent += '</div>';
 
-                // [Notifications] Dispatch Notifications
-                if (typeof window.notifyOnStepActivation === 'function') {
-                    const metadata = extractNotificationMetadata(ordersData, data);
+    htmlContent += '</div>';
 
-                    // 1. Notify Delivered
-                    window.notifyOnStepActivation({
-                        stepId: 'step-delivered',
-                        stepName: 'استلام الطلب',
-                        ...metadata
-                    });
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'تأكيد الحفظ النهائي',
+        html: htmlContent,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'تأكيد الحفظ',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d',
+        customClass: { popup: 'fullscreen-swal' },
+        allowOutsideClick: false
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            // User confirmed, proceed with saving
+            const updates = [];
 
-                    // 2. Notify Returned (Implicitly handled if status logic changes, but here we only handle DELIVERED/SHIPPED toggle)
-                    // If return logic was here, we'd add it. For now, just delivered.
+            checkboxes.forEach(cb => {
+                const currentStatus = loadItemStatus(cb.value);
+                const isChecked = cb.checked;
+
+                if (isChecked && currentStatus === ITEM_STATUS.SHIPPED) {
+                    updates.push({ key: cb.value, status: ITEM_STATUS.DELIVERED });
+                } else if (!isChecked && currentStatus === ITEM_STATUS.DELIVERED) {
+                    updates.push({ key: cb.value, status: ITEM_STATUS.SHIPPED });
                 }
             });
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'فشل الحفظ',
-                text: 'حدث خطأ أثناء حفظ البيانات.',
-                confirmButtonText: 'حسنًا'
-            });
+
+            if (updates.length > 0) {
+                // Show loading
+                Swal.fire({
+                    title: 'جاري الحفظ...',
+                    text: 'يتم حفظ التسليم والقفل...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                try {
+                    // Save items first
+                    await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+
+                    // Then Lock using Buyer/Courier ID
+                    if (ordersData && ordersData.length > 0) {
+                        const orderKey = ordersData[0].order_key;
+                        const userId = data.currentUser.idUser;
+                        await saveDeliveryLock(orderKey, true, ordersData, userId);
+                        console.log('[BuyerPopups] Delivery permanently locked for order:', orderKey, 'User:', userId);
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم الحفظ بنجاح',
+                        text: 'تم حفظ التسليم بشكل نهائي.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(() => {
+                        updateCurrentStepFromState(data, ordersData);
+
+                        // [Notifications] Dispatch Notifications
+                        if (typeof window.notifyOnStepActivation === 'function') {
+                            const metadata = extractNotificationMetadata(ordersData, data);
+
+                            window.notifyOnStepActivation({
+                                stepId: 'step-delivered',
+                                stepName: 'استلام الطلب',
+                                ...metadata
+                            });
+                        }
+                    });
+                } catch (error) {
+                    console.error("Save failed", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'فشل الحفظ',
+                        text: 'حدث خطأ أثناء حفظ البيانات.',
+                        confirmButtonText: 'حسنًا'
+                    });
+                }
+            } else {
+                Swal.close();
+            }
         }
-    } else {
-        Swal.close();
-    }
+    });
 }
 
 // =============================================================================
@@ -332,6 +404,7 @@ export function showUnselectedProductsAlert(data, ordersData) {
 
 /**
  * Displays a popup for the buyer to confirm receipt of products.
+ * Checks lock status first - buyers cannot edit if locked, admins can override.
  * @function showDeliveryConfirmationAlert
  * @param {object} data
  * @param {Array<object>} ordersData
@@ -354,26 +427,51 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
             return;
         }
 
+        // Check lock status from local ordersData using User ID
+        let isLocked = false;
+        if (ordersData && ordersData.length > 0) {
+            const orderKey = ordersData[0].order_key;
+            isLocked = getDeliveryLockStatus(ordersData, orderKey, userId);
+        }
+
+        // Determine if editing is allowed
+        const canEdit = userType === 'admin' || !isLocked;
+
+        console.log(`[BuyerPopups] Opening delivery | User: ${userType} | Locked: ${isLocked} | CanEdit: ${canEdit}`);
+
         const userDetails = getUserDetailsForDelivery(productsToDeliver, ordersData);
         const userInfoHtml = generateDeliveryUserInfoHtml(userDetails);
         const checkboxesHtml = generateDeliveryItemsHtml(productsToDeliver);
 
         Swal.fire({
-            title: "تأكيد استلام المنتجات",
+            title: canEdit ? "تأكيد استلام المنتجات" : "تأكيد استلام المنتجات (قراءة فقط)",
             html: `<div id="delivery-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">
                     ${userInfoHtml}
                     ${checkboxesHtml}
                    </div>`,
-            footer: '<button id="btn-save-delivery" class="swal2-confirm swal2-styled" style="background-color: #28a745;">تأكيد الاستلام</button>',
+            footer: canEdit
+                ? '<button id="btn-save-delivery" class="swal2-confirm swal2-styled" style="background-color: #28a745;">تأكيد الاستلام</button>'
+                : '<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">🔒 تم قفل التسليم بشكل دائم - لا يمكن التعديل</p>',
             cancelButtonText: "إلغاء",
             showConfirmButton: false,
             showCancelButton: true,
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
-                document.getElementById('btn-save-delivery')?.addEventListener('click', () => {
-                    handleDeliverySave(data, ordersData);
-                });
+
+                if (canEdit) {
+                    document.getElementById('btn-save-delivery')?.addEventListener('click', () => {
+                        handleDeliverySave(data, ordersData);
+                    });
+                } else {
+                    // Disable all inputs for locked view
+                    const container = document.getElementById('delivery-confirmation-container');
+                    if (container) {
+                        container.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                            checkbox.disabled = true;
+                        });
+                    }
+                }
             },
         });
     } catch (error) {

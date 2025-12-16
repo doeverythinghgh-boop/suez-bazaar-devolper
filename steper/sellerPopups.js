@@ -16,7 +16,9 @@ import {
 } from "./uiUpdates.js";
 import {
     saveConfirmationLock,
-    getConfirmationLockStatus
+    getConfirmationLockStatus,
+    saveShippingLock,
+    getShippingLockStatus
 } from "./dataFetchers.js";
 
 // Import Logic and UI modules
@@ -207,72 +209,149 @@ function handleConfirmationSave(data, ordersData) {
 
 /**
  * Handles the save action for shipping updates.
+ * Shows confirmation dialog before permanently locking.
  * @function handleShippingSave
  * @param {object} data
  * @param {Array<object>} ordersData
  */
 async function handleShippingSave(data, ordersData) {
     const checkboxes = document.querySelectorAll('input[name="shippingProductKeys"]');
-    const updates = [];
+
+    // Collect shipped and not-shipped products
+    const shippedProducts = [];
+    const notShippedProducts = [];
 
     checkboxes.forEach(cb => {
-        if (!cb.disabled) {
-            const currentStatus = loadItemStatus(cb.value);
-            const shouldBeShipped = cb.checked;
-
-            if (shouldBeShipped && currentStatus === ITEM_STATUS.CONFIRMED) {
-                updates.push({ key: cb.value, status: ITEM_STATUS.SHIPPED });
-            } else if (!shouldBeShipped && currentStatus === ITEM_STATUS.SHIPPED) {
-                updates.push({ key: cb.value, status: ITEM_STATUS.CONFIRMED });
-            }
+        const productName = cb.getAttribute('data-product-name') || cb.value;
+        if (cb.checked) {
+            shippedProducts.push(productName);
+        } else {
+            notShippedProducts.push(productName);
         }
     });
 
-    if (updates.length > 0) {
-        Swal.fire({
-            title: 'جاري الحفظ...',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
+    // Build HTML for confirmation dialog
+    let htmlContent = '<div style="text-align: right; direction: rtl;">';
+
+    // Shipped products section
+    if (shippedProducts.length > 0) {
+        htmlContent += '<div style="margin-bottom: 20px;">';
+        htmlContent += '<h3 style="color: #00d4ff; margin-bottom: 10px;">📦 المنتجات المشحونة (' + shippedProducts.length + '):</h3>';
+        htmlContent += '<ul style="list-style: none; padding: 0;">';
+        shippedProducts.forEach(name => {
+            htmlContent += '<li style="padding: 5px; background: #d1f2ff; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
         });
+        htmlContent += '</ul></div>';
+    }
 
-        try {
-            await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+    // Not shipped products section
+    if (notShippedProducts.length > 0) {
+        htmlContent += '<div style="margin-bottom: 20px;">';
+        htmlContent += '<h3 style="color: #666; margin-bottom: 10px;">⏸️ المنتجات غير المشحونة (' + notShippedProducts.length + '):</h3>';
+        htmlContent += '<ul style="list-style: none; padding: 0;">';
+        notShippedProducts.forEach(name => {
+            htmlContent += '<li style="padding: 5px; background: #f0f0f0; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
+        });
+        htmlContent += '</ul></div>';
+    }
 
-            Swal.fire({
-                icon: 'success',
-                title: 'تم التحديث',
-                text: 'تم تحديث حالة الشحن بنجاح.',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(async () => {
-                updateCurrentStepFromState(data, ordersData);
+    // Warning message
+    htmlContent += '<div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 5px; margin-top: 15px;">';
+    htmlContent += '<p style="margin: 0; font-weight: bold; color: #856404;">⚠️ تحذير هام:</p>';
+    htmlContent += '<p style="margin: 5px 0 0 0; color: #856404;">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
+    htmlContent += '</div>';
 
-                // [Notifications] Dispatch Notifications (Buyer Only)
-                if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
-                    const metadata = extractNotificationMetadata(ordersData, data);
-                    const shouldSend = await window.shouldNotify('step-shipped', 'buyer');
+    htmlContent += '</div>';
 
-                    if (shouldSend) {
-                        window.notifyBuyerOnStepChange(
-                            metadata.buyerKey,
-                            'step-shipped',
-                            'شحن الطلب',
-                            metadata.orderId
-                        );
+    // Show confirmation dialog
+    Swal.fire({
+        title: 'تأكيد الحفظ النهائي',
+        html: htmlContent,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'تأكيد الحفظ',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: '#00d4ff',
+        cancelButtonColor: '#6c757d',
+        customClass: { popup: 'fullscreen-swal' },
+        allowOutsideClick: false
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            // User confirmed, proceed with saving
+            const updates = [];
+
+            checkboxes.forEach(cb => {
+                if (!cb.disabled) {
+                    const currentStatus = loadItemStatus(cb.value);
+                    const shouldBeShipped = cb.checked;
+
+                    if (shouldBeShipped && currentStatus === ITEM_STATUS.CONFIRMED) {
+                        updates.push({ key: cb.value, status: ITEM_STATUS.SHIPPED });
+                    } else if (!shouldBeShipped && currentStatus === ITEM_STATUS.SHIPPED) {
+                        updates.push({ key: cb.value, status: ITEM_STATUS.CONFIRMED });
                     }
                 }
             });
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'فشل الحفظ',
-                text: 'حدث خطأ أثناء الاتصال بالسيرفر.',
-                confirmButtonText: 'حسنًا'
-            });
+
+            if (updates.length > 0) {
+                // Show loading
+                Swal.fire({
+                    title: 'جاري الحفظ...',
+                    text: 'يتم حفظ الشحن والقفل...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                try {
+                    // Save items first
+                    await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+
+                    // Then Lock using Seller/Courier ID
+                    if (ordersData && ordersData.length > 0) {
+                        const orderKey = ordersData[0].order_key;
+                        const userId = data.currentUser.idUser;
+                        await saveShippingLock(orderKey, true, ordersData, userId);
+                        console.log('[SellerPopups] Shipping permanently locked for order:', orderKey, 'User:', userId);
+                    }
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'تم الحفظ بنجاح',
+                        text: 'تم حفظ الشحن بشكل نهائي.',
+                        timer: 1500,
+                        showConfirmButton: false
+                    }).then(async () => {
+                        updateCurrentStepFromState(data, ordersData);
+
+                        // [Notifications] Dispatch Notifications (Buyer Only)
+                        if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
+                            const metadata = extractNotificationMetadata(ordersData, data);
+                            const shouldSend = await window.shouldNotify('step-shipped', 'buyer');
+
+                            if (shouldSend) {
+                                window.notifyBuyerOnStepChange(
+                                    metadata.buyerKey,
+                                    'step-shipped',
+                                    'شحن الطلب',
+                                    metadata.orderId
+                                );
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error("Save failed", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'فشل الحفظ',
+                        text: 'حدث خطأ أثناء الاتصال بالسيرفر.',
+                        confirmButtonText: 'حسنًا'
+                    });
+                }
+            } else {
+                Swal.close();
+            }
         }
-    } else {
-        Swal.close();
-    }
+    });
 }
 
 // =============================================================================
@@ -376,6 +455,7 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
 
 /**
  * Displays a popup with products to be shipped.
+ * Checks lock status first - sellers cannot edit if locked, admins can override.
  * @function showShippingInfoAlert
  * @param {object} data
  * @param {Array<object>} ordersData
@@ -395,12 +475,28 @@ export function showShippingInfoAlert(data, ordersData) {
             return;
         }
 
+        // Check lock status from local ordersData using User ID
+        let isLocked = false;
+        if (ordersData && ordersData.length > 0) {
+            const orderKey = ordersData[0].order_key;
+            const userId = data.currentUser.idUser;
+            isLocked = getShippingLockStatus(ordersData, orderKey, userId);
+        }
+
+        // Determine if editing is allowed
+        const userType = data.currentUser.type;
+        const canEdit = userType === 'admin' || !isLocked;
+
+        console.log(`[SellerPopups] Opening shipping | User: ${userType} | Locked: ${isLocked} | CanEdit: ${canEdit}`);
+
         const htmlContent = generateShippingTableHtml(shippableProducts);
 
         Swal.fire({
-            title: "شحن المنتجات",
+            title: canEdit ? "شحن المنتجات" : "شحن المنتجات (قراءة فقط)",
             html: `<div id="seller-shipping-container">${htmlContent}</div>`,
-            footer: '<button id="btn-save-shipping" class="swal2-confirm swal2-styled" style="background-color: #007bff;">تحديث حالة الشحن</button>',
+            footer: canEdit
+                ? '<button id="btn-save-shipping" class="swal2-confirm swal2-styled" style="background-color: #007bff;">تحديث حالة الشحن</button>'
+                : '<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">🔒 تم قفل الشحن بشكل دائم - لا يمكن التعديل</p>',
             confirmButtonText: "إغلاق",
             showConfirmButton: false,
             showCancelButton: true,
@@ -408,9 +504,20 @@ export function showShippingInfoAlert(data, ordersData) {
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
-                document.getElementById('btn-save-shipping')?.addEventListener('click', () => {
-                    handleShippingSave(data, ordersData);
-                });
+
+                if (canEdit) {
+                    document.getElementById('btn-save-shipping')?.addEventListener('click', () => {
+                        handleShippingSave(data, ordersData);
+                    });
+                } else {
+                    // Disable all inputs for locked view
+                    const container = document.getElementById('seller-shipping-container');
+                    if (container) {
+                        container.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                            checkbox.disabled = true;
+                        });
+                    }
+                }
             },
         });
     } catch (error) {
