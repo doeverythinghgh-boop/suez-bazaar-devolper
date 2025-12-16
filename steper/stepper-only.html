@@ -335,8 +335,36 @@
                     if (progress < 1) {
                         requestAnimationFrame(animateScroll);
                     } else {
-                        console.log('[Tutorial] Auto-scroll completed.');
-                        console.log('[Tutorial] Final scrollLeft:', wrapper.scrollLeft);
+                        console.log('[Tutorial] Forward scroll completed. Starting return animation...');
+                        console.log('[Tutorial] Current scrollLeft:', wrapper.scrollLeft);
+
+                        // Start return animation after a brief pause
+                        setTimeout(() => {
+                            const returnStartTime = performance.now();
+
+                            function animateReturn(currentTime) {
+                                const elapsed = currentTime - returnStartTime;
+                                const progress = Math.min(elapsed / SCROLL_DURATION, 1);
+
+                                // Easing function (ease-in-out)
+                                const easeProgress = progress < 0.5
+                                    ? 2 * progress * progress
+                                    : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                                // Return to start position
+                                const scrollPosition = endScroll + ((startScroll - endScroll) * easeProgress);
+                                wrapper.scrollLeft = scrollPosition;
+
+                                if (progress < 1) {
+                                    requestAnimationFrame(animateReturn);
+                                } else {
+                                    console.log('[Tutorial] Return animation completed.');
+                                    console.log('[Tutorial] Final scrollLeft:', wrapper.scrollLeft);
+                                }
+                            }
+
+                            requestAnimationFrame(animateReturn);
+                        }, 100); // Small pause before returning
                     }
                 }
 
