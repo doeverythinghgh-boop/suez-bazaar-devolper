@@ -258,25 +258,27 @@
             localStorage.setItem(TUTORIAL_KEY, count.toString());
             console.log(`[Tutorial] Running auto-scroll tutorial (${count}/${MAX_RUNS})`);
 
-            // Get the stepper container
-            const container = document.getElementById('primary-stepper-container');
-            if (!container) {
-                console.warn('[Tutorial] Stepper container not found.');
+            // Get the stepper wrapper (the scrollable element)
+            const wrapper = document.getElementById('primary-stepper-wrapper');
+            if (!wrapper) {
+                console.warn('[Tutorial] Stepper wrapper not found.');
                 return;
             }
 
-            // Wait a bit for content to render
+            // Wait 1 second for content to fully render
             setTimeout(() => {
-                const maxScroll = container.scrollWidth - container.clientWidth;
+                const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
 
                 if (maxScroll <= 0) {
                     console.log('[Tutorial] No scroll needed, all steps visible.');
                     return;
                 }
 
+                console.log(`[Tutorial] Starting scroll animation. Max scroll: ${maxScroll}px`);
+
                 // Perform smooth scroll animation
                 const startTime = performance.now();
-                const startScroll = container.scrollLeft;
+                const startScroll = wrapper.scrollLeft;
 
                 function animateScroll(currentTime) {
                     const elapsed = currentTime - startTime;
@@ -287,9 +289,9 @@
                         ? 2 * progress * progress
                         : 1 - Math.pow(-2 * progress + 2, 2) / 2;
 
-                    // Calculate scroll position (RTL: scroll to negative values)
+                    // Calculate scroll position
                     const scrollPosition = startScroll + (maxScroll * easeProgress);
-                    container.scrollLeft = scrollPosition;
+                    wrapper.scrollLeft = scrollPosition;
 
                     if (progress < 1) {
                         requestAnimationFrame(animateScroll);
@@ -299,7 +301,7 @@
                 }
 
                 requestAnimationFrame(animateScroll);
-            }, 300); // Delay to ensure DOM is ready
+            }, 1000); // Wait 1 second as requested
 
         } catch (error) {
             console.error('[Tutorial] Error in auto-scroll tutorial:', error);
