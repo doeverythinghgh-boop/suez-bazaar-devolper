@@ -40,6 +40,7 @@ import {
 // Import reused Logic and UI from Seller modules
 import { getShippableProducts, getRejectedProducts } from "./sellerLogic.js";
 import { generateShippingTableHtml, generateRejectedListHtml } from "./sellerUi.js";
+import { extractNotificationMetadata } from "./steperNotificationLogic.js";
 
 // ... existing code ...
 
@@ -146,6 +147,22 @@ async function handleReviewSave(data, ordersData) {
                 showConfirmButton: false
             }).then(() => {
                 updateCurrentStepFromState(data, ordersData);
+
+                // [Notifications] Dispatch Notifications
+                if (typeof window.notifyOnStepActivation === 'function') {
+                    const metadata = extractNotificationMetadata(ordersData, data);
+
+                    // 1. Notify Review/Pending (Generic Update) - Optional, maybe just for Cancelled
+                    // 2. Notify Cancelled
+                    const hasCancelled = updates.some(u => u.status === ITEM_STATUS.CANCELLED);
+                    if (hasCancelled) {
+                        window.notifyOnStepActivation({
+                            stepId: 'step-cancelled',
+                            stepName: 'منتجات ملغاة',
+                            ...metadata
+                        });
+                    }
+                }
             });
         } catch (error) {
             Swal.fire({
@@ -203,6 +220,21 @@ async function handleDeliverySave(data, ordersData) {
                 showConfirmButton: false
             }).then(() => {
                 updateCurrentStepFromState(data, ordersData);
+
+                // [Notifications] Dispatch Notifications
+                if (typeof window.notifyOnStepActivation === 'function') {
+                    const metadata = extractNotificationMetadata(ordersData, data);
+
+                    // 1. Notify Delivered
+                    window.notifyOnStepActivation({
+                        stepId: 'step-delivered',
+                        stepName: 'استلام الطلب',
+                        ...metadata
+                    });
+
+                    // 2. Notify Returned (Implicitly handled if status logic changes, but here we only handle DELIVERED/SHIPPED toggle)
+                    // If return logic was here, we'd add it. For now, just delivered.
+                }
             });
         } catch (error) {
             Swal.fire({

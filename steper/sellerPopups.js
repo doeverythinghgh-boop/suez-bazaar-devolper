@@ -32,6 +32,8 @@ import {
     generateShippingTableHtml
 } from "./sellerUi.js";
 
+import { extractNotificationMetadata } from "./steperNotificationLogic.js";
+
 
 // =============================================================================
 // EVENT HANDLERS (Logic Layer)
@@ -164,6 +166,28 @@ function handleConfirmationSave(data, ordersData) {
                         showConfirmButton: false
                     }).then(() => {
                         updateCurrentStepFromState(data, ordersData);
+
+                        // [Notifications] Dispatch Notifications
+                        if (typeof window.notifyOnStepActivation === 'function') {
+                            const metadata = extractNotificationMetadata(ordersData, data);
+
+                            // 1. Notify Confirmed
+                            window.notifyOnStepActivation({
+                                stepId: 'step-confirmed',
+                                stepName: 'تأكيد الطلب',
+                                ...metadata
+                            });
+
+                            // 2. Notify Rejected (if any)
+                            const hasRejected = updates.some(u => u.status === ITEM_STATUS.REJECTED);
+                            if (hasRejected) {
+                                window.notifyOnStepActivation({
+                                    stepId: 'step-rejected',
+                                    stepName: 'منتجات مرفوضة',
+                                    ...metadata
+                                });
+                            }
+                        }
                     });
                 } catch (error) {
                     console.error("Save failed", error);
@@ -220,8 +244,23 @@ async function handleShippingSave(data, ordersData) {
                 text: 'تم تحديث حالة الشحن بنجاح.',
                 timer: 1500,
                 showConfirmButton: false
-            }).then(() => {
+            }).then(async () => {
                 updateCurrentStepFromState(data, ordersData);
+
+                // [Notifications] Dispatch Notifications (Buyer Only)
+                if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
+                    const metadata = extractNotificationMetadata(ordersData, data);
+                    const shouldSend = await window.shouldNotify('step-shipped', 'buyer');
+
+                    if (shouldSend) {
+                        window.notifyBuyerOnStepChange(
+                            metadata.buyerKey,
+                            'step-shipped',
+                            'شحن الطلب',
+                            metadata.orderId
+                        );
+                    }
+                }
             });
         } catch (error) {
             Swal.fire({
