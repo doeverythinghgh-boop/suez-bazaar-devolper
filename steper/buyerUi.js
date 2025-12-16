@@ -78,10 +78,10 @@ export function generateCancelledListHtml(cancelledKeys, ordersData) {
  */
 export function generateDeliveryUserInfoHtml(userDetails) {
     return userDetails.map(user => `
-         <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right;">
-            <p><strong>Name:</strong> ${user.name}</p>
-            <p><strong>Phone:</strong> ${user.phone}</p>
-            <p><strong>Address:</strong> ${user.address}</p>
+         <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right; direction: rtl;">
+            <p><strong>الاسم:</strong> ${user.name}</p>
+            <p><strong>الهاتف:</strong> ${user.phone}</p>
+            <p><strong>العنوان:</strong> ${user.address}</p>
         </div>
     `).join("");
 }
