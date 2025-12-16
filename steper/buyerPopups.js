@@ -467,20 +467,34 @@ export async function showCourierConfirmedProductsAlert(data, ordersData) {
         }
 
         // 2. Fetch ALL users to resolve Seller Names (Name, Phone, Address)
-        // Note: fetchUsers() is global from js/connectUsers.js
         let allUsers = [];
-        if (typeof window.fetchUsers === 'function') {
-            Swal.showLoading(); // Show loading while fetching
-            const result = await window.fetchUsers();
-            if (result && Array.isArray(result.users)) {
-                allUsers = result.users;
-            } else if (Array.isArray(result)) {
+
+        // Try using window.apiFetch which is available from network.js in stepper-only.html
+        if (typeof window.apiFetch === 'function') {
+            Swal.showLoading();
+            // Note: apiFetch relies on 'baseURL' variable. 
+            // In stepper-only.html, we bridged parentData.baseURL to window.globalStepperAppData.baseURL
+            // But 'network.js' might expect a global 'baseURL' variable.
+            // Let's ensure it is set if missing, using the one from control data.
+            if (typeof baseURL === 'undefined' && data.baseURL) {
+                window.baseURL = data.baseURL;
+            }
+
+            const result = await window.apiFetch('/api/users');
+            if (result && !result.error && Array.isArray(result)) {
                 allUsers = result;
+            } else if (result && !result.error && result.users) {
+                allUsers = result.users;
+            } else {
+                console.warn("[BuyerPopups] apiFetch for users failed:", result);
             }
             if (Swal.isVisible()) Swal.close();
         } else {
-            console.warn("[BuyerPopups] fetchUsers is not available globally.");
-            // Fallback: Try to use local users list from control data (permissions) if useful, or empty
+            console.warn("[BuyerPopups] window.apiFetch is not available.");
+        }
+
+        // Fallback
+        if (allUsers.length === 0) {
             allUsers = data.users || [];
         }
 
