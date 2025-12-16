@@ -43,15 +43,15 @@
    النوافذ المنبثقة (Popups) - تحسين الحجم (Minimum Size)
    ============================================ */
 div:where(.swal2-container) .fullscreen-swal {
-    width: auto !important;
-    min-width: 350px;
+    width: fit-content !important;
+    min-width: fit-content;
     /* زيادة الحد الأدنى قليلاً */
     max-width: 95vw !important;
 
-    height: auto !important;
+    height: fit-content !important;
     max-height: 90vh !important;
 
-    padding: 1.5rem !important;
+    padding: 3px !important;
     /* توسيع الحشو قليلاً */
 }
 
@@ -64,16 +64,16 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
     /* إضافة ثلاث نقاط إذا زاد عن الشاشة */
     width: 100% !important;
     display: block !important;
-    padding: 0 10px !important;
+    padding: 3px !important;
     font-size: 1.2em !important;
     /* ضبط حجم الخط */
 }
 
 .fullscreen-swal .swal2-html-container {
-    overflow-y: auto !important;
+    overflow: auto !important;
     max-height: 70vh !important;
     /* تقليل الارتفاع المتاح للمحتوى لترك مساحة للعنوان */
-    margin: 10px 0 !important;
-    padding: 5px !important;
+    margin: 3px !important;
+    padding: 3px !important;
     text-align: right;
 }
