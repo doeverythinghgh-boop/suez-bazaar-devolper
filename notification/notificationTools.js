@@ -31,15 +31,20 @@ async function shouldNotify(eventKey, role) {
     if (!config) {
         if (!cachedDefaultConfig) { // استخدام الكاش الداخلي كخط دفاع ثانٍ
             try {
-                console.warn('[Notifications] التكوين غير موجود في window، جارٍ جلب ملف JSON...');
-                const response = await fetch('notification_config.json');
+                console.warn('[Notifications] التكوين غير موجود في window، جارٍ جلب ملف JSON من السحابة...');
+                const r2Url = 'https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/notification_config.json';
+                const timestamp = new Date().getTime();
+                const response = await fetch(`${r2Url}?t=${timestamp}`);
+
                 if (response.ok) {
                     cachedDefaultConfig = await response.json();
                     config = cachedDefaultConfig;
                     // تحديث المتغير العام للمستقبل
                     window.globalNotificationConfig = config;
+                    console.log('[Notifications] تم تحميل التكوين من Cloudflare بنجاح.');
                 } else {
-                    console.error('[Notifications] فشل جلب تكوين JSON:', response.status);
+                    console.error('[Notifications] فشل جلب تكوين JSON من السحابة:', response.status);
+                    // Fallback to local if needed?
                 }
             } catch (e) {
                 console.error('[Notifications] خطأ في جلب تكوين JSON:', e);

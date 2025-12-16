@@ -60,18 +60,30 @@ const notifiSetting_Controller = {
      * @returns {Promise<void>}
      */
     async notifiSetting_loadDefaults() {
+        const r2Url = 'https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/notification_config.json';
+        const timestamp = new Date().getTime(); // Cache busting
         try {
-            // Adjust path if necessary. Assuming notification_config.json is at root "/" or relative to this file.
-            // Since this JS is in /notification/page/, and json is in /bazaar/ (root web), we use /notification_config.json
-            const response = await fetch('/notification_config.json');
-            if (!response.ok) throw new Error('Failed to load configuration file');
+            console.log('محاولة تحميل الإعدادات من Cloudflare...');
+            const response = await fetch(`${r2Url}?t=${timestamp}`);
+            if (!response.ok) throw new Error('Failed to load from R2');
+
             notifiSetting_DEFAULT_CONFIG = await response.json();
-            console.log('تم تحميل الإعدادات الافتراضية من JSON:', notifiSetting_DEFAULT_CONFIG);
+            // في هذا النظام، الملف على السحابة هو الحقيقة، لذا نحدث Config مباشرة
+            this.notifiSetting_config = JSON.parse(JSON.stringify(notifiSetting_DEFAULT_CONFIG));
+            console.log('تم تحميل الإعدادات من Cloudflare بنجاح:', notifiSetting_DEFAULT_CONFIG);
         } catch (error) {
-            console.error('فشل تحميل ملف الإعدادات JSON:', error);
-            this.notifiSetting_showToast('فشل تحميل ملف الإعدادات الافتراضية ⚠️');
-            // Empty defaults or hardcoded fallback could go here if needed
-            notifiSetting_DEFAULT_CONFIG = {};
+            console.warn('فشل تحميل الإعدادات من السحابة، العودة للملف المحلي:', error);
+            try {
+                const localResponse = await fetch('/notification_config.json');
+                notifiSetting_DEFAULT_CONFIG = await localResponse.json();
+                this.notifiSetting_config = JSON.parse(JSON.stringify(notifiSetting_DEFAULT_CONFIG));
+                console.log('تم تحميل الإعدادات الافتراضية المحلية.');
+            } catch (localError) {
+                console.error('فشل تحميل الإعدادات المحلية والآمنة:', localError);
+                this.notifiSetting_showToast('فشل تحميل الإعدادات ⚠️');
+                notifiSetting_DEFAULT_CONFIG = {};
+                this.notifiSetting_config = {};
+            }
         }
     },
     /**
@@ -82,37 +94,15 @@ const notifiSetting_Controller = {
      * @description تحميل الإعدادات المخزنة محلياً ودمجها مع الافتراضيات
      * @returns {void}
      */
+    /**
+     * @description تم الاستغناء عن التحميل من LocalStorage لصالح السحابة مباشرة.
+     * @returns {void}
+     */
     notifiSetting_loadConfig() {
-        try {
-            const notifiSetting_stored = localStorage.getItem(notifiSetting_STORAGE_KEY);
-            if (notifiSetting_stored) {
-                try {
-                    // دمج الإعدادات المخزنة مع الافتراضيات لضمان صحة الهيكل
-                    const notifiSetting_parsed = JSON.parse(notifiSetting_stored);
-                    this.notifiSetting_config = { ...notifiSetting_DEFAULT_CONFIG };
-
-                    // تحديث القيم المنطقية فقط، والإبقاء على التسميات من الكود/JSON
-                    for (const notifiSetting_key in notifiSetting_parsed) {
-                        if (this.notifiSetting_config[notifiSetting_key]) {
-                            this.notifiSetting_config[notifiSetting_key] = {
-                                ...this.notifiSetting_config[notifiSetting_key],
-                                buyer: notifiSetting_parsed[notifiSetting_key].buyer,
-                                admin: notifiSetting_parsed[notifiSetting_key].admin,
-                                seller: notifiSetting_parsed[notifiSetting_key].seller,
-                                delivery: notifiSetting_parsed[notifiSetting_key].delivery
-                            };
-                        }
-                    }
-                } catch (notifiSetting_parseError) {
-                    console.error('خطأ في تحليل الإعدادات، التراجع إلى الافتراضي', notifiSetting_parseError);
-                    this.notifiSetting_config = JSON.parse(JSON.stringify(notifiSetting_DEFAULT_CONFIG));
-                }
-            } else {
-                // نسخة عميقة من الافتراضيات
-                this.notifiSetting_config = JSON.parse(JSON.stringify(notifiSetting_DEFAULT_CONFIG));
-            }
-        } catch (notifiSetting_error) {
-            console.error('حدث خطأ أثناء تحميل الإعدادات:', notifiSetting_error);
+        // لا نحتاج لدمج localStorage هنا لأننا حملنا البيانات الكاملة من السحابة في notifiSetting_loadDefaults
+        // ولكن للتأكد، إذا كانت Config فارغة، نحاول ملئها من Default
+        if (Object.keys(this.notifiSetting_config).length === 0) {
+            this.notifiSetting_config = JSON.parse(JSON.stringify(notifiSetting_DEFAULT_CONFIG));
         }
     },
     /**
@@ -125,14 +115,21 @@ const notifiSetting_Controller = {
      * @description حفظ الإعدادات الحالية في localStorage
      * @returns {void}
      */
-    notifiSetting_saveConfig() {
+    async notifiSetting_saveConfig() {
         try {
-            localStorage.setItem(notifiSetting_STORAGE_KEY, JSON.stringify(this.notifiSetting_config));
-            this.notifiSetting_showToast('تم حفظ الإعدادات بنجاح ✅');
-            console.log('[notifiSetting] تم حفظ الإعدادات:', this.notifiSetting_config);
+            this.notifiSetting_showToast('جاري رفع الإعدادات للسحابة... ☁️');
+
+            const jsonString = JSON.stringify(this.notifiSetting_config, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+
+            // استخدام مكتبة cloudFileManager للرفع
+            await uploadFile2cf(blob, 'notification_config.json', (msg) => console.log(msg));
+
+            this.notifiSetting_showToast('تم حفظ الإعدادات وتحديث السحابة بنجاح ✅');
+            console.log('[notifiSetting] تم حفظ الإعدادات في Cloudflare:', this.notifiSetting_config);
         } catch (notifiSetting_error) {
-            console.error('حدث خطأ أثناء حفظ الإعدادات:', notifiSetting_error);
-            this.notifiSetting_showToast('فشل حفظ الإعدادات ❌');
+            console.error('حدث خطأ أثناء حفظ الإعدادات في Cloudflare:', notifiSetting_error);
+            this.notifiSetting_showToast('فشل حفظ الإعدادات في السحابة ❌');
         }
     },
     /**

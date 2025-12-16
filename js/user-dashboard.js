@@ -82,7 +82,7 @@ function handleAdminPanelClick() {
       .getElementById("swal-notifications-btn")
       .addEventListener("click", async () => {
         await mainLoader(
-          "notification/page/settings.html",
+          "notification/page/admainNotificationsetting.html",
           "index-user-container",
           0,
           undefined,

@@ -46,9 +46,7 @@ th {
     font-weight: 600;
 }
 
-tr:hover {
-    background-color: var(--bg-color-light);
-}
+/* Hover effect removed per design rules */
 
 tr:last-child td {
     border-bottom: none;
@@ -126,7 +124,7 @@ input[type="checkbox"]:disabled {
     color: var(--bg-color-white);
 }
 
-.notifiSetting_btn-reset:hover {
+.notifiSetting_btn-reset:active {
     background-color: var(--danger-color-dark);
 }
 

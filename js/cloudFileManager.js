@@ -1,5 +1,5 @@
 /**
- * @file cloudflare-workers/cloudFileManager.js
+ * @file cloudFileManager.js
  * @description Client-side Library for interacting with Cloudflare R2 file management service.
  *
  * This file provides three main functions for file handling:
@@ -15,21 +15,18 @@
  * const url = URL.createObjectURL(blob); // Can be displayed or saved
  */
 
-/**
- * @description Base URL for the Cloudflare Worker file management endpoint.
- * @type {string}
- * @const
- */
-const baseUrl = "https://bidstory-files.bidsstories.workers.dev";
+
+
+
 
 /**
  * @description Ensures a valid authentication token (X-Auth-Key) exists for Cloudflare Workers interaction.
- *   If a token exists in `localStorage`, it returns it. Otherwise, it fetches a new token from `/login` endpoint
- *   and saves it to `localStorage`.
+ *   If a token exists in `localStorage`, it returns it.Otherwise, it fetches a new token from `/login` endpoint
+  * and saves it to`localStorage`.
  * @function ensureToken2cf
- * @returns {Promise<string>} - A Promise containing the auth token.
+ * @returns { Promise < string >} - A Promise containing the auth token.
  * @async
- * @throws {Error} - If token fetch fails.
+  * @throws { Error } - If token fetch fails.
  */
 async function ensureToken2cf() {
   const existing = localStorage.getItem("X-Auth-Key");
