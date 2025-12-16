@@ -187,7 +187,10 @@
             console.warn("⚠️ [StepperOnly] No parent data found or initializeStepperData missing.");
         }
 
-        // 2. Photo Link Logic (Existing)
+        // 2. Auto-Scroll Tutorial (New)
+        runStepperScrollTutorial();
+
+        // 3. Photo Link Logic (Existing)
         const checkData = setInterval(() => {
             // Need to check the exported ordersData, or wait for initialization
             if (ordersData && ordersData.length > 0) {
@@ -230,4 +233,76 @@
             }
         }
     });
+
+    /**
+     * Auto-scroll tutorial to show all stepper steps.
+     * Runs only on first and second page load.
+     */
+    function runStepperScrollTutorial() {
+        const TUTORIAL_KEY = 'stepperScrollTutorialCount';
+        const MAX_RUNS = 2;
+        const SCROLL_DURATION = 2000; // 2 seconds
+
+        try {
+            // Get current count
+            let count = parseInt(localStorage.getItem(TUTORIAL_KEY) || '0', 10);
+
+            // Check if tutorial should run
+            if (count >= MAX_RUNS) {
+                console.log('[Tutorial] Auto-scroll tutorial already completed.');
+                return;
+            }
+
+            // Increment count
+            count++;
+            localStorage.setItem(TUTORIAL_KEY, count.toString());
+            console.log(`[Tutorial] Running auto-scroll tutorial (${count}/${MAX_RUNS})`);
+
+            // Get the stepper container
+            const container = document.getElementById('primary-stepper-container');
+            if (!container) {
+                console.warn('[Tutorial] Stepper container not found.');
+                return;
+            }
+
+            // Wait a bit for content to render
+            setTimeout(() => {
+                const maxScroll = container.scrollWidth - container.clientWidth;
+
+                if (maxScroll <= 0) {
+                    console.log('[Tutorial] No scroll needed, all steps visible.');
+                    return;
+                }
+
+                // Perform smooth scroll animation
+                const startTime = performance.now();
+                const startScroll = container.scrollLeft;
+
+                function animateScroll(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / SCROLL_DURATION, 1);
+
+                    // Easing function (ease-in-out)
+                    const easeProgress = progress < 0.5
+                        ? 2 * progress * progress
+                        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+                    // Calculate scroll position (RTL: scroll to negative values)
+                    const scrollPosition = startScroll + (maxScroll * easeProgress);
+                    container.scrollLeft = scrollPosition;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animateScroll);
+                    } else {
+                        console.log('[Tutorial] Auto-scroll completed.');
+                    }
+                }
+
+                requestAnimationFrame(animateScroll);
+            }, 300); // Delay to ensure DOM is ready
+
+        } catch (error) {
+            console.error('[Tutorial] Error in auto-scroll tutorial:', error);
+        }
+    }
 </script>
