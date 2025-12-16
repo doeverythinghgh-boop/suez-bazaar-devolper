@@ -78,5 +78,38 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
     /* تقليل الارتفاع المتاح للمحتوى لترك مساحة للعنوان */
     margin: 3px !important;
     padding: 3px !important;
-    text-align: right;
+    text-align: center !important;
+    /* توسيط المحتوى */
+}
+
+/* ============================================
+   توسيط جميع العناصر الداخلية بالقوة
+   FORCE CENTERING FOR ALL POPUP CHILDREN
+   ============================================ */
+
+/* 1. جداول وقوائم */
+.fullscreen-swal table,
+.fullscreen-swal tr,
+.fullscreen-swal td,
+.fullscreen-swal th,
+.fullscreen-swal ul,
+.fullscreen-swal li,
+.fullscreen-swal .seller-header,
+.fullscreen-swal .user-details-container {
+    text-align: center !important;
+    justify-content: center !important;
+    /* للعناصر Flex */
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* 2. عناصر Flex (مثل checkbox-item) */
+.fullscreen-swal .checkbox-item,
+.fullscreen-swal li[style*="display: flex"] {
+    justify-content: center !important;
+}
+
+/* 3. حاويات الأزرار في الأسفل */
+.fullscreen-swal .swal2-actions {
+    justify-content: center !important;
 }
