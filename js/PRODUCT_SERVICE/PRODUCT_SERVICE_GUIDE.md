@@ -10,7 +10,7 @@
 
 ### ملف التكوين
 
-**الموقع:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](file:///c:/Users/hesham/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
+**الموقع:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
 
 ```json
 {
@@ -38,7 +38,7 @@
 
 ### 1. وحدة المساعدة: `serviceCategoryHelper.js`
 
-**الموقع:** [`js/PRODUCT_SERVICE/serviceCategoryHelper.js`](file:///c:/Users/hesham/bazaar/js/PRODUCT_SERVICE/serviceCategoryHelper.js)
+**الموقع:** [`js/PRODUCT_SERVICE/serviceCategoryHelper.js`](/bazaar/js/PRODUCT_SERVICE/serviceCategoryHelper.js)
 
 #### الدوال الرئيسية:
 
@@ -78,7 +78,7 @@ function getServiceType(mainId, subId = null)
 
 ### 2. وحدة إدارة الحالة: `productStateManager.js`
 
-**الموقع:** [`js/PRODUCT_SERVICE/productStateManager.js`](file:///c:/Users/hesham/bazaar/js/PRODUCT_SERVICE/productStateManager.js)
+**الموقع:** [`js/PRODUCT_SERVICE/productStateManager.js`](/bazaar/js/PRODUCT_SERVICE/productStateManager.js)
 
 #### الدوال الرئيسية:
 
@@ -118,7 +118,7 @@ ProductStateManager.getSelectedCategories()
 
 ### 3. الدوال الرئيسية: `globalVariable.js`
 
-**الموقع:** [`js/globalVariable.js`](file:///c:/Users/hesham/bazaar/js/globalVariable.js)
+**الموقع:** [`js/globalVariable.js`](/bazaar/js/globalVariable.js)
 
 #### `loadProductView(productData, options)`
 ```javascript
@@ -197,8 +197,8 @@ async function showAddProductModal()
 
 | الصفحة | الاستخدام | الوصف |
 |--------|-----------|-------|
-| [`productView.html`](file:///c:/Users/hesham/bazaar/pages/productView.html) | عرض المنتجات | تعرض تفاصيل المنتج مع السعر والكمية وزر الإضافة للسلة |
-| [`productView2.html`](file:///c:/Users/hesham/bazaar/pages/productView2.html) | عرض الخدمات | تعرض تفاصيل الخدمة مع سلايدر ثلاثي الأبعاد ونموذج طلب صور |
+| [`productView.html`](/bazaar/pages/productView.html) | عرض المنتجات | تعرض تفاصيل المنتج مع السعر والكمية وزر الإضافة للسلة |
+| [`productView2.html`](/bazaar/pages/productView2.html) | عرض الخدمات | تعرض تفاصيل الخدمة مع سلايدر ثلاثي الأبعاد ونموذج طلب صور |
 
 **كيفية قراءة البيانات:**
 ```javascript
@@ -217,8 +217,8 @@ if (productData) {
 
 | الصفحة | الاستخدام | الوصف |
 |--------|-----------|-------|
-| [`productAdd.html`](file:///c:/Users/hesham/bazaar/pages/productAdd.html) | إضافة منتج | نموذج إضافة منتج مع حقول السعر والكمية |
-| [`productAdd2.html`](file:///c:/Users/hesham/bazaar/pages/productAdd2.html) | إضافة خدمة | نموذج إضافة خدمة بدون حقول السعر والكمية |
+| [`productAdd.html`](/bazaar/pages/productAdd.html) | إضافة منتج | نموذج إضافة منتج مع حقول السعر والكمية |
+| [`productAdd2.html`](/bazaar/pages/productAdd2.html) | إضافة خدمة | نموذج إضافة خدمة بدون حقول السعر والكمية |
 
 **كيفية قراءة الفئات:**
 ```javascript
@@ -233,8 +233,8 @@ const categories = ProductStateManager.getSelectedCategories();
 
 | الصفحة | الاستخدام | الوصف |
 |--------|-----------|-------|
-| [`productEdit.html`](file:///c:/Users/hesham/bazaar/pages/productEdit.html) | تعديل منتج | نموذج تعديل منتج موجود |
-| [`productEdit2.html`](file:///c:/Users/hesham/bazaar/pages/productEdit2.html) | تعديل خدمة | نموذج تعديل خدمة موجودة |
+| [`productEdit.html`](/bazaar/pages/productEdit.html) | تعديل منتج | نموذج تعديل منتج موجود |
+| [`productEdit2.html`](/bazaar/pages/productEdit2.html) | تعديل خدمة | نموذج تعديل خدمة موجودة |
 
 **كيفية قراءة البيانات:**
 ```javascript
@@ -335,7 +335,7 @@ function generateSearchResultHTML(product) {
 
 ### الخطوات:
 
-1. **افتح ملف التكوين:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](file:///c:/Users/hesham/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
+1. **افتح ملف التكوين:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
 
 2. **أضف الفئة المناسبة:**
 
