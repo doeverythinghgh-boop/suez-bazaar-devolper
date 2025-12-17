@@ -110,7 +110,7 @@ function login_setupLoginForm() {
  */
 function login_handleRegisterClick(e) {
     e.preventDefault();
-    mainLoader("./pages/register.html", "index-user-container", 0, undefined, "hiddenLoginIcon", true);
+    mainLoader("./pages/register/register.html", "index-user-container", 0, undefined, "hiddenLoginIcon", true);
 }
 
 

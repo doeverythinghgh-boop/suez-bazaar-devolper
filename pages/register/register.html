@@ -1,0 +1,46 @@
+<body>
+  <div id="header-container1Xx" style="height: 70px"></div>
+  <link rel="stylesheet" href="pages/register/register.css">
+
+  <div class="register_page-wrapper">
+
+    <div class="register_container">
+
+      <h2>إنشاء حساب جديد</h2>
+      <form id="register_form" novalidate>
+        <div class="register_form-group">
+          <label for="register_username"><i class="fas fa-user"></i> الاسم</label>
+          <input type="text" id="register_username" name="username" required autocomplete="off" />
+          <div id="register_username-error" class="register_error-message"></div>
+        </div>
+        <div class="register_form-group">
+          <label for="register_phone"><i class="fa fa-phone"></i> رقم الهاتف</label>
+          <input type="tel" id="register_phone" name="phone" required autocomplete="tel" />
+          <div id="register_phone-error" class="register_error-message"></div>
+        </div>
+        <div class="register_form-group">
+          <label for="register_password"><i class="fas fa-lock"></i> كلمة المرور</label>
+          <div class="register_password-container">
+            <input type="password" id="register_password" name="password" required autocomplete="new-password" />
+            <i class="fa fa-eye register_toggle-password" id="register_toggle-password-icon"></i>
+          </div>
+          <div id="register_password-error" class="register_error-message"></div>
+          <small class="register_form-hint">يجب أن تتكون من 4 أحرف على الأقل لحماية حسابك.</small>
+        </div>
+        <div class="register_form-group">
+          <label for="register_address"><i class="fas fa-map-marker-alt"></i> العنوان (اختياري)</label>
+          <input type="text" id="register_address" name="address" autocomplete="off" />
+          <div id="register_address-error" class="register_error-message"></div>
+          <small class="register_form-hint">اختياري. يُستخدم لتسهيل عملية توصيل المنتجات إليك.</small>
+        </div>
+
+        <button type="submit" class="button register_btn">إنشاء الحساب</button>
+        <div class="register_form-footer">
+          <a href="#" id="register_goToLoginLink">لديك حساب بالفعل؟ <strong>سجل الدخول</strong></a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="pages/register/register.js"></script>
+</body>
