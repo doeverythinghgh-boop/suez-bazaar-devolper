@@ -490,7 +490,7 @@ function showLoginAlert() {
     }).then((result) => {
       if (result.isConfirmed) {
         if (typeof mainLoader === 'function') {
-          mainLoader("./pages/login.html", "index-user-container", 0, undefined, "hiddenLoginIcon", true);
+          mainLoader("./pages/login/login.html", "index-user-container", 0, undefined, "hiddenLoginIcon", true);
         } else {
           console.error("mainLoader function is not defined");
         }
@@ -501,17 +501,17 @@ function showLoginAlert() {
   return true;
 }
 
- /**
-         * @function generateSerial
-         * @description Generates a unique 6-character alphanumeric serial.
-         * @returns {string} Serial.
-         */
-        function generateSerial() {
-            const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-            let serial = "";
-            for (let i = 0; i < 6; i++) {
-                serial += chars.charAt(Math.floor(Math.random() * chars.length));
-            }
-            return serial;
-        }
+/**
+        * @function generateSerial
+        * @description Generates a unique 6-character alphanumeric serial.
+        * @returns {string} Serial.
+        */
+function generateSerial() {
+  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+  let serial = "";
+  for (let i = 0; i < 6; i++) {
+    serial += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return serial;
+}
 

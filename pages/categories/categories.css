@@ -1,0 +1,261 @@
+/*
+ * ========================================
+ * Product Categories Styles (categories_)
+ * ========================================
+ */
+
+/* General styles (from utilities.css) */
+/* Shared selectors like error-message, loader and spin should NOT be renamed unless they are specific to categories */
+/* .error-message */
+.error-message {
+    color: var(--danger-color);
+    font-size: 12px;
+    margin-top: 5px;
+    min-height: 15px;
+}
+
+/* .loader & @keyframes spin (from loader.css) */
+.loader {
+    border: 5px solid var(--primary-color-light);
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    margin: 50px auto;
+    /* Center the loader */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Category section styles (from index-categories.css) */
+.categories_section_container {
+    padding: 0px 0 40px 0;
+    background-color: var(--bg-color-light);
+    text-align: center;
+}
+
+.categories_table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 15px;
+    margin-top: 0px;
+    table-layout: fixed;
+}
+
+@keyframes categories_fadeInRow {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.categories_main_row {
+    animation: categories_fadeInRow 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+.categories_main_cell {
+    border: 1px solid var(--border-color);
+    padding: 20px;
+    text-align: center;
+    vertical-align: middle;
+    background-color: var(--bg-color-light);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease, box-shadow 0.5s ease, opacity 0.3s ease,
+        border-color 0.5s ease;
+}
+
+.categories_main_row .categories_main_cell--has-subcategories {
+    cursor: pointer;
+}
+
+.categories_main_row .categories_main_cell--active {
+    border: 1px solid var(--border-color-active);
+    box-shadow: var(--shadow-focus);
+    opacity: 1;
+}
+
+.categories_main_row .categories_main_cell--active .categories_cell_content i {
+    color: var(--primary-color);
+}
+
+.categories_main_row .categories_main_cell--active .categories_cell_content span {
+    color: var(--text-color-medium);
+}
+
+.categories_cell_content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.categories_cell_content__icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+.categories_cell_content__text {
+    font-size: 0.6rem;
+    color: var(--text-color-medium);
+    font-weight: 600;
+}
+
+.categories_sub_row td {
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+@keyframes categories_slide_fade_in {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.categories_subcategories_container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    gap: 15px;
+    padding: 20px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.categories_subcategories_container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.categories_subcategories_container::-webkit-scrollbar-track {
+    background: var(--bg-color-light);
+}
+
+.categories_subcategories_container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color-input);
+    border-radius: 10px;
+}
+
+.categories_subcategory_item {
+    background-color: var(--bg-color-light);
+    border: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: background-color 0.3s ease, color 0.3s ease,
+        border-color 0.5s ease, box-shadow 0.5s ease;
+    white-space: nowrap;
+    font-size: 0.8em;
+    cursor: pointer;
+}
+
+.categories_subcategory_item:active {
+    background-color: var(--primary-color-light);
+}
+
+.categories_subcategory_item__icon {
+    font-size: 1.2em;
+}
+
+.categories_subcategory_item--active {
+    border: 1px solid var(--border-color-active);
+    box-shadow: var(--shadow-focus);
+}
+
+.categories_subcategory_item--active .categories_subcategory_item__icon {
+    color: var(--primary-color);
+}
+
+/* Product gallery styles (from index-products-gallery.css) */
+.categories_products_gallery_row td {
+    height: 15vh;
+    padding: 0px;
+    background-color: var(--bg-color-white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+    vertical-align: top;
+}
+
+.categories_products_gallery_container {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 15px;
+    white-space: nowrap;
+    padding: 15px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.categories_products_gallery_container::-webkit-scrollbar {
+    height: 6px;
+}
+
+.categories_products_gallery_container::-webkit-scrollbar-track {
+    background: var(--bg-color-light);
+}
+
+.categories_products_gallery_container::-webkit-scrollbar-thumb {
+    background-color: var(--border-color-input);
+    border-radius: 10px;
+}
+
+.categories_product_item {
+    cursor: pointer;
+    text-align: center;
+    line-height: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-color-input);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    width: 12vh;
+    flex-shrink: 0;
+}
+
+.categories_product_item__image {
+    width: 100%;
+    height: 12vh;
+    object-fit: cover;
+    display: block;
+}
+
+.categories_product_item__name {
+    font-family: var(--font-primary);
+    font-size: 0.75rem;
+    color: var(--text-color-dark);
+    padding: 8px 5px;
+    margin: 0;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

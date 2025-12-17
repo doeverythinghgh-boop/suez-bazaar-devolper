@@ -236,7 +236,7 @@
     if (register_password) register_password.value = "";
     if (register_address) register_address.value = "";
 
-  
+
     // Add input event listener to sanitize phone number in real-time.
     if (register_phone) {
       register_phone.addEventListener("input", function (e) {
@@ -512,7 +512,7 @@
         register_loginLink.addEventListener("click", function (e) {
           e.preventDefault();
           mainLoader(
-            "./pages/login.html",
+            "./pages/login/login.html",
             "index-user-container",
             0,
             undefined,

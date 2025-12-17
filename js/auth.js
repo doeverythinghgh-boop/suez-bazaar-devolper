@@ -135,7 +135,7 @@ async function signOutAndClear() {
   // [Step 1] Call `mainLoader` to load login page content into the main user container.
   console.log("[Auth] دخلنا دالة signOutAndClear . جاري تحميل صفحة تسجيل الدخول...");
   await mainLoader(
-    "pages/login.html",
+    "pages/login/login.html",
     "index-user-container",
     0,
     undefined,

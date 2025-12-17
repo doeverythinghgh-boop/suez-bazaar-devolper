@@ -29,8 +29,8 @@
     // Step 2: Load content of different parts (ads and categories) synchronously.
     // Promise.all is used to ensure all parts are loaded before proceeding.
     await Promise.all([
-      loader("pages/advertisement.html?v=1.0", "advertisement", 0),
-      loader("pages/categories.html?v=1.0", "categories00", 300),
+      loader("pages/advertisement/advertisement.html?v=1.0", "advertisement", 0),
+      loader("pages/categories/categories.html?v=1.0", "categories00", 300),
     ]);
 
     // Step 3: After content loading, initialize modules responsible for each part's functionality.
