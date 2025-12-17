@@ -141,7 +141,7 @@ function productAddSetType(editMode = false) {
   if (editMode == false) {
     if (productTypeToAdd == 2) {
       mainLoader(
-        "./pages/productAdd2.html",
+        "./pages/productAdd2/productAdd2.html",
         "index-product-container",
         0,
         undefined,
@@ -216,7 +216,7 @@ function loadProductForm(options = {}) {
   if (editMode) {
     pagePath = isService ? "./pages/productEdit2.html" : "./pages/productEdit.html";
   } else {
-    pagePath = isService ? "./pages/productAdd2.html" : "./pages/productAdd/productAdd.html";
+    pagePath = isService ? "./pages/productAdd2/productAdd2.html" : "./pages/productAdd/productAdd.html";
   }
 
   console.log(`[ProductForm] تحميل صفحة ${editMode ? 'تعديل' : 'إضافة'} ${isService ? 'خدمة' : 'منتج'} للفئة ${categories.mainId}/${categories.subId}`);

@@ -1,0 +1,659 @@
+// ✅ Simple IIFE usage without assigning to window
+console.log('%c[ProductForm] بدء تهيئة نموذج إضافة الخدمة...', 'color: blue;');
+// --- Default Compression Settings ---
+const IMAGE_MAX_WIDTH = 1600; // Max width after compression
+const IMAGE_MAX_HEIGHT = 1600; // Max height after compression
+const IMAGE_QUALITY = 0.75; // Compression quality 0..1
+const MAX_FILES = 6; // Reasonable limit of images
+
+// DOM Elements
+const fileInput0 = document.getElementById('fileInput00');
+const pickFilesBtn = document.getElementById('pick-files-btn');
+const takePhotoBtn = document.getElementById('take-photo-btn');
+const previewsEl = document.getElementById('previews');
+const uploaderEl = document.getElementById('image-uploader');
+const form = document.getElementById('add-product-form');
+const descriptionTextarea = document.getElementById('product-description');
+const productNameInput = document.getElementById('product-name');
+const sellerMessageTextarea = document.getElementById('seller-message');
+const notesInput = document.getElementById('product-notes');
+
+// --- Helper functions for error handling ---
+/**
+ * @function showError
+ * @description Displays an error message below the specified element.
+ * @param {HTMLElement} element - The element where the error occurred.
+ * @param {string} message - The error message to display.
+ */
+function showError(element, message) {
+    clearError(element); // Clear any old error first
+    const errorDiv = document.createElement('div');
+    errorDiv.id = element.id ? `${element.id}_error` : `error_${Date.now()}`;
+    errorDiv.className = 'add-product-modal__error-message';
+    errorDiv.textContent = message;
+    // Insert error message immediately after the element or its container
+    element.parentElement.appendChild(errorDiv);
+}
+
+/**
+ * @function clearError
+ * @description Removes the error message from below the specified element.
+ * @param {HTMLElement} element - The element to clear errors for.
+ */
+function clearError(element) {
+    const errorDiv = element.parentElement.querySelector('.add-product-modal__error-message');
+    if (errorDiv) errorDiv.remove();
+}
+
+/**
+ * @function formatBytes
+ * @description Converts bytes to a human-readable string (KB, MB, etc.).
+ * @param {number} bytes - Size in bytes.
+ * @param {number} decimals - Number of decimal places.
+ * @returns {string} Formatted string.
+ */
+function formatBytes(bytes, decimals = 2) {
+    if (!+bytes) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
+const images = [];
+let idCounter = 1;
+
+// Helper: Generate lightweight unique ID
+function genId() { return 'img_' + (Date.now() + idCounter++); }
+
+// Check WebP support
+async function supportsWebP() {
+    if (!self.createImageBitmap) return false;
+    const blob = await fetch('data:image/webp;base64,UklGRiIAAABXRUJQVlA4TAYAAAAvAAAAAAfQ//73v/+BiOh/AAA=')
+        .then(r => r.blob()).catch(() => null);
+    if (!blob) return false;
+    try { await createImageBitmap(blob); return true; } catch (e) { return false; }
+}
+const WEBP_SUPPORTED_PROMISE = supportsWebP();
+
+// --- Compression function: Takes File or Blob and returns compressed Blob ---
+// --- Compression Function: Takes File or Blob, returns compressed Blob ---
+/**
+ * @function compressImage
+ * @description Compresses an image file using Canvas and createImageBitmap.
+ *   Optimized for mobile memory usage by downscaling if necessary.
+ * @param {File|Blob} file - The image file to compress.
+ * @returns {Promise<Blob>} - A Promise resolving to the compressed image Blob.
+ * @throws {Error} If compression fails.
+ */
+async function compressImage(file) {
+    let imgBitmap = null;
+    let canvas = null;
+    let ctx = null;
+
+    try {
+        // Detect mobile devices to reduce resolution further for memory saving
+        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+        // Reduce resolution for mobile to avoid memory consumption
+        const targetMaxWidth = isMobile ? 1280 : IMAGE_MAX_WIDTH;
+        const targetMaxHeight = isMobile ? 1280 : IMAGE_MAX_HEIGHT;
+
+        // Use integrated resize options to save memory
+        // resizeWidth/Height allows browser to decode to target size directly
+        try {
+            imgBitmap = await createImageBitmap(file, {
+                resizeWidth: targetMaxWidth,
+                resizeHeight: targetMaxHeight,
+                resizeQuality: 'high'
+            });
+        } catch (e) {
+            console.warn('فشل createImageBitmap مع الخيارات، العودة إلى الافتراضي:', e);
+            imgBitmap = await createImageBitmap(file);
+        }
+
+        // Since we resized upfront, current dimensions are the target dimensions (or smaller if aspect ratio kept)
+        let { width, height } = imgBitmap;
+
+        // Manual calculation if resize options failed or weren't supported
+        const ratio = Math.min(1, targetMaxWidth / width, targetMaxHeight / height);
+        const newWidth = Math.round(width * ratio);
+        const newHeight = Math.round(height * ratio);
+
+        // Draw to canvas
+        canvas = document.createElement('canvas');
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        ctx = canvas.getContext('2d');
+
+        // Fill white background to avoid alpha channel issues (e.g. png -> jpeg)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, newWidth, newHeight);
+
+        ctx.drawImage(imgBitmap, 0, 0, newWidth, newHeight);
+
+        const webpSupported = await WEBP_SUPPORTED_PROMISE;
+        const mime = webpSupported ? 'image/webp' : 'image/jpeg';
+
+        // Convert to blob
+        const blob = await new Promise((res) => canvas.toBlob(res, mime, IMAGE_QUALITY));
+
+        return blob;
+
+    } catch (err) {
+        console.error('فشل الضغط المحسن للذاكرة:', err);
+        throw err;
+    } finally {
+        // Explicit and aggressive memory cleanup
+        if (imgBitmap) {
+            try { imgBitmap.close(); } catch (e) { }
+            imgBitmap = null;
+        }
+        if (ctx) ctx = null;
+        if (canvas) {
+            canvas.width = 1; // Clear canvas buffer
+            canvas.height = 1;
+            canvas = null;
+        }
+    }
+}
+
+// --- Function to create thumbnail preview and show in UI ---
+/**
+ * @function createPreviewItem
+ * @description Creates a visual preview element for an image and appends it to the DOM.
+ * @param {Object} state - The image state object (id, file, status, etc.).
+ * @param {string} [existingImageUrl=null] - URL for existing image (unused in Add, used in Edit).
+ */
+function createPreviewItem(state, existingImageUrl = null) {
+    const wrapper = document.createElement('div');
+    wrapper.id = `productAdd_preview_${state.id}`;
+    wrapper.className = 'add-product-modal__preview';
+    wrapper.setAttribute('data-id', state.id);
+
+    // On click, select image and show remove button
+    wrapper.addEventListener('click', (e) => {
+        // Do nothing if clicking remove button
+        if (e.target.closest('.add-product-modal__preview-remove')) return;
+
+        // Deselect others
+        document.querySelectorAll('.add-product-modal__preview--selected').forEach(p => p.classList.remove('add-product-modal__preview--selected'));
+        // Select current
+        wrapper.classList.add('add-product-modal__preview--selected');
+    });
+    const removeBtn = document.createElement('button');
+    removeBtn.type = "button"; // Fix: Prevent button from submitting form
+    removeBtn.id = `productAdd_preview_remove_${state.id}`;
+    removeBtn.className = 'add-product-modal__preview-remove';
+    removeBtn.setAttribute('title', 'Remove Image');
+    removeBtn.innerHTML = `<i class="fas fa-trash-alt" id="productAdd_icon_trash_${state.id}"></i>`; // Changed icon to trash can
+    removeBtn.addEventListener('click', () => removeImage(state.id));
+
+    const img = document.createElement('img'); // Removed alt as there is no name now
+    img.id = `productAdd_preview_img_${state.id}`;
+
+    const meta = document.createElement('div');
+    meta.id = `productAdd_preview_meta_${state.id}`;
+    meta.className = 'add-product-modal__preview-meta';
+    meta.textContent = 'جاري المعالجة...'; // Temporary text
+
+    wrapper.appendChild(removeBtn);
+    wrapper.appendChild(img);
+    wrapper.appendChild(meta);
+
+    if (existingImageUrl) {
+        img.src = existingImageUrl;
+        meta.textContent = 'Current Image';
+    } else {
+        const reader = new FileReader();
+        reader.onload = (e) => { img.src = e.target.result; };
+        reader.readAsDataURL(state.file);
+    }
+
+    previewsEl.appendChild(wrapper);
+    state._el = wrapper;
+    state._metaEl = meta; // Store reference to meta element for later updates
+}
+
+// --- Remove Image Function ---
+/**
+ * @function removeImage
+ * @description Removes an image from the list and DOM after user confirmation.
+ * @param {string} id - The ID of the image to remove.
+ */
+function removeImage(id) {
+    console.log(`[ImageUploader] محاولة حذف الصورة بالمعرف: ${id}`);
+    Swal.fire({
+        title: 'هل أنت متأكد؟',
+        text: "هل تريد حقاً حذف هذه الصورة؟",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'نعم، احذفها!',
+        cancelButtonText: 'إلغاء'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // 1. Find the index of the image in the state array
+            const idx = images.findIndex(i => i.id === id);
+            if (idx > -1) {
+                const state = images[idx];
+                // 2. Remove the image element from the UI (DOM)
+                if (state._el) state._el.remove();
+                console.log(`[ImageUploader] تمت إزالة الصورة ${id} (${state.fileName || 'ملف جديد'}) من العرض.`);
+                // 3. Remove the image from the state array
+                images.splice(idx, 1);
+                // Note: No cloud deletion function is called here.
+                // Actual deletion will be handled when the form is submitted? Or this is just local cleanup strictly for new images.
+            }
+        }
+    });
+}
+
+let stop = 0;
+// --- Handle new files when selected or dropped ---
+/**
+ * @function handleNewFiles
+ * @description Processes newly selected files: validates, adds to preview, and triggers compression.
+ * @param {FileList|Array<File>} fileList - The list of files to process.
+ */
+async function handleNewFiles(fileList) {
+    console.log(`[ImageUploader] معالجة ${fileList.length} ملف (ملفات)`);
+
+    // Prevent recursion/duplication
+    if (window.isProcessingFiles) return;
+    window.isProcessingFiles = true;
+
+    try {
+        // Hide old error message
+        clearError(uploaderEl);
+
+        // Convert FileList to Array
+        const filesArr = Array.from(fileList);
+
+        // Check max limit
+        const availableSlots = MAX_FILES - images.length;
+        if (availableSlots <= 0) {
+            Swal.fire('تحذير', `لا يمكن إضافة أكثر من ${MAX_FILES} صور`, 'warning');
+            return;
+        }
+
+        const filesToProcess = filesArr.slice(0, availableSlots);
+
+        for (const file of filesToProcess) {
+            // Check file type
+            if (!file.type.startsWith('image/')) {
+                console.warn(`[ImageUploader] تخطي ملف غير صورة: ${file.name}`);
+                continue;
+            }
+
+            const id = genId();
+            const state = {
+                id,
+                file,
+                fileName: file.name,
+                compressedBlob: null,
+                status: 'pending'
+            };
+
+            images.push(state);
+            createPreviewItem(state);
+
+            // Compress Image
+            try {
+                state.status = 'compressing';
+                const compressed = await compressImage(file);
+                state.compressedBlob = compressed;
+                state.status = 'ready';
+
+                // Update UI with final size
+                if (state._metaEl) {
+                    state._metaEl.textContent = formatBytes(compressed.size);
+                }
+
+            } catch (err) {
+                console.error('[ImageUploader] خطأ في الضغط:', err);
+                state.status = 'error';
+                if (state._metaEl) {
+                    state._metaEl.textContent = 'خطأ في الضغط';
+                }
+            }
+        }
+
+    } catch (error) {
+        console.error('[ImageUploader] خطأ حرج:', error);
+
+    } finally {
+        window.isProcessingFiles = false;
+    }
+}
+// --- Upload to Server (Template) ---
+/**
+ * @function uploadAll
+ * @description Uploads all ready images to the server sequentially.
+ *   Note: This function appears to be a template or unused in favor of inline submission logic.
+ * @param {Function} progressCallback - Callback for upload progress.
+ * @returns {Promise<Array>} Array of uploaded file data.
+ */
+async function uploadAll(progressCallback) {
+    // Sequential upload behavior: separate request for each image
+    const uploaded = [];
+    for (const state of images) {
+        if (state.status !== 'ready' || !state.compressedBlob) continue;
+        // Example: Using FormData
+        const fd = new FormData();
+        // Field name: images[] for array
+        fd.append('images[]', state.compressedBlob, state.file.name);
+        // Replace URL with your API endpoint
+        const endpoint = '/api/upload-image';
+
+        // Simple visual progress (simulated as native fetch doesn't support request body progress)
+        try {
+            state.status = 'uploading';
+
+            // Use fetch
+            const res = await fetch(endpoint, { method: 'POST', body: fd });
+            if (!res.ok) throw new Error('Upload failed ' + res.status);
+
+            state.status = 'uploaded';
+            uploaded.push(await res.json());
+        } catch (err) {
+            console.error('خطأ في الرفع', err);
+            state.status = 'error';
+        }
+    }
+    return uploaded;
+}
+
+// --- UI Events ---
+pickFilesBtn.addEventListener('click', () => {
+    // Ensure camera attribute is removed to open file picker
+    fileInput0.removeAttribute('capture');
+    fileInput0.click();
+});
+
+// New: Character counter and error hiding for Product Name
+productNameInput.addEventListener('input', () => {
+    const currentLength = productNameInput.value.length;
+    const maxLength = productNameInput.maxLength;
+    document.getElementById('product-name-char-counter').textContent = `${currentLength} / ${maxLength}`;
+
+    // Hide error message once user starts writing
+    if (currentLength > 0) clearError(productNameInput);
+});
+
+// Character counter and error hiding for Description
+descriptionTextarea.addEventListener('input', () => {
+    const currentLength = descriptionTextarea.value.length;
+    const maxLength = descriptionTextarea.maxLength;
+    document.getElementById('description-char-counter').textContent = `${currentLength} / ${maxLength}`;
+
+    // Hide error message once user starts writing
+    if (currentLength > 0) clearError(descriptionTextarea);
+});
+
+// Character counter and error hiding for Seller Message
+sellerMessageTextarea.addEventListener('input', () => {
+    const currentLength = sellerMessageTextarea.value.length;
+    const maxLength = sellerMessageTextarea.maxLength;
+    document.getElementById('seller-message-char-counter').textContent = `${currentLength} / ${maxLength}`;
+
+    // Hide error message once user starts writing
+    if (currentLength > 0) clearError(sellerMessageTextarea);
+});
+
+// New: Character counter for Notes field
+notesInput.addEventListener('input', () => {
+    const currentLength = notesInput.value.length;
+    const maxLength = notesInput.maxLength;
+    document.getElementById('notes-char-counter').textContent = `${currentLength} / ${maxLength}`;
+    // Hide error message once user starts writing
+    if (currentLength > 0) clearError(notesInput);
+});
+
+// Capture photo via camera: Open file input with capture attribute
+takePhotoBtn.addEventListener('click', () => {
+    console.log('[Camera] Take photo button clicked on mobile');
+
+    // Final solution: Create a new input every time
+    const tempInput = document.createElement('input');
+    tempInput.type = 'file';
+    tempInput.accept = 'image/*';
+    tempInput.style.display = 'none';
+
+    // For mobile devices: Open camera directly
+    tempInput.setAttribute('capture', 'environment');
+
+    // Add to DOM temporarily
+    document.body.appendChild(tempInput);
+
+    // Define event before clicking
+    tempInput.addEventListener('change', async (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+            console.log('[Camera] File selected from camera:', e.target.files[0].name);
+            await handleNewFiles(e.target.files);
+        }
+
+        // Cleanup: Remove temp input from DOM
+        if (tempInput.parentNode) {
+            tempInput.parentNode.removeChild(tempInput);
+        }
+    });
+
+    // Add error event to handle issues
+    tempInput.addEventListener('error', (e) => {
+        console.error('[Camera] Error with file input:', e);
+        if (tempInput.parentNode) {
+            tempInput.parentNode.removeChild(tempInput);
+        }
+
+        // Fallback attempt
+        Swal.fire({
+            icon: 'warning',
+            title: 'مشكلة في الكاميرا',
+            text: 'حاول فتح الكاميرا بطريقة أخرى',
+            showCancelButton: true,
+            confirmButtonText: 'اختر من المعرض',
+            cancelButtonText: 'إلغاء'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                pickFilesBtn.click();
+            }
+        });
+    });
+
+    // Trigger click
+    setTimeout(() => {
+        tempInput.click();
+    }, 100);
+});
+/**
+ * @function openDesktopCamera
+ * @description Opens the webcam modal for desktop devices.
+ */
+async function openDesktopCamera() {
+    const cameraModalContainer = document.getElementById('camera-modal-container');
+    if (!cameraModalContainer) {
+        console.error('Camera modal container not found!');
+        return;
+    }
+
+    // 1. Create UI for camera modal
+    cameraModalContainer.innerHTML = `
+            <div class="modal-content camera-modal-content" id="productAdd_camera_modal_content">
+                <button class="close-button" id="camera-modal-close-btn" aria-label="Close"><i class="fas fa-times" id="productAdd_icon_camera_close"></i></button>
+                <video id="camera-preview" autoplay playsinline></video>
+                <canvas id="camera-canvas" style="display:none;"></canvas>
+                <div class="camera-controls" id="productAdd_camera_controls">
+                    <button id="capture-photo-btn" class="btn btn-primary"><i class="fas fa-camera" id="productAdd_icon_camera_capture"></i> Capture Photo</button>
+                </div>
+            </div>
+        `;
+    cameraModalContainer.style.display = 'flex';
+
+    const video = document.getElementById('camera-preview');
+    const captureBtn = document.getElementById('capture-photo-btn');
+    const closeBtn = document.getElementById('camera-modal-close-btn');
+
+    // 2. Request camera access
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+        video.srcObject = stream;
+
+        const closeStream = () => {
+            stream.getTracks().forEach(track => track.stop());
+            cameraModalContainer.style.display = 'none';
+            cameraModalContainer.innerHTML = '';
+        };
+
+        closeBtn.onclick = closeStream;
+
+        captureBtn.onclick = () => {
+            const canvas = document.getElementById('camera-canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0);
+            canvas.toBlob(blob => {
+                // Convert Blob to File to give it a name (helps with logging and handling)
+                const file = new File([blob], `camera_${Date.now()}.jpg`, { type: "image/jpeg" });
+                handleNewFiles([file]);
+                closeStream(); // Close modal after capture
+            }, 'image/jpeg', 0.9);
+        };
+    } catch (err) {
+        console.error("Error accessing camera: ", err);
+
+        cameraModalContainer.style.display = 'none';
+    }
+}
+
+fileInput0.addEventListener('change', async (e) => await handleNewFiles(e.target.files));
+
+// Drag and Drop
+//    uploaderEl.addEventListener('dragover', (e) => { e.preventDefault(); uploaderEl.style.borderColor = '#007bff'; });
+//    uploaderEl.addEventListener('dragleave', (e) => { uploaderEl.style.borderColor = ''; });
+//    uploaderEl.addEventListener('drop', (e) => { e.preventDefault(); uploaderEl.style.borderColor = ''; handleNewFiles(e.dataTransfer.files); });
+
+// Form Submission: Compresses files and uploads them
+form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    console.log('%c[ProductForm] Submit event triggered.', 'color: blue;');
+    let isValid = true;
+
+    // --- Validate Inputs ---
+    console.log('[ProductForm] Starting validation...');
+
+    // 1. Check for at least one image
+    clearError(uploaderEl);
+    if (images.length === 0) {
+        showError(uploaderEl, 'مطلوب صورة واحدة للخدمة على الأقل.');
+        isValid = false;
+    }
+
+    // 2. Check Product Name
+    clearError(productNameInput);
+    if (!productNameInput.value.trim()) {
+        showError(productNameInput, 'اسم الخدمة مطلوب.');
+        isValid = false;
+    }
+
+    // 3. Check Description
+    clearError(descriptionTextarea);
+    if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
+        showError(descriptionTextarea, 'وصف الخدمة مطلوب (على الأقل 10 أحرف).');
+        isValid = false;
+    }
+
+    // 4. Check Seller Message
+    clearError(sellerMessageTextarea);
+    if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
+        showError(sellerMessageTextarea, 'رسالة مقدم الخدمة مطلوبة (على الأقل 10 أحرف).');
+        isValid = false;
+    }
+
+    // 5. Quantity Check - REMOVED for Services
+    // 6. Price Check - REMOVED for Services
+
+    if (!isValid) {
+        console.warn('[ProductForm] Validation failed. Submission aborted.');
+        return; // Stop execution if data is invalid
+    }
+
+    // If all data is valid, proceed with upload
+    console.log('%c[ProductForm] التحقق نجح. بدء عملية الإرسال.', 'color: green;');
+    Swal.fire({
+        title: 'جاري إضافة الخدمة...',
+        text: 'يرجى الانتظار بينما يتم رفع الصور.',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+        },
+    });
+
+    try {
+        // Generate unique product serial
+        const productSerial = generateSerial();
+
+        // 1. Upload images sequentially
+        const uploadedImageUrls = [];
+        console.log(`[ProductForm] Uploading ${images.filter(s => s.status === 'ready').length} new images...`);
+        for (let i = 0; i < images.length; i++) {
+            const state = images[i];
+            if (state.status !== 'ready' || !state.compressedBlob) continue;
+
+            // Create new image name
+            const fileName = `${i + 1}_${productSerial}.webp`;
+
+            // Call upload function from cloudFileManager.js
+            const result = await uploadFile2cf(state.compressedBlob, fileName, (msg) => console.log('[CloudflareUpload]', msg));
+            console.log(`[ProductForm] Image uploaded: ${result.file}`);
+            uploadedImageUrls.push(result.file);
+        }
+
+        console.log('[ProductForm] Assembling final product data for API.');
+        // 2. Assemble product data to send to database
+        const productData = {
+            productName: normalizeArabicText(document.getElementById('product-name').value.trim()),
+            user_key: userSession.user_key, // Fixed value as requested
+            product_key: productSerial,
+            product_description: normalizeArabicText(document.getElementById('product-description').value.trim()),
+            product_price: 0, // Default for service
+            product_quantity: 0, // Default for service
+            original_price: null, // Default for service
+            user_message: normalizeArabicText(document.getElementById('seller-message').value.trim()),
+            user_note: normalizeArabicText(document.getElementById('product-notes').value.trim()),
+            ImageName: uploadedImageUrls.join(','),
+            MainCategory: mainCategorySelectToAdd, // Fixed value
+            SubCategory: subCategorySelectToAdd,  // Fixed value
+            ImageIndex: uploadedImageUrls.length,
+            serviceType: productTypeToAdd // Not used in this page
+        };
+
+        // 3. Send ADD request
+        console.log('[ProductForm] Sending ADD request to backend...');
+        const dbResult = await addProduct(productData);
+
+        if (dbResult && dbResult.error) {
+            throw new Error(`Failed to save product data: ${dbResult.error}`);
+        }
+
+        console.log('%c[ProductForm] تم حفظ الخدمة بنجاح.', 'color: green; font-weight: bold;');
+        // 4. Show success message
+        Swal.fire('تم بنجاح!', 'تم إضافة الخدمة بنجاح.', 'success').then(() => {
+            // Reset form
+            form.reset();
+            previewsEl.innerHTML = '';
+            images.length = 0;
+
+            // Reset character counters
+            document.getElementById('product-name-char-counter').textContent = '0 / 100';
+            document.getElementById('description-char-counter').textContent = '0 / 400';
+            document.getElementById('seller-message-char-counter').textContent = '0 / 100';
+            document.getElementById('notes-char-counter').textContent = '0 / 100';
+        });
+
+    } catch (error) {
+        console.error('%c[ProductForm] Submission failed with critical error:', 'color: red; font-weight: bold;', error);
+
+    }
+});

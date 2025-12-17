@@ -1,0 +1,97 @@
+<link rel="stylesheet" href="pages/productAdd2/productAdd2.css">
+
+<!--
+@file pages/productAdd2.html
+@description Product Addition Page. Handles picking/capturing images, compression, preview, and form submission for new products.
+-->
+
+<div class="add-product-modal" role="dialog" aria-modal="true" aria-labelledby="addProductTitle"
+    id="add-product-modal-container">
+    <h2 class="add-product-modal__title" id="addProductTitle"><i class="fas fa-cart-plus"
+            id="productAdd_icon_title"></i> إضافة خدمة جديدة</h2>
+
+    <form class="add-product-modal__form" id="add-product-form" novalidate>
+        <!-- Image Upload Module -->
+        <section class="add-product-modal__form-group" aria-labelledby="imagesHeading" id="productAdd_section_images">
+            <label id="imagesHeading" class="add-product-modal__label"><i class="fas fa-images"
+                    id="productAdd_icon_images"></i> صور
+                الخدمة</label>
+
+            <div class="add-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group"
+                aria-label="منطقة رفع الصور">
+                <div class="add-product-modal__uploader-actions" id="productAdd_uploader_actions">
+                    <!-- input with capture to enable camera on mobile devices -->
+                    <input class="add-product-modal__hidden-file" id="fileInput00" type="file" accept="image/*" multiple
+                        aria-hidden="true">
+
+                    <!-- Changed btn-primary to btn-ghost for design consistency -->
+                    <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i
+                            class="fas fa-folder-open" id="productAdd_icon_folder"></i></button>
+                    <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn"
+                        title="التقاط من الكاميرا"><i class="fas fa-camera" id="productAdd_icon_camera"></i></button>
+
+                </div>
+
+                <div class="add-product-modal__hint" id="productAdd_hint_text">المطلوب: صورة واحدة للخدمة على الأقل.
+                    الدعم:
+                    jpg, png, webp. </div>
+
+                <div class="add-product-modal__previews" id="previews" aria-live="polite" aria-atomic="false"></div>
+            </div>
+        </section>
+
+        <!-- NEW: Product Name Field -->
+        <div class="add-product-modal__form-group" id="productAdd_group_productName">
+            <label for="product-name" class="add-product-modal__label" id="productAdd_label_productName"><i
+                    class="fas fa-signature" id="productAdd_icon_productName"></i> اسم
+                الخدمة</label>
+            <input type="text" id="product-name" name="product-name" class="add-product-modal__input" maxlength="100"
+                placeholder="اكتب اسمًا واضحًا للخدمة..." required>
+            <div id="product-name-char-counter" class="add-product-modal__char-counter">0 / 100</div>
+        </div>
+
+        <!-- Product Description Field -->
+        <div class="add-product-modal__form-group" id="productAdd_group_description">
+            <label for="product-description" class="add-product-modal__label" id="productAdd_label_description"><i
+                    class="fas fa-file-alt" id="productAdd_icon_description"></i>
+                وصف الخدمة</label>
+            <textarea id="product-description" name="product-description" class="add-product-modal__textarea" rows="4"
+                maxlength="400" placeholder="اكتب وصفًا جذابًا للخدمة..."></textarea>
+            <div id="description-char-counter" class="add-product-modal__char-counter">0 / 400</div>
+        </div>
+
+        <!-- Seller Message Field -->
+        <div class="add-product-modal__form-group" id="productAdd_group_sellerMessage">
+            <label for="seller-message" class="add-product-modal__label" id="productAdd_label_sellerMessage"><i
+                    class="fas fa-comment-dots" id="productAdd_icon_sellerMessage"></i> رسالة
+                من مقدم الخدمة</label>
+            <input type="text" id="seller-message" name="seller-message" class="add-product-modal__input"
+                maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للعميل...">
+            <div id="seller-message-char-counter" class="add-product-modal__char-counter">0 / 100</div>
+        </div>
+
+        <!-- Notes Field -->
+        <div class="add-product-modal__form-group" id="productAdd_group_notes">
+            <label for="product-notes" class="add-product-modal__label" id="productAdd_label_notes"><i
+                    class="fas fa-sticky-note" id="productAdd_icon_notes"></i>
+                ملاحظات</label>
+            <input type="text" id="product-notes" name="product-notes" class="add-product-modal__input" maxlength="100"
+                placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
+            <div id="notes-char-counter" class="add-product-modal__char-counter">0 / 100</div>
+        </div>
+
+
+
+        <!-- Submit Button -->
+        <div class="add-product-modal__submit-container" id="productAdd_submit_container">
+            <button type="submit" class="btn btn-primary" id="productAdd_btn_submit">اضف الخدمة الآن</button>
+        </div>
+    </form>
+</div>
+
+<!-- Camera Container -->
+<div id="camera-modal-container"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+</div>
+
+<script src="pages/productAdd2/productAdd2.js"></script>
