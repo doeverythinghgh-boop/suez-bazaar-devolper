@@ -218,7 +218,7 @@ function updateViewForLoggedInUser() {
 
       .addEventListener("click", () =>
         mainLoader(
-          "pages/profile-modal.html",
+          "pages/profile-modal/profile-modal.html",
           "index-user-container",
           0,
           undefined,
