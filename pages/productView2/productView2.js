@@ -26,7 +26,7 @@
     //  3D Slider Logic
     // ==============================================
 
-    let pv2_sliderState = {
+    var pv2_sliderState = {
         currentIndex: 0,
         slides: [],
         dots: [],
