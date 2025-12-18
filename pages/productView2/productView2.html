@@ -1,61 +1,61 @@
 <link rel="stylesheet" href="pages/productView2/productView2.css">
 
-<div class="productView_modal_content" id="productView_modal_content">
+<div class="pv2_modal_content" id="pv2_modal_content">
 
     <!-- ✅ NEW: Image Slider Container -->
-    <div id="productView_slider" class="productView_slider-container">
-        <div class="productView_slider-track" id="productView_slider_track"></div>
-        <div class="productView_slider-dots" id="productView_slider_dots"></div>
-        <button class="productView_slider-nav prev" id="productView_slider_prev" aria-label="Previous Slide">
+    <div id="pv2_slider" class="pv2_slider-container">
+        <div class="pv2_slider-track" id="pv2_slider_track"></div>
+        <div class="pv2_slider-dots" id="pv2_slider_dots"></div>
+        <button class="pv2_slider-nav prev" id="pv2_slider_prev" aria-label="Previous Slide">
             <i class="fas fa-chevron-left"></i>
         </button>
-        <button class="productView_slider-nav next" id="productView_slider_next" aria-label="Next Slide">
+        <button class="pv2_slider-nav next" id="pv2_slider_next" aria-label="Next Slide">
             <i class="fas fa-chevron-right"></i>
         </button>
     </div>
 
-    <div class="productView_details" id="productView_details_container">
-        <h3 id="productView_name" style="text-align: center; margin-bottom: 1rem; color: var(--text-color-dark, #222)">
+    <div class="pv2_details" id="pv2_details_container">
+        <h3 id="pv2_name" style="text-align: center; margin-bottom: 1rem; color: var(--text-color-dark, #222)">
         </h3>
-        <div class="productView_description_box" id="productView_description_container">
-            <h4 id="productView_description_header">
+        <div class="pv2_description_box" id="pv2_description_container">
+            <h4 id="pv2_description_header">
                 <i class="fas fa-file-alt"></i> وصف الخدمة
             </h4>
-            <p id="productView_description_text"></p>
+            <p id="pv2_description_text"></p>
         </div>
 
-        <div class="productView_seller_message_box" id="productView_seller_message_container">
-            <h4 id="productView_seller_message_header">
-                <i class="fas fa-comment-dots" id="productView_seller_message_icon"></i>
+        <div class="pv2_seller_message_box" id="pv2_seller_message_container">
+            <h4 id="pv2_seller_message_header">
+                <i class="fas fa-comment-dots" id="pv2_seller_message_icon"></i>
                 رسالة من مقدم الخدمة
             </h4>
-            <p id="productView_seller_message_text"></p>
+            <p id="pv2_seller_message_text"></p>
         </div>
 
         <!-- New: Order Photos and Notes Section -->
-        <div class="productView_order_box" id="productView_order_box">
+        <div class="pv2_order_box" id="pv2_order_box">
             <h4><i class="fas fa-camera"></i> طلب صور خاصة</h4>
 
-            <textarea id="productView_note" maxlength="300"
+            <textarea id="pv2_note" maxlength="300"
                 placeholder="أضف ملاحظاتك حول الصور المطلوبة (اختياري - بحد أقصى 300 حرف)..."></textarea>
 
-            <div class="productView_uploader" id="productView_uploader_area">
+            <div class="pv2_uploader" id="pv2_uploader_area">
                 <div style="font-weight:600; color:#555;">اضغط أو اسحب الصور هنا</div>
                 <div style="font-size:0.8rem; color:#888; margin-top:5px;">(بحد أقصى 4 صور - 5 ميجابايت لكل صورة)</div>
 
-                <input type="file" id="productView_fileInput" accept="image/*" multiple style="display:none">
+                <input type="file" id="pv2_fileInput" accept="image/*" multiple style="display:none">
 
-                <div class="productView_uploader_actions">
-                    <div class="productView_uploader_btn" id="productView_pickImgBtn" title="اختر صور"><i
+                <div class="pv2_uploader_actions">
+                    <div class="pv2_uploader_btn" id="pv2_pickImgBtn" title="اختر صور"><i
                             class="fas fa-folder-open"></i></div>
-                    <div class="productView_uploader_btn" id="productView_camBtn" title="الكاميرا"><i
+                    <div class="pv2_uploader_btn" id="pv2_camBtn" title="الكاميرا"><i
                             class="fas fa-camera"></i></div>
                 </div>
 
-                <div class="productView_previews" id="productView_previews"></div>
+                <div class="pv2_previews" id="pv2_previews"></div>
             </div>
 
-            <button id="productView_sendBtn" class="productView_send_btn">
+            <button id="pv2_sendBtn" class="pv2_send_btn">
                 <i class="fas fa-paper-plane"></i> إرسال الطلب
             </button>
         </div>

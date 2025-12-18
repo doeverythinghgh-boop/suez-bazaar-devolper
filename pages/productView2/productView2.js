@@ -1,6 +1,6 @@
 
     /**
-     * @fileoverview Product View Details Logic with 3D Slider (productView_ module)
+     * @fileoverview Product View Details Logic with 3D Slider (pv2_ module)
      * @description Handles product details display, 3D image slider, and custom photo order requests.
      */
 
@@ -8,17 +8,17 @@
     //  DOM Elements Access
     // ==============================================
 
-    var productView_domElements = {
-        name: document.getElementById("productView_name"),
-        description: document.getElementById("productView_description_text"),
-        sellerMessage: document.getElementById("productView_seller_message_text"),
+    var pv2_domElements = {
+        name: document.getElementById("pv2_name"),
+        description: document.getElementById("pv2_description_text"),
+        sellerMessage: document.getElementById("pv2_seller_message_text"),
 
         // Slider Elements
-        sliderContainer: document.getElementById("productView_slider"),
-        sliderTrack: document.getElementById("productView_slider_track"),
-        sliderDots: document.getElementById("productView_slider_dots"),
-        prevBtn: document.getElementById("productView_slider_prev"),
-        nextBtn: document.getElementById("productView_slider_next")
+        sliderContainer: document.getElementById("pv2_slider"),
+        sliderTrack: document.getElementById("pv2_slider_track"),
+        sliderDots: document.getElementById("pv2_slider_dots"),
+        prevBtn: document.getElementById("pv2_slider_prev"),
+        nextBtn: document.getElementById("pv2_slider_next")
     };
 
 
@@ -26,7 +26,7 @@
     //  3D Slider Logic
     // ==============================================
 
-    let productView_sliderState = {
+    let pv2_sliderState = {
         currentIndex: 0,
         slides: [],
         dots: [],
@@ -35,15 +35,15 @@
     };
 
     /**
-     * @function productView_buildSlider
+     * @function pv2_buildSlider
      * @description Builds and renders the 3D image slider for the product.
      * @param {string[]} images - Array of image URLs.
      */
-    function productView_buildSlider(images) {
-        const { sliderTrack, sliderDots, prevBtn, nextBtn, sliderContainer } = productView_domElements;
+    function pv2_buildSlider(images) {
+        const { sliderTrack, sliderDots, prevBtn, nextBtn, sliderContainer } = pv2_domElements;
 
         // Reset state
-        productView_sliderState = {
+        pv2_sliderState = {
             currentIndex: 0,
             slides: [],
             dots: [],
@@ -68,30 +68,30 @@
         images.forEach((imageUrl, index) => {
             // Slide
             const slide = document.createElement('div');
-            slide.className = 'productView_slide';
+            slide.className = 'pv2_slide';
             slide.style.backgroundImage = `url('${imageUrl}')`;
 
             // Pause/Play events
-            slide.addEventListener('mousedown', productView_pauseAutoPlay);
-            slide.addEventListener('mouseup', productView_startAutoPlay);
-            slide.addEventListener('touchstart', productView_pauseAutoPlay, { passive: true });
-            slide.addEventListener('touchend', productView_startAutoPlay);
+            slide.addEventListener('mousedown', pv2_pauseAutoPlay);
+            slide.addEventListener('mouseup', pv2_startAutoPlay);
+            slide.addEventListener('touchstart', pv2_pauseAutoPlay, { passive: true });
+            slide.addEventListener('touchend', pv2_startAutoPlay);
 
             // Click side slide to activate
-            slide.onclick = () => productView_goToSlide(index);
+            slide.onclick = () => pv2_goToSlide(index);
 
             sliderTrack.appendChild(slide);
-            productView_sliderState.slides.push(slide);
+            pv2_sliderState.slides.push(slide);
 
             // Dot
             const dot = document.createElement('div');
-            dot.className = 'productView_slider-dot';
+            dot.className = 'pv2_slider-dot';
             dot.onclick = (e) => {
                 e.stopPropagation(); // Prevent click propagation
-                productView_goToSlide(index);
+                pv2_goToSlide(index);
             };
             sliderDots.appendChild(dot);
-            productView_sliderState.dots.push(dot);
+            pv2_sliderState.dots.push(dot);
         });
 
         // Setup controls
@@ -99,33 +99,33 @@
             prevBtn.style.display = 'flex';
             nextBtn.style.display = 'flex';
 
-            prevBtn.onclick = () => productView_goToSlide(productView_sliderState.currentIndex - 1);
-            nextBtn.onclick = () => productView_goToSlide(productView_sliderState.currentIndex + 1);
+            prevBtn.onclick = () => pv2_goToSlide(pv2_sliderState.currentIndex - 1);
+            nextBtn.onclick = () => pv2_goToSlide(pv2_sliderState.currentIndex + 1);
 
             // Start auto play
-            productView_startAutoPlay();
+            pv2_startAutoPlay();
         } else {
             // Hide dots if only one image
             sliderDots.style.display = 'none';
         }
 
         // Show first slide
-        productView_goToSlide(0);
+        pv2_goToSlide(0);
     }
 
     /**
-     * @function productView_goToSlide
+     * @function pv2_goToSlide
      * @description Navigates to a specific slide with 3D effect.
      * @param {number} index - Index of the target slide.
      */
-    function productView_goToSlide(index) {
-        const { slides, dots } = productView_sliderState;
+    function pv2_goToSlide(index) {
+        const { slides, dots } = pv2_sliderState;
         if (slides.length === 0) return;
 
         // Calculate circular index
         const total = slides.length;
         const newIndex = (index + total) % total;
-        productView_sliderState.currentIndex = newIndex;
+        pv2_sliderState.currentIndex = newIndex;
 
         slides.forEach((slide, i) => {
             const directOffset = i - newIndex;
@@ -160,37 +160,37 @@
 
         // Reset timer
         if (slides.length > 1) {
-            productView_resetAutoPlay();
+            pv2_resetAutoPlay();
         }
     }
 
     /**
-     * @function productView_startAutoPlay
+     * @function pv2_startAutoPlay
      * @description Starts the auto-play timer for the slider.
      */
-    function productView_startAutoPlay() {
-        if (productView_sliderState.images.length <= 1) return;
-        if (productView_sliderState.autoPlayInterval) clearInterval(productView_sliderState.autoPlayInterval);
-        productView_sliderState.autoPlayInterval = setInterval(() => {
-            productView_goToSlide(productView_sliderState.currentIndex + 1);
+    function pv2_startAutoPlay() {
+        if (pv2_sliderState.images.length <= 1) return;
+        if (pv2_sliderState.autoPlayInterval) clearInterval(pv2_sliderState.autoPlayInterval);
+        pv2_sliderState.autoPlayInterval = setInterval(() => {
+            pv2_goToSlide(pv2_sliderState.currentIndex + 1);
         }, 4000);
     }
 
     /**
-     * @function productView_pauseAutoPlay
+     * @function pv2_pauseAutoPlay
      * @description Pauses the auto-play timer.
      */
-    function productView_pauseAutoPlay() {
-        if (productView_sliderState.autoPlayInterval) clearInterval(productView_sliderState.autoPlayInterval);
+    function pv2_pauseAutoPlay() {
+        if (pv2_sliderState.autoPlayInterval) clearInterval(pv2_sliderState.autoPlayInterval);
     }
 
     /**
-     * @function productView_resetAutoPlay
+     * @function pv2_resetAutoPlay
      * @description Resets the auto-play timer (pause then start).
      */
-    function productView_resetAutoPlay() {
-        productView_pauseAutoPlay();
-        productView_startAutoPlay();
+    function pv2_resetAutoPlay() {
+        pv2_pauseAutoPlay();
+        pv2_startAutoPlay();
     }
 
     // ==============================================
@@ -270,18 +270,18 @@
     // ==============================================
 
     /**
-     * @function productView_viewDetails
+     * @function pv2_viewDetails
      * @description Displays product details and initializes the slider.
      * @param {object} productData - The product data object.
      */
-    function productView_viewDetails(productData, options = {}) {
+    function pv2_viewDetails(productData, options = {}) {
         try {
-            console.log("[productView_] عرض تفاصيل الخدمة مع السلايدر...");
+            console.log("[pv2_] عرض تفاصيل الخدمة مع السلايدر...");
             const showAddToCart = options.showAddToCart !== false;
             if (!showAddToCart) {
-                document.getElementById("productView_order_box").style.display = "none";
+                document.getElementById("pv2_order_box").style.display = "none";
             }
-            const { name, description, sellerMessage } = productView_domElements;
+            const { name, description, sellerMessage } = pv2_domElements;
 
             name.textContent = productData.productName || "غير متوفر";
             description.textContent = productData.description || "لا يوجد وصف متاح.";
@@ -289,10 +289,10 @@
 
             // Build slider
             const images = productData.imageSrc || [];
-            productView_buildSlider(images);
+            pv2_buildSlider(images);
 
         } catch (error) {
-            console.error("productView_viewDetails - خطأ:", error);
+            console.error("pv2_viewDetails - خطأ:", error);
 
         }
     }
@@ -301,71 +301,71 @@
     //  Order Photo Logic
     // ==============================================
 
-    let productView_orderImages = []; // Stores file objects
+    let pv2_orderImages = []; // Stores file objects
     const MAX_ORDER_IMAGES = 4;
     const MAX_IMAGE_SIZE_MB = 5;
 
     // Elements
-    const productView_orderEls = {
-        note: document.getElementById('productView_note'),
-        uploader: document.getElementById('productView_uploader_area'),
-        fileInput: document.getElementById('productView_fileInput'),
-        pickBtn: document.getElementById('productView_pickImgBtn'),
-        camBtn: document.getElementById('productView_camBtn'),
-        previews: document.getElementById('productView_previews'),
-        sendBtn: document.getElementById('productView_sendBtn')
+    const pv2_orderEls = {
+        note: document.getElementById('pv2_note'),
+        uploader: document.getElementById('pv2_uploader_area'),
+        fileInput: document.getElementById('pv2_fileInput'),
+        pickBtn: document.getElementById('pv2_pickImgBtn'),
+        camBtn: document.getElementById('pv2_camBtn'),
+        previews: document.getElementById('pv2_previews'),
+        sendBtn: document.getElementById('pv2_sendBtn')
     };
 
     /**
-     * @function productView_initOrderLogic
+     * @function pv2_initOrderLogic
      * @description Initializes listeners and state for the photo order request form.
      */
-    function productView_initOrderLogic() {
+    function pv2_initOrderLogic() {
         // Reset state
-        productView_orderImages = [];
-        productView_orderEls.note.value = '';
-        productView_orderEls.previews.innerHTML = '';
-        productView_orderEls.fileInput.value = '';
+        pv2_orderImages = [];
+        pv2_orderEls.note.value = '';
+        pv2_orderEls.previews.innerHTML = '';
+        pv2_orderEls.fileInput.value = '';
 
         // Event Listeners
-        productView_orderEls.pickBtn.onclick = () => productView_orderEls.fileInput.click();
+        pv2_orderEls.pickBtn.onclick = () => pv2_orderEls.fileInput.click();
 
-        productView_orderEls.fileInput.onchange = (e) => {
-            productView_handleFiles(Array.from(e.target.files));
+        pv2_orderEls.fileInput.onchange = (e) => {
+            pv2_handleFiles(Array.from(e.target.files));
         };
 
-        productView_orderEls.camBtn.onclick = () => {
+        pv2_orderEls.camBtn.onclick = () => {
             // Simple camera triggering for mobile
             if (/Mobi|Android/i.test(navigator.userAgent)) {
-                productView_orderEls.fileInput.setAttribute('capture', 'environment');
-                productView_orderEls.fileInput.click();
+                pv2_orderEls.fileInput.setAttribute('capture', 'environment');
+                pv2_orderEls.fileInput.click();
             } else {
                 Swal.fire('تنبيه', 'يرجى استخدام زر اختيار الملفات على الكمبيوتر', 'info');
             }
         };
 
-        productView_orderEls.sendBtn.onclick = productView_sendOrder;
+        pv2_orderEls.sendBtn.onclick = pv2_sendOrder;
 
         // check Drag and drop (Optional, but good UX)
-        productView_orderEls.uploader.ondragover = (e) => { e.preventDefault(); productView_orderEls.uploader.style.borderColor = 'var(--primary-color)'; };
-        productView_orderEls.uploader.ondragleave = (e) => { e.preventDefault(); productView_orderEls.uploader.style.borderColor = '#dee2e6'; };
-        productView_orderEls.uploader.ondrop = (e) => {
+        pv2_orderEls.uploader.ondragover = (e) => { e.preventDefault(); pv2_orderEls.uploader.style.borderColor = 'var(--primary-color)'; };
+        pv2_orderEls.uploader.ondragleave = (e) => { e.preventDefault(); pv2_orderEls.uploader.style.borderColor = '#dee2e6'; };
+        pv2_orderEls.uploader.ondrop = (e) => {
             e.preventDefault();
-            productView_orderEls.uploader.style.borderColor = '#dee2e6';
-            productView_handleFiles(Array.from(e.dataTransfer.files));
+            pv2_orderEls.uploader.style.borderColor = '#dee2e6';
+            pv2_handleFiles(Array.from(e.dataTransfer.files));
         };
     }
 
     /**
-     * @function productView_handleFiles
+     * @function pv2_handleFiles
      * @description Processes selected files (validation, compression, preview).
      * @param {File[]} files - Array of selected files.
      */
-    async function productView_handleFiles(files) {
+    async function pv2_handleFiles(files) {
         // Allowed extensions (Web-supported) - Relaxed because we try to compress
         // If it's an image that the browser can decode, it will be compressed/converted.
 
-        if (productView_orderImages.length + files.length > MAX_ORDER_IMAGES) {
+        if (pv2_orderImages.length + files.length > MAX_ORDER_IMAGES) {
             Swal.fire('تنبيه', `الحد الأقصى هو ${MAX_ORDER_IMAGES} صور`, 'warning');
             return;
         }
@@ -389,8 +389,8 @@
                 // Ensure name property exists
                 if (!processedBlob.name) processedBlob.name = file.name;
 
-                productView_orderImages.push(processedBlob);
-                productView_createPreview(processedBlob);
+                pv2_orderImages.push(processedBlob);
+                pv2_createPreview(processedBlob);
             } catch (err) {
                 console.error("خطأ في معالجة الملف", file.name, err);
 
@@ -398,22 +398,22 @@
         }
 
         Swal.close();
-        productView_orderEls.fileInput.value = ''; // Reset
+        pv2_orderEls.fileInput.value = ''; // Reset
     }
 
     /**
-     * @function productView_createPreview
+     * @function pv2_createPreview
      * @description Creates a visual preview for an uploaded image.
      * @param {Blob} file - The image blob to preview.
      */
-    function productView_createPreview(file) {
+    function pv2_createPreview(file) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const div = document.createElement('div');
-            div.className = 'productView_preview_item';
+            div.className = 'pv2_preview_item';
             div.innerHTML = `
                 <img src="${e.target.result}" alt="Preview">
-                <button class="productView_preview_remove" onclick="productView_removeImage(this, '${file.name}')">
+                <button class="pv2_preview_remove" onclick="pv2_removeImage(this, '${file.name}')">
                     <i class="fas fa-times"></i>
                 </button>
             `;
@@ -421,43 +421,48 @@
             // Better: Re-render or map DOM to array. For simplicity, we just find index by file object (reference) but file object might be tricky.
             // Let's attach file object to the div
             div.fileRef = file;
-            productView_orderEls.previews.appendChild(div);
+            pv2_orderEls.previews.appendChild(div);
         };
         reader.readAsDataURL(file);
     }
 
     /**
-     * @function productView_removeImage
+     * @function pv2_removeImage
      * @description Removes an image from the order list and DOM (Global/Window).
      * @param {HTMLElement} btn - The remove button element.
      * @param {string} fileName - Name of the file (unused in logic but good for debug).
      */
-    window.productView_removeImage = (btn, fileName) => {
+    window.pv2_removeImage = (btn, fileName) => {
         const div = btn.parentElement;
         const file = div.fileRef;
-        productView_orderImages = productView_orderImages.filter(f => f !== file);
+        pv2_orderImages = pv2_orderImages.filter(f => f !== file);
         div.remove();
     };
 
     /**
-     * @function productView_sendOrder
+     * @function pv2_sendOrder
      * @description Submits the new order request with notes and images.
      */
-    async function productView_sendOrder() {
+    async function pv2_sendOrder() {
         // Validation
         if (showLoginAlert()) {
 
 
 
-            const note = productView_orderEls.note.value.trim();
-            if (productView_orderImages.length === 0 && !note) {
+            const note = pv2_orderEls.note.value.trim();
+            if (pv2_orderImages.length === 0 && !note) {
                 Swal.fire('تنبيه', 'يرجى إضافة ملاحظة أو صورة واحدة على الأقل', 'warning');
                 return;
             }
 
             // 1. Setup Keys
             // User provided data shows 'user_key' is the seller's key in productSession[0]
-            const productData = productSession[0];
+            const productData = ProductStateManager.getCurrentProduct() || (productSession ? productSession[0] : null);
+            if (!productData) {
+              Swal.fire('خطأ', 'لم يتم العثور على بيانات المنتج', 'error');
+              return;
+            }
+            
             const product_key = productData.product_key; // PRODUCTKEY (From Product Data)
             const seller_key = productData.user_key;     // sellerKey (From Product Data)
 
@@ -480,8 +485,8 @@
                 // 3. Upload Images
                 const uploadedFileNames = [];
 
-                for (let i = 0; i < productView_orderImages.length; i++) {
-                    const file = productView_orderImages[i];
+                for (let i = 0; i < pv2_orderImages.length; i++) {
+                    const file = pv2_orderImages[i];
                     const index = i + 1;
                     // Get extension from compressed blob (if available) or fallback to name
                     // This converts .tif -> .webp/.jpg automatically in the filename
@@ -551,8 +556,6 @@
     }
 
 
-
-
     // ==============================================
     //  Entry Point
     // ==============================================
@@ -560,8 +563,8 @@
     try {
         console.log("تهيئة عرض الخدمة سلايدر ثلاثي الأبعاد...");
         // Check session and clear old intervals if any
-        if (typeof productView_sliderState !== 'undefined' && productView_sliderState.autoPlayInterval) {
-            clearInterval(productView_sliderState.autoPlayInterval);
+        if (typeof pv2_sliderState !== 'undefined' && pv2_sliderState.autoPlayInterval) {
+            clearInterval(pv2_sliderState.autoPlayInterval);
         }
 
         // Get product data from state manager (new approach)
@@ -569,19 +572,19 @@
         const viewOptions = ProductStateManager.getViewOptions();
 
         if (productData) {
-            productView_viewDetails(productData, viewOptions);
+            pv2_viewDetails(productData, viewOptions);
         } else {
             // Fallback to old approach for backward compatibility
-            console.warn("[productView2] لم يتم العثور على بيانات في State Manager، استخدام productSession");
+            console.warn("[pv2] لم يتم العثور على بيانات في State Manager، استخدام productSession");
             if (productSession) {
-                productView_viewDetails(productSession[0], productSession[1]);
+                pv2_viewDetails(productSession[0], productSession[1]);
             } else {
-                console.error("[productView2] لا توجد بيانات منتج للعرض");
+                console.error("[pv2] لا توجد بيانات منتج للعرض");
             }
         }
 
         // Initialize Order Logic
-        productView_initOrderLogic();
+        pv2_initOrderLogic();
 
     } catch (error) {
         console.error("خطأ في تهيئة عرض الخدمة:", error);
