@@ -337,9 +337,9 @@ async function insertUniqueSnapshot(pageUrl, containerId) {
     container.setAttribute("data-page-url", pageUrl);
 
     // Run all scripts
-    const scripts = container.querySelectorAll("script");
+    const scripts = [...container.querySelectorAll("script")];
 
-    scripts.forEach((oldScript) => {
+    for (const oldScript of scripts) {
       const newScript = document.createElement("script");
 
       // Copy attributes
@@ -364,7 +364,15 @@ async function insertUniqueSnapshot(pageUrl, containerId) {
       }
 
       oldScript.replaceWith(newScript);
-    });
+
+      // Wait for external script to load
+      if (newScript.src) {
+        await new Promise((resolve) => {
+          newScript.onload = resolve;
+          newScript.onerror = resolve; // Continue on error
+        });
+      }
+    }
 
   } catch (err) {
     console.error("خطأ:", err);
@@ -446,6 +454,14 @@ async function loader(pageUrl, containerId, waitMs = 300) {
         }
 
         oldScript.replaceWith(newScript);
+
+        // Wait for external script to load
+        if (newScript.src) {
+          await new Promise((resolve) => {
+            newScript.onload = resolve;
+            newScript.onerror = resolve; // Continue on error
+          });
+        }
       }
     } catch (scriptError) {
       console.error("خطأ أثناء تشغيل السكربتات:", scriptError);
