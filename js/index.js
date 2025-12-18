@@ -1,0 +1,505 @@
+    /**
+     * @file index.html
+     * @description Main entry point for the Bazaar application. Handles navigation, initial data loading (user session, notification config), and UI setup for the single-page application structure.
+     */
+
+    /**
+     * @function hiddenHomeIcon
+     * @description Hides the "Home" icon in the navigation bar by adding a CSS class.
+     * @returns {void}
+     */
+
+    function hiddenHomeIcon() {
+      const homeButton = document.getElementById("index-home-btn");
+      if (homeButton) {
+        homeButton.classList.add("index-hidden");
+      }
+    }
+
+    /**
+     * @function showHomeIcon
+     * @description Shows the "Home" icon in the navigation bar by removing the CSS class.
+     * @returns {void}
+     */
+    function showHomeIcon() {
+      const homeButton = document.getElementById("index-home-btn");
+      if (homeButton) {
+        homeButton.classList.remove("index-hidden");
+      }
+    }
+
+    // [EntryPoint] Executed when DOM is fully loaded.
+    /**
+     * @event DOMContentLoaded
+     * @description Initializes the application on page load. Fetches notification config, sets up user session, loads the home page, and binds all navigation event listeners.
+     * @async
+     */
+    document.addEventListener("DOMContentLoaded", async () => {
+
+      // [Step 0] Load notification configurations from server (Single Source of Truth)
+      try {
+        const r2Url = getPublicR2FileUrl('notification_config.json');
+        const timestamp = new Date().getTime();
+        const response = await fetch(`${r2Url}?t=${timestamp}`);
+        if (response.ok) {
+          window.globalNotificationConfig = await response.json();
+          console.log('✅ تم تحميل إعدادات الإشعارات من السيرفر بنجاح:', window.globalNotificationConfig);
+        } else {
+          console.error('❌ فشل تحميل إعدادات الإشعارات من السيرفر:', response.status);
+        }
+      } catch (error) {
+        console.error('❌ خطأ في الاتصال أثناء تحميل إعدادات الإشعارات:', error);
+      }
+
+      // [Step 1] Read logged-in user data from storage. If not exists, value is null.
+      userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
+      // [Step 2] Update username in top navigation bar.
+      setUserNameInIndexBar();
+      // [Step 3] Update cart item count badge.
+      updateCartBadge();
+      // [Step 4] Load home page by default when app opens.
+      mainLoader(
+        "./pages/home.html",
+        "index-home-container",
+        0,
+        undefined,
+        // Call function to hide "Home" button since we are already on home.
+        "hiddenHomeIcon"
+      );
+
+      //#region main navigation handlers
+      document
+        .getElementById("index-login-btn")
+        .addEventListener("click", handleLoginButtonClick);
+
+      // [خطوة 5.2] ربط زر "الرئيسية" بالدالة الخاصة به.
+      document
+        .getElementById("index-home-btn")
+        .addEventListener("click", handleHomeButtonClick);
+
+      // [Step 5.3] Bind "Search" button.
+      document
+        .getElementById("index-search-btn")
+        .addEventListener("click", handleSearchButtonClick);
+
+      // [Step 5.4] Bind "Sales Movement" button.
+      /**
+       * @event click
+       * @description Handles the "Sales Movement" button click. Checks login status: if logged in, loads the sales movement page; otherwise, prompts for login.
+       * @async
+       */
+      document
+        .getElementById("index-sales-movement-btn")
+        .addEventListener("click", async () => {
+          // Check if user is logged in.
+          if (showLoginAlert()) {
+            const container = document.getElementById("index-salesMovement-container");
+            if (container.innerHTML == "") {
+              await mainLoader(
+                "./pages/sales-movement/sales-movement.html",
+                "index-salesMovement-container",
+                300,
+                undefined,
+                "showHomeIcon",
+                true
+              );
+            } else {
+              await mainLoader(
+                "./pages/sales-movement/sales-movement.html",
+                "index-salesMovement-container",
+                300,
+                undefined,
+                "showHomeIcon",
+                false
+              );
+            }
+          }
+        });
+
+      // [Step 5.9] Bind "Notifications" button.
+      /**
+       * @event click
+       * @description Handles the "Notifications" button click. Loads the notifications page.
+       */
+      document
+        .getElementById("index-notifications-btn")
+        .addEventListener("click", () => {
+          if (showLoginAlert()) {
+            mainLoader("./notification/page/notifications.html", "index-notifications-container", 0, undefined, "showHomeIcon", true);
+          }
+        });
+
+      document
+        .getElementById("index-contact-btn")
+        .addEventListener("click", handleContactButtonClick);
+
+
+      // [Step 5.5] Bind "Cart" button.
+      /**
+       * @event click
+       * @description Handles the "Cart" button click. Loads the card package page (cart).
+       */
+      document
+        .getElementById("index-cart-btn")
+        .addEventListener("click", () => {
+          if (showLoginAlert()) {
+            const container = document.getElementById(
+              "index-cardPackage-container"
+            );
+            if (container.innerHTML == "") {
+              mainLoader(
+                "./pages/cardPackage/cardPackage.html",
+                "index-cardPackage-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                true
+              );
+            } else {
+              mainLoader(
+                "./pages/cardPackage/cardPackage.html",
+                "index-cardPackage-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                false
+              );
+            }
+          }
+        });
+
+      // [Step 5.6] Bind "Gifts" button.
+      /**
+       * @event click
+       * @description Handles the "Gifts" button click. Navigates to the gifts page via a protected link handler.
+       */
+      document
+        .getElementById("index-gifts-btn")
+        .addEventListener("click", () => {
+          if (showLoginAlert()) {
+            handleProtectedLinkClick("./pages/gifts.html")
+          }
+        }
+        );
+
+
+
+      /**
+       * @function handleHomeButtonClick
+       * @description Handles the "Home" button click. Checks for Android updates and reloads the home page if necessary.
+       * @returns {void}
+       */
+      function handleHomeButtonClick() {
+        // Check for Android interface and update function.
+        if (window.Android && typeof window.Android.checkForUpdates === "function") {
+          window.Android.checkForUpdates();
+        }
+        const container = document.getElementById("index-home-container");
+        if (container.innerHTML == "") {
+          mainLoader(
+            "pages/home.html",
+            "index-home-container",
+            0,
+            undefined,
+            "hiddenHomeIcon",
+            true
+          );
+        } else {
+          mainLoader(
+            "pages/home.html",
+            "index-home-container",
+            0,
+            undefined,
+            "hiddenHomeIcon",
+            false
+          );
+        }
+      }
+
+      /**
+       * @function handleLoginButtonClick
+       * @description Handles the "Login" button click. Redirects to User Dashboard if logged in, otherwise to Login page.
+       * @returns {void}
+       */
+      function handleLoginButtonClick() {
+        try {
+          if (userSession) {
+            // [A] If user is logged in, redirect to dashboard.
+            mainLoader(
+              "pages/user-dashboard.html",
+              "index-user-container",
+              0,
+              undefined,
+              "showHomeIcon",
+              true
+            );
+          } else {
+            // [B] If user is not logged in, redirect to login page.
+            mainLoader(
+              "pages/login/login.html",
+              "index-user-container",
+              0,
+              undefined,
+              "showHomeIcon",
+              true
+            );
+          }
+        } catch (error) {
+          console.error("خطأ في معالجة زر تسجيل الدخول:", error);
+        }
+      }
+
+      /**
+       * @function handleSearchButtonClick
+       * @description Handles the "Search" button click. Loads the search page.
+       * @returns {void}
+       */
+      function handleSearchButtonClick() {
+        const container = document.getElementById("index-search-container");
+        if (container.innerHTML == "") {
+          mainLoader(
+            "pages/search/search.html",
+            "index-search-container",
+            0,
+            undefined,
+            "showHomeIcon",
+            true
+          );
+        } else {
+          mainLoader(
+            "pages/search/search.html",
+            "index-search-container",
+            0,
+            undefined,
+            "showHomeIcon",
+            false
+          );
+        }
+      }
+
+      /**
+       * @function handleContactButtonClick
+       * @description Handles the "Contact Us" button click. Loads the contact page.
+       * @returns {void}
+       */
+      function handleContactButtonClick() {
+        const container = document.getElementById("index-contact-btn");
+        mainLoader(
+          "pages/contact.html",
+          "index-contact-container",
+          0,
+          undefined,
+          "showHomeIcon",
+          true
+        );
+
+      }
+
+      // [Step 5.7] Bind "Add Product" button.
+      /**
+       * @constant {HTMLElement} addProductBtn
+       * @description Button element for adding a new product.
+       */
+      const addProductBtn = document.getElementById("dash-add-product-btn");
+      if (addProductBtn) {
+        addProductBtn.addEventListener("click",
+          function () {
+            if (showLoginAlert()) {
+              showAddProductModal();
+            }
+          });
+      }
+      // [Step 5.8] Bind "My Products" button.
+      /**
+       * @constant {HTMLElement} viewMyProductsBtn
+       * @description Button element for viewing the user's products.
+       */
+      const viewMyProductsBtn = document.getElementById(
+        "dash-view-my-products-btn"
+      );
+      if (viewMyProductsBtn) {
+        /**
+         * @event click
+         * @description Handles "My Products" button click. Loads the user's products page.
+         * @async
+         */
+        viewMyProductsBtn.addEventListener("click", async () => {
+          if (showLoginAlert()) {
+            console.log(myProducts);
+            const container = document.getElementById(
+              "index-myProducts-container"
+            );
+            if (container.innerHTML == "") {
+              mainLoader(
+                "pages/product2Me/product2Me.html",
+                "index-myProducts-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                true
+              );
+            }
+            else {
+              mainLoader(
+                "pages/product2Me/product2Me.html",
+                "index-myProducts-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                false
+              );
+            }
+
+          }
+        });
+
+      }
+      //#endregion
+
+      // [Step 6] Validation logic for active button in navigation bar.
+      /**
+       * @constant {NodeListOf<HTMLElement>} headerButtons
+       * @description List of all header navigation buttons.
+       */
+      const headerButtons = document.querySelectorAll(".index-header-login-btn");
+
+      /**
+       * @function setActiveButton
+       * @description Sets the active class on the clicked button and removes it from others.
+       * @param {HTMLElement} clickedBtn - The button that was clicked.
+       * @returns {void}
+       */
+      function setActiveButton(clickedBtn) {
+        // [A] Remove 'active' class from all buttons.
+        headerButtons.forEach((btn) => btn.classList.remove("active"));
+        if (clickedBtn) {
+          clickedBtn.classList.add("active");
+        }
+      }
+
+      headerButtons.forEach((btn) => {
+        // [B] Add listener to each button to apply active state on click.
+        btn.addEventListener("click", function () {
+          setActiveButton(this);
+        });
+      });
+
+      // [Step 7] Set "Home" button as active by default on page load.
+      /**
+       * @constant {HTMLElement} homeBtn
+       * @description The Home button element.
+       */
+      const homeBtn = document.getElementById("index-home-btn");
+      if (homeBtn) {
+        setActiveButton(homeBtn);
+      }
+
+      // [Step 8] Check for Impersonation Mode (Admin viewing as user) and show watermark if active.
+      checkImpersonationMode();
+
+      // [Step 9] Auto-initialize FCM if user is already logged in.
+      if (userSession && userSession.user_key) {
+        setupFCM();
+      }
+
+      // [Step 10] Run Header Scroll Tutorial
+      runHeaderScrollTutorial();
+    });
+
+    /**
+     * Auto-scroll tutorial to show that the header is scrollable.
+     * Runs only on first and second page load.
+     */
+    function runHeaderScrollTutorial() {
+      const TUTORIAL_KEY = 'headerScrollTutorial_v4'; // Final production key
+      const MAX_RUNS = 7; // Run 7 times per user
+      const SCROLL_DURATION = 1000; // Accelerated speed (1 second)
+
+      try {
+        let count = parseInt(localStorage.getItem(TUTORIAL_KEY) || '0', 10);
+
+        if (count >= MAX_RUNS) {
+          return;
+        }
+
+        // Increment count
+        localStorage.setItem(TUTORIAL_KEY, (count + 1).toString());
+
+        const wrapper = document.getElementById('index-app-header');
+        if (!wrapper) return;
+
+        // Wait for rendering
+        setTimeout(() => {
+          const scrollW = wrapper.scrollWidth;
+          const clientW = wrapper.clientWidth;
+          const maxScroll = scrollW - clientW;
+
+          if (maxScroll <= 1) {
+            return;
+          }
+
+          // Determine Start/End based strictly on logical direction (0 to Max)
+          // Browser behavior check for RTL is implicitly handled by testing valid scroll values
+
+          const originalPos = wrapper.scrollLeft;
+
+          // Simple robust detection: Try scrolling positive. If it moves, use positive logic.
+          wrapper.scrollLeft = 50;
+          const valPositive = wrapper.scrollLeft;
+          wrapper.scrollLeft = originalPos; // Reset
+
+          let targetValue = 0;
+
+          if (valPositive > 1) {
+            // Browser accepts positive values (LTR or specific RTL implementations like Firefox/Safari)
+            targetValue = maxScroll;
+          } else {
+            // Browser likely expects negative values for RTL (Chrome)
+            targetValue = -maxScroll;
+          }
+
+          // Log for verification without spamming
+          console.log(`[HeaderTutorial] Auto-scrolling to ${targetValue} over ${SCROLL_DURATION}ms`);
+
+          // Start Animation
+          const startTime = performance.now();
+
+          function animate(time) {
+            const elapsed = time - startTime;
+            const progress = Math.min(elapsed / SCROLL_DURATION, 1);
+
+            // Ease In Out Quad
+            const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
+            const currentPos = targetValue * ease;
+            wrapper.scrollLeft = currentPos;
+
+            if (progress < 1) {
+              requestAnimationFrame(animate);
+            } else {
+              // Start return animation after a brief pause
+              setTimeout(() => {
+                const returnStart = performance.now();
+                function animateBack(t) {
+                  const e = t - returnStart;
+                  const p = Math.min(e / SCROLL_DURATION, 1);
+                  const easeBack = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+
+                  wrapper.scrollLeft = targetValue * (1 - easeBack);
+
+                  if (p < 1) requestAnimationFrame(animateBack);
+                }
+                requestAnimationFrame(animateBack);
+              }, 250); // Shorter pause (0.25s)
+            }
+          }
+
+          requestAnimationFrame(animate);
+
+        }, 1500);
+
+      } catch (e) {
+        console.warn("[HeaderTutorial] Silent fail:", e);
+      }
+    }
+

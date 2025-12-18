@@ -1,0 +1,185 @@
+  html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+      /* Prevent scrollbars on the body */
+      box-sizing: border-box;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      /* لجعل المحتوى الرئيسي والتذييل يترتبان عموديًا */
+    }
+
+    .add-product-modal__hidden-file {
+      display: none;
+    }
+
+
+    /* ✅ Edit: Rename class and apply Flexbox */
+    .index-app-header {
+      display: flex;
+      justify-content: flex-start;
+      /* Align items from start (Right in RTL) */
+      align-items: center;
+      flex-wrap: nowrap;
+      /* Prevent items from wrapping */
+      overflow-x: auto;
+      /* Add horizontal scroll if needed */
+      background-color: var(--bg-color-light);
+      padding: 15px 20px;
+      box-shadow: var(--shadow-interactive);
+      /* تغيير الظل ليصبح سفليًا */
+      z-index: 1000;
+      /* لضمان ظهوره فوق المحتوى الآخر */
+    }
+
+    .index-header-login-btn {
+      /* ✅ Edit: Use Flexbox to align icon and text vertically */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      /* Space between icon and text */
+
+      /* ✅ Edit: Remove background and border to make it look like just icon and text */
+      background-color: transparent;
+      border: none;
+      padding: 5px;
+      /* Reduce padding */
+
+      font-family: "Tajawal", sans-serif;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s;
+      position: relative;
+      /* ✅ New: Necessary for badge positioning */
+    }
+
+    /* ✅ New: Icon Styling */
+    .index-header-login-btn .index-user-icon {
+      font-size: 20px;
+      /* Increase icon size */
+      color: var(--primary-color);
+      /* Icon color */
+    }
+
+    /* ✅ New: Text Styling */
+    .index-header-login-btn span {
+      font-size: 8px;
+      /* Decrease font size */
+      color: var(--dark-blue);
+      white-space: nowrap;
+      /* ✅ New: Prevent text wrapping */
+    }
+
+    .index-header-login-btn {
+      /* ... Current button styles ... */
+
+      /* ✅ New: Add transition properties for animation control */
+      /* ✅ Improvement: Add more properties to animation to ensure full disappearance */
+      opacity: 1;
+      margin-left: 20px;
+      margin-right: 5px;
+      transform: translateY(0);
+      max-width: 100px;
+      /* Max width to allow animation */
+      transition: opacity 0.3s ease, transform 0.3s ease, max-width 0.5s ease,
+        padding 0.5s ease, margin 0.5s ease;
+    }
+
+    .index-header-login-btn.index-hidden {
+      /* ✅ New: Define button state when hidden */
+      /* ✅ Improvement: Make button shrink and disappear completely from layout */
+      opacity: 0;
+      transform: translateY(-10px
+          /* Move button up slightly when disappearing */
+        );
+      pointer-events: none;
+      /* Prevent interaction when hidden */
+      max-width: 0;
+      /* Set width to zero to remove from flow */
+      padding-left: 0;
+      padding-right: 0;
+      /* ✅ Fix Gap Issue: Remove margins completely when hidden */
+      margin: 0;
+    }
+
+    /* ✅ New: Active button styling */
+    .index-header-login-btn.active {
+      border-bottom: 2px solid var(--primary-color);
+      background-color: var(--primary-color-light);
+      color: var(--primary-color);
+      border-radius: 8px;
+    }
+
+    .index-header-login-btn.active .index-user-icon {
+      color: var(--primary-color);
+    }
+
+    .index-header-login-btn.active span {
+      color: var(--primary-color);
+      font-weight: bold;
+    }
+
+    /* ✅ New: Cart Badge styling */
+    .cart-badge {
+      position: absolute;
+      top: -5px;
+      /* Update vertical position */
+      right: -8px;
+      /* Update horizontal position */
+      background-color: var(--accent-color);
+      /* Background color */
+      border-radius: 50%;
+      /* Make it circular */
+      width: 18px;
+      /* Badge width */
+      height: 18px;
+      /* Badge height */
+      font-size: 10px;
+      /* Font size */
+      font-weight: bold;
+      display: flex;
+      /* Center number */
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--bg-color-light);
+      /* Add border to separate from background */
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      /* Light shadow */
+
+      /* Hide badge by default */
+      display: none;
+    }
+
+    /* ✅ New: Admin Mode Watermark Styling */
+    .admin-watermark {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: rgba(220, 53, 69, 0.9);
+      /* Transparent Red */
+      color: white;
+      padding: 8px 15px;
+      border-radius: 25px;
+      font-family: 'Tajawal', sans-serif;
+      font-size: 12px;
+      z-index: 9999;
+      pointer-events: none;
+      /* Allow clicking through */
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      direction: rtl;
+    }
+
+
+    .admin-watermark i {
+      font-size: 14px;
+    }

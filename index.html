@@ -2,215 +2,67 @@
 <html lang="ar" dir="rtl" id="index-html-root">
 
 <head id="index-page-head">
-  <meta charset="UTF-8" id="index-meta-charset" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" id="index-meta-viewport" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title id="index-page-title">Suez Bazaar</title>
   <!-- Favicon -->
-  <link rel="icon" href="favicon.ico" type="image/x-icon" id="index-favicon-icon" />
-  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" id="index-favicon-shortcut" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- 1. Fonts & Third Party CSS -->
   <link id="font-tajawal" href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.2/css/all.css" />
-  <link rel="stylesheet" href="notification/page/notifications.css">
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <script src="https://unpkg.com/@zxing/library@latest"></script>
 
-  <!-- ✅ Link variables file for usage in internal styles -->
+  <!-- 2. Core Variables & Base Styles -->
   <link rel="stylesheet" href="style/variables.css" />
-  <script src="pages/category/categoryModal.js"></script>
-  <script src="js/cloudFileManager.js"></script>
-  <script src="js/cardPackage.js"></script>
+  <link rel="stylesheet" href="style/index.css">
 
-  <script src="js/forms.js"></script>
+  <!-- 3. Component Styles -->
+  <link rel="stylesheet" href="notification/page/notifications.css">
 
+  <!---region main javaScript files (Ordered by Dependency)---->
+
+  <!-- 1. Third Party Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+
+  <!-- 2. Configuration & Globals (No Dependencies) -->
+  <script src="js/config.js" defer></script>
+  <script src="js/globalVariable.js" defer></script>
+
+  <!-- 3. Core Utilities (Low Dependency) -->
+  <script src="js/network.js" defer></script> <!-- Depends on config.js -->
+  <script src="js/tools.js" defer></script>
+  <script src="js/cloudFileManager.js" defer></script>
+
+  <!-- 4. Data & State Management -->
+  <script src="notification/notification-db-manager.js" defer></script>
+  <script src="js/PRODUCT_SERVICE/serviceCategoryHelper.js" defer></script>
+  <script src="js/PRODUCT_SERVICE/productStateManager.js" defer></script>
+
+  <!-- 5. Core Business Logic & Auth -->
+  <script src="js/auth.js" defer></script> <!-- Depends on network.js -->
+  <script src="notification/notificationTools.js" defer></script> <!-- Depends on network.js -->
+
+  <!-- 6. Feature Modules -->
+  <script src="js/forms.js" defer></script>
+  <script src="js/cardPackage.js" defer></script>
+  <script src="js/connectUsers.js" defer></script>
+  <script src="js/connectProduct.js" defer></script>
+  <script src="pages/category/categoryModal.js" defer></script>
+
+  <!-- 7. Initialization & Page Specific Logic -->
+  <script src="notification/notificationSetUp.js" defer></script> <!-- Depends on notificationTools.js -->
+  <script src="notification/page/notification-global.js" defer></script>
+  <script src="notification/page/notifications.js" defer></script>
+
+  <!-- 8. Application Entry Point (Last) -->
+  <script src="js/index.js" defer></script> <!-- Main Logic -->
+
+
+  <!---end region main javaScript files---->
   <!-- ربط ملف الأنماط الخارجي -->
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-      /* Prevent scrollbars on the body */
-      box-sizing: border-box;
-    }
 
-    body {
-      display: flex;
-      flex-direction: column;
-      /* لجعل المحتوى الرئيسي والتذييل يترتبان عموديًا */
-    }
-
-    .add-product-modal__hidden-file {
-      display: none;
-    }
-
-
-    /* ✅ Edit: Rename class and apply Flexbox */
-    .index-app-header {
-      display: flex;
-      justify-content: flex-start;
-      /* Align items from start (Right in RTL) */
-      align-items: center;
-      flex-wrap: nowrap;
-      /* Prevent items from wrapping */
-      overflow-x: auto;
-      /* Add horizontal scroll if needed */
-      background-color: var(--bg-color-light);
-      padding: 15px 20px;
-      box-shadow: var(--shadow-interactive);
-      /* تغيير الظل ليصبح سفليًا */
-      z-index: 1000;
-      /* لضمان ظهوره فوق المحتوى الآخر */
-    }
-
-    .index-header-login-btn {
-      /* ✅ Edit: Use Flexbox to align icon and text vertically */
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      /* Space between icon and text */
-
-      /* ✅ Edit: Remove background and border to make it look like just icon and text */
-      background-color: transparent;
-      border: none;
-      padding: 5px;
-      /* Reduce padding */
-
-      font-family: "Tajawal", sans-serif;
-      text-decoration: none;
-      cursor: pointer;
-      transition: transform 0.2s;
-      position: relative;
-      /* ✅ New: Necessary for badge positioning */
-    }
-
-    /* ✅ New: Icon Styling */
-    .index-header-login-btn .index-user-icon {
-      font-size: 20px;
-      /* Increase icon size */
-      color: var(--primary-color);
-      /* Icon color */
-    }
-
-    /* ✅ New: Text Styling */
-    .index-header-login-btn span {
-      font-size: 8px;
-      /* Decrease font size */
-      color: var(--dark-blue);
-      white-space: nowrap;
-      /* ✅ New: Prevent text wrapping */
-    }
-
-    .index-header-login-btn {
-      /* ... Current button styles ... */
-
-      /* ✅ New: Add transition properties for animation control */
-      /* ✅ Improvement: Add more properties to animation to ensure full disappearance */
-      opacity: 1;
-      margin-left: 20px;
-      margin-right: 5px;
-      transform: translateY(0);
-      max-width: 100px;
-      /* Max width to allow animation */
-      transition: opacity 0.3s ease, transform 0.3s ease, max-width 0.5s ease,
-        padding 0.5s ease, margin 0.5s ease;
-    }
-
-    .index-header-login-btn.index-hidden {
-      /* ✅ New: Define button state when hidden */
-      /* ✅ Improvement: Make button shrink and disappear completely from layout */
-      opacity: 0;
-      transform: translateY(-10px
-          /* Move button up slightly when disappearing */
-        );
-      pointer-events: none;
-      /* Prevent interaction when hidden */
-      max-width: 0;
-      /* Set width to zero to remove from flow */
-      padding-left: 0;
-      padding-right: 0;
-      /* ✅ Fix Gap Issue: Remove margins completely when hidden */
-      margin: 0;
-    }
-
-    /* ✅ New: Active button styling */
-    .index-header-login-btn.active {
-      border-bottom: 2px solid var(--primary-color);
-      background-color: var(--primary-color-light);
-      color: var(--primary-color);
-      border-radius: 8px;
-    }
-
-    .index-header-login-btn.active .index-user-icon {
-      color: var(--primary-color);
-    }
-
-    .index-header-login-btn.active span {
-      color: var(--primary-color);
-      font-weight: bold;
-    }
-
-    /* ✅ New: Cart Badge styling */
-    .cart-badge {
-      position: absolute;
-      top: -5px;
-      /* Update vertical position */
-      right: -8px;
-      /* Update horizontal position */
-      background-color: var(--accent-color);
-      /* Background color */
-      border-radius: 50%;
-      /* Make it circular */
-      width: 18px;
-      /* Badge width */
-      height: 18px;
-      /* Badge height */
-      font-size: 10px;
-      /* Font size */
-      font-weight: bold;
-      display: flex;
-      /* Center number */
-      align-items: center;
-      justify-content: center;
-      border: 2px solid var(--bg-color-light);
-      /* Add border to separate from background */
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-      /* Light shadow */
-
-      /* Hide badge by default */
-      display: none;
-    }
-
-    /* ✅ New: Admin Mode Watermark Styling */
-    .admin-watermark {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: rgba(220, 53, 69, 0.9);
-      /* Transparent Red */
-      color: white;
-      padding: 8px 15px;
-      border-radius: 25px;
-      font-family: 'Tajawal', sans-serif;
-      font-size: 12px;
-      z-index: 9999;
-      pointer-events: none;
-      /* Allow clicking through */
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      direction: rtl;
-    }
-
-
-    .admin-watermark i {
-      font-size: 14px;
-    }
-  </style>
 </head>
 
 <body id="index-app-body">
@@ -285,432 +137,8 @@
   <div id="index-notifications-container"></div>
   <div id="index-salesMovement-container"></div>
   <div id="index-orderPhoto-container"></div>
-  <!---region main javaScript files---->
-  <script src="js/auth.js" id="index-script-auth-js"></script>
-  <!-- ملف الإعدادات العامة للمشروع (مثل baseURL) -->
-  <script src="js/config.js"></script>
-  <script src="js/connectUsers.js"></script>
-  <script src="js/connectProduct.js"></script>
-  <script src="js/network.js" id="index-script-network-js"></script>
-  <script src="notification/notificationSetUp.js"></script>
-  <script src="notification/notificationTools.js"></script>
-  <script src="notification/notification-db-manager.js"></script>
-  <script src="js/tools.js" id="index-script-tools-js"></script>
-  <!-- New helper modules for service category detection and state management -->
-  <script src="js/PRODUCT_SERVICE/serviceCategoryHelper.js"></script>
-  <script src="js/PRODUCT_SERVICE/productStateManager.js"></script>
-  <script src="js/globalVariable.js"></script>
-  <script src="notification/page/notification-global.js"></script>
-  <script src="notification/page/notifications.js"></script>
-  <!---end region main javaScript files---->
-  <script>
-    /**
-     * @file index.html
-     * @description Main entry point for the Bazaar application. Handles navigation, initial data loading (user session, notification config), and UI setup for the single-page application structure.
-     */
-
-    /**
-     * @function hiddenHomeIcon
-     * @description Hides the "Home" icon in the navigation bar by adding a CSS class.
-     * @returns {void}
-     */
-
-    function hiddenHomeIcon() {
-      const homeButton = document.getElementById("index-home-btn");
-      if (homeButton) {
-        homeButton.classList.add("index-hidden");
-      }
-    }
-
-    /**
-     * @function showHomeIcon
-     * @description Shows the "Home" icon in the navigation bar by removing the CSS class.
-     * @returns {void}
-     */
-    function showHomeIcon() {
-      const homeButton = document.getElementById("index-home-btn");
-      if (homeButton) {
-        homeButton.classList.remove("index-hidden");
-      }
-    }
-
-    // [EntryPoint] Executed when DOM is fully loaded.
-    /**
-     * @event DOMContentLoaded
-     * @description Initializes the application on page load. Fetches notification config, sets up user session, loads the home page, and binds all navigation event listeners.
-     * @async
-     */
-    document.addEventListener("DOMContentLoaded", async () => {
-
-      // [Step 0] Load notification configurations from server (Single Source of Truth)
-      try {
-        const r2Url = getPublicR2FileUrl('notification_config.json');
-        const timestamp = new Date().getTime();
-        const response = await fetch(`${r2Url}?t=${timestamp}`);
-        if (response.ok) {
-          window.globalNotificationConfig = await response.json();
-          console.log('✅ تم تحميل إعدادات الإشعارات من السيرفر بنجاح:', window.globalNotificationConfig);
-        } else {
-          console.error('❌ فشل تحميل إعدادات الإشعارات من السيرفر:', response.status);
-        }
-      } catch (error) {
-        console.error('❌ خطأ في الاتصال أثناء تحميل إعدادات الإشعارات:', error);
-      }
-
-      // [Step 1] Read logged-in user data from storage. If not exists, value is null.
-      userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
-      // [Step 2] Update username in top navigation bar.
-      setUserNameInIndexBar();
-      // [Step 3] Update cart item count badge.
-      updateCartBadge();
-      // [Step 4] Load home page by default when app opens.
-      mainLoader(
-        "./pages/home.html",
-        "index-home-container",
-        0,
-        undefined,
-        // Call function to hide "Home" button since we are already on home.
-        "hiddenHomeIcon"
-      );
-
-      //#region main navigation handlers
-      document
-        .getElementById("index-login-btn")
-        .addEventListener("click", handleLoginButtonClick);
-
-      // [خطوة 5.2] ربط زر "الرئيسية" بالدالة الخاصة به.
-      document
-        .getElementById("index-home-btn")
-        .addEventListener("click", handleHomeButtonClick);
-
-      // [Step 5.3] Bind "Search" button.
-      document
-        .getElementById("index-search-btn")
-        .addEventListener("click", handleSearchButtonClick);
-
-      // [Step 5.4] Bind "Sales Movement" button.
-      /**
-       * @event click
-       * @description Handles the "Sales Movement" button click. Checks login status: if logged in, loads the sales movement page; otherwise, prompts for login.
-       * @async
-       */
-      document
-        .getElementById("index-sales-movement-btn")
-        .addEventListener("click", async () => {
-          // Check if user is logged in.
-          if (showLoginAlert()) {
-            const container = document.getElementById("index-salesMovement-container");
-            if (container.innerHTML == "") {
-              await mainLoader(
-                "./pages/sales-movement/sales-movement.html",
-                "index-salesMovement-container",
-                300,
-                undefined,
-                "showHomeIcon",
-                true
-              );
-            } else {
-              await mainLoader(
-                "./pages/sales-movement/sales-movement.html",
-                "index-salesMovement-container",
-                300,
-                undefined,
-                "showHomeIcon",
-                false
-              );
-            }
-          }
-        });
-
-      // [Step 5.9] Bind "Notifications" button.
-      /**
-       * @event click
-       * @description Handles the "Notifications" button click. Loads the notifications page.
-       */
-      document
-        .getElementById("index-notifications-btn")
-        .addEventListener("click", () => {
-          if (showLoginAlert()) {
-            mainLoader("./notification/page/notifications.html", "index-notifications-container", 0, undefined, "showHomeIcon", true);
-          }
-        });
-
-      document
-        .getElementById("index-contact-btn")
-        .addEventListener("click", handleContactButtonClick);
 
 
-      // [Step 5.5] Bind "Cart" button.
-      /**
-       * @event click
-       * @description Handles the "Cart" button click. Loads the card package page (cart).
-       */
-      document
-        .getElementById("index-cart-btn")
-        .addEventListener("click", () => {
-          if (showLoginAlert()) {
-            const container = document.getElementById(
-              "index-cardPackage-container"
-            );
-            if (container.innerHTML == "") {
-              mainLoader(
-                "./pages/cardPackage/cardPackage.html",
-                "index-cardPackage-container",
-                0,
-                undefined,
-                "showHomeIcon",
-                true
-              );
-            } else {
-              mainLoader(
-                "./pages/cardPackage/cardPackage.html",
-                "index-cardPackage-container",
-                0,
-                undefined,
-                "showHomeIcon",
-                false
-              );
-            }
-          }
-        });
-
-      // [Step 5.6] Bind "Gifts" button.
-      /**
-       * @event click
-       * @description Handles the "Gifts" button click. Navigates to the gifts page via a protected link handler.
-       */
-      document
-        .getElementById("index-gifts-btn")
-        .addEventListener("click", () => {
-          if (showLoginAlert()) {
-            handleProtectedLinkClick("./pages/gifts.html")
-          }
-        }
-        );
-
-
-
-      /**
-       * @function handleHomeButtonClick
-       * @description Handles the "Home" button click. Checks for Android updates and reloads the home page if necessary.
-       * @returns {void}
-       */
-      function handleHomeButtonClick() {
-        // Check for Android interface and update function.
-        if (window.Android && typeof window.Android.checkForUpdates === "function") {
-          window.Android.checkForUpdates();
-        }
-        const container = document.getElementById("index-home-container");
-        if (container.innerHTML == "") {
-          mainLoader(
-            "pages/home.html",
-            "index-home-container",
-            0,
-            undefined,
-            "hiddenHomeIcon",
-            true
-          );
-        } else {
-          mainLoader(
-            "pages/home.html",
-            "index-home-container",
-            0,
-            undefined,
-            "hiddenHomeIcon",
-            false
-          );
-        }
-      }
-
-      /**
-       * @function handleLoginButtonClick
-       * @description Handles the "Login" button click. Redirects to User Dashboard if logged in, otherwise to Login page.
-       * @returns {void}
-       */
-      function handleLoginButtonClick() {
-        try {
-          if (userSession) {
-            // [A] If user is logged in, redirect to dashboard.
-            mainLoader(
-              "pages/user-dashboard.html",
-              "index-user-container",
-              0,
-              undefined,
-              "showHomeIcon",
-              true
-            );
-          } else {
-            // [B] If user is not logged in, redirect to login page.
-            mainLoader(
-              "pages/login/login.html",
-              "index-user-container",
-              0,
-              undefined,
-              "showHomeIcon",
-              true
-            );
-          }
-        } catch (error) {
-          console.error("خطأ في معالجة زر تسجيل الدخول:", error);
-        }
-      }
-
-      /**
-       * @function handleSearchButtonClick
-       * @description Handles the "Search" button click. Loads the search page.
-       * @returns {void}
-       */
-      function handleSearchButtonClick() {
-        const container = document.getElementById("index-search-container");
-        if (container.innerHTML == "") {
-          mainLoader(
-            "pages/search/search.html",
-            "index-search-container",
-            0,
-            undefined,
-            "showHomeIcon",
-            true
-          );
-        } else {
-          mainLoader(
-            "pages/search/search.html",
-            "index-search-container",
-            0,
-            undefined,
-            "showHomeIcon",
-            false
-          );
-        }
-      }
-
-      /**
-       * @function handleContactButtonClick
-       * @description Handles the "Contact Us" button click. Loads the contact page.
-       * @returns {void}
-       */
-      function handleContactButtonClick() {
-        const container = document.getElementById("index-contact-btn");
-        mainLoader(
-          "pages/contact.html",
-          "index-contact-container",
-          0,
-          undefined,
-          "showHomeIcon",
-          true
-        );
-
-      }
-
-      // [Step 5.7] Bind "Add Product" button.
-      /**
-       * @constant {HTMLElement} addProductBtn
-       * @description Button element for adding a new product.
-       */
-      const addProductBtn = document.getElementById("dash-add-product-btn");
-      if (addProductBtn) {
-        addProductBtn.addEventListener("click",
-          function () {
-            if (showLoginAlert()) {
-              showAddProductModal();
-            }
-          });
-      }
-      // [Step 5.8] Bind "My Products" button.
-      /**
-       * @constant {HTMLElement} viewMyProductsBtn
-       * @description Button element for viewing the user's products.
-       */
-      const viewMyProductsBtn = document.getElementById(
-        "dash-view-my-products-btn"
-      );
-      if (viewMyProductsBtn) {
-        /**
-         * @event click
-         * @description Handles "My Products" button click. Loads the user's products page.
-         * @async
-         */
-        viewMyProductsBtn.addEventListener("click", async () => {
-          if (showLoginAlert()) {
-            console.log(myProducts);
-            const container = document.getElementById(
-              "index-myProducts-container"
-            );
-            if (container.innerHTML == "") {
-              mainLoader(
-                "pages/product2Me/product2Me.html",
-                "index-myProducts-container",
-                0,
-                undefined,
-                "showHomeIcon",
-                true
-              );
-            }
-            else {
-              mainLoader(
-                "pages/product2Me/product2Me.html",
-                "index-myProducts-container",
-                0,
-                undefined,
-                "showHomeIcon",
-                false
-              );
-            }
-
-          }
-        });
-
-      }
-      //#endregion
-
-      // [Step 6] Validation logic for active button in navigation bar.
-      /**
-       * @constant {NodeListOf<HTMLElement>} headerButtons
-       * @description List of all header navigation buttons.
-       */
-      const headerButtons = document.querySelectorAll(".index-header-login-btn");
-
-      /**
-       * @function setActiveButton
-       * @description Sets the active class on the clicked button and removes it from others.
-       * @param {HTMLElement} clickedBtn - The button that was clicked.
-       * @returns {void}
-       */
-      function setActiveButton(clickedBtn) {
-        // [A] Remove 'active' class from all buttons.
-        headerButtons.forEach((btn) => btn.classList.remove("active"));
-        if (clickedBtn) {
-          clickedBtn.classList.add("active");
-        }
-      }
-
-      headerButtons.forEach((btn) => {
-        // [B] Add listener to each button to apply active state on click.
-        btn.addEventListener("click", function () {
-          setActiveButton(this);
-        });
-      });
-
-      // [Step 7] Set "Home" button as active by default on page load.
-      /**
-       * @constant {HTMLElement} homeBtn
-       * @description The Home button element.
-       */
-      const homeBtn = document.getElementById("index-home-btn");
-      if (homeBtn) {
-        setActiveButton(homeBtn);
-      }
-
-      // [Step 8] Check for Impersonation Mode (Admin viewing as user) and show watermark if active.
-      checkImpersonationMode();
-
-      // [Step 9] Auto-initialize FCM if user is already logged in.
-      if (userSession && userSession.user_key) {
-        setupFCM();
-      }
-    });
-
-
-  </script>
 </body>
 
 </html>
