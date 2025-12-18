@@ -40,8 +40,6 @@ mainLoader(
 
 
 /*
-
-
     <div id="index-home-container"></div>
     <div id="index-search-container"></div>
     <div id="index-user-container"></div>

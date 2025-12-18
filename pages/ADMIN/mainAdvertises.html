@@ -763,7 +763,7 @@
                 }
 
                 // Step 4: Notifications and Update
-                if (window.addUpdate) await window.addUpdate("تحديث الإعلانات");
+                if (addUpdate) await addUpdate("تحديث الإعلانات");
 
                 Swal.fire('تم!', 'تم تحديث الإعلانات بنجاح.', 'success');
                 loadImages(); // Reload to update UI with new data
