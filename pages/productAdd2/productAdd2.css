@@ -1,6 +1,6 @@
 /* Original CSS Styles */
 
-.add-product-modal {
+.add2_product_modal {
     background: white;
     border-radius: 15px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -10,7 +10,7 @@
     position: relative;
 }
 
-.add-product-modal__title {
+.add2_product_modal__title {
     color: #2c3e50;
     text-align: center;
     margin-bottom: 30px;
@@ -19,39 +19,39 @@
     padding-bottom: 15px;
 }
 
-.add-product-modal__title i {
+.add2_product_modal__title i {
     color: #3498db;
     margin-left: 10px;
 }
 
-.add-product-modal__form {
+.add2_product_modal__form {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-.add-product-modal__form-group {
+.add2_product_modal__form_group {
     display: flex;
     flex-direction: column;
 }
 
-.add-product-modal__label {
+.add2_product_modal__label {
     font-weight: 600;
     margin-bottom: 8px;
     color: #34495e;
     font-size: 16px;
 }
 
-.add-product-modal__label i {
+.add2_product_modal__label i {
     color: #3498db;
     margin-left: 8px;
     width: 20px;
     text-align: center;
 }
 
-.add-product-modal__input,
-.add-product-modal__textarea,
-.add-product-modal__select {
+.add2_product_modal__input,
+.add2_product_modal__textarea,
+.add2_product_modal__select {
     padding: 12px 15px;
     border: 2px solid #e9ecef;
     border-radius: 8px;
@@ -60,39 +60,39 @@
     background-color: #f8f9fa;
 }
 
-.add-product-modal__input:focus,
-.add-product-modal__textarea:focus,
-.add-product-modal__select:focus {
+.add2_product_modal__input:focus,
+.add2_product_modal__textarea:focus,
+.add2_product_modal__select:focus {
     outline: none;
     border-color: #3498db;
     background-color: white;
     box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
-.add-product-modal__textarea {
+.add2_product_modal__textarea {
     resize: vertical;
     min-height: 120px;
     font-family: inherit;
 }
 
-.add-product-modal__char-counter {
+.add2_product_modal__char_counter {
     text-align: left;
     font-size: 12px;
     color: #7f8c8d;
     margin-top: 5px;
 }
 
-.add-product-modal__form-row {
+.add2_product_modal__form_row {
     display: flex;
     gap: 15px;
 }
 
-.add-product-modal__form-row .add-product-modal__form-group {
+.add2_product_modal__form_row .add2_product_modal__form_group {
     flex: 1;
 }
 
 /* Image Upload Styles */
-.add-product-modal__image-uploader {
+.add2_product_modal__image_uploader {
     border: 2px dashed #bdc3c7;
     border-radius: 10px;
     padding: 20px;
@@ -100,19 +100,19 @@
     transition: all 0.3s ease;
 }
 
-.add-product-modal__image-uploader:hover {
+.add2_product_modal__image_uploader:active {
     border-color: #3498db;
     background-color: #f1f8ff;
 }
 
-.add-product-modal__uploader-actions {
+.add2_product_modal__uploader_actions {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
     flex-wrap: wrap;
 }
 
-.btn {
+.add2_btn {
     padding: 10px 15px;
     border: none;
     border-radius: 6px;
@@ -125,45 +125,45 @@
     gap: 8px;
 }
 
-.btn-primary {
+.add2_btn_primary {
     background-color: #3498db;
     color: white;
 }
 
-.btn-primary:hover {
+.add2_btn_primary:active {
     background-color: #2980b9;
-    transform: translateY(-2px);
+    transform: translateY(2px);
 }
 
-.btn-ghost {
+.add2_btn_ghost {
     background-color: transparent;
     border: 1px solid #bdc3c7;
     color: #34495e;
 }
 
-.btn-ghost:hover {
+.add2_btn_ghost:active {
     background-color: #ecf0f1;
     border-color: #3498db;
     color: #3498db;
 }
 
-.btn-icon {
+.add2_btn_icon {
     padding: 8px 12px;
 }
 
-.add-product-modal__hint {
+.add2_product_modal__hint {
     font-size: 14px;
     color: #7f8c8d;
     margin-bottom: 15px;
 }
 
-.add-product-modal__previews {
+.add2_product_modal__previews {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: 15px;
 }
 
-.add-product-modal__preview {
+.add2_product_modal__preview {
     position: relative;
     border-radius: 8px;
     overflow: hidden;
@@ -172,22 +172,21 @@
     aspect-ratio: 1;
 }
 
-.add-product-modal__preview:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+.add2_product_modal__preview:active {
+    transform: scale(0.98);
 }
 
-.add-product-modal__preview--selected {
+.add2_product_modal__preview__selected {
     border: 3px solid #3498db;
 }
 
-.add-product-modal__preview img {
+.add2_product_modal__preview img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.add-product-modal__preview-remove {
+.add2_product_modal__preview_remove {
     position: absolute;
     top: 5px;
     left: 5px;
@@ -201,15 +200,12 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    opacity: 0;
+    opacity: 1;
+    /* Made visible always for touch devices */
     transition: opacity 0.3s ease;
 }
 
-.add-product-modal__preview:hover .add-product-modal__preview-remove {
-    opacity: 1;
-}
-
-.add-product-modal__preview-meta {
+.add2_product_modal__preview_meta {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -221,30 +217,30 @@
     text-align: center;
 }
 
-.add-product-modal__submit-container {
+.add2_product_modal__submit_container {
     text-align: center;
     margin-top: 20px;
 }
 
-.add-product-modal__submit-container .btn {
+.add2_product_modal__submit_container .add2_btn {
     padding: 12px 30px;
     font-size: 18px;
     border-radius: 30px;
 }
 
-.add-product-modal__error-message {
+.add2_product_modal__error_message {
     color: #e74c3c;
     font-size: 14px;
     margin-top: 5px;
     text-align: right;
 }
 
-.add-product-modal__hidden-file {
+.add2_product_modal__hidden_file {
     display: none;
 }
 
 /* Desktop Camera */
-.camera-modal-content {
+.add2_camera_modal_content {
     position: relative;
     background: white;
     border-radius: 10px;
@@ -253,17 +249,17 @@
     width: 90%;
 }
 
-.camera-modal-content video {
+.add2_camera_modal_content video {
     width: 100%;
     border-radius: 8px;
     margin-bottom: 15px;
 }
 
-.camera-controls {
+.add2_camera_controls {
     text-align: center;
 }
 
-.close-button {
+.add2_close_button {
     position: absolute;
     top: 15px;
     left: 15px;
@@ -275,30 +271,30 @@
     z-index: 10;
 }
 
-.close-button:hover {
+.add2_close_button:active {
     color: #e74c3c;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .add-product-modal {
+    .add2_product_modal {
         padding: 20px 15px;
         border-radius: 12px;
         margin: 10px;
         width: auto;
     }
 
-    .add-product-modal__title {
+    .add2_product_modal__title {
         font-size: 22px;
         margin-bottom: 20px;
     }
 
-    .add-product-modal__form-row {
+    .add2_product_modal__form_row {
         flex-direction: column;
         gap: 15px;
     }
 
-    .add-product-modal__submit-container .btn {
+    .add2_product_modal__submit_container .add2_btn {
         width: 100%;
         padding: 14px;
         font-size: 16px;
@@ -306,25 +302,25 @@
 }
 
 @media (max-width: 480px) {
-    .add-product-modal__uploader-actions {
+    .add2_product_modal__uploader_actions {
         justify-content: center;
     }
 
-    .add-product-modal__image-uploader {
+    .add2_product_modal__image_uploader {
         padding: 15px 10px;
     }
 
-    .add-product-modal__previews {
+    .add2_product_modal__previews {
         grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
         gap: 10px;
     }
 
-    .btn {
+    .add2_btn {
         padding: 10px;
         font-size: 13px;
     }
-    
-    .add-product-modal__label {
+
+    .add2_product_modal__label {
         font-size: 14px;
     }
 }
