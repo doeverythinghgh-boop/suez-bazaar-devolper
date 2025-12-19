@@ -164,3 +164,21 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
     color: red;
     font-size: 0.9rem;
 }
+
+/* Tel Links in Popups */
+.fullscreen-swal a[href^="tel:"] {
+    color: #007bff !important;
+    text-decoration: none !important;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.fullscreen-swal a[href^="tel:"] i {
+    font-size: 0.8em;
+}

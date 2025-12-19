@@ -209,10 +209,10 @@ async function handleDeliverySave(data, ordersData) {
     // Delivered products section
     if (deliveredProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: #1abc9c; margin-bottom: 10px;">✅ المنتجات المستلمة (' + deliveredProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: #28a745; margin-bottom: 10px; font-size: 1.1em;">✅ المنتجات المستلمة (' + deliveredProducts.length + '):</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         deliveredProducts.forEach(name => {
-            htmlContent += '<li style="padding: 5px; background: #d5f4e6; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
+            htmlContent += '<li style="padding: 5px; background: #d5f4e6; margin: 3px 0; border-radius: 3px; color: #4a5568;">• ' + name + '</li>';
         });
         htmlContent += '</ul></div>';
     }
@@ -220,10 +220,10 @@ async function handleDeliverySave(data, ordersData) {
     // Not delivered products section
     if (notDeliveredProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: #666; margin-bottom: 10px;">⏳ المنتجات غير المستلمة (' + notDeliveredProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: #4a5568; margin-bottom: 10px; font-size: 1.1em;">⏳ المنتجات غير المستلمة (' + notDeliveredProducts.length + '):</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         notDeliveredProducts.forEach(name => {
-            htmlContent += '<li style="padding: 5px; background: #f0f0f0; margin: 3px 0; border-radius: 3px;">• ' + name + '</li>';
+            htmlContent += '<li style="padding: 5px; background: #f0f0f0; margin: 3px 0; border-radius: 3px; color: #7f8c8d;">• ' + name + '</li>';
         });
         htmlContent += '</ul></div>';
     }

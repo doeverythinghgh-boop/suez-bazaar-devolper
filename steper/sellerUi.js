@@ -62,8 +62,8 @@ export function generateConfirmationTableHtml(products, ordersData) {
         // Use pre-extracted name or fallback
         const productName = product.product_name || getProductName(product.product_key, ordersData);
         // Safely map delivery info even if empty
-        const agentNames = product.delivery_info ? product.delivery_info.map(d => d.name).join("<br>") : '-';
-        const agentPhones = product.delivery_info ? product.delivery_info.map(d => d.phone).join("<br>") : '-';
+        const agentNames = product.delivery_info ? product.delivery_info.map(d => `<strong style="color: #03478f;">${d.name}</strong>`).join("<br>") : '-';
+        const agentPhones = product.delivery_info ? product.delivery_info.map(d => `<a href="tel:${d.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${d.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>`).join("<br>") : '-';
 
         return `
             <tr id="seller-confirmation-item-${product.product_key}">
@@ -82,10 +82,10 @@ export function generateConfirmationTableHtml(products, ordersData) {
             <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9em;">
                 <thead>
                     <tr style="background-color: #f2f2f2;">
-                        <th style="padding: 8px; border: 1px solid #ddd;">المنتج (حدد للتأكيد)</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">ملاحظات</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">مندوب التوصيل</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">رقم الهاتف</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">المنتج (حدد للتأكيد)</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">ملاحظات</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">مندوب التوصيل</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">رقم الهاتف</th>
                     </tr>
                 </thead>
                 <tbody>${tableRows}</tbody>
@@ -131,8 +131,8 @@ export function generateShippingTableHtml(products) {
         const isDisabled = status === ITEM_STATUS.DELIVERED;
 
         // Extract delivery info for display
-        const names = item.delivery_info ? item.delivery_info.map(d => d.name).join(", ") : '-';
-        const phones = item.delivery_info ? item.delivery_info.map(d => d.phone).join(", ") : '-';
+        const names = item.delivery_info ? item.delivery_info.map(d => `<strong style="color: #03478f;">${d.name}</strong>`).join(", ") : '-';
+        const phones = item.delivery_info ? item.delivery_info.map(d => `<a href="tel:${d.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${d.phone}</a>`).join(", ") : '-';
 
         return `
             <tr>
@@ -163,9 +163,9 @@ export function generateShippingTableHtml(products) {
             <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9em; margin-top: 10px;">
                 <thead>
                     <tr style="background-color: #f2f2f2;">
-                        <th style="padding: 8px; border: 1px solid #ddd;">المنتج</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">موصل</th>
-                        <th style="padding: 8px; border: 1px solid #ddd;">هاتف</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">المنتج</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">موصل</th>
+                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">هاتف</th>
                     </tr>
                 </thead>
                 <tbody>${tableRows}</tbody>

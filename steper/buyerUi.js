@@ -79,9 +79,9 @@ export function generateCancelledListHtml(cancelledKeys, ordersData) {
 export function generateDeliveryUserInfoHtml(userDetails) {
     return userDetails.map(user => `
          <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right; direction: rtl;">
-            <p><strong>الاسم:</strong> ${user.name}</p>
-            <p><strong>الهاتف:</strong> ${user.phone}</p>
-            <p><strong>العنوان:</strong> ${user.address}</p>
+            <p style="margin: 5px 0;"><strong style="color: #03478f;">الاسم:</strong> <span style="color: #4a5568;">${user.name}</span></p>
+            <p style="margin: 5px 0;"><strong style="color: #03478f;">الهاتف:</strong> <a href="tel:${user.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${user.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a></p>
+            <p style="margin: 5px 0;"><strong style="color: #03478f;">العنوان:</strong> <span style="color: #4a5568;">${user.address}</span></p>
         </div>
     `).join("");
 }
@@ -168,7 +168,7 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
                 }
 
                 if (name) {
-                    deliveryInfo = `<br><small style="color: #666;">المندوب: ${name} ${phone ? `(${phone})` : ''}</small>`;
+                    deliveryInfo = `<br><small style="color: #4a5568;">المندوب: <strong style="color: #03478f;">${name}</strong> ${phone ? `<a href="tel:${phone}" style="color: #007bff; text-decoration: none; margin-right: 5px;">(${phone}) <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>` : ''}</small>`;
                 }
             }
         }
@@ -201,9 +201,9 @@ export function generateSellerGroupedHtml(groupedData) {
     const groupsHtml = groupedData.map(group => `
         <div class="seller-group-container" style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
             <div class="seller-header" style="background-color: #f8f9fa; padding: 10px; border-bottom: 1px solid #ddd; text-align: right; direction: rtl;">
-                <h5 style="margin: 0; color: #333; font-size: 1.1em; font-weight: bold;">البائع: ${group.seller.name}</h5>
-                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
-                    <span><i class="fas fa-phone"></i> ${group.seller.phone}</span> | 
+                <h5 style="margin: 0; color: #03478f; font-size: 1.1em; font-weight: bold;">البائع: ${group.seller.name}</h5>
+                <div style="font-size: 0.9em; color: #4a5568; margin-top: 5px;">
+                    <span><i class="fas fa-phone"></i> <a href="tel:${group.seller.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${group.seller.phone}</a></span> | 
                     <span><i class="fas fa-map-marker-alt"></i> ${group.seller.address}</span>
                 </div>
             </div>
