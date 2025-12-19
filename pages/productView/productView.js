@@ -159,11 +159,22 @@ function productView_setupQuantityControls(productData, dom) {
         };
 
         increaseBtn.onclick = () => {
-            console.log("Increase button clicked");
-            const max = parseInt(selectedQuantityInput.max, 10);
-            if (parseInt(selectedQuantityInput.value, 10) < max) {
-                selectedQuantityInput.value = parseInt(selectedQuantityInput.value, 10) + 1;
+            console.log("[productView_] النقر على زر الزيادة...");
+            const currentVal = parseInt(selectedQuantityInput.value, 10) || 1;
+            let maxAttr = parseInt(selectedQuantityInput.max, 10);
+
+            // Defensive Check: If max is not a valid number or 0, we allow incrementing up to a safe limit (e.g. 999)
+            // or we trust the productData. If it's 0, we treat it as 1 to allow selection.
+            if (isNaN(maxAttr) || maxAttr <= 0) {
+                console.warn("[productView_] تنبيه: الكمية القصوى غير صالحة، استخدام قيمة افتراضية.");
+                maxAttr = 999;
+            }
+
+            if (currentVal < maxAttr) {
+                selectedQuantityInput.value = currentVal + 1;
                 productView_updateTotalPrice(pricePerItem, dom);
+            } else {
+                console.log("[productView_] تم الوصول للحد الأقصى للكمية المتاحة.");
             }
         };
 

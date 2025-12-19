@@ -196,7 +196,7 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
                     seller: {
                         name: sellerUser?.username || "غير معروف",
                         phone: sellerUser?.phone || "غير متاح",
-                        address: sellerUser?.address || "غير متاح"
+                        address: sellerUser?.Address || "غير متاح"
                     },
                     products: []
                 };
