@@ -198,7 +198,7 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
 export function generateSellerGroupedHtml(groupedData) {
     if (!groupedData || groupedData.length === 0) return "<p class='text-center'>لا توجد منتجات.</p>";
 
-    return groupedData.map(group => `
+    const groupsHtml = groupedData.map(group => `
         <div class="seller-group-container" style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
             <div class="seller-header" style="background-color: #f8f9fa; padding: 10px; border-bottom: 1px solid #ddd; text-align: right; direction: rtl;">
                 <h5 style="margin: 0; color: #333; font-size: 1.1em; font-weight: bold;">البائع: ${group.seller.name}</h5>
@@ -212,20 +212,40 @@ export function generateSellerGroupedHtml(groupedData) {
                     <thead>
                         <tr style="border-bottom: 2px solid #eee;">
                             <th style="padding: 5px;">المنتج</th>
-                            <th style="padding: 5px;">السعر</th>
+                            <th style="padding: 5px;">سعر القطعة</th>
+                            <th style="padding: 5px;">الكمية</th>
+                            <th style="padding: 5px;">إجمالي</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${group.products.map(p => `
                             <tr style="border-bottom: 1px solid #eee;">
                                 <td style="padding: 8px;">${p.name}</td>
-                                <td style="padding: 8px;">${p.price || '-'}</td>
+                                <td style="padding: 8px;">${p.price.toFixed(2)}</td>
+                                <td style="padding: 8px;">${p.quantity}</td>
+                                <td style="padding: 8px;">${p.total.toFixed(2)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
+                    <tfoot style="background: #f1f1f1; font-weight: bold;">
+                        <tr>
+                            <td colspan="3" style="padding: 8px; text-align: left;">إجمالي الحساب للبائع:</td>
+                            <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + p.total, 0).toFixed(2)} جنيه</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>
     `).join("");
+
+    const grandTotal = groupedData.reduce((total, group) => {
+        return total + group.products.reduce((sum, p) => sum + p.total, 0);
+    }, 0);
+
+    return groupsHtml + `
+        <div class="grand-total-container" style="margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 8px; text-align: center; border: 2px solid #dee2e6;">
+            <h4 style="margin: 0; color: #000; font-weight: bold;">إجمالي جميع المنتجات: ${grandTotal.toFixed(2)} جنيه</h4>
+        </div>
+    `;
 }
 

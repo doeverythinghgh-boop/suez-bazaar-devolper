@@ -231,7 +231,8 @@ export default async function handler(request) {
           oi.quantity,
           oi.seller_key,
           oi.note,
-          mp.productName as product_name
+          mp.productName as product_name,
+          mp.product_price as product_price
         FROM order_items oi
         JOIN marketplace_products mp ON oi.product_key = mp.product_key
         WHERE oi.order_key IN (${placeholders})
@@ -322,6 +323,7 @@ export default async function handler(request) {
           quantity: item.quantity,
           seller_key: item.seller_key,
           note: item.note,
+          product_price: item.product_price,
           item_status: serverStatus, // PASSING THE STATUS HERE
           supplier_delivery: deliveries
         };

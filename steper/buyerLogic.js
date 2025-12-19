@@ -204,8 +204,9 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
 
             grouped[sellerKey].products.push({
                 name: foundItem.product_name || "منتج",
-                quantity: 1, // Quantity is usually 1 per item row in this system's logic or derived
-                price: foundItem.total_price // or price_per_item
+                quantity: parseInt(foundItem.quantity) || 1,
+                price: parseFloat(foundItem.product_price) || 0,
+                total: (parseFloat(foundItem.product_price) || 0) * (parseInt(foundItem.quantity) || 1)
             });
         }
     });
