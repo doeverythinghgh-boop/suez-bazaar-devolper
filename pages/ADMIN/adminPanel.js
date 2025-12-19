@@ -555,7 +555,12 @@ window.sendAdminNotification = async (userKey) => {
         }
 
         // 2. Send Notification
-        await sendNotificationsToTokens(tokens, "إشعار من الإدارة", messageBody);
+        // ملاحظة: يتم جلب العنوان من القالب الموحد في notificationTools
+        const notificationTitle = (window.notificationMessages && window.notificationMessages.admin_manual)
+            ? window.notificationMessages.admin_manual.title
+            : "إشعار من الإدارة";
+
+        await sendNotificationsToTokens(tokens, notificationTitle, messageBody);
 
         Swal.fire({
             toast: true,

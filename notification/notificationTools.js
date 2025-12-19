@@ -13,9 +13,57 @@
 let cachedDefaultConfig = null;
 /**
  * @type {object|null}
- * @description Cache for the default notification configuration loaded from `notification_config.json`.
- * This helps avoid redundant fetches if `window.globalNotificationConfig` is not yet available.
+ * @description Cache for the notification messages loaded from `notification_messages.json`.
  */
+let notificationMessages = null;
+
+/**
+ * @description جلب ملف نصوص الإشعارات وتخزينه في الذاكرة.
+ */
+async function loadNotificationMessages() {
+    if (notificationMessages) return notificationMessages;
+    try {
+        const r2Url = getPublicR2FileUrl('notification_messages.json');
+        const timestamp = new Date().getTime();
+        const response = await fetch(`${r2Url}?t=${timestamp}`);
+        if (response.ok) {
+            notificationMessages = await response.json();
+            window.notificationMessages = notificationMessages; // إتاحة الوصول عالمياً
+            return notificationMessages;
+        }
+    } catch (e) {
+        console.error('[Notifications] خطأ في جلب ملف الرسائل:', e);
+    }
+    return null;
+}
+
+/**
+ * @description استخراج نص الرسالة واستبدال المتغيرات.
+ */
+function getMessageTemplate(path, placeholders = {}) {
+    if (!notificationMessages) return { title: 'Notification', body: '' };
+
+    const keys = path.split('.');
+    let template = notificationMessages;
+    for (const key of keys) {
+        template = template ? template[key] : null;
+    }
+
+    if (!template) return { title: 'Notification', body: '' };
+
+    let body = template.body || '';
+    let title = template.title || '';
+
+    // استبدال المتغيرات
+    Object.keys(placeholders).forEach(key => {
+        const regex = new RegExp(`\\$\\{${key}\\}`, 'g');
+        body = body.replace(regex, placeholders[key]);
+        title = title.replace(regex, placeholders[key]);
+    });
+
+    return { title, body };
+}
+
 /**
  * @description التحقق من تفعيل التنبيه لحدث معين ودور معين بناءً على ملف JSON.
  * ✅ يعتمد **حصرياً** على notification_config.json (المحمل في window.globalNotificationConfig أو عبر الجلب).
@@ -497,10 +545,10 @@ async function handlePurchaseNotifications(order) {
  */
 async function notifyAdminOnPurchase(order) {
     try {
+        await loadNotificationMessages();
         const adminTokens = await getAdminTokens();
         if (adminTokens.length > 0) {
-            const title = "طلب شراء جديد";
-            const body = `تم استلام طلب جديد رقم #${order.id || 'N/A'}. تحقق من التفاصيل في لوحة التحكم.`;
+            const { title, body } = getMessageTemplate('purchase.admin', { orderId: order.id || 'N/A' });
             await sendNotificationsToTokens(adminTokens, title, body);
             console.log('[Notifications] تم إرسال إشعار للإدارة.');
         } else {
@@ -542,15 +590,13 @@ async function notifySellersOnPurchase(order) {
     console.log(`[Notifications] تم العثور على ${sellersMap.size} بائعين لإخطارهم.`);
 
     // إرسال الإشعارات لكل بائع
+    await loadNotificationMessages();
     for (const [sellerKey, products] of sellersMap) {
         try {
             const sellerTokens = await getUsersTokens([sellerKey]);
 
             if (sellerTokens.length > 0) {
-                const productCount = products.length;
-                const title = "مبيعات جديدة!";
-                const body = `طلب شراء. تفقد الطلبات الآن.`;
-
+                const { title, body } = getMessageTemplate('purchase.seller');
                 await sendNotificationsToTokens(sellerTokens, title, body);
                 console.log(`[Notifications] تم إرسال إشعار للبائع ${sellerKey}.`);
             }
@@ -575,34 +621,29 @@ async function notifySellersOnPurchase(order) {
  */
 async function notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId = '') {
     try {
+        await loadNotificationMessages();
         const buyerTokens = await getUsersTokens([buyerKey]);
 
         if (buyerTokens.length > 0) {
-            let title = "";
-            let body = "";
+            const orderIdText = orderId ? ` رقم #${orderId}` : '';
+            let templatePath = `steps.${stepId}.buyer`;
 
-            // تخصيص الرسالة حسب المرحلة
-            switch (stepId) {
-                case "step-review":
-                    title = "تم استلام طلبك";
-                    body = `تم استلام طلبك${orderId ? ` رقم #${orderId}` : ''}. يرجى مراجعة المنتجات.`;
-                    break;
-                case "step-confirmed":
-                    title = "تم تأكيد الطلب";
-                    body = `تم تأكيد طلبك${orderId ? ` رقم #${orderId}` : ''} من قبل البائع. جاري التجهيز للشحن.`;
-                    break;
-                case "step-shipped":
-                    title = "تم شحن الطلب";
-                    body = `تم شحن طلبك${orderId ? ` رقم #${orderId}` : ''}. في الطريق إليك!`;
-                    break;
-                case "step-delivered":
-                    title = "تم التسليم";
-                    body = `تم تسليم طلبك${orderId ? ` رقم #${orderId}` : ''} بنجاح. نتمنى أن تكون راضياً عن الخدمة.`;
-                    break;
-                default:
-                    title = "تحديث الطلب";
-                    body = `تم تحديث حالة طلبك${orderId ? ` رقم #${orderId}` : ''} إلى: ${stepName}`;
+            // Fallback checking
+            const check = (path) => {
+                const parts = path.split('.');
+                let val = notificationMessages;
+                for (const p of parts) { val = val ? val[p] : null; }
+                return !!val;
+            };
+
+            if (!check(templatePath)) {
+                templatePath = 'steps.general_update.buyer';
             }
+
+            const { title, body } = getMessageTemplate(templatePath, {
+                orderIdText,
+                stepName
+            });
 
             await sendNotificationsToTokens(buyerTokens, title, body);
             console.log(`[Notifications] تم إرسال إشعار للمشتري ${buyerKey} عن المرحلة ${stepName}`);
@@ -629,12 +670,18 @@ async function notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId = '')
  */
 async function notifyAdminOnStepChange(stepId, stepName, orderId = '', userName = '') {
     try {
+        await loadNotificationMessages();
         const adminTokens = await getAdminTokens();
 
         if (adminTokens.length > 0) {
-            const title = "تحديث حالة الطلب";
+            const orderIdText = orderId ? ` للطلب #${orderId}` : '';
             const userInfo = userName ? ` بواسطة ${userName}` : '';
-            const body = `تم تفعيل مرحلة "${stepName}"${orderId ? ` للطلب #${orderId}` : ''}${userInfo}.`;
+
+            const { title, body } = getMessageTemplate('steps.general_update.admin', {
+                stepName,
+                orderIdText,
+                userInfo
+            });
 
             await sendNotificationsToTokens(adminTokens, title, body);
             console.log(`[Notifications] تم إرسال إشعار للإدارة عن المرحلة ${stepName}`);
@@ -666,30 +713,29 @@ async function notifyDeliveryOnStepChange(deliveryKeys, stepId, stepName, orderI
     }
 
     try {
+        await loadNotificationMessages();
         const deliveryTokens = await getUsersTokens(deliveryKeys);
 
         if (deliveryTokens.length > 0) {
-            let title = "";
-            let body = "";
+            const orderIdText = orderId ? ` #${orderId}` : '';
+            let templatePath = `steps.${stepId}.delivery`;
 
-            // تخصيص الرسالة حسب المرحلة
-            switch (stepId) {
-                case "step-confirmed":
-                    title = "طلب جديد للتوصيل";
-                    body = `تم تأكيد طلب${orderId ? ` #${orderId}` : ''} وجاهز للشحن. يرجى الاستعداد للتوصيل.`;
-                    break;
-                case "step-shipped":
-                    title = "تم الشحن";
-                    body = `تم شحن الطلب${orderId ? ` #${orderId}` : ''}. يرجى التوصيل للعميل.`;
-                    break;
-                case "step-delivered":
-                    title = "تم التسليم";
-                    body = `تم تسليم الطلب${orderId ? ` #${orderId}` : ''} بنجاح.`;
-                    break;
-                default:
-                    title = "تحديث الطلب";
-                    body = `تم تحديث حالة الطلب${orderId ? ` #${orderId}` : ''} إلى: ${stepName}`;
+            // Fallback checking
+            const check = (path) => {
+                const parts = path.split('.');
+                let val = notificationMessages;
+                for (const p of parts) { val = val ? val[p] : null; }
+                return !!val;
+            };
+
+            if (!check(templatePath)) {
+                templatePath = 'steps.general_update.delivery';
             }
+
+            const { title, body } = getMessageTemplate(templatePath, {
+                orderIdText,
+                stepName
+            });
 
             await sendNotificationsToTokens(deliveryTokens, title, body);
             console.log(`[Notifications] تم إرسال إشعار لخدمات التوصيل (${deliveryKeys.length}) عن المرحلة ${stepName}`);
@@ -800,34 +846,29 @@ async function notifySellerOnStepChange(sellerKeys, stepId, stepName, orderId = 
     }
 
     try {
+        await loadNotificationMessages();
         const sellerTokens = await getUsersTokens(sellerKeys);
 
         if (sellerTokens.length > 0) {
-            let title = "";
-            let body = "";
+            const orderIdText = orderId ? ` #${orderId}` : '';
+            let templatePath = `steps.${stepId}.seller`;
 
-            // تخصيص الرسالة حسب المرحلة
-            switch (stepId) {
-                case "step-cancelled":
-                    title = "منتجات ملغاة";
-                    body = `المشتري ألغى بعض منتجاتك في الطلب${orderId ? ` #${orderId}` : ''}.`;
-                    break;
-                case "step-returned":
-                    title = "منتجات مرتجعة";
-                    body = `المشتري أرجع بعض منتجاتك من الطلب${orderId ? ` #${orderId}` : ''}.`;
-                    break;
-                case "step-delivered":
-                    title = "تم تسليم الطلب";
-                    body = `تم تسليم الطلب${orderId ? ` #${orderId}` : ''} بنجاح للعميل.`;
-                    break;
-                case "step-confirmed":
-                    title = "تم تأكيد الطلب";
-                    body = `تم تأكيد الطلب${orderId ? ` #${orderId}` : ''}، يرجى الاستعداد.`;
-                    break;
-                default:
-                    title = "تحديث الطلب";
-                    body = `تم تحديث حالة الطلب${orderId ? ` #${orderId}` : ''} إلى: ${stepName}`;
+            // Fallback checking
+            const check = (path) => {
+                const parts = path.split('.');
+                let val = notificationMessages;
+                for (const p of parts) { val = val ? val[p] : null; }
+                return !!val;
+            };
+
+            if (!check(templatePath)) {
+                templatePath = 'steps.general_update.seller';
             }
+
+            const { title, body } = getMessageTemplate(templatePath, {
+                orderIdText,
+                stepName
+            });
 
             await sendNotificationsToTokens(sellerTokens, title, body);
             console.log(`[Notifications] تم إرسال إشعار للبائعين (${sellerKeys.length}) عن المرحلة ${stepName}`);
@@ -876,6 +917,7 @@ async function notifyOnSubStepActivation({
         const filteredSellerKeys = sellerKeys.filter(k => k !== actingUserId);
 
         // حسب نوع المرحلة الفرعية
+        await loadNotificationMessages();
         switch (stepId) {
             case 'step-cancelled':
                 // ملغي: إشعار البائعين + الإدارة
@@ -894,8 +936,9 @@ async function notifyOnSubStepActivation({
             case 'step-rejected':
                 // مرفوض: إشعار المشتري + الإدارة
                 if (buyerKey && buyerKey !== actingUserId && await shouldNotify('step-rejected', 'buyer')) {
-                    const title = "منتجات مرفوضة";
-                    const body = `تم رفض بعض المنتجات من طلبك${orderId ? ` رقم #${orderId}` : ''} لعدم توفرها.`;
+                    const orderIdText = orderId ? ` رقم #${orderId}` : '';
+                    const { title, body } = getMessageTemplate('steps.step-rejected.buyer', { orderIdText });
+
                     const buyerTokens = await getUsersTokens([buyerKey]);
                     if (buyerTokens.length > 0) {
                         notificationPromises.push(
