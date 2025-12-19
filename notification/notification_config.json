@@ -1,0 +1,35 @@
+{
+    "purchase": {
+        "admin": true,
+        "seller": true
+    },
+    "step-review": {
+        "buyer": true
+    },
+    "step-confirmed": {
+        "buyer": true,
+        "seller": true,
+        "delivery": true
+    },
+    "step-shipped": {
+        "buyer": true,
+        "delivery": true
+    },
+    "step-delivered": {
+        "buyer": true,
+        "seller": true,
+        "delivery": true
+    },
+    "step-cancelled": {
+        "seller": true,
+        "admin": true
+    },
+    "step-rejected": {
+        "buyer": true,
+        "admin": true
+    },
+    "step-returned": {
+        "seller": true,
+        "admin": true
+    }
+}
