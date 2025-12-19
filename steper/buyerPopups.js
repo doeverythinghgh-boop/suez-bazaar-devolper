@@ -39,7 +39,7 @@ import {
 
 import { getShippableProducts, getRejectedProducts } from "./sellerLogic.js";
 import { generateShippingTableHtml, generateRejectedListHtml } from "./sellerUi.js";
-import { extractNotificationMetadata } from "./steperNotificationLogic.js";
+import { extractNotificationMetadata, extractRelevantSellerKeys } from "./steperNotificationLogic.js";
 import {
     saveDeliveryLock,
     getDeliveryLockStatus
@@ -159,10 +159,12 @@ async function handleReviewSave(data, ordersData) {
                     // 2. Notify Cancelled
                     const hasCancelled = updates.some(u => u.status === ITEM_STATUS.CANCELLED);
                     if (hasCancelled) {
+                        const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                         window.notifyOnStepActivation({
                             stepId: 'step-cancelled',
                             stepName: 'منتجات ملغاة',
-                            ...metadata
+                            ...metadata,
+                            sellerKeys: relevantSellers
                         });
                     }
                 }
@@ -297,11 +299,13 @@ async function handleDeliverySave(data, ordersData) {
                         // [Notifications] Dispatch Notifications
                         if (typeof window.notifyOnStepActivation === 'function') {
                             const metadata = extractNotificationMetadata(ordersData, data);
+                            const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
 
                             window.notifyOnStepActivation({
                                 stepId: 'step-delivered',
-                                stepName: 'استلام الطلب',
-                                ...metadata
+                                stepName: 'تأكيد الاستلام',
+                                ...metadata,
+                                sellerKeys: relevantSellers
                             });
                         }
                     });

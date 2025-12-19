@@ -63,38 +63,63 @@ export function extractNotificationMetadata(ordersData, controlData) {
  * @returns {object|null} Notification payload for notifyOnSubStepActivation or null.
  */
 export function checkSubStepConditions(activatedStepId, metadata) {
-    const itemsMap = getAllItemsStatus();
-    const allItems = Object.values(itemsMap);
+    const itemsMap = getAllItemsStatus(); // { itemKey: { status, ... } }
+    const allItems = Object.entries(itemsMap);
 
     if (activatedStepId === 'step-review') {
-        const hasCancelled = allItems.some(i => i.status === ITEM_STATUS.CANCELLED);
-        if (hasCancelled) {
+        // Find sellers whose items were CANCELLED
+        const cancelledSellerKeys = new Set();
+        allItems.forEach(([key, info]) => {
+            if (info.status === ITEM_STATUS.CANCELLED) {
+                // We need to find the seller_key for this item. 
+                // Since itemsMap might not have seller_key, we can find it in metadata or pass ordersData.
+                // However, metadata.sellerKeys is the full list.
+                // Let's improve this by finding the seller from the status data if available, 
+                // or just accept that we need to look it up.
+                if (info.seller_key) cancelledSellerKeys.add(info.seller_key);
+            }
+        });
+
+        if (cancelledSellerKeys.size > 0) {
             return {
                 stepId: 'step-cancelled',
                 stepName: 'ملغي',
-                sellerKeys: metadata.sellerKeys,
+                sellerKeys: Array.from(cancelledSellerKeys),
                 orderId: metadata.orderId,
                 userName: metadata.userName
             };
         }
     } else if (activatedStepId === 'step-confirmed') {
-        const hasRejected = allItems.some(i => i.status === ITEM_STATUS.REJECTED);
-        if (hasRejected) {
+        const rejectedSellerKeys = new Set();
+        allItems.forEach(([key, info]) => {
+            if (info.status === ITEM_STATUS.REJECTED) {
+                if (info.seller_key) rejectedSellerKeys.add(info.seller_key);
+            }
+        });
+
+        if (rejectedSellerKeys.size > 0) {
             return {
                 stepId: 'step-rejected',
                 stepName: 'مرفوض',
                 buyerKey: metadata.buyerKey,
+                sellerKeys: Array.from(rejectedSellerKeys), // Added for seller notification if needed
                 orderId: metadata.orderId,
                 userName: metadata.userName
             };
         }
     } else if (activatedStepId === 'step-delivered') {
-        const hasReturned = allItems.some(i => i.status === ITEM_STATUS.RETURNED);
-        if (hasReturned) {
+        const returnedSellerKeys = new Set();
+        allItems.forEach(([key, info]) => {
+            if (info.status === ITEM_STATUS.RETURNED) {
+                if (info.seller_key) returnedSellerKeys.add(info.seller_key);
+            }
+        });
+
+        if (returnedSellerKeys.size > 0) {
             return {
                 stepId: 'step-returned',
                 stepName: 'مرتجع',
-                sellerKeys: metadata.sellerKeys,
+                sellerKeys: Array.from(returnedSellerKeys),
                 orderId: metadata.orderId,
                 userName: metadata.userName
             };
@@ -102,4 +127,33 @@ export function checkSubStepConditions(activatedStepId, metadata) {
     }
 
     return null;
+}
+
+/**
+ * Extracts seller keys for only the items being updated.
+ * @function extractRelevantSellerKeys
+ * @param {Array<object>} updates - Array of { key: item_key, status: new_status }.
+ * @param {Array<object>} ordersData - Original orders data to find item details.
+ * @returns {Array<string>} Unique list of relevant seller keys.
+ */
+export function extractRelevantSellerKeys(updates, ordersData) {
+    if (!updates || updates.length === 0 || !ordersData) return [];
+
+    const sellerKeysSet = new Set();
+    const updateKeys = updates.map(u => u.key);
+
+    ordersData.forEach(order => {
+        if (order.order_items && Array.isArray(order.order_items)) {
+            order.order_items.forEach(item => {
+                // If this item is in our updates list, collect its seller_key
+                if (updateKeys.includes(item.item_key)) {
+                    if (item.seller_key) {
+                        sellerKeysSet.add(item.seller_key);
+                    }
+                }
+            });
+        }
+    });
+
+    return Array.from(sellerKeysSet);
 }

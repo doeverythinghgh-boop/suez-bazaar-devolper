@@ -63,6 +63,7 @@ export function initializeState() {
                     if (item.item_status) {
                         currentItems[item.product_key] = {
                             status: item.item_status,
+                            seller_key: item.seller_key,
                             timestamp: new Date().toISOString()
                         };
                     }
@@ -157,8 +158,13 @@ export async function saveItemStatus(productKey, status) {
 
         // 3. Update Local Memory (Only after success)
         if (!globalStepperAppData.items) globalStepperAppData.items = {};
+
+        // Find the item in ordersData to get the seller_key
+        const itemInfo = order.order_items.find(i => i.product_key === productKey);
+
         globalStepperAppData.items[productKey] = {
             status: status,
+            seller_key: itemInfo ? itemInfo.seller_key : null,
             timestamp: new Date().toISOString()
         };
 

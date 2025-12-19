@@ -32,9 +32,10 @@ import {
     generateConfirmationTableHtml,
     generateRejectedListHtml,
     generateShippingTableHtml
-} from "./sellerUi.js";
+}
+    from "./sellerUi.js";
 
-import { extractNotificationMetadata } from "./steperNotificationLogic.js";
+import { extractNotificationMetadata, extractRelevantSellerKeys } from "./steperNotificationLogic.js";
 
 
 // =============================================================================
@@ -174,10 +175,16 @@ function handleConfirmationSave(data, ordersData) {
                             const metadata = extractNotificationMetadata(ordersData, data);
 
                             // 1. Notify Confirmed
+                            const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
+                            // Filter out current seller (they don't need a push notification for their own action)
+                            const actingSellerId = data.currentUser.idUser;
+                            const sellersToNotify = relevantSellers.filter(s => s !== actingSellerId);
+
                             window.notifyOnStepActivation({
                                 stepId: 'step-confirmed',
                                 stepName: 'تأكيد الطلب',
-                                ...metadata
+                                ...metadata,
+                                sellerKeys: sellersToNotify
                             });
 
                             // 2. Notify Rejected (if any)
@@ -186,7 +193,8 @@ function handleConfirmationSave(data, ordersData) {
                                 window.notifyOnStepActivation({
                                     stepId: 'step-rejected',
                                     stepName: 'منتجات مرفوضة',
-                                    ...metadata
+                                    ...metadata,
+                                    sellerKeys: sellersToNotify
                                 });
                             }
                         }
