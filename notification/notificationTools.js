@@ -18,21 +18,37 @@ let cachedDefaultConfig = null;
 let notificationMessages = null;
 
 /**
+ * @description جلب رابط الملف من R2 (دالة احتياطية في حال غياب cloudFileManager.js)
+ */
+function _safeGetR2Url(fileName) {
+    if (typeof getPublicR2FileUrl === 'function') {
+        return getPublicR2FileUrl(fileName);
+    }
+    const R2_PUBLIC_BASE_URL = "https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev";
+    const cleanName = fileName.startsWith("/") ? fileName.substring(1) : fileName;
+    return `${R2_PUBLIC_BASE_URL}/${cleanName}`;
+}
+
+/**
  * @description جلب ملف نصوص الإشعارات وتخزينه في الذاكرة.
  */
 async function loadNotificationMessages() {
     if (notificationMessages) return notificationMessages;
     try {
-        const r2Url = getPublicR2FileUrl('notification_messages.json');
         const timestamp = new Date().getTime();
-        const response = await fetch(`${r2Url}?t=${timestamp}`);
+        // تحميل الملف محلياً حصراً بناءً على مساره في المشروع
+        const response = await fetch(`notification/notification_messages.json?t=${timestamp}`);
+
         if (response.ok) {
             notificationMessages = await response.json();
-            window.notificationMessages = notificationMessages; // إتاحة الوصول عالمياً
+            window.notificationMessages = notificationMessages;
+            console.log('[Notifications] تم تحميل الرسائل محلياً بنجاح.');
             return notificationMessages;
+        } else {
+            console.error('[Notifications] فشل تحميل ملف الرسائل المحلي:', response.status);
         }
     } catch (e) {
-        console.error('[Notifications] خطأ في جلب ملف الرسائل:', e);
+        console.error('[Notifications] خطأ في جلب ملف الرسائل المحلي:', e);
     }
     return null;
 }
@@ -79,23 +95,34 @@ async function shouldNotify(eventKey, role) {
     if (!config) {
         if (!cachedDefaultConfig) { // استخدام الكاش الداخلي كخط دفاع ثانٍ
             try {
-                console.warn('[Notifications] التكوين غير موجود في window، جارٍ جلب ملف JSON من السحابة...');
-                const r2Url = getPublicR2FileUrl('notification_config.json');
                 const timestamp = new Date().getTime();
-                const response = await fetch(`${r2Url}?t=${timestamp}`);
+                try {
+                    console.warn('[Notifications] التكوين غير موجود في window، جارٍ جلب ملف JSON من السحابة...');
+                    const r2Url = _safeGetR2Url('notification_config.json');
+                    const response = await fetch(`${r2Url}?t=${timestamp}`);
 
-                if (response.ok) {
-                    cachedDefaultConfig = await response.json();
-                    config = cachedDefaultConfig;
-                    // تحديث المتغير العام للمستقبل
-                    window.globalNotificationConfig = config;
-                    console.log('[Notifications] تم تحميل التكوين من Cloudflare بنجاح.');
-                } else {
-                    console.error('[Notifications] فشل جلب تكوين JSON من السحابة:', response.status);
-                    // Fallback to local if needed?
+                    if (response.ok) {
+                        cachedDefaultConfig = await response.json();
+                        config = cachedDefaultConfig;
+                        window.globalNotificationConfig = config;
+                        console.log('[Notifications] تم تحميل التكوين من Cloudflare بنجاح.');
+                    }
+                } catch (e) {
+                    console.warn('[Notifications] فشل جلب التكوين من السحابة، سيتم استخدام القيم الافتراضية.');
+                }
+
+                // محاولة جلب التكوين محلياً إذا فشل R2 (إضافة منطق أمان إضافي)
+                if (!config) {
+                    const localRes = await fetch(`notification/notification_config.json?t=${timestamp}`);
+                    if (localRes.ok) {
+                        cachedDefaultConfig = await localRes.json();
+                        config = cachedDefaultConfig;
+                        window.globalNotificationConfig = config;
+                        console.log('[Notifications] تم تحميل التكوين محلياً بنجاح.');
+                    }
                 }
             } catch (e) {
-                console.error('[Notifications] خطأ في جلب تكوين JSON:', e);
+                console.error('[Notifications] خطأ فادح في جلب التكوين:', e);
             }
         } else {
             config = cachedDefaultConfig;
