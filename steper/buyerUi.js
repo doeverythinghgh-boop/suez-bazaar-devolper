@@ -196,7 +196,6 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
  * @returns {string} HTML string.
  */
 export function generateSellerGroupedHtml(groupedData) {
-    console.log("[BuyerUi] Rendering grouped data:", groupedData);
     if (!groupedData || groupedData.length === 0) return "<p class='text-center'>لا توجد منتجات.</p>";
 
     const groupsHtml = groupedData.map(group => `

@@ -190,13 +190,12 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
             const sellerKey = foundItem.seller_key;
             if (!grouped[sellerKey]) {
                 const sellerUser = allUsers.find(u => u.user_key === sellerKey);
-                console.log(`[BuyerLogic] Detailed Seller Info for ${sellerKey}:`, JSON.stringify(sellerUser));
                 grouped[sellerKey] = {
                     seller: {
                         name: sellerUser?.username || "غير معروف",
                         phone: sellerUser?.phone || "غير متاح",
                         address: sellerUser?.Address || "غير متاح",
-                        location: sellerUser?.location || null
+                        location: sellerUser?.Location || sellerUser?.location || null
                     },
                     products: []
                 };
