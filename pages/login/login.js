@@ -12,10 +12,8 @@
  */
 async function loadPage(params) {
     try {
-        // Refresh userSession from localStorage to ensure we have the latest state.
-        // This prevents the code from believing the user is still logged in after logout
-        // if the global userSession variable hasn't been updated yet.
-        userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
+        // Use SessionManager to get the latest state
+        userSession = SessionManager.getUser();
 
         // Check if a user is already logged in.
         if (Number(userSession?.is_seller) >= 1) {
@@ -133,73 +131,59 @@ async function login_handleSubmit(e) {
         const loginPhoneInput = document.getElementById("login_phone");
         const loginPasswordInput = document.getElementById("login_password");
 
-        // 1. Clear previous errors.
+        // 1. Get values
+        const phoneValue = loginPhoneInput.value.trim();
+        const passwordValue = loginPasswordInput.value.trim();
+
+        // 2. Clear previous errors.
         if (typeof clearError === "function") {
             clearError(loginPhoneInput);
             clearError(loginPasswordInput);
         }
 
-        // 2. Get values and validate inputs.
-        const phoneValue = loginPhoneInput.value.trim();
-        const passwordValue = loginPasswordInput.value.trim();
+        // 3. Validation
         let loginIsValid = true;
+        AuthUI.clearFieldValidationMsg(loginPhoneInput);
+        AuthUI.clearFieldValidationMsg(loginPasswordInput);
 
-        // Validate Phone
-        if (phoneValue === "") {
-            showError(loginPhoneInput, "رقم الهاتف مطلوب.");
-            loginIsValid = false;
-        } else if (phoneValue.length < 11) {
-            showError(loginPhoneInput, "يجب أن يتكون رقم الهاتف من 11 رقمًا على الأقل.");
+        // Validate Phone using AuthValidators
+        const normalizedPhone = AuthValidators.normalizePhone(phoneValue);
+        const phoneValidation = AuthValidators.validatePhone(normalizedPhone);
+        if (!phoneValidation.isValid) {
+            AuthUI.showFieldValidationMsg(loginPhoneInput, phoneValidation.message);
             loginIsValid = false;
         }
 
-        // Validate Password
-        if (passwordValue === "") {
-            showError(loginPasswordInput, "كلمة المرور مطلوبة.");
-            loginIsValid = false;
-        } else if (passwordValue.length < 4) {
-            showError(loginPasswordInput, "يجب أن تكون كلمة المرور 4 أحرف على الأقل.");
+        // Validate Password using AuthValidators
+        const passwordValidation = AuthValidators.validatePassword(passwordValue);
+        if (!passwordValidation.isValid) {
+            AuthUI.showFieldValidationMsg(loginPasswordInput, passwordValidation.message);
             loginIsValid = false;
         }
 
-        // 3. If all inputs are valid.
         if (loginIsValid) {
-            console.log("[صفحة تسجيل الدخول] النموذج صالح، جاري التحقق من الاعتمادات...");
+            // 4. Show Loading
+            AuthUI.showLoading("جاري تسجيل الدخول...");
 
-            // Show loading popup.
-            Swal.fire({
-                title: "جاري تسجيل الدخول...",
-                text: "يرجى الانتظار لحظة.",
-                allowOutsideClick: false,
-                didOpen: () => {
-                    // Show loading spinner.
-                    Swal.showLoading();
-                },
-                customClass: { popup: 'fullscreen-swal' }, // Apply custom style
-            });
+            try {
+                // 5. Verify Credentials
+                const verificationResult = await verifyUserPassword(normalizedPhone, passwordValue);
 
-            // 4. Verify user credentials with server.
-            const verificationResult = await verifyUserPassword(
-                phoneValue,
-                passwordValue
-            );
-
-            // 5. Handle verification result.
-            if (verificationResult && !verificationResult.error) {
-
-                login_handleLoginSuccess(verificationResult);
-            } else {
-                // Verification failed.
-                console.error(
-                    "[صفحة تسجيل الدخول] فشل تسجيل الدخول:",
-                    verificationResult?.error || "خطأ غير معروف"
-                );
-                Swal.close();
-                const errorMessage =
-                    "كلمة المرور أو رقم الهاتف غير صحيح. يرجى التحقق منهم.";
-                if (typeof showError === "function") {
-                    showError(loginPasswordInput, errorMessage);
+                if (verificationResult && !verificationResult.error) {
+                    // 6. Success -> Use SessionManager
+                    SessionManager.login(verificationResult);
+                    AuthUI.close();
+                } else {
+                    // 7. Error
+                    AuthUI.close();
+                    const errMsg = verificationResult?.error || "كلمة المرور أو رقم الهاتف غير صحيح.";
+                    AuthUI.showError("خطأ", errMsg);
+                    AuthUI.showFieldValidationMsg(loginPasswordInput, errMsg);
                 }
+            } catch (error) {
+                console.error(error);
+                AuthUI.close();
+                AuthUI.showError("خطأ", "حدث خطأ غير متوقع.");
             }
         }
     } catch (error) {
@@ -209,104 +193,18 @@ async function login_handleSubmit(e) {
     }
 }
 
-/**
- * @function login_handleLoginSuccess
- * @description Handles actions after a successful login.
- * @param {object} user - The logged-in user object.
- * @async
- * @returns {Promise<void>}
- */
-async function login_handleLoginSuccess(user) {
-    try {
-        console.log(
-            "%c[صفحة تسجيل الدخول] تم الدخول إلى login_handleLoginSuccess. بيانات المستخدم:",
-            "color: green;",
-            user
-        );
-
-        // 1. Save user data and update session.
-        localStorage.setItem("loggedInUser", JSON.stringify(user));
-        userSession = user; // Update user session global object.
-        setUserNameInIndexBar();
-        // 2. Setup FCM notifications if eligible.
-        if (userSession.user_key != "guest_user") {
-            await setupFCM();
-            await askForNotificationPermission();
-        } else {
-            console.log(
-                "[صفحة تسجيل الدخول] المستخدم غير مؤهل للإشعارات، تخطي setupFCM()."
-            );
-        }
-
-        // 3. Show welcome message and redirect to home.
-        Swal.fire({
-            title: `🎉 مرحباً بك، ${userSession.username}! 🎉`,
-            html: `
-        <p style="font-size: 1.1rem; color: #333;">أنت الآن جاهز لتجربة تسوق فريدة!</p>
-        <div style="text-align: right; margin-top: 20px; padding-right: 15px; font-size: 1rem;">
-          <p style="margin-bottom: 10px;">🛍️ تصفح آلاف المنتجات بسهولة.</p>
-          <p style="margin-bottom: 10px;">💰 استمتع بخصومات وعروض حصرية.</p>
-          <p>✨ اكتشف ما هو جديد في سوق السويس.</p>
-        </div>
-      `,
-            icon: "success",
-            allowOutsideClick: false, // Prevent closing on click outside
-            confirmButtonText: "ابدأ التسوق الآن!",
-            confirmButtonColor: "#3b82f6",
-            customClass: { popup: 'fullscreen-swal' }, // Apply custom style
-        }).then((result) => {
-            // Redirect to home page on button click.
-            if (result.isConfirmed) {
-                if (typeof mainLoader === "function") {
-                    mainLoader("./pages/home.html", "index-home-container", 0, undefined, "hiddenHomeIcon", true);
-                }
-            }
-        });
-
-    } catch (error) {
-        console.error("🚫 خطأ في دالة login_handleLoginSuccess:", error);
-    }
-}
-
-
-/**
- * @function login_handleGuestLogin
- * @description Handles guest login process. Creates a dummy guest user session.
- * @param {Event} event - The event object to prevent default link behavior.
- * @returns {void}
- */
+// Legacy functions login_handleLoginSuccess and login_handleGuestLogin replaced by inline logic / SessionManager
+// Guest login handler
 function login_handleGuestLogin(event) {
-    try {
-        event.preventDefault(); // Prevent link from updating page.
-        console.log("[Auth] تسجيل الدخول كضيف.");
-
-        // Create guest user object.
-        const guestUser = {
-            username: "Guest",
-            is_guest: true,
-            user_key: "guest_user",
-            is_seller: -1,
-            notifications_key: null, // Guest has no notifications key.
-            notifications_enabled: false, // Notifications disabled for guest.
-        };
-
-        // Save guest data in localStorage and update session.
-        localStorage.setItem("loggedInUser", JSON.stringify(guestUser));
-        userSession = guestUser;
-        setUserNameInIndexBar();
-        // Reload home page fully to update UI.
-        if (typeof mainLoader === "function") {
-            mainLoader(
-                "./pages/home.html",
-                "index-home-container",
-                0,
-                undefined,
-                "hiddenHomeIcon", true
-            );
-        }
-    } catch (error) {
-        console.error("🚫 خطأ في دالة login_handleGuestLogin:", error);
-    }
+    event.preventDefault();
+    const guestUser = {
+        username: "Guest",
+        is_guest: true,
+        user_key: "guest_user",
+        is_seller: -1,
+        notifications_enabled: false
+    };
+    SessionManager.login(guestUser);
 }
 
 

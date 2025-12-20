@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>تحديد الموقع - BidStory</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- Material Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="location_styles.css" />
+</head>
+
+<body>
+    <!-- Loading overlay -->
+    <div id="location_loadingOverlay" class="location_loading-overlay">
+        <div id="location_spinner" class="location_spinner"></div>
+        <p id="location_loadingText" class="location_loading-text">جاري تحميل الخريطة...</p>
+    </div>
+
+    <!-- Main map container -->
+    <div id="location_map"></div>
+
+    <!-- Controls panel -->
+    <div class="location_controls">
+        <button id="location_gpsBtn" class="location_btn location_btn-gps" onclick="location_app.getLocationByGPS()">
+            <span id="location_gpsIcon" class="material-symbols-outlined">my_location</span>
+            <span id="location_gpsText" class="location_btn-text">تحديد</span>
+        </button>
+        <button id="location_shareBtn" class="location_btn location_btn-share"
+            onclick="location_app.shareCoordinates()">
+            <span id="location_shareIcon" class="material-symbols-outlined">share</span>
+            <span id="location_shareText" class="location_btn-text">مشاركة</span>
+        </button>
+        <button id="location_resetBtn" class="location_btn location_btn-reset" onclick="location_app.resetLocation()">
+            <span id="location_resetIcon" class="material-symbols-outlined">delete_forever</span>
+            <span id="location_resetText" class="location_btn-text">إعادة ضبط</span>
+        </button>
+    </div>
+
+    <!-- External libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Main application modules -->
+    <script src="js/location/config.js"></script>
+    <script src="js/location/ui.js"></script>
+    <script src="js/location/storage.js"></script>
+    <script src="js/location/map.js"></script>
+    <script src="js/location/gps.js"></script>
+    <script src="js/location/utils.js"></script>
+    <script src="js/location/core.js"></script>
+    <script src="location_app.js"></script>
+</body>
+
+</html>

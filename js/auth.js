@@ -35,112 +35,17 @@ async function logout() {
     // [Step 2] Use `preConfirm` to execute the async logout process.
     // This ensures the popup stays open showing the loader until the process completes.
     preConfirm: async () => {
-      await signOutAndClear();
+      await SessionManager.logout();
     },
     // [Step 3] Prevent closing the popup by clicking outside during loading.
     allowOutsideClick: () => !Swal.isLoading(),
   });
-
 }
 
 /**
- * @description Clears the content of all main containers on the page.
- *   Used to reset the interface upon logout or navigation between main sections.
- * @function clearMainContainers
- * @returns {void}
- * @throws {Error} - If there's an error manipulating DOM elements.
+ * @deprecated signOutAndClear logic has been moved to SessionManager.logout
  */
-function clearMainContainers() {
-  // [Step 1] Define an array of container IDs to clear.
-  const containerIds = [
-    "index-home-container",
-    "index-search-container",
-    "index-user-container",
-    "index-product-container",
-    "index-cardPackage-container",
-    "index-myProducts-container",
-  ];
+// Function removed: signOutAndClear
 
-  console.log("[UI] جاري مسح الحاويات الرئيسية...");
-
-  // [Step 2] Iterate through each ID in the array.
-  containerIds.forEach(id => {
-    const container = document.getElementById(id);
-    if (container) {
-      // [Step 3] If found, clear its content completely.
-      container.innerHTML = "";
-    }
-  });
-
-  console.log("[UI] تم مسح الحاويات الرئيسية بنجاح.");
-}
-
-/**
- * @description Helper function handling the full logout process:
- * 1. Notify Android interface (if exists).
- * 2. Attempt to delete FCM token from server.
- * 3. Clear all browser data (localStorage, etc.).
- * 4. Redirect user to login page.
- * @async
- * @function signOutAndClear
- * @returns {Promise<void>}
- * @throws {Error} - If `onUserLoggedOutAndroid`, `clearAllBrowserData`, `clearMainContainers`, `setUserNameInIndexBar`, `checkImpersonationMode`, or `mainLoader` fails.
- * @see onUserLoggedOutAndroid
- * @see clearAllBrowserData
- * @see clearMainContainers
- * @see setUserNameInIndexBar
- * @see checkImpersonationMode
- * @see mainLoader
- */
-async function signOutAndClear() {
-  const fcmToken = localStorage.getItem("fcm_token") || localStorage.getItem("android_fcm_key");
-
-  // 1. Notify Android interface (if exists)
-  if (typeof onUserLoggedOutAndroid === "function") {
-    onUserLoggedOutAndroid();
-  } else if (window.Android && typeof window.Android.onUserLoggedOut === "function") {
-    window.Android.onUserLoggedOut(userSession?.user_key);
-  }
-
-  // 2. Attempt to delete token from server (if user and token exist)
-  /*if (fcmToken && userSession?.user_key) {
-    try {
-      // Send delete request (optional, depends on API support)
-      await fetch(`${baseURL}/api/tokens`, {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_key: userSession.user_key,
-          token: fcmToken,
-        }),
-      });
-      console.log("[FCM] تم إرسال طلب حذف التوكن من الخادم بنجاح.");
-    } catch (error) {
-      console.error(
-        "[FCM] فشل إرسال طلب حذف التوكن من الخادم. الخطأ:",
-        error
-      );
-    }
-  }*/
-
-  // 3. Clear all browser data
-  console.log("[Auth] جاري مسح جميع بيانات المتصفح...");
-  await clearAllBrowserData();
-  clearMainContainers();
-  console.log("[Auth] تم مسح بيانات المتصفح بنجاح.");
-  userSession = null;
-  //
-  setUserNameInIndexBar();
-  checkImpersonationMode();
-  // [Step 1] Call `mainLoader` to load login page content into the main user container.
-  console.log("[Auth] دخلنا دالة signOutAndClear . جاري تحميل صفحة تسجيل الدخول...");
-  await mainLoader(
-    "pages/login/login.html",
-    "index-user-container",
-    0,
-    undefined,
-    "showHomeIcon", true
-  );
-}
 
 

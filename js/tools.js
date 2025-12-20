@@ -12,16 +12,19 @@
  * @returns {void}
  */
 function checkImpersonationMode() {
-  const originalAdminSession = localStorage.getItem("originalAdminSession");
-  if (originalAdminSession) {
+  const isImpersonating = SessionManager.isImpersonating();
+
+  if (isImpersonating) {
     // If found, create HTML element for watermark and add to page.
-    const watermark = document.createElement("div");
-    watermark.className = "admin-watermark";
-    watermark.innerHTML = `
-          <i class="fas fa-user-shield"></i>
-          <span>وضع المسؤول: تتصفح بصلاحيات المستخدم</span>
-        `;
-    document.body.appendChild(watermark);
+    if (!document.querySelector(".admin-watermark")) {
+      const watermark = document.createElement("div");
+      watermark.className = "admin-watermark";
+      watermark.innerHTML = `
+            <i class="fas fa-user-shield"></i>
+            <span>وضع المسؤول: تتصفح بصلاحيات المستخدم</span>
+            `;
+      document.body.appendChild(watermark);
+    }
   } else {
     const watermark = document.querySelector(".admin-watermark");
     if (watermark) {

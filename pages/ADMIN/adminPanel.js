@@ -474,44 +474,12 @@ window.loginAsUser = async (targetUserKey) => {
 
         if (!targetUser) throw new Error('المستخدم غير موجود');
 
-        // 2. Keep the original admin session in local storage
-        // If we are already impersonating, use the saved original session, otherwise use the current user as "original"
-        const currentSession = JSON.parse(localStorage.getItem('loggedInUser'));
-        const existingOriginalSession = JSON.parse(localStorage.getItem('originalAdminSession'));
-        const originalAdminSession = existingOriginalSession || currentSession;
-
-        if (!originalAdminSession) throw new Error('لا يوجد جلسة مسؤول صالحة للحفظ');
-
-        // 3. Perform full logout (browser cleanup)
-        // Use the function from tools.js or auth.js to clear everything
-        console.log('[انتحال الشخصية] تنظيف بيانات المتصفح...');
-        if (typeof clearAllBrowserData === 'function') {
-            await clearAllBrowserData();
-        } else {
-            // fallback if function is not available
-            localStorage.clear();
-        }
-
-        // 4. Restore admin session in localStorage (so button appears later)
-        localStorage.setItem('originalAdminSession', JSON.stringify(originalAdminSession));
-
-        // 5. Setup and save new user session
-        const newUserSession = {
-            user_key: targetUser.user_key,
-            username: targetUser.username,
-            phone: targetUser.phone,
-            is_seller: targetUser.is_seller || 0,
-            is_guest: false,
-            platform: targetUser.platform || 'web'
-        };
-        localStorage.setItem('loggedInUser', JSON.stringify(newUserSession));
-
-        // 6. Full redirect to ensure system loads with new data
-        console.log('[انتحال الشخصية] إعادة التوجيه إلى الصفحة الرئيسية كمستخدم جديد...');
-        window.location.href = 'index.html';
+        // 2. Use SessionManager to handle impersonation
+        await SessionManager.impersonate(targetUser);
 
     } catch (error) {
         console.error(error);
+        Swal.fire("خطأ", error.message || "حدث خطأ أثناء التبديل.", "error");
     }
 };
 /**

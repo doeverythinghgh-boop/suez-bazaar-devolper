@@ -1,0 +1,202 @@
+/* CSS variables for consistent theming */
+:root {
+    --location_primary: #2563eb;
+    --location_primary-dark: #1d4ed8;
+    --location_danger: #dc2626;
+    --location_danger-dark: #b91c1c;
+    --location_success: #10b981;
+    --location_success-dark: #059669;
+    --location_bg: #f8fafc;
+    --location_shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --location_radius: 12px;
+}
+
+/* Base styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: var(--location_bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Loading overlay styles */
+.location_loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.location_loading-overlay.hidden {
+    display: none;
+}
+
+.location_spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid var(--location_primary);
+    border-radius: 50%;
+    animation: location_spin 1s linear infinite;
+}
+
+.location_loading-text {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+    font-weight: 500;
+}
+
+@keyframes location_spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Map container styles */
+#location_map {
+    width: 100%;
+    height: 60vh;
+    z-index: 1;
+}
+
+/* Controls panel styles */
+.location_controls {
+    width: calc(100% - 30px);
+    max-width: 600px;
+    background: #fff;
+    padding: 12px;
+    margin: 15px auto;
+    border-radius: 20px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 10px;
+    flex-wrap: nowrap;
+    justify-content: center;
+    z-index: 10;
+    overflow-x: auto;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Button base styles */
+.location_btn {
+    flex: 1;
+    min-width: 80px;
+    padding: 10px 5px;
+    border-radius: var(--location_radius);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    user-select: none;
+    background: transparent;
+    color: var(--location_primary);
+}
+
+.location_btn-text {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.location_btn:active {
+    transform: translateY(0);
+}
+
+.location_btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Specific button variations (Resetting to shared transparent/blue style) */
+.location_btn-gps,
+.location_btn-share,
+.location_btn-reset {
+    background: transparent;
+    color: var(--location_primary);
+}
+
+/* Custom marker styles */
+.location_custom-marker {
+    background: none;
+    border: none;
+}
+
+.location_marker-pin {
+    width: 30px;
+    height: 42px;
+    background: var(--location_primary);
+    border-radius: 50% 50% 50% 0;
+    position: relative;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.location_marker-pin::after {
+    content: '';
+    width: 14px;
+    height: 14px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+    top: 8px;
+    left: 8px;
+}
+
+/* SweetAlert2 customization */
+.location_fullscreen-swal {
+    width: 95vw !important;
+    max-width: 720px !important;
+    max-height: 90vh;
+    border-radius: 1rem;
+}
+
+/* Map attribution style */
+.leaflet-control-attribution {
+    font-size: 8px !important;
+}
+
+/* Responsive design */
+@media (min-width: 768px) {
+    #location_map {
+        height: 75vh;
+    }
+
+    .location_btn {
+        flex: 0 0 260px;
+    }
+}
+
+@media (max-width: 480px) {
+    .location_controls {
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .location_btn {
+        min-width: 0;
+        padding: 8px 4px;
+    }
+
+    .location_btn-text {
+        font-size: 11px;
+    }
+}

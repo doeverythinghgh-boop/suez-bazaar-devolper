@@ -19,9 +19,16 @@
     <script src="../notification/notificationTools.js"></script>
     <script src="../notification/notification-db-manager.js"></script>
 
+    <!-- Auth Infrastructure (If needed) -->
+    <script src="../js/auth/sessionManager.js"></script>
+
     <script>
-        // Initialize userSession for notificationTools.js
-        window.userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
+        // Initialize userSession using SessionManager logic if available
+        if (typeof SessionManager !== 'undefined') {
+            SessionManager.init();
+        } else {
+            window.userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
+        }
     </script>
 
     <script src="./main.js" type="module" id="main-script"></script>

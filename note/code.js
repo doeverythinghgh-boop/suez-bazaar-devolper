@@ -2,6 +2,7 @@
 /**
  <user_rules>
 .gemini\GEMINI.md هل تحترمة
+ MEMORY[user_global] 
  * 
 يضمن حساب الهوامش الداخلية ضمن العرض الكلي للعنصر
  * 

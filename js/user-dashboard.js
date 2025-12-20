@@ -128,95 +128,68 @@ function handleAdminPanelClick() {
  * @see userSession
  */
 function updateViewForLoggedInUser() {
-  // [Step 1] Check for user session. If no user logged in, function stops.
-  if (!userSession) {
-    // No action taken, as this scenario should be handled elsewhere (e.g., redirection).
-    return;
-  }
+  // [Step 1] Check for user session.
+  const user = SessionManager.getUser();
+  if (!user) return; // No user logged in
 
-  // [Step 2] Update welcome message to display logged-in username.
-  document.getElementById(
-    "dash-welcome-message"
-  ).textContent = `أهلاً بك، ${userSession.username}`;
+  // [Step 2] Update welcome message
+  const welcomeMsg = document.getElementById("dash-welcome-message");
+  if (welcomeMsg) welcomeMsg.textContent = `أهلاً بك، ${user.username}`;
 
-  // [Step 3] Check if user is a "guest".
-  if (userSession.is_guest) {
-    // [Step 3.1] If guest, hide buttons they don't have access to.
+  // [Step 3] Guest Check
+  if (SessionManager.isGuest()) {
+    // [Step 3.1] Hide buttons
     [
       "dash-edit-profile-btn",
       "dash-admin-panel-btn",
-
       "dash-view-sales-movement-btn",
     ].forEach((id) => {
       const btn = document.getElementById(id);
-      if (btn) btn.style.display = "none"; // Hide button if exists
+      if (btn) btn.style.display = "none";
     });
-    // [Step 3.2] Bind "Logout" button click event to `logout` function.
-    document
-      .getElementById("dash-logout-btn-alt")
-      .addEventListener("click", () => {
-        console.log("تم النقر على زر تسجيل الخروج.1");
+
+    // [Step 3.2] Bind Logout
+    const logoutBtn = document.getElementById("dash-logout-btn-alt");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        // Use global logout() to show confirmation, or SessionManager.logout() directly?
+        // Global logout() shows "Are you sure?". SessionManager.logout() just logs out.
+        // We keep global logout() for UX consistent with header.
         if (typeof logout === "function") logout();
       });
-  } else {
-    // [Step 4] Display logic for logged-in user (non-guest).
-
-    // [Step 4.1] Check seller permissions:
-    // If user is seller (is_seller === 1) or admin, they see product management buttons (visible by default).
-    if (
-      userSession.is_seller === 1 ||
-      (typeof adminPhoneNumbers !== "undefined" &&
-        adminPhoneNumbers.includes(userSession.phone))
-    ) {
-      // No action required here as buttons are visible by default in HTML.
     }
 
-    // [Step 4.2] Check admin permissions:
-    // Admin Panel button is shown if user phone is in admin list,
-    // or if an original admin session exists (impersonation mode).
-    if (
-      (typeof adminPhoneNumbers !== "undefined" &&
-        adminPhoneNumbers.includes(userSession.phone)) ||
-      localStorage.getItem("originalAdminSession")
-    ) {
-      // Bind click event to admin panel button.
-      const adminBtn = document.getElementById("dash-admin-panel-btn");
+  } else {
+    // [Step 4] Logged-in User (Non-Guest)
+
+    // [Step 4.1] Seller/Admin Permissions (Product Management)
+    // Buttons visible by default in HTML.
+
+    // [Step 4.2] Admin Panel Button
+    const adminBtn = document.getElementById("dash-admin-panel-btn");
+    const isAdmin = (typeof adminPhoneNumbers !== "undefined" && adminPhoneNumbers.includes(user.phone));
+    const isImpersonating = localStorage.getItem("originalAdminSession");
+
+    if (isAdmin || isImpersonating) {
       if (adminBtn) adminBtn.addEventListener("click", handleAdminPanelClick);
     } else {
-      // If user is not admin, hide admin panel button.
-      const adminBtn = document.getElementById("dash-admin-panel-btn");
       if (adminBtn) adminBtn.style.display = "none";
     }
 
-    // [Step 4.3] Check reports viewing permissions:
-    // If user is seller (1), delivery (2), or admin, they see reports button.
-    if (
-      userSession.is_seller === 1 ||
-      userSession.is_seller === 2 ||
-      (typeof adminPhoneNumbers !== "undefined" &&
-        adminPhoneNumbers.includes(userSession.phone))
-    ) {
-      // No action required here as button is visible by default.
-    } else {
-      // If not eligible, hide button (code currently disabled).
-      ///    document.getElementById("dash-view-sales-movement-btn").style.display =
-      ///    "none";
-    }
-    // [Step 5] Bind general button events for all registered users.
-    // [5.1] Bind logout button.
-    document
-      .getElementById("dash-logout-btn-alt")
-      .addEventListener("click", () => {
-        console.log("تم النقر على زر تسجيل الخروج.2");
+    // [Step 4.3] Reports (Seller/Delivery/Admin)
+    // Visible by default.
 
-        logout();
+    // [Step 5] General Buttons
+    const logoutBtn = document.getElementById("dash-logout-btn-alt");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", () => {
+        if (typeof logout === "function") logout();
       });
+    }
 
-    // [5.2] Bind "Edit Profile" button to load edit page.
-    document
-      .getElementById("dash-edit-profile-btn")
-
-      .addEventListener("click", () =>
+    const editProfileBtn = document.getElementById("dash-edit-profile-btn");
+    if (editProfileBtn) {
+      editProfileBtn.addEventListener("click", () =>
         mainLoader(
           "pages/profile-modal/profile-modal.html",
           "index-user-container",
@@ -226,14 +199,9 @@ function updateViewForLoggedInUser() {
           true
         )
       );
+    }
   }
 }
 
-// [Final Step] Call function immediately upon file load to update view based on current user state.
-/**
- * @description Automatically initializes the user dashboard view when the script loads.
- * @function initializeDashboardView
- * @returns {void}
- * @see updateViewForLoggedInUser
- */
+// [Final Step] Initialize
 updateViewForLoggedInUser();

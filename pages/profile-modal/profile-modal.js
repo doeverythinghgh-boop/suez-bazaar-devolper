@@ -184,8 +184,13 @@ async function profileHandleChangePasswordCheck(event) {
  * @returns {{isValid: boolean, data: object}} - An object containing the validity status and the extracted form data.
  */
 function profileValidateInputs() {
-    const validationState = { isValid: true };
-    profileClearErrors();
+    const result = { isValid: true, data: {} };
+
+    // Use AuthUI to clear errors
+    AuthUI.clearFieldValidationMsg(profileElements.usernameInput);
+    AuthUI.clearFieldValidationMsg(profileElements.phoneInput);
+    AuthUI.clearFieldValidationMsg(profileElements.newPasswordInput);
+    AuthUI.clearFieldValidationMsg(profileElements.confirmPasswordInput);
 
     const username = profileElements.usernameInput.value.trim();
     const phone = profileElements.phoneInput.value.trim();
@@ -194,22 +199,34 @@ function profileValidateInputs() {
     const confirmPassword = profileElements.confirmPasswordInput.value;
 
     // Validate Name
-    if (!username || username.length < 8) {
-        profileShowError(profileElements.usernameInput, "الاسم مطلوب ويجب أن يكون 8 أحرف على الأقل.", validationState);
+    const nameValidation = AuthValidators.validateUsername(username);
+    if (!nameValidation.isValid) {
+        AuthUI.showFieldValidationMsg(profileElements.usernameInput, nameValidation.message);
+        result.isValid = false;
     }
 
     // Validate Phone
-    if (!phone || phone.length < 11) {
-        profileShowError(profileElements.phoneInput, "رقم الهاتف مطلوب ويجب أن يكون 11 رقمًا على الأقل.", validationState);
+    const phoneValidation = AuthValidators.validatePhone(phone);
+    if (!phoneValidation.isValid) {
+        AuthUI.showFieldValidationMsg(profileElements.phoneInput, phoneValidation.message);
+        result.isValid = false;
     }
 
-    // Check password match if change option is selected
-    if (profileElements.changePasswordCheckbox.checked && password !== confirmPassword) {
-        profileShowError(profileElements.confirmPasswordInput, "كلمتا المرور غير متطابقتين.", validationState);
+    // Password validation if checkbox checked
+    if (profileElements.changePasswordCheckbox.checked) {
+        const passValidation = AuthValidators.validatePassword(password);
+        if (!passValidation.isValid) {
+            AuthUI.showFieldValidationMsg(profileElements.newPasswordInput, passValidation.message);
+            result.isValid = false;
+        }
+        if (password !== confirmPassword) {
+            AuthUI.showFieldValidationMsg(profileElements.confirmPasswordInput, "كلمتا المرور غير متطابقتين.");
+            result.isValid = false;
+        }
     }
 
-    const data = { username, phone, address, password };
-    return { isValid: validationState.isValid, data };
+    result.data = { username, phone, address, password };
+    return result;
 }
 
 /**
@@ -218,86 +235,53 @@ function profileValidateInputs() {
  * @async
  */
 async function profileHandleSaveChanges() {
-    try {
-        const validationResult = profileValidateInputs();
-        if (!validationResult.isValid) return;
+    const validationResult = profileValidateInputs();
+    if (!validationResult.isValid) return;
 
-        const { username, phone, address, password } = validationResult.data;
+    const { username, phone, address, password } = validationResult.data;
 
-        // 1. Prepare data for update
-        const updatedData = { user_key: userSession.user_key };
-        if (username !== userSession.username) updatedData.username = username;
-        if (phone !== userSession.phone) updatedData.phone = phone;
-        if (address !== (userSession.Address || "")) updatedData.address = address;
-        if (profileElements.changePasswordCheckbox.checked && password) {
-            updatedData.password = password;
-        }
+    // 1. Prepare data
+    const updatedData = { user_key: userSession.user_key };
+    if (username !== userSession.username) updatedData.username = username;
+    if (phone !== userSession.phone) updatedData.phone = phone;
+    if (address !== (userSession.Address || "")) updatedData.address = address;
+    if (profileElements.changePasswordCheckbox.checked && password) {
+        updatedData.password = password;
+    }
 
-        // Check for no changes
-        if (Object.keys(updatedData).length === 1) {
-            await Swal.fire("لم يتغير شيء", "لم تقم بإجراء أي تغييرات على بياناتك.", "info");
+    if (Object.keys(updatedData).length === 1) {
+        await AuthUI.showSuccess("لم يتغير شيء", "لم تقم بإجراء أي تغييرات.");
+        return;
+    }
+
+    // 2. Verify current password logic (using AuthUI)
+    if (userSession.Password && !profileIsPasswordVerified) {
+        const passwordEntered = await AuthUI.confirmPassword("تأكيد الهوية", "أدخل كلمة المرور الحالية لحفظ التغييرات.");
+        if (!passwordEntered) return;
+
+        AuthUI.showLoading("جاري التحقق...");
+        const verification = await verifyUserPassword(userSession.phone, passwordEntered);
+        AuthUI.close();
+
+        if (!verification || verification.error) {
+            AuthUI.showError("خطأ", "كلمة المرور غير صحيحة.");
             return;
         }
+    }
 
-        // 2. Verify current password (if necessary)
-        if (userSession.Password && !profileIsPasswordVerified) {
-            const { isConfirmed } = await Swal.fire({
-                title: "تأكيد الهوية",
-                text: "لحفظ التغييرات، يرجى إدخال كلمة المرور الحالية.",
-                input: "password",
-                inputPlaceholder: "أدخل كلمة المرور الحالية",
-                inputAttributes: { autocapitalize: "off", autocorrect: "off" },
-                customClass: { popup: 'fullscreen-swal' }, // Apply cached custom style
-                showCancelButton: true,
-                confirmButtonText: "تأكيد وحفظ",
-                cancelButtonText: "إلغاء",
-                showLoaderOnConfirm: true,
-                preConfirm: async (enteredPassword) => {
-                    const verificationResult = await verifyUserPassword(userSession.phone, enteredPassword);
-                    if (verificationResult && verificationResult.error) {
-                        Swal.showValidationMessage(`كلمة المرور غير صحيحة.`);
-                        return false;
-                    }
-                    return true; // Verification successful
-                },
-                allowOutsideClick: () => !Swal.isLoading(),
-            });
+    // 3. Save
+    AuthUI.showLoading("جاري الحفظ...");
+    const result = await updateUser(updatedData);
+    AuthUI.close();
 
-            if (!isConfirmed) return; // User cancelled
-        }
-
-        // 3. Show loading screen and execute update
-        Swal.fire({
-            title: "جاري حفظ التغييرات...",
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading(),
-            customClass: { popup: 'fullscreen-swal' },
-        });
-
-        const result = await updateUser(updatedData);
-        Swal.close();
-
-        // 4. Handle update results
-        if (result && !result.error) {
-            profileUpdateSession(updatedData); // Update local session data
-
-            await Swal.fire({
-                icon: "success",
-                title: "تم التحديث بنجاح!",
-                text: result.message,
-            });
-
-            // Reload home page to update interface (Header)
-        } else {
-            await Swal.fire({
-                icon: "error",
-                title: "حدث خطأ",
-                text: result.error || "فشل تحديث البيانات. يرجى المحاولة مرة أخرى.",
-            });
-        }
-    } catch (error) {
-        console.error("خطأ في حفظ التغييرات (profileHandleSaveChanges):", error);
-
+    if (result && !result.error) {
+        SessionManager.updateUser(updatedData);
+        await AuthUI.showSuccess("تم التحديث بنجاح!", result.message);
+        // Reload page if needed or just modal closed? 
+        // Original code reloaded mainLoader or similar? No, just success msg.
+        // We can optionally refresh header or just let SessionManager update global vars.
+    } else {
+        AuthUI.showError("خطأ", result?.error || "فشل التحديث.");
     }
 }
 
@@ -307,16 +291,7 @@ async function profileHandleSaveChanges() {
  * @param {object} updatedData - The data that was successfully updated.
  */
 function profileUpdateSession(updatedData) {
-    try {
-        if (updatedData.username) userSession.username = updatedData.username;
-        if (updatedData.phone) userSession.phone = updatedData.phone;
-        if (updatedData.address !== undefined) userSession.Address = updatedData.address;
-        if (updatedData.password) userSession.Password = true;
-
-        localStorage.setItem("loggedInUser", JSON.stringify(userSession));
-    } catch (error) {
-        console.error("خطأ في تحديث بيانات الجلسة (profileUpdateSession):", error);
-    }
+    SessionManager.updateUser(updatedData);
 }
 
 /**
@@ -327,74 +302,42 @@ function profileUpdateSession(updatedData) {
  * @returns {Promise<void>}
  */
 async function profileHandleAccountDeletion(userSession) {
-    try {
-        // 1. Initial Deletion Confirmation
-        const confirmationResult = await Swal.fire({
-            title: "هل أنت متأكد تمامًا؟",
-            html: `<div style="text-align: right; color: #e74c3c; font-weight: bold;">
-                سيتم حذف حسابك وجميع بياناتك نهائيًا. <br> هذا الإجراء لا يمكن التراجع عنه.
-            </div>`,
-            icon: "warning",
-            customClass: { popup: 'fullscreen-swal' },
-            showCancelButton: true,
-            confirmButtonText: "نعم، أفهم وأريد المتابعة",
-            cancelButtonText: "إلغاء",
-            confirmButtonColor: "#d33",
-        });
+    const confirmation = await Swal.fire({
+        title: "هل أنت متأكد تمامًا؟",
+        text: "سيتم حذف حسابك نهائياً.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "نعم، حذف",
+        cancelButtonText: "إلغاء",
+        confirmButtonColor: "#d33"
+    });
 
-        if (!confirmationResult.isConfirmed) return;
+    if (!confirmation.isConfirmed) return;
 
-        let canDelete = !userSession.Password;
+    // Verify Password
+    if (userSession.Password) {
+        const password = await AuthUI.confirmPassword("تأكيد الحذف", "أدخل كلمة المرور لتأكيد الحذف.");
+        if (!password) return;
 
-        // 2. Final verification with password if exists
-        if (userSession.Password) {
-            const { value: password } = await Swal.fire({
-                title: "التحقق النهائي",
-                text: "لحماية حسابك، يرجى إدخال كلمة المرور الخاصة بك لتأكيد الحذف.",
-                input: "password",
-                inputPlaceholder: "أدخل كلمة المرور",
-                customClass: { popup: 'fullscreen-swal' },
-                showCancelButton: true,
-                confirmButtonText: "تأكيد الحذف",
-                cancelButtonText: "إلغاء",
-                showLoaderOnConfirm: true,
-                preConfirm: async (enteredPassword) => {
-                    const verificationResult = await verifyUserPassword(userSession.phone, enteredPassword);
-                    if (verificationResult && verificationResult.error) {
-                        Swal.showValidationMessage("كلمة المرور غير صحيحة.");
-                        return false;
-                    }
-                    return true;
-                },
-                allowOutsideClick: () => !Swal.isLoading(),
-            });
+        AuthUI.showLoading("جاري التحقق...");
+        const verification = await verifyUserPassword(userSession.phone, password);
+        AuthUI.close();
 
-            if (password) {
-                canDelete = true;
-            }
+        if (!verification || verification.error) {
+            AuthUI.showError("خطأ", "كلمة المرور غير صحيحة.");
+            return;
         }
+    }
 
-        // 3. Execute Deletion
-        if (canDelete) {
-            Swal.fire({
-                title: "جاري حذف الحساب...",
-                allowOutsideClick: false,
-                didOpen: () => Swal.showLoading(),
-                customClass: { popup: 'fullscreen-swal' },
-            });
+    AuthUI.showLoading("جاري الحذف...");
+    const result = await deleteUser(userSession.user_key);
+    AuthUI.close();
 
-            const deleteResult = await deleteUser(userSession.user_key);
-
-            if (deleteResult && !deleteResult.error) {
-                await signOutAndClear();
-                await Swal.fire("تم الحذف", "تم حذف حسابك بنجاح.", "success");
-            } else {
-                await Swal.fire("خطأ", `فشل حذف الحساب: ${deleteResult.error || "خطأ غير معروف."}`, "error");
-            }
-        }
-    } catch (error) {
-        console.error("خطأ في حذف الحساب (profileHandleAccountDeletion):", error);
-
+    if (result && !result.error) {
+        await SessionManager.logout();
+        await Swal.fire("تم الحذف", "تم حذف الحساب بنجاح.", "success");
+    } else {
+        AuthUI.showError("خطأ", result?.error || "حدث خطأ أثناء الحذف.");
     }
 }
 
