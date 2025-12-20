@@ -221,6 +221,23 @@ export async function showCourierConfirmedProductsAlert(data, ordersData) {
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
+
+                // إضافة مستمع لحدث النقر على زر الخريطة لموقع البائع
+                const popup = Swal.getPopup();
+                popup.querySelectorAll('.btn-view-seller-map').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const lat = btn.dataset.lat;
+                        const lng = btn.dataset.lng;
+                        const sellerName = btn.dataset.name;
+
+                        Swal.fire({
+                            title: `موقع البائع: ${sellerName}`,
+                            html: `<iframe src="/location/LOCATION.html?lat=${lat}&lng=${lng}" style="width: 100%; height: 60vh; min-height: 400px; border: none; border-radius: 8px;"></iframe>`,
+                            confirmButtonText: "إغلاق",
+                            customClass: { popup: "fullscreen-swal" }
+                        });
+                    });
+                });
             }
         });
     } catch (error) {

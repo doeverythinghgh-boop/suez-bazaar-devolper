@@ -204,7 +204,19 @@ export function generateSellerGroupedHtml(groupedData) {
                 <h5 style="margin: 0; color: #03478f; font-size: 1.1em; font-weight: bold;">البائع: ${group.seller.name}</h5>
                 <div style="font-size: 0.9em; color: #4a5568; margin-top: 5px;">
                     <span><i class="fas fa-phone"></i> <a href="tel:${group.seller.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${group.seller.phone}</a></span> | 
-                    <span><i class="fas fa-map-marker-alt"></i> ${group.seller.address}</span>
+                    <span>
+                        <i class="fas fa-map-marker-alt"></i> ${group.seller.address}
+                        ${group.seller.location ? `
+                            <button class="btn-view-seller-map" 
+                                    data-lat="${group.seller.location.split(',')[0].trim()}" 
+                                    data-lng="${group.seller.location.split(',')[1].trim()}"
+                                    data-name="${group.seller.name}"
+                                    title="عرض على الخريطة"
+                                    style="margin-right: 5px; cursor: pointer; border: none; background: none; color: #007bff; font-size: 1.1em; padding: 0;">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </button>
+                        ` : ''}
+                    </span>
                 </div>
             </div>
             <div class="seller-products" style="padding: 10px;">
