@@ -17,6 +17,31 @@ location_app.init = function () {
         console.log("[Core] Initializing components...");
         this.location_showLoading(true);
 
+        // Check for viewOnly mode from URL parameters
+        const params = new URLSearchParams(window.location.search);
+        this.viewOnly = params.get('viewOnly') === 'true';
+
+        if (this.viewOnly) {
+            console.log("[Core] Mode: ViewOnly. Hiding editing controls...");
+            const buttonsToHide = [
+                'location_saveBtn',
+                'location_gpsBtn',
+                'location_resetBtn',
+                'location_closeBtn'
+            ];
+            buttonsToHide.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) btn.style.display = 'none';
+            });
+
+            // Adjust sharing button position if needed (it will be the only one)
+            const shareBtn = document.getElementById('location_shareBtn');
+            if (shareBtn) {
+                shareBtn.style.flex = '1';
+                shareBtn.style.justifyContent = 'center';
+            }
+        }
+
         console.log("[Core] -> Setting up Map...");
         this.location_initMap();
 

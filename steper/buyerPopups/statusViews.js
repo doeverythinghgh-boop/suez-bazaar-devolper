@@ -231,9 +231,9 @@ export async function showCourierConfirmedProductsAlert(data, ordersData) {
                         const sellerName = btn.dataset.name;
 
                         Swal.fire({
-                            title: `موقع البائع: ${sellerName}`,
-                            html: `<iframe src="/location/LOCATION.html?lat=${lat}&lng=${lng}" style="width: 100%; height: 60vh; min-height: 400px; border: none; border-radius: 8px;"></iframe>`,
-                            confirmButtonText: "إغلاق",
+                            html: `<iframe src="/location/LOCATION.html?lat=${lat}&lng=${lng}&viewOnly=true" style="width: 100%; height: 75vh; min-height: 400px; border: none; border-radius: 8px;"></iframe>`,
+                            showConfirmButton: false,
+                            showCloseButton: true,
                             customClass: { popup: "fullscreen-swal" }
                         });
                     });

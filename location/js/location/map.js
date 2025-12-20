@@ -56,7 +56,10 @@ location_app.location_initMap = function () {
  * @returns {void}
  */
 location_app.location_setupEventListeners = function () {
-    if (!this.location_map) return;
+    if (!this.location_map || this.viewOnly) {
+        if (this.viewOnly) console.log("[Map] Mode: ViewOnly. Event listeners for selection disabled.");
+        return;
+    }
 
     try {
         // Desktop: Double click to select location
