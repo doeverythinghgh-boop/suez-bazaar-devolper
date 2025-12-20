@@ -10,23 +10,32 @@ insertUniqueSnapshot("pages/header.html", "profile-header-container", 300);
 
 // 1. Define Elements and Variables (DOM Elements & State)
 // ----------------------------------------------------
-var profileElements = {
-    // Input Fields
-    usernameInput: document.getElementById("profile-username"),
-    phoneInput: document.getElementById("profile-phone"),
-    addressInput: document.getElementById("profile-address"),
-    newPasswordInput: document.getElementById("profile-new-password"),
-    confirmPasswordInput: document.getElementById("profile-confirm-password"),
+/**
+ * @function profileGetElements
+ * @description Safely retrieves DOM elements for the profile module.
+ */
+function profileGetElements() {
+    return {
+        // Input Fields
+        usernameInput: document.getElementById("profile-username"),
+        phoneInput: document.getElementById("profile-phone"),
+        addressInput: document.getElementById("profile-address"),
+        newPasswordInput: document.getElementById("profile-new-password"),
+        confirmPasswordInput: document.getElementById("profile-confirm-password"),
+        coordsInput: document.getElementById("profile-coords"),
 
-    // Controls
-    changePasswordCheckbox: document.getElementById("profile-change-password-checkbox"),
-    passwordFieldsContainer: document.getElementById("profile-password-fields-container"),
-    saveButton: document.getElementById("profile-save-button"),
-    deleteButton: document.getElementById("profile-delete-account-button"),
+        // Controls
+        changePasswordCheckbox: document.getElementById("profile-change-password-checkbox"),
+        passwordFieldsContainer: document.getElementById("profile-password-fields-container"),
+        saveButton: document.getElementById("profile-save-button"),
+        deleteButton: document.getElementById("profile-delete-account-button"),
+        locationBtn: document.getElementById("profile-location-btn"),
 
-    // Errors
-    passwordErrorDiv: document.getElementById("profile-password-error"),
-};
+        // Feedback
+        passwordErrorDiv: document.getElementById("profile-password-error"),
+        addressError: document.getElementById("profile-address-error")
+    };
+}
 
 // State to track if old password was successfully verified (to reduce Swal.fire repetition)
 var profileIsPasswordVerified = false;
@@ -97,108 +106,107 @@ var profileTogglePasswordVisibility = (inputId, toggleId) => {
  */
 function profileInitializeData() {
     try {
-        profileElements.usernameInput.value = userSession.username || "";
-        profileElements.phoneInput.value = userSession.phone || "";
-        // userSession.Address changed to userSession.address to standardize casing if needed 
-        profileElements.addressInput.value = userSession.Address || "";
+        const els = profileGetElements();
+        const user = window.userSession;
 
-        // Reset password fields state (OCP: Open Closed Principle)
-        profileElements.changePasswordCheckbox.checked = false;
-        profileElements.passwordFieldsContainer.style.display = "none";
-        profileElements.newPasswordInput.value = "";
-        profileElements.confirmPasswordInput.value = "";
-        profileElements.passwordErrorDiv.textContent = "";
+        console.log("[Profile] Initializing data. Session:", user);
+        console.log("[Profile] Elements found:", !!els.usernameInput, !!els.locationBtn, !!els.coordsInput);
 
-        // Restore saved location from userSession (Database driven)
-        const coordsInput = document.getElementById("profile-coords");
-        const locationBtn = document.getElementById("profile-location-btn");
-        const addressError = document.getElementById("profile-address-error");
+        if (!user) {
+            console.warn("[Profile] No active session found.");
+            return;
+        }
 
-        // Prioritize session location (formerly coordinates)
-        let initialCoords = userSession.location || userSession.coordinates || "";
+        if (els.usernameInput) els.usernameInput.value = user.username || "";
+        if (els.phoneInput) els.phoneInput.value = user.phone || "";
 
-        if (initialCoords && coordsInput) {
-            coordsInput.value = initialCoords;
-            if (locationBtn) locationBtn.classList.add("is-success");
-            if (addressError) {
+        // Handle both casing possibilities for address
+        if (els.addressInput) {
+            els.addressInput.value = user.Address || user.address || "";
+        }
+
+        // Reset password fields
+        if (els.changePasswordCheckbox) els.changePasswordCheckbox.checked = false;
+        if (els.passwordFieldsContainer) els.passwordFieldsContainer.style.display = "none";
+        if (els.newPasswordInput) els.newPasswordInput.value = "";
+        if (els.confirmPasswordInput) els.confirmPasswordInput.value = "";
+        if (els.passwordErrorDiv) els.passwordErrorDiv.textContent = "";
+
+        // Restore saved location
+        // Search in all possible property names to be safe
+        console.log("[Profile] Available session keys:", Object.keys(user));
+        let initialCoords = user.location || user.Coordinates || user.coordinates || user.user_location || "";
+        console.log("[Profile] Raw extracted coordinates:", initialCoords);
+
+        // Final fallback: check direct localStorage for very old sessions if needed
+        if (!initialCoords) {
+            initialCoords = localStorage.getItem("saved_location") || "";
+        }
+
+        if (initialCoords && initialCoords.includes(",")) {
+            if (els.coordsInput) els.coordsInput.value = initialCoords;
+            if (els.locationBtn) els.locationBtn.classList.add("is-success");
+
+            if (els.addressError) {
+                els.addressError.style.color = "#10b981";
+                els.addressError.style.display = "block";
+
                 const addressInput = document.getElementById("profile-address");
-                addressError.style.color = "#10b981";
-                addressError.style.display = "block";
-
-                if (addressInput && addressInput.value.trim() !== "") {
-                    // Address already has details
-                    addressError.innerHTML = '<i class="fas fa-check-circle"></i> شكراً لك! تم ربط موقعك المحفوظ بنجاح.';
+                const hasDetails = addressInput && addressInput.value.trim() !== "";
+                if (hasDetails) {
+                    els.addressError.innerHTML = '<i class="fas fa-check-circle"></i> تم ربط موقعك المحفوظ بنجاح!';
                 } else {
-                    // Address is empty
-                    addressError.innerHTML = '<i class="fas fa-check-circle"></i> شكراً لك! تم العثور على موقعك المحفوظ.<br/>يرجى الآن كتابة وصف دقيق (مثلاً: الدور أو علامة مميزة) أعلاه.';
+                    els.addressError.innerHTML = '<i class="fas fa-check-circle"></i> تم العثور على موقعك المحفوظ.<br/>يرجى الآن كتابة وصف دقيق (مثلاً: الدور أو علامة مميزة) أعلاه.';
                 }
             }
         }
     } catch (error) {
-        console.error("خطأ في تهيئة بيانات الملف الشخصي (profileInitializeData):", error);
+        console.error("خطأ في تهيئة بيانات الملف الشخصي:", error);
     }
 }
 
 /**
  * @function profileHandleChangePasswordCheck
- * @description Handles the "Change Password" checkbox interaction. Verifies the old password before allowing the user to proceed with changing it.
+ * @description Handles the "Change Password" checkbox interaction. Verifies the identity before showing fields.
  * @async
- * @param {Event} event - The click event on the checkbox.
  */
-async function profileHandleChangePasswordCheck(event) {
+async function profileHandleChangePasswordCheck() {
     try {
-        if (!event.target.checked) {
-            profileElements.passwordFieldsContainer.style.display = "none";
-            return;
-        }
+        const els = profileGetElements();
+        const user = window.userSession;
+        if (!els.changePasswordCheckbox || !user) return;
 
-        event.preventDefault(); // Prevent immediate selection to trigger verification logic
+        if (els.changePasswordCheckbox.checked) {
+            // If user has NO password set, just show fields
+            if (!user.Password) {
+                if (els.passwordFieldsContainer) els.passwordFieldsContainer.style.display = "block";
+                profileIsPasswordVerified = true;
+                return;
+            }
 
-        // If user has no password (e.g. external login), allow change immediately
-        if (!userSession.Password) {
-            profileElements.changePasswordCheckbox.checked = true;
-            profileElements.passwordFieldsContainer.style.display = "block";
-            return;
-        }
+            // Verify identity
+            const passwordEntered = await AuthUI.confirmPassword("تأكيد الهوية", "يرجى إدخال كلمة المرور الحالية لتغييرها.");
+            if (passwordEntered) {
+                AuthUI.showLoading("جاري التحقق...");
+                const result = await verifyUserPassword(user.phone, passwordEntered);
+                AuthUI.close();
 
-        // SweetAlert2 for verifying old password
-        const { isConfirmed } = await Swal.fire({
-            title: "التحقق من الهوية",
-            text: "لتغيير كلمة المرور، الرجاء إدخال كلمة المرور القديمة أولاً.",
-            input: "password",
-            inputPlaceholder: "أدخل كلمة المرور القديمة",
-            inputAttributes: { autocapitalize: "off", autocorrect: "off" },
-            customClass: { popup: 'fullscreen-swal' }, // Apply cached custom style
-            showCancelButton: true,
-            confirmButtonText: "تحقق",
-            cancelButtonText: "إلغاء",
-            showLoaderOnConfirm: true,
-            preConfirm: async (enteredOldPassword) => {
-                if (!enteredOldPassword) {
-                    Swal.showValidationMessage("يجب إدخال كلمة المرور القديمة.");
-                    return false;
+                if (result && !result.error) {
+                    if (els.passwordFieldsContainer) els.passwordFieldsContainer.style.display = "block";
+                    profileIsPasswordVerified = true;
+                } else {
+                    els.changePasswordCheckbox.checked = false;
+                    AuthUI.showError("خطأ", "كلمة المرور غير صحيحة.");
                 }
-                const verificationResult = await verifyUserPassword(
-                    userSession.phone,
-                    enteredOldPassword
-                );
-                if (verificationResult && verificationResult.error) {
-                    Swal.showValidationMessage(`كلمة المرور القديمة غير صحيحة.`);
-                    return false;
-                }
-                return true;
-            },
-            allowOutsideClick: () => !Swal.isLoading(),
-        });
-
-        if (isConfirmed) {
-            profileElements.changePasswordCheckbox.checked = true;
-            profileElements.passwordFieldsContainer.style.display = "block";
-            profileIsPasswordVerified = true; // Verified successfully
+            } else {
+                els.changePasswordCheckbox.checked = false;
+            }
+        } else {
+            if (els.passwordFieldsContainer) els.passwordFieldsContainer.style.display = "none";
+            profileIsPasswordVerified = false;
         }
     } catch (error) {
-        console.error("خطأ في التحقق من كلمة المرور (profileHandleChangePasswordCheck):", error);
-
+        console.error("خطأ في معالج تغيير كلمة المرور:", error);
     }
 }
 
@@ -208,53 +216,53 @@ async function profileHandleChangePasswordCheck(event) {
  * @returns {{isValid: boolean, data: object}} - An object containing the validity status and the extracted form data.
  */
 function profileValidateInputs() {
+    const els = profileGetElements();
     const result = { isValid: true, data: {} };
 
     // Use AuthUI to clear errors
-    AuthUI.clearFieldValidationMsg(profileElements.usernameInput);
-    AuthUI.clearFieldValidationMsg(profileElements.phoneInput);
-    AuthUI.clearFieldValidationMsg(profileElements.newPasswordInput);
-    AuthUI.clearFieldValidationMsg(profileElements.newPasswordInput);
-    AuthUI.clearFieldValidationMsg(profileElements.confirmPasswordInput);
-    AuthUI.clearFieldValidationMsg(profileElements.addressInput);
+    if (els.usernameInput) AuthUI.clearFieldValidationMsg(els.usernameInput);
+    if (els.phoneInput) AuthUI.clearFieldValidationMsg(els.phoneInput);
+    if (els.newPasswordInput) AuthUI.clearFieldValidationMsg(els.newPasswordInput);
+    if (els.confirmPasswordInput) AuthUI.clearFieldValidationMsg(els.confirmPasswordInput);
+    if (els.addressInput) AuthUI.clearFieldValidationMsg(els.addressInput);
 
-    const username = profileElements.usernameInput.value.trim();
-    const phone = profileElements.phoneInput.value.trim();
-    const address = profileElements.addressInput.value.trim();
-    const password = profileElements.newPasswordInput.value;
-    const confirmPassword = profileElements.confirmPasswordInput.value;
+    const username = els.usernameInput?.value.trim() || "";
+    const phone = els.phoneInput?.value.trim() || "";
+    const address = els.addressInput?.value.trim() || "";
+    const password = els.newPasswordInput?.value || "";
+    const confirmPassword = els.confirmPasswordInput?.value || "";
 
     // Validate Name
     const nameValidation = AuthValidators.validateUsername(username);
     if (!nameValidation.isValid) {
-        AuthUI.showFieldValidationMsg(profileElements.usernameInput, nameValidation.message);
+        AuthUI.showFieldValidationMsg(els.usernameInput, nameValidation.message);
         result.isValid = false;
     }
 
     // Validate Phone
     const phoneValidation = AuthValidators.validatePhone(phone);
     if (!phoneValidation.isValid) {
-        AuthUI.showFieldValidationMsg(profileElements.phoneInput, phoneValidation.message);
+        AuthUI.showFieldValidationMsg(els.phoneInput, phoneValidation.message);
         result.isValid = false;
     }
 
     // Validate Address
-    const hasCoords = !!(document.getElementById("profile-coords")?.value);
+    const hasCoords = !!(els.coordsInput?.value);
     const addressValidation = AuthValidators.validateAddress(address, hasCoords);
     if (!addressValidation.isValid) {
-        AuthUI.showFieldValidationMsg(profileElements.addressInput, addressValidation.message);
+        AuthUI.showFieldValidationMsg(els.addressInput, addressValidation.message);
         result.isValid = false;
     }
 
     // Password validation if checkbox checked
-    if (profileElements.changePasswordCheckbox.checked) {
+    if (els.changePasswordCheckbox?.checked) {
         const passValidation = AuthValidators.validatePassword(password);
         if (!passValidation.isValid) {
-            AuthUI.showFieldValidationMsg(profileElements.newPasswordInput, passValidation.message);
+            AuthUI.showFieldValidationMsg(els.newPasswordInput, passValidation.message);
             result.isValid = false;
         }
         if (password !== confirmPassword) {
-            AuthUI.showFieldValidationMsg(profileElements.confirmPasswordInput, "كلمتا المرور غير متطابقتين.");
+            AuthUI.showFieldValidationMsg(els.confirmPasswordInput, "كلمتا المرور غير متطابقتين.");
             result.isValid = false;
         }
     }
@@ -269,23 +277,32 @@ function profileValidateInputs() {
  * @async
  */
 async function profileHandleSaveChanges() {
+    const els = profileGetElements();
     const validationResult = profileValidateInputs();
     if (!validationResult.isValid) return;
 
     const { username, phone, address, password } = validationResult.data;
 
-    // 1. Prepare data
-    const updatedData = { user_key: userSession.user_key };
-    if (username !== userSession.username) updatedData.username = username;
-    if (phone !== userSession.phone) updatedData.phone = phone;
-    if (address !== (userSession.Address || "")) updatedData.address = address;
+    const user = window.userSession;
+    if (!user) return;
 
-    const coordInput = document.getElementById("profile-coords");
-    if (coordInput && coordInput.value) {
-        updatedData.location = coordInput.value;
+    // 1. Prepare data
+    const updatedData = { user_key: user.user_key };
+    if (username !== user.username) updatedData.username = username;
+    if (phone !== user.phone) updatedData.phone = phone;
+
+    // Check against both casings to avoid redundant updates
+    const currentAddress = user.Address || user.address || "";
+    if (address !== currentAddress) {
+        // We use 'address' for payload but SessionManager should merge correctly
+        updatedData.address = address;
     }
 
-    if (profileElements.changePasswordCheckbox.checked && password) {
+    if (els.coordsInput && els.coordsInput.value) {
+        updatedData.location = els.coordsInput.value;
+    }
+
+    if (els.changePasswordCheckbox?.checked && password) {
         updatedData.password = password;
     }
 
@@ -295,12 +312,13 @@ async function profileHandleSaveChanges() {
     }
 
     // 2. Verify current password logic (using AuthUI)
-    if (userSession.Password && !profileIsPasswordVerified) {
+    const sessionAuth = window.userSession;
+    if (sessionAuth.Password && !profileIsPasswordVerified) {
         const passwordEntered = await AuthUI.confirmPassword("تأكيد الهوية", "أدخل كلمة المرور الحالية لحفظ التغييرات.");
         if (!passwordEntered) return;
 
         AuthUI.showLoading("جاري التحقق...");
-        const verification = await verifyUserPassword(userSession.phone, passwordEntered);
+        const verification = await verifyUserPassword(sessionAuth.phone, passwordEntered);
         AuthUI.close();
 
         if (!verification || verification.error) {
@@ -317,9 +335,7 @@ async function profileHandleSaveChanges() {
     if (result && !result.error) {
         SessionManager.updateUser(updatedData);
         await AuthUI.showSuccess("تم التحديث بنجاح!", result.message);
-        // Reload page if needed or just modal closed? 
-        // Original code reloaded mainLoader or similar? No, just success msg.
-        // We can optionally refresh header or just let SessionManager update global vars.
+        mainLoader("pages/user-dashboard.html", "index-user-container", 0, undefined, "showHomeIcon", true);
     } else {
         AuthUI.showError("خطأ", result?.error || "فشل التحديث.");
     }
@@ -327,7 +343,7 @@ async function profileHandleSaveChanges() {
 
 /**
  * @function profileUpdateSession
- * @description Updates the global `userSession` object and `localStorage` after a successful profile update.
+ * @description Updates the global `window.userSession` object and `localStorage` after a successful profile update.
  * @param {object} updatedData - The data that was successfully updated.
  */
 function profileUpdateSession(updatedData) {
@@ -338,10 +354,10 @@ function profileUpdateSession(updatedData) {
  * @function profileHandleAccountDeletion
  * @description Handles the secure account deletion process, including confirmation prompts and password verification.
  * @async
- * @param {object} userSession - Object containing the current user's session data.
+ * @param {object} session - Object containing the current user's session data.
  * @returns {Promise<void>}
  */
-async function profileHandleAccountDeletion(userSession) {
+async function profileHandleAccountDeletion(session) {
     const confirmation = await Swal.fire({
         title: "هل أنت متأكد تمامًا؟",
         text: "سيتم حذف حسابك نهائياً.",
@@ -355,12 +371,12 @@ async function profileHandleAccountDeletion(userSession) {
     if (!confirmation.isConfirmed) return;
 
     // Verify Password
-    if (userSession.Password) {
+    if (window.userSession.Password) {
         const password = await AuthUI.confirmPassword("تأكيد الحذف", "أدخل كلمة المرور لتأكيد الحذف.");
         if (!password) return;
 
         AuthUI.showLoading("جاري التحقق...");
-        const verification = await verifyUserPassword(userSession.phone, password);
+        const verification = await verifyUserPassword(window.userSession.phone, password);
         AuthUI.close();
 
         if (!verification || verification.error) {
@@ -370,7 +386,7 @@ async function profileHandleAccountDeletion(userSession) {
     }
 
     AuthUI.showLoading("جاري الحذف...");
-    const result = await deleteUser(userSession.user_key);
+    const result = await deleteUser(window.userSession.user_key);
     AuthUI.close();
 
     if (result && !result.error) {
@@ -391,31 +407,41 @@ async function profileHandleAccountDeletion(userSession) {
  */
 function profileSetupListeners() {
     try {
+        const els = profileGetElements();
+
         // 1. Initialize Password Visibility
         profileTogglePasswordVisibility("profile-new-password", "profile-toggle-new-password");
         profileTogglePasswordVisibility("profile-confirm-password", "profile-toggle-confirm-password-icon");
 
         // 2. Change Password Option Handler
-        profileElements.changePasswordCheckbox.addEventListener("click", profileHandleChangePasswordCheck);
+        if (els.changePasswordCheckbox) {
+            els.changePasswordCheckbox.addEventListener("click", profileHandleChangePasswordCheck);
+        }
 
         // 3. Save Button Handler
-        profileElements.saveButton.addEventListener("click", profileHandleSaveChanges);
+        if (els.saveButton) {
+            els.saveButton.addEventListener("click", profileHandleSaveChanges);
+        }
 
         // 4. Delete Account Button Handler
-        profileElements.deleteButton.addEventListener("click", (e) => {
-            e.preventDefault();
-            profileHandleAccountDeletion(userSession);
-        });
+        if (els.deleteButton) {
+            els.deleteButton.addEventListener("click", (e) => {
+                e.preventDefault();
+                profileHandleAccountDeletion(window.userSession);
+            });
+        }
 
         // Location Picker Support
-        const locationBtn = document.getElementById("profile-location-btn");
-        if (locationBtn) {
-            locationBtn.addEventListener("click", () => {
-                const existingCoords = document.getElementById("profile-coords")?.value || "";
+        if (els.locationBtn) {
+            els.locationBtn.addEventListener("click", () => {
+                const existingCoords = els.coordsInput?.value || "";
                 let iframeSrc = "location/LOCATION.html";
+
                 if (existingCoords && existingCoords.includes(",")) {
-                    const [lt, ln] = existingCoords.split(",").map(c => c.trim());
-                    iframeSrc += `?lat=${lt}&lng=${ln}`;
+                    const coords = existingCoords.split(",").map(c => c.trim());
+                    if (coords.length === 2) {
+                        iframeSrc += `?lat=${coords[0]}&lng=${coords[1]}`;
+                    }
                 }
 
                 Swal.fire({

@@ -34,6 +34,7 @@ location_app.location_initMap = function () {
         }).addTo(this.location_map);
 
         if (location_savedLocation) {
+            this.location_map.setView([location_savedLocation.lat, location_savedLocation.lng], location_savedLocation.zoom);
             this.location_updateMarker(location_savedLocation.lat, location_savedLocation.lng);
         }
 

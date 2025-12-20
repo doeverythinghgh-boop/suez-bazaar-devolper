@@ -35,17 +35,22 @@ location_app.location_getSavedLocation = function () {
 
     // 2. Check URL params (passed from parent)
     const params = new URLSearchParams(window.location.search);
-    const lat = parseFloat(params.get('lat'));
-    const lng = parseFloat(params.get('lng'));
+    const latParam = params.get('lat');
+    const lngParam = params.get('lng');
 
-    if (!isNaN(lat) && !isNaN(lng)) {
-        this.location_currentSelection = {
-            lat: lat,
-            lng: lng,
-            zoom: 15,
-            timestamp: new Date().toISOString()
-        };
-        return this.location_currentSelection;
+    if (latParam !== null && lngParam !== null) {
+        const lat = parseFloat(latParam);
+        const lng = parseFloat(lngParam);
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+            this.location_currentSelection = {
+                lat: lat,
+                lng: lng,
+                zoom: 15,
+                timestamp: new Date().toISOString()
+            };
+            return this.location_currentSelection;
+        }
     }
 
     return null;
