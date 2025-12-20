@@ -223,6 +223,33 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
                         });
                     }
                 }
+
+                // إضافة مستمع لحدث النقر على زر خريطة المشتري
+                const popup = Swal.getPopup();
+                popup.querySelectorAll('.btn-view-buyer-map').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const lat = btn.dataset.lat;
+                        const lng = btn.dataset.lng;
+
+                        Swal.fire({
+                            html: `<iframe src="/location/LOCATION.html?lat=${lat}&lng=${lng}&viewOnly=true" style="width: 100%; height: 95vh; border: none; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);"></iframe>`,
+                            showConfirmButton: false,
+                            showCloseButton: false,
+                            padding: '0',
+                            background: 'transparent',
+                            customClass: { popup: "fullscreen-swal" },
+                            didOpen: () => {
+                                const handleMapMsg = (event) => {
+                                    if (event.data && event.data.type === 'CLOSE_LOCATION_MODAL') {
+                                        Swal.close();
+                                        window.removeEventListener('message', handleMapMsg);
+                                    }
+                                };
+                                window.addEventListener('message', handleMapMsg);
+                            }
+                        });
+                    });
+                });
             },
         });
     } catch (error) {

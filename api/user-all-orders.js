@@ -209,7 +209,8 @@ export default async function handler(request) {
           o.created_at,
           u.username as user_name,
           u.phone as user_phone,
-          u.Address as user_address
+          u.Address as user_address,
+          u.Location as user_location
         FROM orders o
         JOIN users u ON o.user_key = u.user_key
         WHERE o.order_key IN (${placeholders})
@@ -335,6 +336,7 @@ export default async function handler(request) {
         user_name: order.user_name,
         user_phone: order.user_phone,
         user_address: order.user_address,
+        user_location: order.user_location,
         order_status: order.order_status,
         created_at: order.created_at,
         total_amount: order.total_amount,

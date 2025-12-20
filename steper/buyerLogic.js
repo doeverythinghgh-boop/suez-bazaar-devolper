@@ -153,7 +153,8 @@ export function getUserDetailsForDelivery(products, ordersData) {
             userDetails.push({
                 name: parentOrder.user_name || "N/A",
                 phone: parentOrder.user_phone || "N/A",
-                address: parentOrder.user_address || "N/A"
+                address: parentOrder.user_address || "N/A",
+                location: parentOrder.user_location || null
             });
         }
     });

@@ -81,7 +81,20 @@ export function generateDeliveryUserInfoHtml(userDetails) {
          <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right; direction: rtl;">
             <p style="margin: 5px 0;"><strong style="color: #03478f;">الاسم:</strong> <span style="color: #4a5568;">${user.name}</span></p>
             <p style="margin: 5px 0;"><strong style="color: #03478f;">الهاتف:</strong> <a href="tel:${user.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${user.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a></p>
-            <p style="margin: 5px 0;"><strong style="color: #03478f;">العنوان:</strong> <span style="color: #4a5568;">${user.address}</span></p>
+            <p style="margin: 5px 0;">
+                <strong style="color: #03478f;">العنوان:</strong> 
+                <span style="color: #4a5568;">${user.address}</span>
+                ${(user.location && user.location.trim() !== "") ? `
+                    <button class="btn-view-buyer-map" 
+                            data-lat="${user.location.split(',')[0].trim()}" 
+                            data-lng="${user.location.split(',')[1].trim()}"
+                            data-name="${user.name}"
+                            title="عرض على الخريطة"
+                            style="margin-right: 5px; cursor: pointer; border: none; background: none; color: #007bff; font-size: 1.1em; padding: 0;">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </button>
+                ` : ""}
+            </p>
         </div>
     `).join("");
 }
