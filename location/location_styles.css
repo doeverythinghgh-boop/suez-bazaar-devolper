@@ -205,8 +205,8 @@ body {
 
 /* Map attribution style */
 .leaflet-control-attribution {
-    font-size: 7px !important;
-    opacity: 0.7;
+    font-size: 3px !important;
+    opacity: 0.5;
 }
 
 /* Move Leaflet controls to the right (RTL support) */
