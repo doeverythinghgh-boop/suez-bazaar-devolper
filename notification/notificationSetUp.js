@@ -76,7 +76,7 @@ async function registerServiceWorker() {
 
     try {
         console.log("[SW] جاري تسجيل Service Worker...");
-        const reg = await navigator.serviceWorker.register("firebase-messaging-sw.js");
+        const reg = await navigator.serviceWorker.register("/firebase-messaging-sw.js");
 
         // الانتظار حتى يصبح Service Worker نشطاً تماماً
         // هذا يمنع خطأ "no active Service Worker" عند طلب التوكن
