@@ -164,26 +164,7 @@ location_app.location_handleLocationSelection = async function (lat, lng) {
  * @returns {void}
  */
 location_app.location_loadInitialLocation = function () {
-    try {
-        if (!this.location_getSavedLocation() && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    this.location_map.setView(
-                        [position.coords.latitude, position.coords.longitude],
-                        15
-                    );
-                },
-                () => {
-                    console.log('Using default location view');
-                },
-                {
-                    enableHighAccuracy: false,
-                    maximumAge: 600000,
-                    timeout: 5000
-                }
-            );
-        }
-    } catch (error) {
-        console.error('Failed to load initial location:', error);
-    }
+    // Auto-GPS removed to strictly follow "Open at Default Location" if no saved location exists.
+    // User can still click the 'Deteremine' (GPS) button.
+    console.log('Map initialized at target location (Saved or Default).');
 };

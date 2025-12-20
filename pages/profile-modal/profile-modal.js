@@ -109,25 +109,13 @@ function profileInitializeData() {
         profileElements.confirmPasswordInput.value = "";
         profileElements.passwordErrorDiv.textContent = "";
 
-        // NEW: Restore saved location from userSession or localStorage
-        const savedLocation = localStorage.getItem('saved_location') || localStorage.getItem('bidstory_user_saved_location');
+        // Restore saved location from userSession (Database driven)
         const coordsInput = document.getElementById("profile-coords");
         const locationBtn = document.getElementById("profile-location-btn");
         const addressError = document.getElementById("profile-address-error");
 
-        // Prioritize session coordinates if they exist
-        let initialCoords = userSession.coordinates || "";
-
-        if (!initialCoords && savedLocation) {
-            try {
-                const parsed = JSON.parse(savedLocation);
-                if (parsed && (parsed.lat || parsed.lng)) {
-                    initialCoords = parsed.coordinates || `${parsed.lat}, ${parsed.lng}`;
-                }
-            } catch (e) {
-                console.error("Error parsing saved location in profile:", e);
-            }
-        }
+        // Prioritize session location (formerly coordinates)
+        let initialCoords = userSession.location || userSession.coordinates || "";
 
         if (initialCoords && coordsInput) {
             coordsInput.value = initialCoords;
@@ -294,7 +282,7 @@ async function profileHandleSaveChanges() {
 
     const coordInput = document.getElementById("profile-coords");
     if (coordInput && coordInput.value) {
-        updatedData.coordinates = coordInput.value;
+        updatedData.location = coordInput.value;
     }
 
     if (profileElements.changePasswordCheckbox.checked && password) {
@@ -423,11 +411,18 @@ function profileSetupListeners() {
         const locationBtn = document.getElementById("profile-location-btn");
         if (locationBtn) {
             locationBtn.addEventListener("click", () => {
+                const existingCoords = document.getElementById("profile-coords")?.value || "";
+                let iframeSrc = "location/LOCATION.html";
+                if (existingCoords && existingCoords.includes(",")) {
+                    const [lt, ln] = existingCoords.split(",").map(c => c.trim());
+                    iframeSrc += `?lat=${lt}&lng=${ln}`;
+                }
+
                 Swal.fire({
                     html: `
-                      <div style="width: 100%; height: 500px; overflow: hidden; border-radius: 15px;">
-                        <iframe 
-                          src="location/LOCATION.html" 
+                              <div style="width: 100%; height: 500px; overflow: hidden; border-radius: 15px;">
+                                <iframe 
+                                  src="${iframeSrc}" 
                           style="width: 100%; height: 100%; border: none;"
                           id="profile_location-iframe"
                         ></iframe>

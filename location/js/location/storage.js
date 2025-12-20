@@ -8,59 +8,47 @@
  */
 
 /**
- * Save location data to local storage
+ * Save location data locally in memory (Temporary state)
  * @memberof location_app
  * @param {number} lat - Latitude coordinate
  * @param {number} lng - Longitude coordinate
  * @returns {void}
- * @throws {Error} If saving fails
  */
 location_app.location_saveLocation = function (lat, lng) {
-    try {
-        const location_data = {
-            lat: lat,
-            lng: lng,
-            zoom: this.location_map.getZoom(),
-            timestamp: new Date().toISOString()
-        };
-
-        localStorage.setItem(this.location_storageKey, JSON.stringify(location_data));
-        console.log('Location saved successfully:', location_data);
-    } catch (error) {
-        console.error('Error saving location:', error);
-        throw new Error('تعذر حفظ الموقع في التخزين المحلي');
-    }
+    this.location_currentSelection = {
+        lat: lat,
+        lng: lng,
+        zoom: this.location_map ? this.location_map.getZoom() : 15,
+        timestamp: new Date().toISOString()
+    };
+    console.log('Location updated in memory:', this.location_currentSelection);
 };
 
 /**
- * Retrieve saved location from local storage
+ * Retrieve current location selection from memory or URL params
  * @memberof location_app
- * @returns {Object|null} The saved location object or null if not found/invalid
+ * @returns {Object|null} The current location object or null if not set
  */
 location_app.location_getSavedLocation = function () {
-    try {
-        const location_data = localStorage.getItem(this.location_storageKey);
+    // 1. Check memory state
+    if (this.location_currentSelection) return this.location_currentSelection;
 
-        if (!location_data) {
-            return null;
-        }
+    // 2. Check URL params (passed from parent)
+    const params = new URLSearchParams(window.location.search);
+    const lat = parseFloat(params.get('lat'));
+    const lng = parseFloat(params.get('lng'));
 
-        const location_parsed = JSON.parse(location_data);
-
-        // Validate parsed data structure
-        if (!location_parsed ||
-            typeof location_parsed.lat !== 'number' ||
-            typeof location_parsed.lng !== 'number') {
-            localStorage.removeItem(this.location_storageKey);
-            return null;
-        }
-
-        return location_parsed;
-    } catch (error) {
-        console.error('Error retrieving saved location:', error);
-        localStorage.removeItem(this.location_storageKey);
-        return null;
+    if (!isNaN(lat) && !isNaN(lng)) {
+        this.location_currentSelection = {
+            lat: lat,
+            lng: lng,
+            zoom: 15,
+            timestamp: new Date().toISOString()
+        };
+        return this.location_currentSelection;
     }
+
+    return null;
 };
 
 /**

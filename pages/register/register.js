@@ -118,7 +118,7 @@ if (register_form) {
       user_key: register_userKey,
       password: register_password.value,
       address: register_address.value.trim(),
-      coordinates: document.getElementById("register_coords")?.value || "",
+      location: document.getElementById("register_coords")?.value || "",
     };
 
     // 4. Submit
@@ -135,6 +135,7 @@ if (register_form) {
           phone: register_newUser.phone,
           user_key: register_newUser.user_key,
           Address: register_newUser.address,
+          location: register_newUser.location,
           is_seller: 0,
         };
 
@@ -228,12 +229,19 @@ if (register_togglePasswordIcon && register_password) {
 // Location Picker Logic
 const register_locationBtn = document.getElementById("register_location-btn");
 if (register_locationBtn) {
-  register_locationBtn.addEventListener("click", function () {
+  register_locationBtn.addEventListener("click", () => {
+    const existingCoords = document.getElementById("register_coords")?.value || "";
+    let iframeSrc = "location/LOCATION.html";
+    if (existingCoords && existingCoords.includes(",")) {
+      const [lt, ln] = existingCoords.split(",").map(c => c.trim());
+      iframeSrc += `?lat=${lt}&lng=${ln}`;
+    }
+
     Swal.fire({
       html: `
-        <div style="width: 100%; height: 500px; overflow: hidden; border-radius: 15px;">
-          <iframe 
-            src="location/LOCATION.html" 
+            <div style="width: 100%; height: 500px; overflow: hidden; border-radius: 15px;">
+              <iframe 
+                src="${iframeSrc}" 
             style="width: 100%; height: 100%; border: none;"
             id="register_location-iframe"
           ></iframe>

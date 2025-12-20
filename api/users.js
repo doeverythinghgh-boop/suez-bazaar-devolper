@@ -65,7 +65,7 @@ export default async function handler(request) {
     console.log(`[Request Start] Method: ${request.method}, URL: ${request.url}`);
 
     if (request.method === "POST") {
-      const { action, phone, password, username, user_key, address } = await request.json();
+      const { action, phone, password, username, user_key, address, location } = await request.json();
 
       // ✅ الحالة 1: التحقق من كلمة المرور
       if (action === 'verify') {
@@ -112,8 +112,8 @@ export default async function handler(request) {
       }
 
       await db.execute({
-        sql: "INSERT INTO users (username, phone, user_key, Password, Address) VALUES (?, ?, ?, ?, ?)",
-        args: [username, phone, user_key, password || null, address || null]
+        sql: "INSERT INTO users (username, phone, user_key, Password, Address, location) VALUES (?, ?, ?, ?, ?, ?)",
+        args: [username, phone, user_key, password || null, address || null, location || null]
       });
 
       return new Response(JSON.stringify({ message: "تم إضافة المستخدم بنجاح ✅" }), {
@@ -127,7 +127,7 @@ export default async function handler(request) {
       // إذا تم توفير رقم هاتف، ابحث عن مستخدم معين
       if (phone) {
         const result = await db.execute({
-          sql: "SELECT id, username, phone, is_seller, user_key, Password, Address FROM users WHERE phone = ?",
+          sql: "SELECT id, username, phone, is_seller, user_key, Password, Address, location FROM users WHERE phone = ?",
           args: [phone],
         });
 
@@ -146,7 +146,7 @@ export default async function handler(request) {
       if (role) {
         const result = await db.execute({
           sql: `
-            SELECT id, username, phone, is_seller, user_key, Address,
+            SELECT id, username, phone, is_seller, user_key, Address, location,
                    (SELECT fcm_token FROM user_tokens ut WHERE ut.user_key = u.user_key LIMIT 1) as fcm_token
             FROM users u 
             WHERE is_seller = ?
@@ -160,7 +160,7 @@ export default async function handler(request) {
       // ✅ إصلاح: استخدام LEFT JOIN لجلب fcm_token مع كل مستخدم إن وجد.
       const result = await db.execute(`
         SELECT 
-          u.id, u.username, u.phone, u.is_seller, u.user_key, u.Address, u.Password,
+          u.id, u.username, u.phone, u.is_seller, u.user_key, u.Address, u.location, u.Password,
            ut.fcm_token,
     ut.platform  
         FROM users u
@@ -206,7 +206,7 @@ export default async function handler(request) {
       // الحالة 2: تحديث بيانات مستخدم واحد
       else if (typeof updatesData === 'object' && updatesData.user_key) {
         console.log(`[Logic] Entered: Update single user profile for key: ${updatesData.user_key}`);
-        const { user_key, username, phone, password, address } = updatesData;
+        const { user_key, username, phone, password, address, location } = updatesData;
 
         // إذا تم تغيير رقم الهاتف، تحقق من أنه غير مستخدم
         if (phone) {
@@ -228,6 +228,7 @@ export default async function handler(request) {
         if (phone) { sql += "phone = ?, "; args.push(phone); }
         if (password) { sql += "Password = ?, "; args.push(password); }
         if (address !== undefined) { sql += "Address = ?, "; args.push(address); }
+        if (location !== undefined) { sql += "location = ?, "; args.push(location); }
 
         sql = sql.slice(0, -2); // إزالة الفاصلة الأخيرة
         sql += " WHERE user_key = ?";
@@ -278,4 +279,4 @@ export default async function handler(request) {
     });
   }
 }
-      // بفضل ON DELETE CASCADE في قاعدة البيانات، سيتم حذف جميع ال
+// بفضل ON DELETE CASCADE في قاعدة البيانات، سيتم حذف جميع ال
