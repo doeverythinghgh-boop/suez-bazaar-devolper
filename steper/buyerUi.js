@@ -196,6 +196,7 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
  * @returns {string} HTML string.
  */
 export function generateSellerGroupedHtml(groupedData) {
+    console.log("[BuyerUi] Rendering grouped data:", groupedData);
     if (!groupedData || groupedData.length === 0) return "<p class='text-center'>لا توجد منتجات.</p>";
 
     const groupsHtml = groupedData.map(group => `
@@ -206,7 +207,7 @@ export function generateSellerGroupedHtml(groupedData) {
                     <span><i class="fas fa-phone"></i> <a href="tel:${group.seller.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${group.seller.phone}</a></span> | 
                     <span>
                         <i class="fas fa-map-marker-alt"></i> ${group.seller.address}
-                        ${group.seller.location ? `
+                        ${(group.seller.location && group.seller.location.trim() !== "") ? `
                             <button class="btn-view-seller-map" 
                                     data-lat="${group.seller.location.split(',')[0].trim()}" 
                                     data-lng="${group.seller.location.split(',')[1].trim()}"
@@ -215,7 +216,7 @@ export function generateSellerGroupedHtml(groupedData) {
                                     style="margin-right: 5px; cursor: pointer; border: none; background: none; color: #007bff; font-size: 1.1em; padding: 0;">
                                 <i class="fas fa-map-marked-alt"></i>
                             </button>
-                        ` : ''}
+                        ` : `<!-- No Location Found for ${group.seller.name} -->`}
                     </span>
                 </div>
             </div>

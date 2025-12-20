@@ -188,10 +188,9 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
 
         if (foundItem && foundOrder) {
             const sellerKey = foundItem.seller_key;
-
             if (!grouped[sellerKey]) {
-                // Find seller details
                 const sellerUser = allUsers.find(u => u.user_key === sellerKey);
+                console.log(`[BuyerLogic] Seller ${sellerKey} location:`, sellerUser?.location);
                 grouped[sellerKey] = {
                     seller: {
                         name: sellerUser?.username || "غير معروف",
@@ -202,7 +201,6 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
                     products: []
                 };
             }
-
             grouped[sellerKey].products.push({
                 name: foundItem.product_name || "منتج",
                 quantity: parseInt(foundItem.quantity) || 1,
