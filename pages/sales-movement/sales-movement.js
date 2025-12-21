@@ -28,6 +28,11 @@ async function salesMovement_fetchOrders(salesMovement_userType) {
                 salesMovement_url = `${baseURL}/api/user-all-orders?user_key=${salesMovement_userKey}&role=${salesMovement_role}`;
                 console.log('جاري جلب طلبات خدمة التوصيل...');
                 break;
+            case 'admin':
+                salesMovement_role = 'admin';
+                salesMovement_url = `${baseURL}/api/user-all-orders?user_key=${salesMovement_userKey}&role=${salesMovement_role}`;
+                console.log('جاري جلب كافة الطلبات (وضع المسؤول)...');
+                break;
             default:
                 console.log('نوع مستخدم غير صالح');
                 return;
@@ -144,6 +149,7 @@ function salesMovement_displayOrders(salesMovement_data) {
                     let apiRole = 'purchaser';
                     if (roleType === 'seller') apiRole = 'seller';
                     if (roleType === 'delivery') apiRole = 'delivery';
+                    if (roleType === 'admin') apiRole = 'admin';
 
                     // بناء الرابط
                     const fetchUrl = `${baseURL}/api/user-all-orders?user_key=${userKey}&role=${apiRole}&order_key=${salesMovement_orderData.order_key}`;
@@ -216,8 +222,36 @@ function salesMovement_loadUserTypeSelection() {
         } else {
             console.log('لا يوجد اختيار محفوظ');
         }
+
+        // تحقق من صلاحيات المسؤول لإظهار الخيار
+        salesMovement_checkAdminStatus();
+
     } catch (salesMovement_error) {
         console.error('حدث خطأ في دالة loadUserTypeSelection:', salesMovement_error);
+    }
+}
+
+/**
+ * @description يتحقق مما إذا كان المستخدم الحالي مسؤولاً ويظهر خيار المسؤول في الفلتر.
+ * @function salesMovement_checkAdminStatus
+ */
+function salesMovement_checkAdminStatus() {
+    try {
+        const user = userSession;
+        if (!user) return;
+
+        const isAdmin = (typeof adminPhoneNumbers !== "undefined" && adminPhoneNumbers.includes(user.phone));
+        const isImpersonating = localStorage.getItem("originalAdminSession");
+
+        if (isAdmin || isImpersonating) {
+            const adminOption = document.getElementById('salesMovement_adminOption');
+            if (adminOption) {
+                adminOption.style.display = 'block';
+                console.log('✅ تم تفعيل خيار المسؤول في لوحة حركة المبيعات');
+            }
+        }
+    } catch (error) {
+        console.error('خطأ في التحقق من حالة المسؤول:', error);
     }
 }
 
