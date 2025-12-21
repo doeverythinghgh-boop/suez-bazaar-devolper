@@ -12,10 +12,11 @@
          * All hover effects have been intentionally removed
          */
   .contact_container {
-    width: 90%;
+    width: 95%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 5px;
+    padding: 10px;
+    box-sizing: border-box;
   }
 
   .contact_logo {
@@ -153,12 +154,12 @@
   #contact_form_title,
   #contact_services_title {
     flex: 1;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, var(--primary-color-light), var(--bg-color-white));
-    border: 2px solid var(--primary-color);
-    border-radius: 8px;
+    padding: 8px 15px;
+    background-color: transparent;
+    border: 1.5px solid var(--primary-color);
+    border-radius: 10px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.85rem;
     font-weight: 600;
     color: var(--primary-color);
     position: relative;
@@ -166,38 +167,27 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    transform: scale(1);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: none;
     margin: 0;
     text-align: center;
     width: auto;
   }
 
-  #contact_form_services_section.contact_expanded #contact_form_title,
-  #contact_form_services_section.contact_expanded #contact_services_title {
-    background-color: transparent;
-    border: none;
-    border-radius: 8px 8px 0 0;
-    box-shadow: none;
-    color: var(--text-color-medium);
-  }
 
-  #contact_form_title.contact_active,
-  #contact_services_title.contact_active {
-    color: var(--primary-color);
-    background-color: var(--primary-color-light);
-  }
+
+
 
   #contact_form_services_section.contact_expanded #contact_form_title.contact_active::after,
   #contact_form_services_section.contact_expanded #contact_services_title.contact_active::after {
     content: '';
     position: absolute;
-    bottom: -12px;
-    left: 0;
-    right: 0;
+    bottom: -15px;
+    left: 20%;
+    right: 20%;
     height: 3px;
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    border-radius: 2px;
+    background-color: var(--primary-color);
+    border-radius: 10px;
   }
 
   #contact_form_title:active,
@@ -283,7 +273,7 @@
     opacity: 1;
     max-height: 2000px;
     transform: translateY(0);
-    margin-top: 20px;
+    margin-top: 5px;
   }
 
   .contact_services-grid {
@@ -405,17 +395,20 @@
   /* Legal Pages Section with Tabs */
   .contact_legal-section {
     margin-bottom: 30px;
-    background-color: var(--bg-color-white);
-    border-radius: 10px;
-    padding: 20px;
-    transition: all 0.4s ease;
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    padding: 0; /* Remove padding here */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
-    max-height: 80px;
+    max-height: 95px;
   }
 
   .contact_legal-section.contact_expanded {
     max-height: 2000px;
-    padding: 20px;
+    padding: 0; /* Remove padding here */
   }
 
   .contact_legal-tabs {
@@ -423,24 +416,24 @@
     gap: 10px;
     margin-bottom: 0;
     border-bottom: none;
-    padding-bottom: 0;
+    padding: 15px 15px 0 15px; /* Add padding here for tabs only */
     transition: all 0.3s ease;
   }
 
   .contact_legal-section.contact_expanded .contact_legal-tabs {
     border-bottom: 2px solid var(--border-color-input);
-    padding-bottom: 10px;
-    margin-bottom: 20px;
+    padding: 15px 15px 8px 15px;
+    margin-bottom: 10px;
   }
 
   .contact_legal-tab {
     flex: 1;
-    padding: 10px;
-    background: linear-gradient(135deg, var(--primary-color-light), var(--bg-color-white));
-    border: 2px solid var(--primary-color);
-    border-radius: 8px;
+    padding: 8px 10px;
+    background-color: transparent;
+    border: 1.5px solid var(--primary-color);
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 600;
     color: var(--primary-color);
     position: relative;
@@ -450,8 +443,8 @@
     align-items: center;
     justify-content: center;
     gap: 5px;
-    transform: scale(1);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    box-shadow: none;
   }
 
   .contact_legal-tab span {
@@ -464,33 +457,24 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
-  .contact_legal-section.contact_expanded .contact_legal-tab {
-    background-color: transparent;
-    border: none;
-    border-radius: 8px 8px 0 0;
-    box-shadow: none;
-    color: var(--text-color-medium);
-  }
 
-  .contact_legal-tab.contact_active {
-    color: var(--primary-color);
-    background-color: var(--primary-color-light);
-  }
+
+
 
   .contact_legal-section.contact_expanded .contact_legal-tab.contact_active::after {
     content: '';
     position: absolute;
-    bottom: -12px;
-    left: 0;
-    right: 0;
+    bottom: -15px;
+    left: 20%;
+    right: 20%;
     height: 3px;
-    background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-    border-radius: 2px;
+    background-color: var(--primary-color);
+    border-radius: 10px;
   }
 
   .contact_legal-tab i {
-    font-size: 1.4rem;
-    /* Slightly larger icon */
+    font-size: 1.2rem;
+    /* Slightly smaller icon */
   }
 
   .contact_legal-iframe-container {
@@ -500,7 +484,6 @@
     border-radius: 8px;
     overflow: hidden;
     background-color: var(--bg-color-white);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     opacity: 0;
     max-height: 0;
     margin: 0;
@@ -512,7 +495,7 @@
   .contact_legal-section.contact_expanded .contact_legal-iframe-container {
     opacity: 1;
     max-height: 2000px;
-    margin-top: 20px;
+    margin-top: 0px;
     padding: 0;
     transform: translateY(0);
   }
@@ -588,17 +571,88 @@
     }
 
     .contact_hero h2 {
-      font-size: 2rem;
+      font-size: 1.8rem;
+    }
+
+    .contact_hero p {
+      font-size: 1rem;
+      margin-bottom: 20px;
     }
 
     .contact_info,
     .contact_form {
-      padding: 5px;
+      padding: 15px;
+    }
+
+    .contact_legal-tabs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .contact_legal-section {
+      max-height: 250px;
+    }
+
+    .contact_legal-section.contact_expanded {
+      max-height: 2000px;
+    }
+
+    .contact_legal-tab {
+      padding: 12px 8px;
+    }
+
+    .contact_legal-tab span {
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .contact_legal-tabs {
+      grid-template-columns: 1fr;
+    }
+
+    .contact_legal-section {
+      max-height: 450px;
+    }
+
+    .contact_legal-section.contact_expanded {
+      max-height: 2500px;
+    }
+
+    .contact_hero h2 {
+      font-size: 1.5rem;
+    }
+
+    .contact_section-title h2 {
+      font-size: 1.4rem;
+    }
+
+    .contact_service-card {
+      flex-direction: column;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .contact_method {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .contact_icon {
+      margin-left: 0;
+      margin-bottom: 10px;
+    }
+
+    .contact_submit-btn {
+      padding: 12px;
+      font-size: 1rem;
     }
   }
 </style>
 
-<body id="contact_body">
+<body id="contact_body" style="background-color: var(--bg-color-light);">
   <div id="header-container101" style="height: 70px; margin-left: 20px; margin-right: 20px"></div>
 
   <!-- Contact Section -->
@@ -678,7 +732,7 @@
 
     <div class="contact_section" id="contact_grid_section">
       <!-- Contact Info -->
-      <div class="contact_info" id="contact_info_div">
+      <div class="contact_info" id="contact_info_div" style="background-color: var(--bg-color-light);">
         <h3 id="contact_info_title">معلومات الاتصال</h3>
 
         <div class="contact_method" id="contact_method_phone">
@@ -717,7 +771,7 @@
       </div>
 
       <!-- Contact Form and Services Tabs Section -->
-      <div class="contact_legal-section" id="contact_form_services_section">
+      <div class="contact_legal-section" id="contact_form_services_section" style="background-color: var(--bg-color-light);">
         <div class="contact_legal-tabs" id="contact_form_services_tabs">
           <button class="contact_legal-tab" id="contact_form_title" data-tab="form">
             <i class="fas fa-envelope" id="contact_form_title_icon"></i>
@@ -736,9 +790,9 @@
             <span id="contact_legal_text_delete">حذف البيانات</span>
           </button>
         </div>
-        <div class="contact_legal-iframe-container" id="contact_form_services_container">
+        <div class="contact_legal-iframe-container" id="contact_form_services_container" style="background-color: var(--bg-color-light);">
           <!-- Contact Form -->
-          <div class="contact_form contact_tab_content" id="contact_form_div" data-content="form">
+          <div class="contact_form contact_tab_content contact_hidden" id="contact_form_div" data-content="form">
             <form id="contact_contactForm">
               <div class="contact_form-group" id="contact_form_group_name">
                 <label for="contact_name" id="contact_label_name">الاسم الكامل *</label>
@@ -768,12 +822,6 @@
                   <option value="branding" id="contact_option_branding">
                     تصميم الهوية البصرية
                   </option>
-                  <option value="social" id="contact_option_social">
-                    إدارة وسائل التواصل الاجتماعي
-                  </option>
-                  <option value="seo" id="contact_option_seo">
-                    تحسين محركات البحث
-                  </option>
                   <option value="other" id="contact_option_other">خدمة أخرى</option>
                 </select>
               </div>
@@ -790,7 +838,7 @@
             </form>
           </div>
           <!-- Services Section -->
-          <div class="contact_info contact_tab_content" id="contact_services_section" data-content="services">
+          <div class="contact_info contact_tab_content contact_hidden" id="contact_services_section" data-content="services">
             <div class="contact_services-grid" id="contact_services_grid">
               <!-- ✅ EDIT: Title and description merged into one container -->
               <div class="contact_service-card" id="contact_service_card_digital">
@@ -961,10 +1009,8 @@
               Object.values(contact_contents).forEach((contact_content) => {
                 if (contact_content) {
                   contact_content.classList.remove("contact_tab_visible");
-                  if (contact_content.classList.contains("contact_legal-iframe")) {
-                    contact_content.classList.add("contact_hidden");
-                    contact_content.classList.remove("contact_visible");
-                  }
+                  contact_content.classList.add("contact_hidden");
+                  contact_content.classList.remove("contact_visible");
                 }
               });
 
@@ -977,17 +1023,13 @@
                   if (!selectedContent.src && selectedContent.hasAttribute("data-src")) {
                     selectedContent.src = selectedContent.getAttribute("data-src");
                   }
-                  setTimeout(() => {
-                    selectedContent.classList.remove("contact_hidden");
-                    selectedContent.classList.add("contact_visible");
-                    selectedContent.classList.add("contact_tab_visible");
-                  }, 100);
-                } else {
-                  // Normal div content
-                  setTimeout(() => {
-                    selectedContent.classList.add("contact_tab_visible");
-                  }, 100);
                 }
+
+                setTimeout(() => {
+                  selectedContent.classList.remove("contact_hidden");
+                  selectedContent.classList.add("contact_visible");
+                  selectedContent.classList.add("contact_tab_visible");
+                }, 100);
               }
             } catch (error) {
               console.error("خطأ في تبديل علامات التبويب:", error);

@@ -11,15 +11,15 @@ CSS: User Profile Styles
     background-color: rgba(255, 255, 255, 0.85);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    padding-right: 30px;
-    padding-left: 30px;
+    padding: 20px 30px;
     border-radius: 20px;
     animation: profileSlideIn 0.4s ease-out;
     /* Animation name changed */
     overflow-x: hidden;
+    width: 95%;
     max-width: 500px;
     /* Set max width for container */
-    margin: 0px;
+    margin: 20px auto;
     /* Center container */
 }
 
@@ -192,6 +192,7 @@ CSS: User Profile Styles
     justify-content: center;
     /* ✅ ADJUST: Center buttons */
     align-items: center;
+    flex-wrap: wrap;
     gap: 15px;
     /* ✅ NEW: Gap between buttons */
     margin-top: 25px;
@@ -317,5 +318,56 @@ CSS: User Profile Styles
     to {
         transform: translateY(0);
         opacity: 1;
+    }
+}
+
+/* ======================================
+   Media Queries for Responsiveness
+   ====================================== */
+
+@media screen and (max-width: 480px) {
+    .profile-content {
+        padding: 15px 20px;
+        margin: 10px auto;
+    }
+
+    .profile-content h3 {
+        margin-bottom: 20px;
+    }
+
+    .profile-modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-modal-footer .profile-button {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .profile-modal-footer .profile-delete-btn-small {
+        width: 100%;
+        order: 2; /* Smallest button at bottom on mobile */
+    }
+
+    .profile-modal-footer .profile-save-btn {
+        order: 1;
+    }
+
+    .profile-input-with-button {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .profile-location-wrapper {
+        align-self: flex-end;
+        margin-top: 5px;
+    }
+
+    .profile-location-badge {
+        position: static;
+        transform: none;
+        margin-top: 5px;
     }
 }
