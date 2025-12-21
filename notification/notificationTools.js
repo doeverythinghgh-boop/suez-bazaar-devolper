@@ -1048,13 +1048,15 @@ async function notifyAdminOnNewItem(productData) {
 
         const itemType = (productData.serviceType === 'service' || productData.isService) ? 'خدمة' : 'منتج';
         const itemName = productData.productName || 'غير مسمى';
+        const userKey = productData.user_key || 'N/A';
         const userName = userSession?.user_name || 'مستخدم مجهول';
 
-        console.log(`[Dev-Notification] 🛠️ تجهيز القالب: new-item-added.admin | المادة: ${itemName} | بواسطة: ${userName}`);
+        console.log(`[Dev-Notification] 🛠️ تجهيز القالب: new-item-added.admin | المادة: ${itemName} | بواسطة: ${userName} | المفتاح: ${userKey}`);
         const { title, body } = getMessageTemplate('new-item-added.admin', {
             itemType,
             itemName,
-            userName
+            userName,
+            userKey
         });
 
         if (!body) {

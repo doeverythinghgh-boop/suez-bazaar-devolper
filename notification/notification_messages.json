@@ -97,7 +97,7 @@
     "new-item-added": {
         "admin": {
             "title": "إضافة جديدة في المتجر",
-            "body": "تم إضافة ${itemType} جديد: ${itemName} بواسطة ${userName}."
+            "body": "تم إضافة ${itemType} جديد: ${itemName} بواسطة ${userName} (المفتاح: ${userKey})."
         }
     }
 }
