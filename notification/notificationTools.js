@@ -1022,33 +1022,54 @@ async function notifyOnSubStepActivation({
  * @async
  */
 async function notifyAdminOnNewItem(productData) {
+    console.log(`%c[Dev-Notification] 🚀 بدء محاولة إخطار الإدارة بالإضافة الجديدة للمادة: ${productData.productName}`, 'color: #2196F3; font-weight: bold;');
     try {
-        if (!(await shouldNotify('new-item-added', 'admin'))) {
+        console.log(`[Dev-Notification] 🔍 المرحلة 1: التحقق من تفعيل الحدث (new-item-added) في الإعدادات...`);
+        const isEnabled = await shouldNotify('new-item-added', 'admin');
+
+        if (!isEnabled) {
+            console.warn(`[Dev-Notification] ⚠️ الكود توقف: الإشعار للحدث new-item-added (admin) معطل حالياً في ملف التكوين.`);
             return;
         }
+        console.log(`[Dev-Notification] ✅ الحدث مفعل في الإعدادات.`);
 
+        console.log(`[Dev-Notification] 🔑 المرحلة 2: جلب توكنات FCM الخاصة بمدراء النظام...`);
         const adminTokens = await getAdminTokens();
-        if (adminTokens.length === 0) {
-            console.warn('[Notifications] لا يوجد توكنات للأدمن لإرسال إشعار الإضافة الجديدة');
+        if (!adminTokens || adminTokens.length === 0) {
+            console.error('[Dev-Notification] ❌ خطأ: لم يتم العثور على أي توكنات (Admins) مسجلة في قاعدة البيانات.');
             return;
         }
 
+        // عرض التوكنات بناءً على طلب المستخدم
+        console.log(`[Dev-Notification] 📱 توكنات الإدارة المكتشفة (${adminTokens.length}):`, adminTokens);
+
+        console.log(`[Dev-Notification] 📄 المرحلة 3: تحميل نصوص الرسائل وتجهيز المحتوى النهائي...`);
         await loadNotificationMessages();
 
-        const itemType = productData.serviceType === 'service' ? 'خدمة' : 'منتج';
+        const itemType = (productData.serviceType === 'service' || productData.isService) ? 'خدمة' : 'منتج';
         const itemName = productData.productName || 'غير مسمى';
-        const userName = userSession?.user_name || 'مستخدم';
+        const userName = userSession?.user_name || 'مستخدم مجهول';
 
+        console.log(`[Dev-Notification] 🛠️ تجهيز القالب: new-item-added.admin | المادة: ${itemName} | بواسطة: ${userName}`);
         const { title, body } = getMessageTemplate('new-item-added.admin', {
             itemType,
             itemName,
             userName
         });
 
-        await sendNotificationsToTokens(adminTokens, title, body);
-        console.log(`[Notifications] تم إرسال إشعار للإدارة عن إضافة ${itemType}: ${itemName}`);
+        if (!body) {
+            console.error('[Dev-Notification] ❌ خطأ فادح: محتوى الرسالة (Body) فارغ! تأكد من وجود مفتاح new-item-added في notification_messages.json');
+        } else {
+            console.log(`[Dev-Notification] ✅ تم تجهيز الرسالة بنجاح: "${body.substring(0, 30)}..."`);
+        }
+
+        console.log(`[Dev-Notification] 📡 المرحلة 4: إرسال الطلبات المتوازية إلى Firebase لعدد ${adminTokens.length} توكن...`);
+        const sendResult = await sendNotificationsToTokens(adminTokens, title, body);
+
+        console.log(`[Dev-Notification] 🏁 ملخص النتيجة النهائية للإرسال:`, sendResult);
+        console.log(`%c[Notifications] ✅ تم إرسال إشعار للإدارة بنجاح عن إضافة ${itemType}: ${itemName}`, 'color: #4CAF50; font-weight: bold;');
 
     } catch (error) {
-        console.error('[Notifications] فشل إرسال إشعار إضافة مادة جديدة للإدارة:', error);
+        console.error('%c[Dev-Notification] ❌ فشل عملية الإخطار بالكامل نتيجة خطأ غير متوقع:', 'color: red;', error);
     }
 }
