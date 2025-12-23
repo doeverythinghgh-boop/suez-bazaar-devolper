@@ -259,6 +259,33 @@
       ]
     },
     {
+      "id": 4.1,
+      "title": "أوريفليم",
+      "icon": "fas fa-circle-notch",
+      "subcategories": [
+        {
+          "id": 1,
+          "title": "عطور رجالي وحريمي",
+          "icon": "fas fa-spray-can"
+        },
+        {
+          "id": 2,
+          "title": "مستحضرات تجميل",
+          "icon": "fas fa-paint-brush"
+        },
+        {
+          "id": 3,
+          "title": "عروض",
+          "icon": "fas fa-tags"
+        },
+        {
+          "id": 4,
+          "title": "عضوية جديدة",
+          "icon": "fas fa-user-plus"
+        }
+      ]
+    },
+    {
       "id": 5,
       "title": "المنزل والأثاث",
       "icon": "fas fa-couch",
@@ -456,7 +483,7 @@
       "title": "الرياضة والترفيه",
       "icon": "fas fa-basketball-ball",
       "subcategories": [
-          {
+        {
           "id": 2,
           "title": "جيم",
           "icon": "fas fa-dumbbell"
@@ -513,7 +540,6 @@
           "title": "طيور الزينة",
           "icon": "fas fa-dove"
         },
-        
         {
           "id": 5,
           "title": "خدمات رعاية وتدريب الحيوانات",
@@ -588,8 +614,7 @@
           "title": "شقق ومنازل للبيع",
           "icon": "fas fa-home"
         },
-        
-         {
+        {
           "id": 7,
           "title": "شليهات و فلل",
           "icon": "fas fa-house-chimney-window"
@@ -646,17 +671,13 @@
           "title": "بطاقات المعايدة والتهنئة",
           "icon": "fas fa-envelope-open-text"
         },
-        
         {
           "id": 5,
           "title": "خدمات التصوير والفيديو",
           "icon": "fas fa-video"
         }
-        
       ]
-      
-    }
-    ,
+    },
     {
       "id": 18,
       "title": "تجار الجملة",
@@ -667,9 +688,7 @@
           "title": "تاجر 1",
           "icon": "fas fa-warehouse"
         }
-        
       ]
-      
     }
   ]
 }

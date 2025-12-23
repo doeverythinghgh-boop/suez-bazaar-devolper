@@ -68,6 +68,11 @@
             "mainId": 17,
             "subId": 5,
             "description": "خدمات التصوير والفيديو"
+        },
+        {
+            "mainId": 4.1,
+            "subId": 4,
+            "description": "عضوية أوريفليم الجديدة"
         }
     ],
     "settings": {

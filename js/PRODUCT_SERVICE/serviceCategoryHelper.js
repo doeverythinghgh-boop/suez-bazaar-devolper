@@ -68,8 +68,8 @@ function isServiceCategory(mainId, subId = null) {
     const config = _serviceConfig;
 
     // Convert to numbers for comparison
-    const mainIdNum = parseInt(mainId);
-    const subIdNum = subId ? parseInt(subId) : null;
+    const mainIdNum = parseFloat(mainId);
+    const subIdNum = subId ? parseFloat(subId) : null;
 
     // Check if entire main category is a service
     if (config.serviceMainCategories.includes(mainIdNum)) {
