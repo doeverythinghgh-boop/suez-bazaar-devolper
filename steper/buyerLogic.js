@@ -205,6 +205,7 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
                 name: foundItem.product_name || "منتج",
                 quantity: parseInt(foundItem.quantity) || 1,
                 price: parseFloat(foundItem.product_price) || 0,
+                realPrice: parseFloat(foundItem.real_price || foundItem.realPrice) || 0,
                 total: (parseFloat(foundItem.product_price) || 0) * (parseInt(foundItem.quantity) || 1)
             });
         }

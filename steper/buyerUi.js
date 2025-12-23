@@ -238,6 +238,7 @@ export function generateSellerGroupedHtml(groupedData) {
                         <tr style="border-bottom: 2px solid #eee;">
                             <th style="padding: 5px;">المنتج</th>
                             <th style="padding: 5px;">سعر القطعة</th>
+                            <th style="padding: 5px;">سعر التطبيق</th>
                             <th style="padding: 5px;">الكمية</th>
                             <th style="padding: 5px;">إجمالي</th>
                         </tr>
@@ -247,6 +248,7 @@ export function generateSellerGroupedHtml(groupedData) {
                             <tr style="border-bottom: 1px solid #eee;">
                                 <td style="padding: 8px;">${p.name}</td>
                                 <td style="padding: 8px;">${p.price.toFixed(2)}</td>
+                                <td style="padding: 8px; color: #d97706; font-weight: bold;">${p.realPrice.toFixed(2)}</td>
                                 <td style="padding: 8px;">${p.quantity}</td>
                                 <td style="padding: 8px;">${p.total.toFixed(2)}</td>
                             </tr>
@@ -254,7 +256,7 @@ export function generateSellerGroupedHtml(groupedData) {
                     </tbody>
                     <tfoot style="background: #f1f1f1; font-weight: bold;">
                         <tr>
-                            <td colspan="3" style="padding: 8px; text-align: left;">إجمالي الحساب للبائع:</td>
+                            <td colspan="4" style="padding: 8px; text-align: left;">إجمالي الحساب للبائع:</td>
                             <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + p.total, 0).toFixed(2)} جنيه</td>
                         </tr>
                     </tfoot>

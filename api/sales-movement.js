@@ -112,7 +112,7 @@ export default async function handler(request) {
       whereClause = 'WHERE 1 = 0'; // شرط مستحيل يحول دون إرجاع أي صفوف
       logMessage = `Access denied or invalid user (role = ${userRole}). Returning empty set.`;
     }
-    
+
     console.log(`[DEV-LOG] ${logMessage}`);
 
     // استعلام شامل لجلب كل البيانات المطلوبة مع الشرط الديناميكي
@@ -128,6 +128,7 @@ export default async function handler(request) {
           u.Address AS customer_address,
           p.productName,
           p.product_price,
+          p.realPrice,
           oi.product_key AS item_product_key,
           oi.quantity,
           oi.seller_key -- ✅ إصلاح: إضافة حقل مفتاح البائع من جدول عناصر الطلب
@@ -164,6 +165,7 @@ export default async function handler(request) {
       ordersMap.get(row.order_key).items.push({
         productName: row.productName,
         product_price: row.product_price,
+        realPrice: row.realPrice,
         quantity: row.quantity,
         product_key: row.item_product_key,
         seller_key: row.seller_key // ✅ إصلاح: إضافة مفتاح البائع إلى كائن المنتج
@@ -172,7 +174,7 @@ export default async function handler(request) {
 
     // تحويل الـ Map إلى مصفوفة من الطلبات المجمعة.
     const groupedOrders = Array.from(ordersMap.values());
-    
+
     // ✅ تتبع: تسجيل البيانات المجمعة قبل إرسالها
     console.log(`[DEV-LOG] /api/sales-movement: تم تجميع البيانات في ${groupedOrders.length} طلب.`);
 
