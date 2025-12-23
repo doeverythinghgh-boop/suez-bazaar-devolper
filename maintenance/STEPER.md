@@ -29,6 +29,20 @@
 | **البائع (Seller)** | تأكيد وشحن | يتحكم في مرحلتي `Confirmed` (التأكيد) و `Shipped` (الشحن) للمنتجات الخاصة به فقط. |
 | **المندوب (Courier)** | شحن وتسليم | يشاهد تفاصيل البائعين لتجميع الطلبات، ويؤكد الشحن أو التسليم. |
 
+### 2.1. خوارزمية تحديد الدور (Role Determination Algorithm)
+تعتمد دالة `determineUserType` في `roleAndStepDetermination.js` على منطق دقيق لتجنب تضارب الصلاحيات:
+
+1.  **المسؤول (Admin):** يتم التحقق أولاً من مصفوفة `ADMIN_IDS` في `config.js`. إذا كان المستخدم فيها، يُمنح صلاحية `admin` فوراً.
+2.  **البائع (Seller):** يتم البحث داخل `order_items`. إذا وجد أن `seller_key` للعنصر يطابق معرف المستخدم الحالي، يتم اعتباره بائعاً.
+3.  **المشتري (Buyer):** يتم البحث في بيانات الطلب `ordersData`. إذا كان `user_key` يطابق معرف المستخدم، يتم اعتباره مشترياً.
+4.  **المندوب (Courier):**
+    *   يتم فحص حقل `supplier_delivery` لكل عنصر.
+    *   يدعم النظام أن يكون هذا الحقل كائناً `{ delivery_key: '...' }` أو مصفوفة.
+    *   يتم استخراج `delivery_key` ومطابقته مع المستخدم الحالي.
+5.  **معالجة التضارب:**
+    *   إذا اكتشف النظام أن المستخدم هو "بائع" و"مشتري" في نفس الوقت لنفس الطلب (وهو خطأ منطقي)، يتم إرجاع `null` وتسجيل خطأ `Fatal Error`.
+    *   الأولوية في الترتيب: المسؤول > البائع > المشتري > المندوب.
+
 ---
 
 ## 3. مراحل الطلب (Steps Timeline)
@@ -146,3 +160,75 @@
 تم تعريب كافة الرسائل العارضة داخل ملفات `buyerUi.js` و `sellerUi.js` لضمان تجربة مستخدم خالية من أي كلمات إنجليزية، بما في ذلك رسائل "لا توجد منتجات" وتنبيهات الحفظ.
 
 ---
+
+## 9. تفاصيل دورة حياة البيانات (Data LifeCycle Deep Dive)
+
+يوضح هذا القسم الرحلة الكاملة للبيانات من قاعدة البيانات حتى وصولها إلى واجهة الـ Stepper.
+
+### 9.1. الجلب والتحضير في النافذة الأم (Parent Window Fetch & Prepare)
+المصدر: `pages/sales-movement/sales-movement.js`
+
+1.  **الجلب (Fetching):**
+    *   يتم استدعاء API: `/api/user-all-orders`.
+    *   يتم تمرير المعاملات: `user_key` (معرف المستخدم) و `role` (الدور المحدد: purchaser, seller, delivery, admin).
+    *   يتم جلب بيانات الطلب "الطازجة" لضمان دقة الحالة قبل العرض.
+
+2.  **التحويل (Transformation):**
+    *   تقوم دالة `salesMovement_showOrderDetails` بمعالجة البيانات الخام.
+    *   يتم تسطيح (Flattening) كائن الطلب ليتوافق مع بنية الـ Stepper.
+    *   يتم معالجة حقل `supplier_delivery` المعقد (الذي قد يكون `null`، كائن، أو مصفوفة) وتوحيده لضمان استقرار الكود.
+
+3.  **الحقن (Injection):**
+    *   قبل إنشاء الـ Iframe، يتم إنشاء كائن عالمي في النافذة الأم:
+        ```javascript
+        window.globalStepperAppData = {
+            idUser: userSession.user_key,
+            ordersData: [convertedOrder], // مصفوفة تحتوي الطلب المحول
+            baseURL: baseURL
+        };
+        ```
+    *   هذا الكائن هو "الجسر" الذي سينقل البيانات إلى الـ Iframe.
+
+### 9.2. الجسر والتهيئة في الـ Iframe (Iframe Bridging & Init)
+المصدر: `steper/stepper-only.html` و `steper/config.js`
+
+1.  **التحقق من الجسر (Bridge Check):**
+    *   عند تحميل `DOMContentLoaded` في الـ Iframe، يتم فحص `window.parent.globalStepperAppData`.
+    *   إذا وجدت البيانات، يتم استدعاء دالة التهيئة.
+
+2.  **وعد التهيئة (Initialization Promise):**
+    *   في ملف `config.js`، يوجد `initializationPromise` معلق.
+    *   تنتظر بقية ملفات النظام (مثل `main.js` و `dataFetchers.js`) حل هذا الوعد.
+    *   عند استلام البيانات من النافذة الأم، يتم استدعاء `setOrdersData` و `setAppDataControl` ثم حل الوعد (`resolve()`).
+    *   هذا يضمن عدم تشغيل أي منطق قبل وصول البيانات.
+
+---
+
+## 10. مخطط هيكلية المكونات (Component Architecture)
+
+يوضح المخطط التالي العلاقات بين ملفات النظام وكيفية تدفق التحكم:
+
+```mermaid
+graph TD
+    ParentWindow[Parent: sales-movement.js] -->|Injects globalStepperAppData| Iframe[Iframe: stepper-only.html]
+    Iframe -->|Calls| Config[config.js]
+    Config -->|Resolves Promise| Main[main.js]
+    
+    subgraph "Core Logic Modules"
+        Main --> RoleLogic[roleAndStepDetermination.js]
+        Main --> StateMgr[stateManagement.js]
+        RoleLogic --> Workflow[workflowLogic.js]
+    end
+
+    subgraph "UI & Interactions"
+        Main --> UiUpdates[uiUpdates.js]
+        UiUpdates --> PopupHelpers[popupHelpers.js]
+        PopupHelpers --> NotificationLogic[steperNotificationLogic.js]
+    end
+
+    subgraph "Data Layer"
+        StateMgr --> DataFetchers[dataFetchers.js]
+        DataFetchers -->|API Calls| Server[Database / API]
+    end
+```
+
