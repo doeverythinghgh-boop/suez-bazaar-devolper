@@ -22,6 +22,7 @@ export function determineUserType(userId, ordersData, controlData) {
         const userIdStr = String(effectiveUserId || '');
 
         console.log(`[RoleDetermination] Checking role for: ${userIdStr} (Original type: ${typeof userId})`);
+        console.log(`[RoleDetermination] Orders count: ${ordersData ? ordersData.length : 0}`);
 
         if (ADMIN_IDS.includes(userIdStr)) return "admin";
 
@@ -29,17 +30,42 @@ export function determineUserType(userId, ordersData, controlData) {
         let isSeller = false;
         let isCourier = false;
 
+        if (!ordersData || !Array.isArray(ordersData)) {
+            console.error("[RoleDetermination] ordersData is not a valid array:", ordersData);
+            return null;
+        }
+
         for (const order of ordersData) {
-            if (String(order.user_key) === userIdStr) isBuyer = true;
+            console.log(`[RoleDetermination] Order ${order.order_key}: user_key=${order.user_key}`);
+            if (String(order.user_key) === userIdStr) {
+                console.log(`[RoleDetermination] Match found: User is BUYER for order ${order.order_key}`);
+                isBuyer = true;
+            }
+
+            if (!order.order_items || !Array.isArray(order.order_items)) {
+                console.warn(`[RoleDetermination] Order ${order.order_key} has no items or order_items is invalid`);
+                continue;
+            }
 
             for (const item of order.order_items) {
-                if (String(item.seller_key) === userIdStr) isSeller = true;
+                console.log(`[RoleDetermination] Item ${item.product_key}: seller_key=${item.seller_key}`);
+                if (String(item.seller_key) === userIdStr) {
+                    console.log(`[RoleDetermination] Match found: User is SELLER for item ${item.product_key}`);
+                    isSeller = true;
+                }
 
-                const deliveryData = item.supplier_delivery?.delivery_key;
-                if (deliveryData) {
-                    if (Array.isArray(deliveryData)) {
-                        if (deliveryData.some(d => String(d) === userIdStr)) isCourier = true;
-                    } else if (String(deliveryData) === userIdStr) {
+                // --- فحص الـ Courier بشكل يدعم عدة منصات وتنسيقات ---
+                const deliveryField = item.supplier_delivery;
+                if (deliveryField) {
+                    // تحويل إلى مصفوفة للتعامل الموحد
+                    const deliveries = Array.isArray(deliveryField) ? deliveryField : [deliveryField];
+
+                    if (deliveries.some(d => {
+                        // استخراج المعرف سواء كان الكائن {delivery_key: '...'} أو كان المعرف نصاً مباشراً
+                        const dKey = (d && typeof d === 'object') ? d.delivery_key : d;
+                        return String(dKey || '') === userIdStr;
+                    })) {
+                        console.log(`[RoleDetermination] Match found: User is COURIER for item ${item.product_key}`);
                         isCourier = true;
                     }
                 }
