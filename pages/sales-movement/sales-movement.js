@@ -374,6 +374,7 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
                     seller_key: salesMovement_item.seller_key,
                     note: salesMovement_item.note || '',
                     product_price: salesMovement_item.product_price,
+                    realPrice: salesMovement_item.realPrice,
                     item_status: salesMovement_item.item_status || null, // Pass Item Status
                     supplier_delivery: null
                 };
