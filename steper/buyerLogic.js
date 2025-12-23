@@ -201,12 +201,16 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
                     products: []
                 };
             }
+            const product_price = parseFloat(foundItem.product_price) || 0;
+            const realPrice = parseFloat(foundItem.real_price || foundItem.realPrice) || product_price;
+            const quantity = parseInt(foundItem.quantity) || 1;
+
             grouped[sellerKey].products.push({
                 name: foundItem.product_name || "منتج",
-                quantity: parseInt(foundItem.quantity) || 1,
-                price: parseFloat(foundItem.product_price) || 0,
-                realPrice: parseFloat(foundItem.real_price || foundItem.realPrice) || 0,
-                total: (parseFloat(foundItem.product_price) || 0) * (parseInt(foundItem.quantity) || 1)
+                quantity: quantity,
+                price: product_price,
+                realPrice: realPrice,
+                total: realPrice * quantity
             });
         }
     });
