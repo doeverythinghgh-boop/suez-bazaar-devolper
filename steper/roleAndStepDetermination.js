@@ -17,23 +17,29 @@ import { ADMIN_IDS, ITEM_STATUS } from "./config.js";
  */
 export function determineUserType(userId, ordersData, controlData) {
     try {
-        if (ADMIN_IDS.includes(userId)) return "admin";
+        // Ensure we are working with a string ID, even if an object was passed
+        const effectiveUserId = (userId && typeof userId === 'object') ? userId.idUser : userId;
+        const userIdStr = String(effectiveUserId || '');
+
+        console.log(`[RoleDetermination] Checking role for: ${userIdStr} (Original type: ${typeof userId})`);
+
+        if (ADMIN_IDS.includes(userIdStr)) return "admin";
 
         let isBuyer = false;
         let isSeller = false;
         let isCourier = false;
 
         for (const order of ordersData) {
-            if (order.user_key === userId) isBuyer = true;
+            if (String(order.user_key) === userIdStr) isBuyer = true;
 
             for (const item of order.order_items) {
-                if (item.seller_key === userId) isSeller = true;
+                if (String(item.seller_key) === userIdStr) isSeller = true;
 
                 const deliveryData = item.supplier_delivery?.delivery_key;
                 if (deliveryData) {
                     if (Array.isArray(deliveryData)) {
-                        if (deliveryData.includes(userId)) isCourier = true;
-                    } else if (deliveryData === userId) {
+                        if (deliveryData.some(d => String(d) === userIdStr)) isCourier = true;
+                    } else if (String(deliveryData) === userIdStr) {
                         isCourier = true;
                     }
                 }
