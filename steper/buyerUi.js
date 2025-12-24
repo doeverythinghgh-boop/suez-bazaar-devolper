@@ -250,14 +250,14 @@ export function generateSellerGroupedHtml(groupedData) {
                                 <td style="padding: 8px; white-space: nowrap;">${p.price.toFixed(2)}</td>
                                 <td style="padding: 8px; color: #d97706; font-weight: bold; white-space: nowrap;">${p.realPrice.toFixed(2)}</td>
                                 <td style="padding: 8px; white-space: nowrap;">${p.quantity}</td>
-                                <td style="padding: 8px; white-space: nowrap;">${p.total.toFixed(2)}</td>
+                                <td style="padding: 8px; white-space: nowrap;">${(p.price * p.quantity).toFixed(2)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
                     <tfoot style="background: #f1f1f1; font-weight: bold;">
                         <tr>
                             <td colspan="4" style="padding: 8px; text-align: left;">إجمالي الحساب للبائع (سعر البيع):</td>
-                            <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + p.total, 0).toFixed(2)} جنيه</td>
+                            <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)} جنيه</td>
                         </tr>
                         <tr>
                             <td colspan="4" style="padding: 8px; text-align: left; color: #d97706;">إجمالي سعر التطبيق:</td>
@@ -270,7 +270,7 @@ export function generateSellerGroupedHtml(groupedData) {
     `).join("");
 
     const grandTotal = groupedData.reduce((total, group) => {
-        return total + group.products.reduce((sum, p) => sum + p.total, 0);
+        return total + group.products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
     }, 0);
 
     const grandTotalReal = groupedData.reduce((total, group) => {
