@@ -78,7 +78,7 @@ export function generateConfirmationTableHtml(products, ordersData) {
     }).join("");
 
     return `
-        <div style="min-width: 100%; width: max-content;">
+        <div style="width: 100%; overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9em;">
                 <thead>
                     <tr style="background-color: #f2f2f2;">

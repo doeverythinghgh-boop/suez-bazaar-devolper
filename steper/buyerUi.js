@@ -232,8 +232,8 @@ export function generateSellerGroupedHtml(groupedData) {
                     </span>
                 </div>
             </div>
-            <div class="seller-products" style="padding: 10px;">
-                <table style="width: 100%; text-align: right; direction: rtl; border-collapse: collapse;">
+            <div class="seller-products" style="padding: 10px; overflow-x: auto;">
+                <table style="width: 100%; min-width: 600px; text-align: right; direction: rtl; border-collapse: collapse;">
                     <thead>
                         <tr style="border-bottom: 2px solid #eee;">
                             <th style="padding: 5px;">المنتج</th>
@@ -246,11 +246,11 @@ export function generateSellerGroupedHtml(groupedData) {
                     <tbody>
                         ${group.products.map(p => `
                             <tr style="border-bottom: 1px solid #eee;">
-                                <td style="padding: 8px;">${p.name}</td>
-                                <td style="padding: 8px;">${p.price.toFixed(2)}</td>
-                                <td style="padding: 8px; color: #d97706; font-weight: bold;">${p.realPrice.toFixed(2)}</td>
-                                <td style="padding: 8px;">${p.quantity}</td>
-                                <td style="padding: 8px;">${p.total.toFixed(2)}</td>
+                                <td style="padding: 8px; white-space: nowrap;">${p.name}</td>
+                                <td style="padding: 8px; white-space: nowrap;">${p.price.toFixed(2)}</td>
+                                <td style="padding: 8px; color: #d97706; font-weight: bold; white-space: nowrap;">${p.realPrice.toFixed(2)}</td>
+                                <td style="padding: 8px; white-space: nowrap;">${p.quantity}</td>
+                                <td style="padding: 8px; white-space: nowrap;">${p.total.toFixed(2)}</td>
                             </tr>
                         `).join('')}
                     </tbody>

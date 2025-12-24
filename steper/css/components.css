@@ -40,77 +40,118 @@
 }
 
 /* ============================================
-   Popups - Optimized Size (Minimum Size)
+   Popups - Modern & Responsive
    ============================================ */
 div:where(.swal2-container) .fullscreen-swal {
-    width: fit-content !important;
-    min-width: fit-content;
-    /* Slightly increase minimum width */
-    max-width: 95vw !important;
-
-    height: fit-content !important;
-    max-height: 90vh !important;
-
-    padding: 3px !important;
-    /* Slightly increase padding */
+    width: 90% !important;
+    max-width: 600px !important;
+    /* Responsive width */
+    height: auto !important;
+    max-height: 85vh !important;
+    /* Prevent overflowing screen vertically */
+    padding: 0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden !important;
+    /* Ensure content stays inside */
+    background: #fff !important;
+    display: flex !important;
+    flex-direction: column !important;
 }
 
-/* Format popup title to be on a single line */
+/* Modern Title */
 div:where(.swal2-container) .fullscreen-swal .swal2-title {
-    white-space: nowrap !important;
-    /* Prevent text wrapping */
-    overflow-x: auto !important;
-    /*text-overflow: ellipsis !important;*/
-    /* Add ellipsis if overflows screen */
-    width: 100% !important;
-    display: block !important;
-    padding: 3px !important;
-    font-size: 1.2em !important;
-    /* Adjust font size */
+    background-color: #f8f9fa;
+    color: var(--color-primary);
+    padding: 1rem 1.5rem !important;
+    margin: 0 !important;
+    font-size: 1.25rem !important;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: right !important;
 }
 
+/* Scrollable Content Area */
 .fullscreen-swal .swal2-html-container {
-    overflow: auto !important;
-    max-height: 90vh !important;
-    max-width: 95vw !important;
-    height: fit-content !important;
-    width: fit-content !important;
-    /* Reduce available height for content to leave space for title */
-    margin: 3px !important;
-    padding: 3px !important;
-    text-align: center !important;
-    /* Center alignment */
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    overflow-y: auto !important;
+    /* Internal scroll */
+    overflow-x: hidden !important;
+    text-align: right !important;
+    /* Arabic alignment */
+    flex-grow: 1;
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* Actions (Buttons) */
+.fullscreen-swal .swal2-actions {
+    padding: 1rem !important;
+    margin: 0 !important;
+    border-top: 1px solid #eee;
+    background-color: #f8f9fa;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start !important;
+    /* Align buttons to start (RTL) or center */
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Button Styling (Modern) */
+.fullscreen-swal .swal2-confirm,
+.fullscreen-swal .swal2-deny,
+.fullscreen-swal .swal2-cancel {
+    border-radius: 8px !important;
+    padding: 0.6em 1.5em !important;
+    font-weight: 600 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none !important;
+}
+
+.fullscreen-swal .swal2-confirm {
+    background-color: var(--color-primary) !important;
+}
+
+.fullscreen-swal .swal2-deny {
+    background-color: var(--color-rejected) !important;
 }
 
 /* ============================================
-   FORCE CENTERING FOR ALL POPUP CHILDREN
+   Internal Element Fixes
    ============================================ */
 
-/* 1. Tables and Lists */
-.fullscreen-swal table,
-.fullscreen-swal tr,
-.fullscreen-swal td,
-.fullscreen-swal th,
-.fullscreen-swal ul,
-.fullscreen-swal li,
-.fullscreen-swal .seller-header,
-.fullscreen-swal .user-details-container {
-    text-align: center !important;
-    justify-content: center !important;
-    /* For Flex items */
-    margin-left: auto !important;
-    margin-right: auto !important;
+/* Ensure tables don't break layout */
+.fullscreen-swal table {
+    width: 100% !important;
+    margin-bottom: 1rem;
 }
 
-/* 2. Flex Items (like checkbox-item) */
-.fullscreen-swal .checkbox-item,
-.fullscreen-swal li[style*="display: flex"] {
-    justify-content: center !important;
+/* Fix Flex items in RTL */
+.fullscreen-swal .checkbox-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
 }
 
-/* 3. Bottom Button Containers */
-.fullscreen-swal .swal2-actions {
-    justify-content: center !important;
+.fullscreen-swal .checkbox-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Map Containers */
+.fullscreen-swal iframe {
+    max-width: 100%;
+    border-radius: 8px;
 }
 
 /* ============================================
