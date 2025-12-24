@@ -265,12 +265,12 @@ async function sendNotificationsToTokens(allTokens, title, body) {
         if (token) {
             if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
                 console.log(`notification send from android`);
-             // 1. تأكد من أن 'tokens' هي مصفوفة دائمًا.
-        var tokensArray = Array.isArray(token) ? token : [token];
+                // 1. تأكد من أن 'tokens' هي مصفوفة دائمًا.
+                var tokensArray = Array.isArray(token) ? token : [token];
 
-        // 2. حول المصفوفة إلى سلسلة JSON.
-        var tokensJsonString = JSON.stringify(tokensArray);
-        
+                // 2. حول المصفوفة إلى سلسلة JSON.
+                var tokensJsonString = JSON.stringify(tokensArray);
+
                 // استدعاء دالة Kotlin من خلال الجسر
                 window.Android.sendNotificationsToTokensP2P(tokensJsonString, title, body);
                 console.log(`[JS] تم استدعاء الدالة sendNotificationsToTokensP2P في Kotlin.`);
@@ -1089,5 +1089,51 @@ async function notifyAdminOnNewItem(productData) {
 
     } catch (error) {
         console.error('%c[Dev-Notification] ❌ فشل عملية الإخطار بالكامل نتيجة خطأ غير متوقع:', 'color: red;', error);
+    }
+}
+
+/**
+ * @description إرسال إشعار للإدارة عند تعديل منتج أو خدمة موجودة.
+ * @function notifyAdminOnItemUpdate
+ * @param {Object} productData - بيانات المنتج أو الخدمة المعدلة.
+ * @returns {Promise<void>}
+ * @async
+ */
+async function notifyAdminOnItemUpdate(productData) {
+    console.log(`%c[Dev-Notification] 🚀 بدء محاولة إخطار الإدارة بتعديل المادة: ${productData.productName}`, 'color: #FF9800; font-weight: bold;');
+    try {
+        const isEnabled = await shouldNotify('item-updated', 'admin');
+        if (!isEnabled) {
+            console.warn(`[Dev-Notification] ⚠️ الكود توقف: الإشعار للحدث item-updated (admin) معطل حالياً.`);
+            return;
+        }
+
+        const adminTokens = await getAdminTokens();
+        if (!adminTokens || adminTokens.length === 0) {
+            console.error('[Dev-Notification] ❌ خطأ: لم يتم العثور على أي توكنات (Admins).');
+            return;
+        }
+
+        await loadNotificationMessages();
+
+        const itemType = (productData.serviceType === 2 || productData.serviceType === '2' || productData.isService) ? 'خدمة' : 'منتج';
+        const itemName = productData.productName || 'غير مسمى';
+        const itemKey = productData.product_key || 'N/A';
+        const userName = userSession?.user_name || 'مستخدم';
+
+        const { title, body } = getMessageTemplate('item-updated.admin', {
+            itemType,
+            itemName,
+            itemKey,
+            userName
+        });
+
+        if (body) {
+            await sendNotificationsToTokens(adminTokens, title, body);
+            console.log(`%c[Notifications] ✅ تم إرسال إشعار للإدارة بنجاح عن تعديل ${itemType}: ${itemName}`, 'color: #4CAF50; font-weight: bold;');
+        }
+
+    } catch (error) {
+        console.error('%c[Dev-Notification] ❌ فشل إشعار التعديل:', 'color: red;', error);
     }
 }

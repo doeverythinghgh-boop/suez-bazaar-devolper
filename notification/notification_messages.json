@@ -99,5 +99,11 @@
             "title": "إضافة جديدة في المتجر",
             "body": "تم إضافة ${itemType} جديد: ${itemName} (مفتاح المنتج: ${itemKey}) بواسطة ${userName} (مفتاح المستخدم: ${userKey})."
         }
+    },
+    "item-updated": {
+        "admin": {
+            "title": "تعديل في المتجر",
+            "body": "تم تعديل ${itemType}: ${itemName} (مفتاح المنتج: ${itemKey}) بواسطة ${userName}. يرجى مراجعة التعديلات."
+        }
     }
 }

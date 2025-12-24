@@ -625,19 +625,49 @@ window.productModule = (function () {
                 MainCategory: productSession.MainCategory || 2,
                 SubCategory: productSession.SubCategory || 3,
                 ImageIndex: allImageNames.length,
-                serviceType: productTypeToAdd
+                serviceType: productTypeToAdd,
+                is_approved: 0 // Reset approval status to pending on edit
             };
 
-            console.log('[ProductForm] Sending UPDATE request to backend with data:', productData);
+            // 5. Check if any data has actually changed
+            console.log('[ProductForm] Comparing current data with original session data...');
+            const hasDataChanged =
+                productData.productName !== (productSession.productName || '') ||
+                productData.product_description !== (productSession.product_description || '') ||
+                productData.product_price !== (productSession.product_price || 0) ||
+                productData.product_quantity !== (productSession.product_quantity || 0) ||
+                productData.original_price !== (productSession.original_price || null) ||
+                productData.realPrice !== (productSession.realPrice || null) ||
+                productData.user_message !== (productSession.user_message || '') ||
+                productData.user_note !== (productSession.user_note || '') ||
+                productData.ImageName !== (productSession.ImageName || '');
 
-            // 5. Send Update Request
+            if (!hasDataChanged) {
+                console.warn('[ProductForm] No changes detected.');
+                Swal.fire({
+                    title: 'تنبيه',
+                    text: 'لم يتم إجراء أي تعديلات على بيانات المنتج.',
+                    icon: 'info'
+                });
+                return;
+            }
+
+            console.log('[ProductForm] Changes detected. Sending UPDATE request to backend.');
+
+            // 6. Send Update Request
             const dbResult = await updateProduct(productData);
 
             if (dbResult && dbResult.error) {
                 throw new Error(`Failed to update product data: ${dbResult.error}`);
             }
 
-            // 6. Delete Removed Images (After successful update)
+            // 7. Notify Admin
+            console.log('[ProductForm] Notifying admin on item update...');
+            if (typeof notifyAdminOnItemUpdate === 'function') {
+                await notifyAdminOnItemUpdate(productData);
+            }
+
+            // 8. Delete Removed Images (After successful update)
             if (imagesToDelete.length > 0) {
                 console.log("[ProductForm] Deleting removed images from cloud storage:", imagesToDelete);
 
