@@ -67,19 +67,19 @@ export function generateConfirmationTableHtml(products, ordersData) {
 
         return `
             <tr id="seller-confirmation-item-${product.product_key}">
-                <td style="padding: 8px; border: 1px solid #ddd;">
+                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">
                      ${generateCheckboxCell(product.product_key, productName, isChecked, isDisabled, 'sellerProductKeys')}
                 </td>
-                <td style="padding: 8px; border: 1px solid #ddd;">${product.note || '-'}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">${agentNames || '-'}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">${agentPhones || '-'}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${product.note || '-'}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${agentNames || '-'}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${agentPhones || '-'}</td>
             </tr>
         `;
     }).join("");
 
     return `
         <div style="width: 100%; overflow-x: auto;">
-            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9em;">
+            <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em;">
                 <thead>
                     <tr style="background-color: #f2f2f2;">
                         <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">المنتج (حدد للتأكيد)</th>
@@ -136,7 +136,7 @@ export function generateShippingTableHtml(products) {
 
         return `
             <tr>
-                <td style="padding: 8px; border: 1px solid #ddd;">
+                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">
                     <label>
                         <input type="checkbox"
                                name="shippingProductKeys"
@@ -151,8 +151,8 @@ export function generateShippingTableHtml(products) {
                         <i class="fas fa-eye"></i>
                     </button>
                 </td>
-                <td style="padding: 8px; border: 1px solid #ddd;">${names || '-'}</td>
-                <td style="padding: 8px; border: 1px solid #ddd;">${phones || '-'}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${names || '-'}</td>
+                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${phones || '-'}</td>
             </tr>
         `;
     }).join("");
@@ -160,7 +160,7 @@ export function generateShippingTableHtml(products) {
     return `
         <div style="width: 100%; overflow-x: auto;">
             <p>حدد المنتجات لتغيير حالتها إلى "مشحون":</p>
-            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9em; margin-top: 10px;">
+            <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em; margin-top: 10px;">
                 <thead>
                     <tr style="background-color: #f2f2f2;">
                         <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">المنتج</th>
