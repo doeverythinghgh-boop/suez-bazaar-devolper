@@ -380,6 +380,48 @@
       ]
     },
     {
+      "id": 16,
+      "title": "العقارات",
+      "icon": "fas fa-city",
+      "subcategories": [
+        {
+          "id": 1,
+          "title": "شقق ومنازل للبيع",
+          "icon": "fas fa-home"
+        },
+        {
+          "id": 7,
+          "title": "شليهات و فلل",
+          "icon": "fas fa-house-chimney-window"
+        },
+        {
+          "id": 2,
+          "title": "شقق ومنازل للإيجار",
+          "icon": "fas fa-key"
+        },
+        {
+          "id": 3,
+          "title": "أراضي وعقارات تجارية",
+          "icon": "fas fa-map-marked-alt"
+        },
+        {
+          "id": 4,
+          "title": "مكاتب ومساحات عمل",
+          "icon": "fas fa-building"
+        },
+        {
+          "id": 5,
+          "title": "خدمات الوساطة العقارية",
+          "icon": "fas fa-handshake"
+        },
+        {
+          "id": 6,
+          "title": "خدمات التصميم والديكور الداخلي",
+          "icon": "fas fa-drafting-compass"
+        }
+      ]
+    },
+    {
       "id": 7,
       "title": "سوق المركبات",
       "icon": "fas fa-car",
@@ -517,48 +559,6 @@
           "id": 8,
           "title": "الحرف التراثية والتقليدية",
           "icon": "fas fa-landmark"
-        }
-      ]
-    },
-    {
-      "id": 16,
-      "title": "العقارات",
-      "icon": "fas fa-city",
-      "subcategories": [
-        {
-          "id": 1,
-          "title": "شقق ومنازل للبيع",
-          "icon": "fas fa-home"
-        },
-        {
-          "id": 7,
-          "title": "شليهات و فلل",
-          "icon": "fas fa-house-chimney-window"
-        },
-        {
-          "id": 2,
-          "title": "شقق ومنازل للإيجار",
-          "icon": "fas fa-key"
-        },
-        {
-          "id": 3,
-          "title": "أراضي وعقارات تجارية",
-          "icon": "fas fa-map-marked-alt"
-        },
-        {
-          "id": 4,
-          "title": "مكاتب ومساحات عمل",
-          "icon": "fas fa-building"
-        },
-        {
-          "id": 5,
-          "title": "خدمات الوساطة العقارية",
-          "icon": "fas fa-handshake"
-        },
-        {
-          "id": 6,
-          "title": "خدمات التصميم والديكور الداخلي",
-          "icon": "fas fa-drafting-compass"
         }
       ]
     },
