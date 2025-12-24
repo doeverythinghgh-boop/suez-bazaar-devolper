@@ -30,6 +30,19 @@
             <p id="productView_description_text"></p>
         </div>
 
+        <p id="productView_real_price_container" style="display: none; color: #d97706; font-weight: bold;">
+            <i class="fas fa-coins"></i> سعر التطبيق (للبائع):
+            <span id="productView_real_price"></span>
+        </p>
+
+        <div id="productView_admin_seller_info"
+            style="display: none; background: #eee; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 0.9em; border: 1px dashed #999;">
+            <p style="margin: 0; color: #d32f2f;"><i class="fas fa-user-shield"></i> بيانات البائع (للمسؤول):</p>
+            <p style="margin: 5px 0 0 0;"><strong>الاسم:</strong> <span id="productView_admin_seller_name"></span></p>
+            <p style="margin: 5px 0 0 0;"><strong>الكي (Key):</strong> <span id="productView_admin_seller_key"></span>
+            </p>
+        </div>
+
         <div class="productView_seller_message_box" id="productView_seller_message_container">
             <h4 id="productView_seller_message_header">
                 <i class="fas fa-comment-dots" id="productView_seller_message_icon"></i>

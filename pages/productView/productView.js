@@ -39,6 +39,13 @@ function productView_getDomElements() {
         selectedQuantityInput: document.getElementById("productView_selected_quantity_input"),
         totalPriceEl: document.getElementById("productView_total_price"),
         addToCartBtn: document.getElementById("productView_add_to_cart_btn"),
+
+        // Conditional elements
+        realPriceContainer: document.getElementById("productView_real_price_container"),
+        realPrice: document.getElementById("productView_real_price"),
+        adminSellerInfo: document.getElementById("productView_admin_seller_info"),
+        adminSellerName: document.getElementById("productView_admin_seller_name"),
+        adminSellerKey: document.getElementById("productView_admin_seller_key"),
     };
 }
 
@@ -249,6 +256,8 @@ function productView_viewDetails(productData, options = {}) {
             quantityContainer, priceContainer, cartActionsContainer,
             originalPriceContainer, originalPrice,
             mainImage, thumbnailsContainer,
+            realPriceContainer, realPrice,
+            adminSellerInfo, adminSellerName, adminSellerKey
         } = dom;
 
         const showAddToCart = options.showAddToCart !== false; // Default is true
@@ -289,8 +298,40 @@ function productView_viewDetails(productData, options = {}) {
             if (originalPriceContainer) originalPriceContainer.style.display = "flex";
         } else {
             console.log("[productView_] إخفاء السعر الأصلي.");
-            if (originalPriceContainer) originalPriceContainer.style.display = "none";
             if (originalPrice) originalPrice.textContent = "";
+        }
+
+        // --- Role Based Logic ---
+        const user = window.userSession;
+        if (user) {
+            // 1. Seller Check (Show realPrice if current user is the owner)
+            if (String(user.user_key) === String(productData.user_key)) {
+                if (realPriceContainer && realPrice) {
+                    realPrice.textContent = `${productData.realPrice || 0} جنيه`;
+                    realPriceContainer.style.display = "block";
+                }
+            } else {
+                if (realPriceContainer) realPriceContainer.style.display = "none";
+            }
+
+            // 2. Admin Check (Show seller details if user is admin)
+            // Note: adminPhoneNumbers is expected to be global or in config
+            const isAdmin = (typeof adminPhoneNumbers !== "undefined" && adminPhoneNumbers.includes(user.phone));
+            const isImpersonating = localStorage.getItem("originalAdminSession");
+
+            if (isAdmin || isImpersonating) {
+                if (adminSellerInfo) {
+                    if (adminSellerName) adminSellerName.textContent = productData.sellerName || "غير متوفر";
+                    if (adminSellerKey) adminSellerKey.textContent = productData.user_key || "غير متوفر";
+                    adminSellerInfo.style.display = "block";
+                }
+            } else {
+                if (adminSellerInfo) adminSellerInfo.style.display = "none";
+            }
+        } else {
+            // Guest or not logged in
+            if (realPriceContainer) realPriceContainer.style.display = "none";
+            if (adminSellerInfo) adminSellerInfo.style.display = "none";
         }
 
     } catch (error) {
