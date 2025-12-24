@@ -44,10 +44,12 @@ async function sendOrder2Excution() {
         }
 
         // 4. Calculate Total Amount and Generate Order Key
-        const totalAmount = cart.reduce(
+        const cartPage_subtotal = cart.reduce(
             (sum, item) => sum + item.price * item.quantity,
             0
         );
+        const deliveryFee = 40.00;
+        const totalAmount = cartPage_subtotal + deliveryFee;
         const orderKey = generateSerial();
 
         // 5. Build Order Data (Remove Duplication)
@@ -243,11 +245,13 @@ function cartPage_updateCartSummary() {
         const cartPage_itemCount = getCartItemCount();
         const cartPage_subtotal = getCartTotalPrice();
         const cartPage_savings = getCartTotalSavings();
-        const cartPage_total = cartPage_subtotal;
+        const cartPage_deliveryFee = 40.00;
+        const cartPage_total = cartPage_subtotal + cartPage_deliveryFee;
 
         document.getElementById('cartPage_itemCount').textContent = cartPage_itemCount;
         document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ج.م';
         document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ج.م';
+        document.getElementById('cartPage_deliveryFee').textContent = cartPage_deliveryFee.toFixed(2) + ' ج.م';
         document.getElementById('cartPage_total').textContent = cartPage_total.toFixed(2) + ' ج.م';
     } catch (error) {
         console.error('حدث خطأ أثناء تحديث ملخص السلة:', error);
