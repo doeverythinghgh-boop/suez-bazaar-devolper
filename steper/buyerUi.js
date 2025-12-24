@@ -256,8 +256,12 @@ export function generateSellerGroupedHtml(groupedData) {
                     </tbody>
                     <tfoot style="background: #f1f1f1; font-weight: bold;">
                         <tr>
-                            <td colspan="4" style="padding: 8px; text-align: left;">إجمالي الحساب للبائع:</td>
+                            <td colspan="4" style="padding: 8px; text-align: left;">إجمالي الحساب للبائع (سعر البيع):</td>
                             <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + p.total, 0).toFixed(2)} جنيه</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding: 8px; text-align: left; color: #d97706;">إجمالي سعر التطبيق:</td>
+                            <td style="padding: 8px; color: #d97706;">${group.products.reduce((sum, p) => sum + (p.realPrice * p.quantity), 0).toFixed(2)} جنيه</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -269,9 +273,14 @@ export function generateSellerGroupedHtml(groupedData) {
         return total + group.products.reduce((sum, p) => sum + p.total, 0);
     }, 0);
 
+    const grandTotalReal = groupedData.reduce((total, group) => {
+        return total + group.products.reduce((sum, p) => sum + (p.realPrice * p.quantity), 0);
+    }, 0);
+
     return groupsHtml + `
         <div class="grand-total-container" style="margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 8px; text-align: center; border: 2px solid #dee2e6;">
-            <h4 style="margin: 0; color: #000; font-weight: bold;">إجمالي جميع المنتجات: ${grandTotal.toFixed(2)} جنيه</h4>
+            <h4 style="margin: 0; color: #000; font-weight: bold;">إجمالي (سعر البيع): ${grandTotal.toFixed(2)} جنيه</h4>
+            <h4 style="margin: 10px 0 0 0; color: #d97706; font-weight: bold;">إجمالي (سعر التطبيق): ${grandTotalReal.toFixed(2)} جنيه</h4>
         </div>
     `;
 }
