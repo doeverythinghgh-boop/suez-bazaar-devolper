@@ -240,7 +240,7 @@ function salesMovement_checkAdminStatus() {
         const user = userSession;
         if (!user) return;
 
-        const isAdmin = (typeof adminPhoneNumbers !== "undefined" && adminPhoneNumbers.includes(user.phone));
+        const isAdmin = (typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
         const isImpersonating = localStorage.getItem("originalAdminSession");
 
         if (isAdmin || isImpersonating) {

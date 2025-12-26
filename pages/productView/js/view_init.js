@@ -79,7 +79,7 @@ function productView_viewDetails(productData, options = {}) {
             }
 
             // 2. Admin Check
-            const isAdmin = (typeof adminPhoneNumbers !== "undefined" && adminPhoneNumbers.includes(user.phone));
+            const isAdmin = (typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
             const isImpersonating = localStorage.getItem("originalAdminSession");
 
             if (isAdmin || isImpersonating) {

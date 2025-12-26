@@ -124,7 +124,7 @@ function handleAdminPanelClick() {
  * @throws {Error} - If critical DOM elements are missing or functions like `logout` or `mainLoader` fail.
  * @see logout
  * @see mainLoader
- * @see adminPhoneNumbers
+ * @see ADMIN_IDS
  * @see userSession
  */
 function updateViewForLoggedInUser() {
@@ -208,7 +208,7 @@ function updateViewForLoggedInUser() {
 
     // [Step 4.2] Admin Panel Button
     const adminBtn = document.getElementById("dash-admin-panel-btn");
-    const isAdmin = (typeof adminPhoneNumbers !== "undefined" && adminPhoneNumbers.includes(user.phone));
+    const isAdmin = (typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
     const isImpersonating = localStorage.getItem("originalAdminSession");
 
     if (isAdmin || isImpersonating) {

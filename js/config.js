@@ -35,8 +35,8 @@ const allowedHosts = [
 const baseURL = allowedHosts.includes(location.hostname) ? VERCEL_URL : "";
 
 /**
- * @description List of admin phone numbers allowed administrative access.
+ * @description List of user IDs with administrative privileges.
  * @type {string[]}
  * @const
  */
-const adminPhoneNumbers = ["01024182175", "01026546550"];
+const ADMIN_IDS = ["dl14v1k7", "682dri6b"];
