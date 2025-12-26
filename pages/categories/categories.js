@@ -619,6 +619,7 @@ function categories_handleProductClick(product, firstImageName) {
             sellerPhone: product.seller_phone,
             MainCategory: product.MainCategory,
             SubCategory: product.SubCategory,
+            realPrice: product.realPrice,
             type: product.serviceType,
         };
 

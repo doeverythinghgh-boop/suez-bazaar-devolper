@@ -68,32 +68,36 @@ function productView_viewDetails(productData, options = {}) {
         // --- Role Based Logic ---
         const user = window.userSession;
         if (user) {
-            // 1. Seller Check
-            if (String(user.user_key) === String(productData.user_key)) {
-                if (realPriceContainer && realPrice) {
-                    realPrice.textContent = `${productData.realPrice || 0} جنيه`;
-                    realPriceContainer.style.display = "block";
-                }
-            } else {
-                if (realPriceContainer) realPriceContainer.style.display = "none";
-            }
-
-            // 2. Admin Check
+            const isSeller = String(user.user_key) === String(productData.user_key);
             const isAdmin = (typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
             const isImpersonating = localStorage.getItem("originalAdminSession");
 
-            if (isAdmin || isImpersonating) {
+            if (isAdmin || isImpersonating || isSeller) {
                 if (adminSellerInfo) {
+                    // Fill data
                     if (adminSellerName) adminSellerName.textContent = productData.sellerName || "غير متوفر";
                     if (adminSellerKey) adminSellerKey.textContent = productData.user_key || "غير متوفر";
-                    if (dom.adminRealPrice) dom.adminRealPrice.textContent = `${productData.realPrice || 0} جنيه`;
+
+                    if (realPrice) {
+                        realPrice.textContent = `${productData.realPrice || 0} جنيه`;
+                    }
+                    if (realPriceContainer) {
+                        realPriceContainer.style.display = "block";
+                    }
+
+                    // Show the whole info box
                     adminSellerInfo.style.display = "block";
+
+                    // Optional: adjust title if it's just the seller
+                    const infoTitle = adminSellerInfo.querySelector('p');
+                    if (infoTitle) {
+                        infoTitle.innerHTML = `<i class="fas fa-user-shield"></i> بيانات تظهر للإدارة والبائع فقط:`;
+                    }
                 }
             } else {
                 if (adminSellerInfo) adminSellerInfo.style.display = "none";
             }
         } else {
-            if (realPriceContainer) realPriceContainer.style.display = "none";
             if (adminSellerInfo) adminSellerInfo.style.display = "none";
         }
 

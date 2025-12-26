@@ -27,13 +27,11 @@ function productView_getDomElements() {
         selectedQuantityInput: document.getElementById("productView_selected_quantity_input"),
         totalPriceEl: document.getElementById("productView_total_price"),
         addToCartBtn: document.getElementById("productView_add_to_cart_btn"),
-        realPriceContainer: document.getElementById("productView_seller_real_price_container"),
-        realPrice: document.getElementById("productView_seller_real_price"),
+        realPriceContainer: document.getElementById("productView_real_price_container"),
+        realPrice: document.getElementById("productView_real_price"),
         adminSellerInfo: document.getElementById("productView_admin_seller_info"),
         adminSellerName: document.getElementById("productView_admin_seller_name"),
         adminSellerKey: document.getElementById("productView_admin_seller_key"),
-        adminRealPriceContainer: document.getElementById("productView_real_price_container"),
-        adminRealPrice: document.getElementById("productView_real_price"),
     };
 }
 

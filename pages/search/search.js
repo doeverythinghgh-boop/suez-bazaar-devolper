@@ -195,6 +195,7 @@ async function initSearchModal(containerId) {
           sellerPhone: productData.seller_phone,
           MainCategory: productData.MainCategory, // Pass Main Category ID
           SubCategory: productData.SubCategory, // Pass Sub Category ID
+          realPrice: productData.realPrice,
           type: productData.serviceType,
         };
 
@@ -365,14 +366,14 @@ function generateSearchResultHTML(product) {
 `;
 }
 
-// Initialize the modal immediately if the container is present? 
+// Initialize the modal immediately if the container is present?
 // No, the architecture seems to call initSearchModal explicitly or implicitly via mainLoader loading the script?
 // NOTE: based on register.html logic, code inside <script> tags runs when loaded.
 // Search modal logic was inside initSearchModal which might be called by the system.
 // Let's check how initSearchModal is called.
 // It seems it is defined as a global function that might be called by the loader or self-invoked??
-// In the original file: 
-// <script> function initSearchModal(...) { ... } </script> 
+// In the original file:
+// <script> function initSearchModal(...) { ... } </script>
 // It is NOT called at the end of the script.
 // Wait, looking at index.html... mainLoader loads the page.
 // Does mainLoader automatically call initSearchModal?
@@ -380,7 +381,7 @@ function generateSearchResultHTML(product) {
 // If initSearchModal is defined, who calls it?
 // Let's re-read the original file's script section carefully.
 // AH! It's NOT called in the script block I saw.
-// But wait, page loading usually implies some init. 
+// But wait, page loading usually implies some init.
 // If mainLoader sees a function with a specific name or just runs code?
 // `register.html` had code running immediately (at top level).
 // `search.html` defined `initSearchModal`.
@@ -394,12 +395,12 @@ function generateSearchResultHTML(product) {
 // I did NOT see a call to `initSearchModal()` at the bottom.
 // BUT, if I look at `js/forms.js` (which I viewed in previous sessions or I can guess), `mainLoader` often calls a function named `init[PageName]` or similar?
 // Or maybe I missed it.
-// Let's add a call to `initSearchModal()` at the end of `search.js` just to be safe? 
+// Let's add a call to `initSearchModal()` at the end of `search.js` just to be safe?
 // OR, better, let's keep it exactly as it was.
 // Wait, if it wasn't called, it wouldn't run.
 // Let me look at the end of the file view again...
 // It ends at line 818. The function ends at 771. `generateSearchResultHTML` is outside at 773.
-// There is NO call to initSearchModal. 
+// There is NO call to initSearchModal.
 // This implies `mainLoader` calls it.
 // So I should expose `initSearchModal` to global scope.
 // Since `search.js` will be loaded, functions defined in it *should* be global if not in a module.
