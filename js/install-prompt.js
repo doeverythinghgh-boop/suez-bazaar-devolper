@@ -17,7 +17,14 @@ window.addEventListener('beforeinstallprompt', (e) => {
   console.log('[InstallPrompt] captured beforeinstallprompt event');
 
   // Attempt to show the custom prompt
-  checkAndShowInstallPrompt();
+  // checkAndShowInstallPrompt();
+});
+
+// Run check on load to support iOS and cases where prompt event doesn't fire
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    checkAndShowInstallPrompt();
+  }, 3000);
 });
 
 // 2. Check conditions and show modal
