@@ -1,5 +1,5 @@
 /**
- * @file js/cardPackage.js
+ * @file pages\cardPackage\cardPackage.js
  * @description Shopping Cart management module.
  *
  * This module provides functions to handle the shopping cart stored in LocalStorage.
