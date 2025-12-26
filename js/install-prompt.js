@@ -206,13 +206,7 @@ window.triggerPWAInstall = async () => {
                     <i class="far fa-plus-square fa-lg" style="color: #555; margin-right: auto;"></i>
                 </div>
                 
-                <div class="install-divider"></div>
 
-                <div class="ios-step">
-                    <span class="step-num">3</span>
-                    <span>اضغط على <b>إضافة</b> في الأعلى</span>
-                    <span style="font-weight: bold; color: #007aff; margin-right: auto;">إضافة</span>
-                </div>
 
             </div>
             <style>
