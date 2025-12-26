@@ -210,7 +210,8 @@ export default async function handler(request) {
           u.username as user_name,
           u.phone as user_phone,
           u.Address as user_address,
-          u.location as user_location
+          u.location as user_location,
+          o.orderType
         FROM orders o
         JOIN users u ON o.user_key = u.user_key
         WHERE o.order_key IN (${placeholders})
@@ -233,7 +234,8 @@ export default async function handler(request) {
           oi.note,
           mp.productName as product_name,
           mp.product_price as product_price,
-          mp.realPrice as realPrice
+          mp.realPrice as realPrice,
+          mp.serviceType as serviceType
         FROM order_items oi
         JOIN marketplace_products mp ON oi.product_key = mp.product_key
         WHERE oi.order_key IN (${placeholders})
@@ -327,6 +329,7 @@ export default async function handler(request) {
           product_price: item.product_price,
           item_status: serverStatus,
           realPrice: item.realPrice,
+          serviceType: item.serviceType,
           supplier_delivery: deliveries
         };
       });
@@ -341,6 +344,7 @@ export default async function handler(request) {
         order_status: order.order_status,
         created_at: order.created_at,
         total_amount: order.total_amount,
+        orderType: (order.orderType !== undefined && order.orderType !== null) ? order.orderType : order.ordertype,
         order_items: formattedItems
       };
     });

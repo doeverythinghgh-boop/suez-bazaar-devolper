@@ -361,7 +361,7 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
             order_status: salesMovement_orderData.order_status || '',
             created_at: salesMovement_orderData.created_at,
             total_amount: salesMovement_orderData.total_amount,
-            orderType: salesMovement_orderData.orderType, // ✅ تم إضافة نوع الطلب (0 للمنتجات، 1 للخدمات)
+            orderType: (salesMovement_orderData.orderType !== undefined && salesMovement_orderData.orderType !== null) ? salesMovement_orderData.orderType : salesMovement_orderData.ordertype, // ✅ دعم حالة الأحرف المختلفة
             order_items: []
         };
 

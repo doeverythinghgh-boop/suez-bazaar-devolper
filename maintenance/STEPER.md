@@ -233,3 +233,62 @@ graph TD
     end
 ```
 
+---
+
+## 11. دليل جودة وسلامة البيانات (Data Integrity & Quality Guide)
+
+لضمان عدم تكرار أخطاء فقدان الحقول البرمجية (مثل `orderType`) وضمان استقرار النظام عند التوسع المستقبلي، يجب اتباع القواعد التالية عند التعامل مع بيانات الـ Stepper:
+
+### 11.1. مبدأ الصراحة في الاستعلام (Explicit SQL Queries)
+*   **القاعدة:** تجنب استخدام `SELECT *` في الـ APIs.
+*   **السبب:** استخدام `SELECT *` قد ينجح محلياً ولكنه قد يفشل في بيئة Edge Functions أو يتأثر بتغييرات هيكلية قاعدة البيانات.
+*   **الممارسة الفضلى:** قم بتسمية كل عمود تحتاجه صراحة (مثل `SELECT o.order_key, o.orderType ...`). هذا يضمن أن الحقل سيتم تضمينه في الاستجابة دائماً وبشكل متوقع.
+
+### 11.2. تتبع سلسلة انتقال الحقول (Detailed Chain of Responsibility)
+
+لضمان وصول أي حقل (مثل `orderType`) من قاعدة البيانات إلى واجهة الـ Stepper، يجب مراقبة انتقال البيانات عبر المحطات التالية:
+
+| المحطة | الملف (File Path) | الدالة البرمجية (Function) | شكل البيانات المتوقع (Data Shape) |
+| :--- | :--- | :--- | :--- |
+| **1. السيرفر** | `api/user-all-orders.js` | `handler(request)` | كائن JSON خام يحتوي على الحقل مباشرة من SQL: `{"orderType": 1, ...}` |
+| **2. الاندماج** | `pages/sales-movement/sales-movement.js` | `salesMovement_showOrderDetails` | كائن `convertedOrder` يتم فيه تحويل الحقول لتطابق بنية الـ Stepper. |
+| **3. الجسر** | `pages/sales-movement/sales-movement.js` | (حقن مباشر) | كائن عالمي: `window.globalStepperAppData.ordersData[0].orderType` |
+| **4. الاستقبال** | `steper/config.js` | `setOrdersData(data)` | المتغير المصدر للـ Stepper: `export let ordersData = [...]` |
+| **5. التنفيذ** | `steper/stepper-only.html` | `initPhotoLink()` | قراءة الحقل برمجياً: `const type = ordersData[0].orderType;` |
+
+#### مثال تطبيقي لشكل البيانات (JSON Path):
+
+*   **من السيرفر ( raw ):**
+    ```json
+    { "order_key": "O-123", "orderType": 1, "total_amount": 0 }
+    ```
+*   **داخل صفحة حركة المبيعات ( Processed ):**
+    ```javascript
+    // يتم التجميع في مصفوفة لأن الـ Stepper يدعم عرض عدة طلبات
+    window.globalStepperAppData.ordersData = [
+       { "order_key": "O-123", "orderType": 1, "order_items": [...] }
+    ];
+    ```
+*   **داخل الـ Stepper ( Runtime ):**
+    ```javascript
+    import { ordersData } from './config.js';
+    console.log(ordersData[0].orderType); // النتيجة: 1
+    ```
+
+### 11.3. البرمجة الدفاعية والتحقق المزدوج (Defensive Programming)
+*   **القاعدة:** لا تعتمد على حقل واحد فقط إذا كان هناك بديل منطقي.
+*   **الممارسة الفضلى:** استخدم "التحقق المزدوج" (Double Check). على سبيل المثال، إذا كان النظام يعتمد على `orderType` لتحديد نوع الخدمة، أضف فحصاً احتياطياً على محتويات الطلب (`serviceType` لكل عنصر). هذا يضمن عمل النظام حتى مع وجود بيانات قديمة أو غير مكتملة.
+
+### 11.4. التعامل مع حالة الأحرف (Case Sensitivity)
+*   تتعامل بعض محركات البيانات (مثل SQLite في بعض الظروف) مع أسماء الأعمدة بحالة أحرف صغيرة فقط (`ordertype` بدلاً من `orderType`).
+*   **الممارسة الفضلى:** عند قراءة الحقول الهامة، استخدم منطقاً مرناً:
+    `const type = order.orderType ?? order.ordertype;`
+
+### 11.5. التوثيق والاختبار (Verification)
+قبل اعتماد أي تغيير في تدفق البيانات، استخدم `console.log` في محطتين أساسيتين:
+*   داخل الـ API للتأكد من خروج البيانات.
+*   داخل الـ Stepper للتأكد من وصول البيانات وفهم المتصفح لنوعها (نصي أم عددي).
+
+> [!TIP]
+> تذكر دائماً: الـ Stepper هو مجرد "مرآة" لما ترسل له صفحة حركة المبيعات؛ فإذا كانت المرآة لا تظهر شيئاً، فالمشكلة غالباً في "الضوء" القادم من السيرفر.
+

@@ -216,15 +216,18 @@
                 const order = ordersData[0];
                 const item = order.order_items && order.order_items[0];
 
-                console.log("[StepperOnly] Checking order for photo link:", {
-                    total_amount: order.total_amount,
+                // Double Check: Explicit orderType OR any item having serviceType === 1
+                const isServiceOrder = Number(order.orderType) === 1 ||
+                    (order.order_items && order.order_items.some(i => Number(i.serviceType) === 1));
+
+                console.log("[StepperOnly] Checking order type:", {
                     orderType: order.orderType,
-                    typeOfOrderType: typeof order.orderType,
-                    condition: (Number(order.orderType) === 1)
+                    isServiceOrder: isServiceOrder,
+                    itemsWithServiceType: order.order_items ? order.order_items.map(i => i.serviceType) : []
                 });
 
-                // Only show for special orders where orderType is 1 (Service)
-                if (item && Number(order.orderType) === 1) {
+                // Only show for special orders (Services)
+                if (item && isServiceOrder) {
                     const u = order.user_key;
                     const s = item.seller_key;
                     const p = item.product_key;
