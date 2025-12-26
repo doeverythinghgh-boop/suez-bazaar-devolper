@@ -236,10 +236,10 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
     flex: 1;
     min-width: 0;
     /* Important for flexbox overflow */
-    padding: 14px;
+    padding: 8px 14px;
     border: 2px solid #edf2f7;
-    border-radius: 12px;
-    font-size: 1.25rem;
+    border-radius: 10px;
+    font-size: 1.15rem;
     font-weight: 800;
     outline: none;
     text-align: center;
@@ -250,17 +250,17 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
 }
 
 .order-save-btn {
-    width: 54px;
-    height: 54px;
+    width: 42px;
+    height: 42px;
     background: var(--color-primary);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     transition: all 0.2s;
     flex-shrink: 0;
 }
