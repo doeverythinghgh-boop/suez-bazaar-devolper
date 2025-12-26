@@ -127,7 +127,13 @@
                 </div>
                 <div class="order-value-input-container">
                     <label for="orderValueInput">قيمة الطلب:</label>
-                    <input type="number" id="orderValueInput" class="order-value-input" step="0.01" placeholder="0.00">
+                    <div class="input-with-button">
+                        <input type="number" id="orderValueInput" class="order-value-input" step="0.01"
+                            placeholder="0.00">
+                        <button id="orderValueSaveBtn" class="order-save-btn" title="حفظ القيمة">
+                            <i class="fas fa-save"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -136,7 +142,9 @@
 
 </html>
 <script type="module">
-    import { ordersData, initializationPromise } from './config.js';
+    import { ordersData, appDataControl } from "./config.js";
+    import { determineUserType } from "./roleAndStepDetermination.js";
+    import { updateOrderTotalAmount } from "./dataFetchers.js";
 
     // Steps definition - static configuration for the stepper
     const DEFAULT_STEPS = [
@@ -169,6 +177,7 @@
     ];
 
     document.addEventListener('DOMContentLoaded', () => {
+        let initRetries = 0; // ✅ Move to top to avoid Temporal Dead Zone ReferenceError
         // 1. Data Bridging: Fetch data from parent window if available
         if (window.parent && window.parent.globalStepperAppData && window.initializeStepperData) {
             console.log("🔗 [StepperOnly] Found parent data, bridging...");
@@ -204,7 +213,6 @@
         runStepperScrollTutorial();
 
         // 3. Photo Link Logic (Robust Recovery)
-        let initRetries = 0;
         const checkData = setInterval(() => {
             // Priority 1: Check internal data
             // Priority 2: Fallback to parent bridge directly
@@ -230,6 +238,7 @@
             const link = document.getElementById('orderPhotoLink');
             const serviceFooter = document.getElementById('orderServiceFooter');
             const valueInput = document.getElementById('orderValueInput');
+            const saveBtn = document.getElementById('orderValueSaveBtn');
 
             if (!serviceFooter) {
                 console.warn("⚠️ [StepperOnly] orderServiceFooter not found yet.");
@@ -254,9 +263,90 @@
                     // Show Footer
                     serviceFooter.style.setProperty('display', 'flex', 'important');
 
-                    // Set Price if available and input is empty
-                    if (valueInput && (!valueInput.value || valueInput.value == "0")) {
-                        valueInput.value = order.total_amount || "";
+                    // --- Role & Lock Specific Logic ---
+                    const currentUser = (window.parent && window.parent.globalStepperAppData && window.parent.globalStepperAppData.idUser);
+                    const role = determineUserType(currentUser, data, appDataControl);
+
+                    // Logic to check if amount is locked
+                    // Amount is locked for seller if:
+                    // 1. Order status JSON has "__confirmation_locked_{sellerId}__" : "locked"
+                    // 2. OR Order timeline has passed confirmation (Step ID >= confirmed)
+                    const isConfirmed = order.order_status && (order.order_status.startsWith('step-confirmed') || order.order_status.startsWith('step-shipped') || order.order_status.startsWith('step-delivered'));
+
+                    const sellerId = (role === "seller") ? currentUser : null;
+                    const itemsMap = (typeof getAllItemsStatus === 'function') ? getAllItemsStatus() : {};
+                    // We don't have direct access to internal locked keys here easily without parsing status,
+                    // but the simple rule is: if order is confirmed/shipped/delivered, it's locked for seller.
+
+                    const isLockedForSeller = (role === "seller" && isConfirmed);
+                    const canEditAmount = (role === "admin") || (role === "seller" && !isLockedForSeller);
+
+                    console.log("[StepperOnly] Price Protection:", { role, canEditAmount, isConfirmed, isLockedForSeller });
+
+                    if (valueInput && saveBtn) {
+                        // 1. Set Value
+                        if (!valueInput.value || valueInput.value == "0") {
+                            valueInput.value = order.total_amount || "";
+                        }
+
+                        // 2. Set ReadOnly state
+                        const isFinalLocked = !canEditAmount;
+                        valueInput.readOnly = isFinalLocked;
+                        valueInput.style.backgroundColor = !isFinalLocked ? "#fdfdfd" : "#f7fafc";
+                        valueInput.style.cursor = !isFinalLocked ? "text" : "not-allowed";
+                        valueInput.title = !isFinalLocked ? "أدخل قيمة الطلب" : (role === "admin" ? "أدمن" : "القيمة مقفلة بعد التأكيد");
+
+                        saveBtn.disabled = isFinalLocked;
+                        saveBtn.style.opacity = isFinalLocked ? "0.5" : "1";
+
+                        // 3. Save Logic with Confirmation
+                        saveBtn.onclick = async () => {
+                            if (!canEditAmount) return;
+                            const newAmount = Number(valueInput.value);
+                            if (isNaN(newAmount) || newAmount < 0) {
+                                Swal.fire({ icon: 'error', title: 'خطأ', text: 'يرجى إدخال رقم صحيح' });
+                                valueInput.value = order.total_amount;
+                                return;
+                            }
+
+                            // Confirmation Dialog
+                            const result = await Swal.fire({
+                                title: 'هل أنت متأكد؟',
+                                text: `هل تريد اعتماد قيمة ${newAmount} كقيمة نهائية للطلب؟`,
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: 'var(--color-primary)',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'نعم، حفظ',
+                                cancelButtonText: 'إلغاء'
+                            });
+
+                            if (result.isConfirmed) {
+                                try {
+                                    saveBtn.disabled = true;
+                                    valueInput.disabled = true;
+
+                                    await updateOrderTotalAmount(order.order_key, newAmount);
+
+                                    // Update local data
+                                    order.total_amount = newAmount;
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'تم الحفظ',
+                                        text: 'تم تحديث قيمة الطلب بنجاح',
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                } catch (err) {
+                                    Swal.fire({ icon: 'error', title: 'فشل الحفظ', text: err.message });
+                                    valueInput.value = order.total_amount;
+                                } finally {
+                                    saveBtn.disabled = false;
+                                    valueInput.disabled = false;
+                                }
+                            }
+                        };
                     }
 
                     // Setup Image Link if item exists

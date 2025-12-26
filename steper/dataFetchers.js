@@ -273,3 +273,33 @@ export function getDeliveryLockStatus(ordersData, orderKey, buyerId) {
         return false;
     }
 }
+/**
+ * Updates the total amount of an order on the server.
+ * @param {string} orderKey 
+ * @param {number} totalAmount 
+ */
+export async function updateOrderTotalAmount(orderKey, totalAmount) {
+    if (!window.globalStepperAppData || !window.globalStepperAppData.baseURL) {
+        console.warn("BaseURL not found, cannot sync to server.");
+        return Promise.reject(new Error("BaseURL not found"));
+    }
+    const baseURL = window.globalStepperAppData.baseURL;
+    try {
+        const response = await fetch(`${baseURL}/api/update-order-amount`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ order_key: orderKey, total_amount: totalAmount })
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server responded with ${response.status}`);
+        }
+
+        const result = await response.json();
+        console.log("[DataFetchers] Order Amount Sync Result:", result);
+        return result;
+    } catch (e) {
+        console.error("[DataFetchers] Order Amount Sync Failed:", e);
+        throw e;
+    }
+}
