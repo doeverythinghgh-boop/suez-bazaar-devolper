@@ -86,6 +86,7 @@ function productView_viewDetails(productData, options = {}) {
                 if (adminSellerInfo) {
                     if (adminSellerName) adminSellerName.textContent = productData.sellerName || "غير متوفر";
                     if (adminSellerKey) adminSellerKey.textContent = productData.user_key || "غير متوفر";
+                    if (dom.adminRealPrice) dom.adminRealPrice.textContent = `${productData.realPrice || 0} جنيه`;
                     adminSellerInfo.style.display = "block";
                 }
             } else {
