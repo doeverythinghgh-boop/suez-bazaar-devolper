@@ -21,7 +21,7 @@ CSS: User Profile Styles
     box-sizing: border-box;
     /* Explicit box-sizing */
     overflow-y: auto;
-    max-height: calc(90vh - 70px);
+
 }
 
 .profile-content h3 {
