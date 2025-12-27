@@ -302,6 +302,7 @@ async function previewProduct(key) {
             MainCategory: p.MainCategory,
             SubCategory: p.SubCategory,
             realPrice: p.real_price || p.realPrice,
+            heavyLoad: p.heavy_load || p.heavyLoad,
             type: p.serviceType,
         };
 

@@ -196,6 +196,7 @@ async function initSearchModal(containerId) {
           MainCategory: productData.MainCategory, // Pass Main Category ID
           SubCategory: productData.SubCategory, // Pass Sub Category ID
           realPrice: productData.realPrice,
+          heavyLoad: productData.heavyLoad || productData.heavy_load,
           type: productData.serviceType,
         };
 

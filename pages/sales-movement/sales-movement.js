@@ -541,6 +541,7 @@ async function salesMovement_checkProductKeyChanges() {
                     MainCategory: product.MainCategory,
                     SubCategory: product.SubCategory,
                     realPrice: product.realPrice,
+                    heavyLoad: product.heavyLoad || product.heavy_load,
                     type: product.serviceType,
                 };
 

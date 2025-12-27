@@ -180,6 +180,7 @@ function createProductCard(product) {
         MainCategory: product.MainCategory,
         SubCategory: product.SubCategory,
         realPrice: product.realPrice,
+        heavyLoad: product.heavyLoad || product.heavy_load,
       };
 
       // Use new loadProductView function
