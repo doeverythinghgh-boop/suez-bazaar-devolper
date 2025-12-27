@@ -3,10 +3,21 @@
  * @description Handles form validation, image uploading, and product update process for Product Edit.
  */
 
-var EDIT_form = document.getElementById('edit-product-form');
+/**
+ * @function EDIT_initSubmitLogic
+ * @description Initializes the submit event listener for the product edit form.
+ */
+function EDIT_initSubmitLogic() {
+    const dom = EDIT_getDomElements();
+    const form = dom.form;
 
-if (EDIT_form) {
-    EDIT_form.addEventListener('submit', async (e) => {
+    if (!form) {
+        console.error('[ProductEdit] نموذج التعديل غير موجود عند محاولة ربط حدث الإرسال!');
+        return;
+    }
+
+    // Remove existing listener if any (to prevent multiple submissions)
+    form.onsubmit = async (e) => {
         e.preventDefault();
         console.log('%c[ProductEdit] Submit event triggered for editing.', 'color: blue;');
         let isValid = true;
@@ -79,7 +90,7 @@ if (EDIT_form) {
         });
 
         try {
-            const productKey = EDIT_form.dataset.productKey;
+            const productKey = form.dataset.productKey;
 
             // 1. Identify Existing vs New Images
             const existingImages = EDIT_images.filter(state => state.isExisting === true);
@@ -191,5 +202,5 @@ if (EDIT_form) {
                 icon: 'error'
             });
         }
-    });
+    };
 }

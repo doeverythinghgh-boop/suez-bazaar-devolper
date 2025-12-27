@@ -10,6 +10,7 @@
 async function initializeEditProductForm() {
     console.log('%c[ProductEdit] تهيئة نموذج التعديل...', 'color: blue;');
 
+    const dom = EDIT_getDomElements();
     const currentProduct = (typeof ProductStateManager !== 'undefined') ? ProductStateManager.getCurrentProduct() : null;
 
     if (!currentProduct) {
@@ -17,17 +18,21 @@ async function initializeEditProductForm() {
         return;
     }
 
-    const form = document.getElementById('edit-product-form');
-    EDIT_images = []; // Clear current session images
-    EDIT_originalImageNames = []; // Reset original names
+    // Reset state
+    EDIT_images = [];
+    EDIT_originalImageNames = [];
 
     // Set edit mode data
-    if (form) {
-        form.dataset.mode = 'edit';
-        form.dataset.productKey = currentProduct.product_key;
+    if (dom.form) {
+        dom.form.dataset.mode = 'edit';
+        dom.form.dataset.productKey = currentProduct.product_key;
     }
 
     console.log(`[ProductEdit] تعديل المنتج: ${currentProduct.product_key}`);
+
+    // Attach Listeners first
+    EDIT_attachEventListeners();
+    EDIT_initSubmitLogic();
 
     // Populate text fields
     const fields = {
@@ -44,15 +49,15 @@ async function initializeEditProductForm() {
     for (const [id, value] of Object.entries(fields)) {
         const el = document.getElementById(id);
         if (el) {
-            el.value = value || '';
+            el.value = (value !== undefined && value !== null) ? value : '';
             // Trigger input event to update character counters and clear errors
             el.dispatchEvent(new Event('input'));
         }
     }
 
     // Initialize Heavy Load Checkbox
-    if (EDIT_heavyLoadCheckbox) {
-        EDIT_heavyLoadCheckbox.checked = (currentProduct.heavyLoad == 1);
+    if (dom.heavyLoadCheckbox) {
+        dom.heavyLoadCheckbox.checked = (currentProduct.heavyLoad == 1);
     }
 
     // Load existing images
@@ -61,13 +66,24 @@ async function initializeEditProductForm() {
     console.log('%c[ProductEdit] تم تهيئة نموذج التعديل بنجاح.', 'color: green;');
 }
 
-// Global exposure for external calls if needed
+// Global exposure
 window.initializeEditProductForm = initializeEditProductForm;
 
-// Auto-initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    // Check if we have state to initialize
-    if (typeof ProductStateManager !== 'undefined' && ProductStateManager.getCurrentProduct()) {
-        initializeEditProductForm();
+/**
+ * Auto-initialize mechanism for both direct script execution (SPA)
+ * and full page loads.
+ */
+(function () {
+    const runInit = () => {
+        if (typeof ProductStateManager !== 'undefined' && ProductStateManager.getCurrentProduct()) {
+            initializeEditProductForm();
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', runInit);
+    } else {
+        // DOM already ready, run immediately
+        runInit();
     }
-});
+})();

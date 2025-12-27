@@ -52,7 +52,8 @@ async function EDIT_compressImage(file) {
  * @description Loads existing product images from the server / cloud storage.
  */
 async function EDIT_loadExistingImages() {
-    const imagesLoadingEl = document.getElementById('images-loading');
+    const dom = EDIT_getDomElements();
+    const imagesLoadingEl = dom.imagesLoading;
     const currentProduct = (typeof ProductStateManager !== 'undefined') ? ProductStateManager.getCurrentProduct() : null;
 
     if (!currentProduct || !currentProduct.ImageName) {

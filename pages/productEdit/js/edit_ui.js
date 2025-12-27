@@ -3,20 +3,34 @@
  * @description Handles UI events, character counters, and preview generation for Product Edit.
  */
 
-// DOM Elements
-var EDIT_fileInput = document.getElementById('file-input');
-var EDIT_pickFilesBtn = document.getElementById('pick-files-btn');
-var EDIT_takePhotoBtn = document.getElementById('take-photo-btn');
-var EDIT_previewsEl = document.getElementById('previews');
-var EDIT_productNameInput = document.getElementById('product-name');
-var EDIT_descriptionTextarea = document.getElementById('product-description');
-var EDIT_sellerMessageTextarea = document.getElementById('seller-message');
-var EDIT_notesInput = document.getElementById('product-notes');
-var EDIT_quantityInput = document.getElementById('product-quantity');
-var EDIT_priceInput = document.getElementById('product-price');
-var EDIT_originalPriceInput = document.getElementById('original-price');
-var EDIT_realPriceInput = document.getElementById('real-price');
-var EDIT_heavyLoadCheckbox = document.getElementById('heavy-load');
+// DOM Elements Cache
+var EDIT_dom = {};
+
+/**
+ * @function EDIT_getDomElements
+ * @description Retrieves and caches DOM elements for the edit form.
+ * @returns {Object} Object containing DOM elements.
+ */
+function EDIT_getDomElements() {
+    EDIT_dom = {
+        fileInput: document.getElementById('file-input'),
+        pickFilesBtn: document.getElementById('pick-files-btn'),
+        takePhotoBtn: document.getElementById('take-photo-btn'),
+        previewsEl: document.getElementById('previews'),
+        productNameInput: document.getElementById('product-name'),
+        descriptionTextarea: document.getElementById('product-description'),
+        sellerMessageTextarea: document.getElementById('seller-message'),
+        notesInput: document.getElementById('product-notes'),
+        quantityInput: document.getElementById('product-quantity'),
+        priceInput: document.getElementById('product-price'),
+        originalPriceInput: document.getElementById('original-price'),
+        realPriceInput: document.getElementById('real-price'),
+        heavyLoadCheckbox: document.getElementById('heavy-load'),
+        form: document.getElementById('edit-product-form'),
+        imagesLoading: document.getElementById('images-loading')
+    };
+    return EDIT_dom;
+}
 
 /**
  * @function EDIT_createPreviewItem
@@ -59,7 +73,8 @@ function EDIT_createPreviewItem(state, existingImageUrl = null) {
         reader.readAsDataURL(state.file);
     }
 
-    if (EDIT_previewsEl) EDIT_previewsEl.appendChild(wrapper);
+    const dom = EDIT_getDomElements();
+    if (dom.previewsEl) dom.previewsEl.appendChild(wrapper);
     state._el = wrapper;
     state._metaEl = meta;
 }
@@ -93,122 +108,130 @@ function EDIT_removeImage(id) {
     });
 }
 
-// UI Events
-if (EDIT_pickFilesBtn) {
-    EDIT_pickFilesBtn.addEventListener('click', () => {
-        if (EDIT_fileInput) {
-            EDIT_fileInput.removeAttribute('capture');
-            EDIT_fileInput.click();
-        }
-    });
-}
+// UI Events - Attached via function to ensure DOM is ready
+/**
+ * @function EDIT_attachEventListeners
+ * @description Attaches event listeners to DOM elements after they are available.
+ */
+function EDIT_attachEventListeners() {
+    const dom = EDIT_getDomElements();
 
-if (EDIT_fileInput) {
-    EDIT_fileInput.addEventListener('change', (e) => EDIT_handleNewFiles(e.target.files));
-}
-
-// Character Counters
-if (EDIT_productNameInput) {
-    EDIT_productNameInput.addEventListener('input', () => {
-        const currentLength = EDIT_productNameInput.value.length;
-        const maxLength = EDIT_productNameInput.maxLength;
-        const counter = document.getElementById('product-name-char-counter');
-        if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
-        if (currentLength > 0) EDIT_clearError(EDIT_productNameInput);
-    });
-}
-
-if (EDIT_descriptionTextarea) {
-    EDIT_descriptionTextarea.addEventListener('input', () => {
-        const currentLength = EDIT_descriptionTextarea.value.length;
-        const maxLength = EDIT_descriptionTextarea.maxLength;
-        const counter = document.getElementById('description-char-counter');
-        if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
-        if (currentLength > 0) EDIT_clearError(EDIT_descriptionTextarea);
-    });
-}
-
-if (EDIT_sellerMessageTextarea) {
-    EDIT_sellerMessageTextarea.addEventListener('input', () => {
-        const currentLength = EDIT_sellerMessageTextarea.value.length;
-        const maxLength = EDIT_sellerMessageTextarea.maxLength;
-        const counter = document.getElementById('seller-message-char-counter');
-        if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
-        if (currentLength > 0) EDIT_clearError(EDIT_sellerMessageTextarea);
-    });
-}
-
-if (EDIT_notesInput) {
-    EDIT_notesInput.addEventListener('input', () => {
-        const currentLength = EDIT_notesInput.value.length;
-        const maxLength = EDIT_notesInput.maxLength;
-        const counter = document.getElementById('notes-char-counter');
-        if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
-        if (currentLength > 0) EDIT_clearError(EDIT_notesInput);
-    });
-}
-
-// Numeric field validation
-if (EDIT_quantityInput) {
-    EDIT_quantityInput.addEventListener('input', () => {
-        let value = normalizeDigits(EDIT_quantityInput.value);
-        EDIT_quantityInput.value = value.replace(/[^0-9]/g, '');
-        if (EDIT_quantityInput.value) EDIT_clearError(EDIT_quantityInput);
-    });
-}
-
-if (EDIT_priceInput) {
-    EDIT_priceInput.addEventListener('input', () => {
-        let value = normalizeDigits(EDIT_priceInput.value);
-        value = value.replace(/[^0-9.]/g, '');
-        const parts = value.split('.');
-        if (parts.length > 2) {
-            value = parts[0] + '.' + parts.slice(1).join('');
-        }
-        EDIT_priceInput.value = value;
-        if (EDIT_priceInput.value) EDIT_clearError(EDIT_priceInput);
-    });
-}
-
-if (EDIT_originalPriceInput) {
-    EDIT_originalPriceInput.addEventListener('input', () => {
-        let value = normalizeDigits(EDIT_originalPriceInput.value);
-        value = value.replace(/[^0-9.]/g, '');
-        const parts = value.split('.');
-        if (parts.length > 2) {
-            value = parts[0] + '.' + parts.slice(1).join('');
-        }
-        EDIT_originalPriceInput.value = value;
-    });
-}
-
-if (EDIT_realPriceInput) {
-    EDIT_realPriceInput.addEventListener('input', () => {
-        let value = normalizeDigits(EDIT_realPriceInput.value);
-        value = value.replace(/[^0-9.]/g, '');
-        const parts = value.split('.');
-        if (parts.length > 2) {
-            value = parts[0] + '.' + parts.slice(1).join('');
-        }
-        EDIT_realPriceInput.value = value;
-    });
-}
-
-// Camera Helper
-if (EDIT_takePhotoBtn) {
-    EDIT_takePhotoBtn.addEventListener('click', () => {
-        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
-        if (isMobile) {
-            console.log('[Camera] Mobile device detected. Using capture attribute.');
-            if (EDIT_fileInput) {
-                EDIT_fileInput.setAttribute('capture', 'environment');
-                EDIT_fileInput.click();
+    if (dom.pickFilesBtn) {
+        dom.pickFilesBtn.onclick = () => {
+            if (dom.fileInput) {
+                dom.fileInput.removeAttribute('capture');
+                dom.fileInput.click();
             }
-        } else {
-            console.log('[Camera] Desktop device detected. Using getUserMedia API.');
-            EDIT_openDesktopCamera();
-        }
-    });
+        };
+    }
+
+    if (dom.fileInput) {
+        dom.fileInput.onchange = (e) => EDIT_handleNewFiles(e.target.files);
+    }
+
+    // Character Counters
+    if (dom.productNameInput) {
+        dom.productNameInput.oninput = () => {
+            const currentLength = dom.productNameInput.value.length;
+            const maxLength = dom.productNameInput.maxLength;
+            const counter = document.getElementById('product-name-char-counter');
+            if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
+            if (currentLength > 0) EDIT_clearError(dom.productNameInput);
+        };
+    }
+
+    if (dom.descriptionTextarea) {
+        dom.descriptionTextarea.oninput = () => {
+            const currentLength = dom.descriptionTextarea.value.length;
+            const maxLength = dom.descriptionTextarea.maxLength;
+            const counter = document.getElementById('description-char-counter');
+            if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
+            if (currentLength > 0) EDIT_clearError(dom.descriptionTextarea);
+        };
+    }
+
+    if (dom.sellerMessageTextarea) {
+        dom.sellerMessageTextarea.oninput = () => {
+            const currentLength = dom.sellerMessageTextarea.value.length;
+            const maxLength = dom.sellerMessageTextarea.maxLength;
+            const counter = document.getElementById('seller-message-char-counter');
+            if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
+            if (currentLength > 0) EDIT_clearError(dom.sellerMessageTextarea);
+        };
+    }
+
+    if (dom.notesInput) {
+        dom.notesInput.oninput = () => {
+            const currentLength = dom.notesInput.value.length;
+            const maxLength = dom.notesInput.maxLength;
+            const counter = document.getElementById('notes-char-counter');
+            if (counter) counter.textContent = `${currentLength} / ${maxLength}`;
+            if (currentLength > 0) EDIT_clearError(dom.notesInput);
+        };
+    }
+
+    // Numeric field validation
+    if (dom.quantityInput) {
+        dom.quantityInput.oninput = () => {
+            let value = normalizeDigits(dom.quantityInput.value);
+            dom.quantityInput.value = value.replace(/[^0-9]/g, '');
+            if (dom.quantityInput.value) EDIT_clearError(dom.quantityInput);
+        };
+    }
+
+    if (dom.priceInput) {
+        dom.priceInput.oninput = () => {
+            let value = normalizeDigits(dom.priceInput.value);
+            value = value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            dom.priceInput.value = value;
+            if (dom.priceInput.value) EDIT_clearError(dom.priceInput);
+        };
+    }
+
+    if (dom.originalPriceInput) {
+        dom.originalPriceInput.oninput = () => {
+            let value = normalizeDigits(dom.originalPriceInput.value);
+            value = value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            dom.originalPriceInput.value = value;
+        };
+    }
+
+    if (dom.realPriceInput) {
+        dom.realPriceInput.oninput = () => {
+            let value = normalizeDigits(dom.realPriceInput.value);
+            value = value.replace(/[^0-9.]/g, '');
+            const parts = value.split('.');
+            if (parts.length > 2) {
+                value = parts[0] + '.' + parts.slice(1).join('');
+            }
+            dom.realPriceInput.value = value;
+        };
+    }
+
+    // Camera Helper
+    if (dom.takePhotoBtn) {
+        dom.takePhotoBtn.onclick = () => {
+            const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+            if (isMobile) {
+                console.log('[Camera] Mobile device detected. Using capture attribute.');
+                if (dom.fileInput) {
+                    dom.fileInput.setAttribute('capture', 'environment');
+                    dom.fileInput.click();
+                }
+            } else {
+                console.log('[Camera] Desktop device detected. Using getUserMedia API.');
+                EDIT_openDesktopCamera();
+            }
+        };
+    }
 }
 
 /**
