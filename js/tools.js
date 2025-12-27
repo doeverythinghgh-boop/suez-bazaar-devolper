@@ -243,6 +243,62 @@ async function clearAllBrowserData() {
 }
 
 /**
+ * @description Checks the application version from version.json and compares it with the version stored in localStorage.
+ *   If the versions are different, it clears browser cache, cookies, and session storage (preserving localStorage and IndexedDB),
+ *   then reloads the page to ensure the user has the latest files.
+ * @function checkAppVersionAndClearData
+ * @async
+ * @returns {Promise<void>}
+ */
+async function checkAppVersionAndClearData() {
+  const VERSION_STORAGE_KEY = 'app_version';
+  try {
+    // 1) Fetch latest version.json with cache busting
+    const response = await fetch(`version.json?t=${Date.now()}`);
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const latestVersion = data.version;
+    const storedVersion = localStorage.getItem(VERSION_STORAGE_KEY);
+
+    // 2) If versions differ, perform cleanup (excluding localStorage and IndexedDB)
+    if (storedVersion && latestVersion !== storedVersion) {
+      console.log(`[VersionCheck] New version detected: ${latestVersion} (Old: ${storedVersion}). Clearing specific data...`);
+
+      // A) Clear Session Storage
+      sessionStorage.clear();
+
+      // B) Clear Cookies
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i];
+        const eqPos = cookie.indexOf("=");
+        const name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+        document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      }
+
+      // C) Clear Cache Storage (The most important part for file updates)
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(cacheNames.map(name => caches.delete(name)));
+      }
+
+      // Update stored version
+      localStorage.setItem(VERSION_STORAGE_KEY, latestVersion);
+
+      // D) Force Reload
+      console.log("[VersionCheck] Cleanup complete. Reloading page...");
+      window.location.reload(true);
+    } else if (!storedVersion) {
+      // First time visit or storage cleared - just set the version
+      localStorage.setItem(VERSION_STORAGE_KEY, latestVersion);
+    }
+  } catch (error) {
+    console.error("[VersionCheck] Error checking for updates:", error);
+  }
+}
+
+/**
  * @description Displays notifications modal using `mainLoader`.
  * @function showNotificationsModal
  * @returns {void}

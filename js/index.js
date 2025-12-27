@@ -35,6 +35,8 @@ function showHomeIcon() {
  * @async
  */
 document.addEventListener("DOMContentLoaded", async () => {
+  // [Step -1] Check for new version and clear data if needed
+  await checkAppVersionAndClearData();
 
   // [Step 0] Load notification configurations from server (Single Source of Truth)
   try {
