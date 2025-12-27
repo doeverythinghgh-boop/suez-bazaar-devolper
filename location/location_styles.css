@@ -238,8 +238,12 @@ body {
 
 /* Map attribution style */
 .leaflet-control-attribution {
-    font-size: 8px !important;
-    opacity: 0.5;
+    font-size: 3px !important;
+    opacity: 0.2 !important;
+}
+
+.leaflet-bottom.leaflet-right {
+    font-size: 6px !important;
 }
 
 /* Move Leaflet controls to the right (RTL support) */
