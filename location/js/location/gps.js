@@ -33,13 +33,19 @@ location_app.getLocationByGPS = function () {
 
             Swal.fire({
                 title: 'جاري تحديد الموقع...',
-                text: 'يرجى السماح بالوصول إلى بيانات الموقع',
+                html: `
+                    <p style="margin-bottom: 20px;">يرجى السماح بالوصول إلى بيانات الموقع</p>
+                    <div class="swal2-loading" style="display: flex; justify-content: center; margin-bottom: 10px;">
+                        <div class="swal2-loader" style="display: block;"></div>
+                    </div>
+                `,
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showCancelButton: true,
                 cancelButtonText: 'إلغاء',
-                didOpen: () => Swal.showLoading(),
-                customClass: { popup: 'fullscreen-swal' }
+                showConfirmButton: false, // Hide confirm button during search
+                cancelButtonColor: '#d33',
+                customClass: { popup: 'location_fullscreen-swal' }
             }).then((result) => {
                 if (result.isDismissed || result.dismiss === Swal.DismissReason.cancel) {
                     console.log("[GPS] User cancelled location retrieval.");
