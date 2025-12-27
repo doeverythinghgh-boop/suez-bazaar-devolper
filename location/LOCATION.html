@@ -14,6 +14,32 @@
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="location_styles.css" />
+
+    <script id="embedded-detector">
+        // Immediate detection and suppression of unwanted buttons to prevent any UI flicker
+        (function () {
+            var search = window.location.search;
+            var isEmbedded = search.indexOf('embedded=true') !== -1;
+            var isHideSave = search.indexOf('hideSave=true') !== -1;
+
+            if (isEmbedded || isHideSave) {
+                var css = '';
+                if (isEmbedded) {
+                    css += '#location_closeBtn, .location_btn-close { display: none !important; visibility: hidden !important; } ';
+                    document.documentElement.classList.add('is-embedded');
+                }
+                if (isHideSave) {
+                    css += '#location_saveBtn, .location_btn-save { display: none !important; visibility: hidden !important; } ';
+                    document.documentElement.classList.add('is-hidesave');
+                }
+                if (css) {
+                    var style = document.createElement('style');
+                    style.innerHTML = css;
+                    document.head.appendChild(style);
+                }
+            }
+        })();
+    </script>
 </head>
 
 <body>
@@ -57,15 +83,15 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="/assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
 
-    <!-- Main application modules -->
-    <script src="js/location/config.js"></script>
-    <script src="js/location/ui.js"></script>
-    <script src="js/location/storage.js"></script>
-    <script src="js/location/map.js"></script>
-    <script src="js/location/gps.js"></script>
-    <script src="js/location/utils.js"></script>
-    <script src="js/location/core.js"></script>
-    <script src="location_app.js"></script>
+    <!-- Main application modules with cache busting -->
+    <script src="js/location/config.js?v=4"></script>
+    <script src="js/location/ui.js?v=4"></script>
+    <script src="js/location/storage.js?v=4"></script>
+    <script src="js/location/map.js?v=4"></script>
+    <script src="js/location/gps.js?v=4"></script>
+    <script src="js/location/utils.js?v=4"></script>
+    <script src="js/location/core.js?v=4"></script>
+    <script src="location_app.js?v=4"></script>
 </body>
 
 </html>

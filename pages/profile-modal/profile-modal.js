@@ -5,7 +5,6 @@
  */
 
 // Import Header as initial action (Must remain outside main function)
-// Container ID changed to "profile-header-container"
 insertUniqueSnapshot("pages/header.html", "profile-header-container", 300);
 
 // 1. Define Elements and Variables (DOM Elements & State)
@@ -23,13 +22,13 @@ function profileGetElements() {
         newPasswordInput: document.getElementById("profile-new-password"),
         confirmPasswordInput: document.getElementById("profile-confirm-password"),
         coordsInput: document.getElementById("profile-coords"),
+        locationIframe: document.getElementById("profile-location-iframe"),
 
         // Controls
         changePasswordCheckbox: document.getElementById("profile-change-password-checkbox"),
         passwordFieldsContainer: document.getElementById("profile-password-fields-container"),
         saveButton: document.getElementById("profile-save-button"),
         deleteButton: document.getElementById("profile-delete-account-button"),
-        locationBtn: document.getElementById("profile-location-btn"),
 
         // Feedback
         passwordErrorDiv: document.getElementById("profile-password-error"),
@@ -109,21 +108,11 @@ function profileInitializeData() {
         const els = profileGetElements();
         const user = window.userSession;
 
-        console.log("[Profile] Initializing data. Session:", user);
-        console.log("[Profile] Elements found:", !!els.usernameInput, !!els.locationBtn, !!els.coordsInput);
-
-        if (!user) {
-            console.warn("[Profile] No active session found.");
-            return;
-        }
+        if (!user) return;
 
         if (els.usernameInput) els.usernameInput.value = user.username || "";
         if (els.phoneInput) els.phoneInput.value = user.phone || "";
-
-        // Handle both casing possibilities for address
-        if (els.addressInput) {
-            els.addressInput.value = user.Address || user.address || "";
-        }
+        if (els.addressInput) els.addressInput.value = user.Address || user.address || "";
 
         // Reset password fields
         if (els.changePasswordCheckbox) els.changePasswordCheckbox.checked = false;
@@ -133,33 +122,31 @@ function profileInitializeData() {
         if (els.passwordErrorDiv) els.passwordErrorDiv.textContent = "";
 
         // Restore saved location
-        // Search in all possible property names to be safe
         let initialCoords = user.location || user.Location || user.Coordinates || user.coordinates || user.user_location || "";
-
-        // Final fallback: check direct localStorage for very old sessions if needed
-        if (!initialCoords) {
-            initialCoords = localStorage.getItem("saved_location") || "";
-        }
+        if (!initialCoords) initialCoords = localStorage.getItem("saved_location") || "";
 
         if (initialCoords && initialCoords.includes(",")) {
-            console.log("%c[Profile] Success: Location button set to SUCCESS state. Coordinates found: " + initialCoords, "color: #10b981; font-weight: bold; border-left: 4px solid #10b981; padding-left: 8px;");
             if (els.coordsInput) els.coordsInput.value = initialCoords;
-            if (els.locationBtn) els.locationBtn.classList.add("is-success");
+
+            // Update Iframe Source with coordinates
+            if (els.locationIframe) {
+                const [lat, lng] = initialCoords.split(",").map(c => c.trim());
+                const timestamp = new Date().getTime();
+                els.locationIframe.src = `location/LOCATION.html?lat=${lat}&lng=${lng}&embedded=true&hideSave=true&v=${timestamp}`;
+            }
 
             if (els.addressError) {
+                const addressInput = document.getElementById("profile-address");
+                const hasDetails = addressInput && addressInput.value.trim() !== "";
                 els.addressError.style.color = "#10b981";
                 els.addressError.style.display = "block";
 
-                const addressInput = document.getElementById("profile-address");
-                const hasDetails = addressInput && addressInput.value.trim() !== "";
                 if (hasDetails) {
                     els.addressError.innerHTML = '<i class="fas fa-check-circle"></i> تم ربط موقعك المحفوظ بنجاح!';
                 } else {
-                    els.addressError.innerHTML = '<i class="fas fa-check-circle"></i> تم العثور على موقعك المحفوظ.<br/>يرجى الآن كتابة وصف دقيق (مثلاً: الدور أو علامة مميزة) أعلاه.';
+                    els.addressError.innerHTML = '<i class="fas fa-check-circle"></i> تم العثور على موقعك المحفوظ.<br/>يرجى الآن كتابة وصف دقيق لحقيبة التوصيل.';
                 }
             }
-        } else {
-            console.log("%c[Profile] Notice: Location button remains in DEFAULT state. No coordinates found.", "color: #f59e0b; font-weight: bold; border-left: 4px solid #f59e0b; padding-left: 8px;");
         }
     } catch (error) {
         console.error("خطأ في تهيئة بيانات الملف الشخصي:", error);
@@ -178,14 +165,12 @@ async function profileHandleChangePasswordCheck() {
         if (!els.changePasswordCheckbox || !user) return;
 
         if (els.changePasswordCheckbox.checked) {
-            // If user has NO password set, just show fields
             if (!user.Password) {
                 if (els.passwordFieldsContainer) els.passwordFieldsContainer.style.display = "block";
                 profileIsPasswordVerified = true;
                 return;
             }
 
-            // Verify identity
             const passwordEntered = await AuthUI.confirmPassword("تأكيد الهوية", "يرجى إدخال كلمة المرور الحالية لتغييرها.");
             if (passwordEntered) {
                 AuthUI.showLoading("جاري التحقق...");
@@ -220,7 +205,6 @@ function profileValidateInputs() {
     const els = profileGetElements();
     const result = { isValid: true, data: {} };
 
-    // Use AuthUI to clear errors
     if (els.usernameInput) AuthUI.clearFieldValidationMsg(els.usernameInput);
     if (els.phoneInput) AuthUI.clearFieldValidationMsg(els.phoneInput);
     if (els.newPasswordInput) AuthUI.clearFieldValidationMsg(els.newPasswordInput);
@@ -233,21 +217,18 @@ function profileValidateInputs() {
     const password = els.newPasswordInput?.value || "";
     const confirmPassword = els.confirmPasswordInput?.value || "";
 
-    // Validate Name
     const nameValidation = AuthValidators.validateUsername(username);
     if (!nameValidation.isValid) {
         AuthUI.showFieldValidationMsg(els.usernameInput, nameValidation.message);
         result.isValid = false;
     }
 
-    // Validate Phone
     const phoneValidation = AuthValidators.validatePhone(phone);
     if (!phoneValidation.isValid) {
         AuthUI.showFieldValidationMsg(els.phoneInput, phoneValidation.message);
         result.isValid = false;
     }
 
-    // Validate Address
     const hasCoords = !!(els.coordsInput?.value);
     const addressValidation = AuthValidators.validateAddress(address, hasCoords);
     if (!addressValidation.isValid) {
@@ -255,7 +236,6 @@ function profileValidateInputs() {
         result.isValid = false;
     }
 
-    // Password validation if checkbox checked
     if (els.changePasswordCheckbox?.checked) {
         const passValidation = AuthValidators.validatePassword(password);
         if (!passValidation.isValid) {
@@ -283,36 +263,42 @@ async function profileHandleSaveChanges() {
     if (!validationResult.isValid) return;
 
     const { username, phone, address, password } = validationResult.data;
-
     const user = window.userSession;
     if (!user) return;
 
-    // 1. Prepare data
     const updatedData = { user_key: user.user_key };
     if (username !== user.username) updatedData.username = username;
     if (phone !== user.phone) updatedData.phone = phone;
 
-    // Check against both casings to avoid redundant updates
-    const currentAddress = user.Address || user.address || "";
+    const currentAddress = (user.Address || user.address || "").trim();
     if (address !== currentAddress) {
-        // We use 'address' for payload but SessionManager should merge correctly
+        console.log("[Profile] Address changed:", { old: currentAddress, new: address });
         updatedData.address = address;
     }
 
-    if (els.coordsInput && els.coordsInput.value) {
-        updatedData.location = els.coordsInput.value;
+    // Capture location change with normalization
+    const currentCoords = (user.location || user.Location || "").toString().trim().replace(/\s+/g, '');
+    const newCoords = (els.coordsInput?.value || "").toString().trim().replace(/\s+/g, '');
+
+    console.log("[Profile] Comparing coordinates:", { currentCoords, newCoords });
+
+    if (newCoords && newCoords !== currentCoords) {
+        console.log("[Profile] Location changed detected!");
+        updatedData.location = newCoords.includes(',') ? newCoords.replace(',', ', ') : newCoords;
     }
 
     if (els.changePasswordCheckbox?.checked && password) {
         updatedData.password = password;
     }
 
+    console.log("[Profile] Final Update Payload:", updatedData);
+
     if (Object.keys(updatedData).length === 1) {
+        console.warn("[Profile] No changes detected in payload.");
         await AuthUI.showSuccess("لم يتغير شيء", "لم تقم بإجراء أي تغييرات.");
         return;
     }
 
-    // 2. Verify current password logic (using AuthUI)
     const sessionAuth = window.userSession;
     if (sessionAuth.Password && !profileIsPasswordVerified) {
         const passwordEntered = await AuthUI.confirmPassword("تأكيد الهوية", "أدخل كلمة المرور الحالية لحفظ التغييرات.");
@@ -328,7 +314,6 @@ async function profileHandleSaveChanges() {
         }
     }
 
-    // 3. Save
     AuthUI.showLoading("جاري الحفظ...");
     const result = await updateUser(updatedData);
     AuthUI.close();
@@ -371,7 +356,6 @@ async function profileHandleAccountDeletion(session) {
 
     if (!confirmation.isConfirmed) return;
 
-    // Verify Password
     if (window.userSession.Password) {
         const password = await AuthUI.confirmPassword("تأكيد الحذف", "أدخل كلمة المرور لتأكيد الحذف.");
         if (!password) return;
@@ -398,7 +382,6 @@ async function profileHandleAccountDeletion(session) {
     }
 }
 
-
 // 4. Event Listeners
 // ----------------------------------------------------
 
@@ -410,21 +393,17 @@ function profileSetupListeners() {
     try {
         const els = profileGetElements();
 
-        // 1. Initialize Password Visibility
         profileTogglePasswordVisibility("profile-new-password", "profile-toggle-new-password");
         profileTogglePasswordVisibility("profile-confirm-password", "profile-toggle-confirm-password-icon");
 
-        // 2. Change Password Option Handler
         if (els.changePasswordCheckbox) {
             els.changePasswordCheckbox.addEventListener("click", profileHandleChangePasswordCheck);
         }
 
-        // 3. Save Button Handler
         if (els.saveButton) {
             els.saveButton.addEventListener("click", profileHandleSaveChanges);
         }
 
-        // 4. Delete Account Button Handler
         if (els.deleteButton) {
             els.deleteButton.addEventListener("click", (e) => {
                 e.preventDefault();
@@ -432,84 +411,36 @@ function profileSetupListeners() {
             });
         }
 
-        // Location Picker Support
-        if (els.locationBtn) {
-            els.locationBtn.addEventListener("click", () => {
-                const existingCoords = els.coordsInput?.value || "";
-                console.log("[Parent] Opening Map from Profile. Passing coords:", existingCoords || "Default (Suez)");
-                let iframeSrc = "location/LOCATION.html";
+        // Embedded Map Message Listener
+        const handleProfileMessage = (event) => {
+            const mapStatus = document.getElementById("profile-map-status");
+            const coordsInput = document.getElementById("profile-coords");
 
-                if (existingCoords && existingCoords.includes(",")) {
-                    const coords = existingCoords.split(",").map(c => c.trim());
-                    if (coords.length === 2) {
-                        iframeSrc += `?lat=${coords[0]}&lng=${coords[1]}`;
-                    }
+            if (event.data && event.data.type === 'LOCATION_SELECTED') {
+                const coords = event.data.coordinates;
+                console.log("[Profile] Received coordinates from map:", coords);
+                if (coordsInput) coordsInput.value = coords;
+
+                if (mapStatus) {
+                    mapStatus.style.color = "#10b981";
+                    mapStatus.innerHTML = '<i class="fas fa-check-circle"></i> تم ربط الموقع بنجاح! شكراً لك.';
                 }
+            } else if (event.data && event.data.type === 'LOCATION_RESET') {
+                if (coordsInput) coordsInput.value = "";
+                if (mapStatus) {
+                    mapStatus.style.color = "";
+                    mapStatus.innerHTML = "";
+                }
+            }
+        };
 
-                Swal.fire({
-                    html: `
-                              <div style="width: 100%; height: 500px; overflow: hidden; border-radius: 15px;">
-                                <iframe 
-                                  src="${iframeSrc}" 
-                          style="width: 100%; height: 100%; border: none;"
-                          id="profile_location-iframe"
-                        ></iframe>
-                      </div>
-                    `,
-                    showConfirmButton: false,
-                    showCloseButton: false,
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    padding: '0px',
-                    customClass: { popup: 'fullscreen-swal' },
-                    didOpen: () => {
-                        const handleProfileMessage = (event) => {
-                            const locationBtn = document.getElementById("profile-location-btn");
-                            const addressError = document.getElementById("profile-address-error");
-                            const profile_coordsInput = document.getElementById("profile-coords");
+        window.addEventListener('message', handleProfileMessage);
 
-                            if (event.data && event.data.type === 'LOCATION_SELECTED') {
-                                const coords = event.data.coordinates;
-                                if (profile_coordsInput) profile_coordsInput.value = coords;
-
-                                // UX Improvement: Show success state and update hint
-                                if (locationBtn) locationBtn.classList.add("is-success");
-                                if (addressError) {
-                                    const addressInput = document.getElementById("profile-address");
-                                    addressError.style.color = "#10b981";
-                                    addressError.style.display = "block";
-
-                                    if (addressInput && addressInput.value.trim() !== "") {
-                                        // Specific address already exists, just show success icon/msg
-                                        addressError.innerHTML = '<i class="fas fa-check-circle"></i> تم ربط الموقع بنجاح!';
-                                    } else {
-                                        // Address empty, show reminder
-                                        addressError.innerHTML = '<i class="fas fa-check-circle"></i> شكراً لك على تحديد موقعك بدقة!<br/>يرجى الآن كتابة وصف دقيق (مثلاً: الدور أو علامة مميزة) أعلاه.';
-                                    }
-                                }
-                            } else if (event.data && event.data.type === 'LOCATION_RESET') {
-                                if (profile_coordsInput) profile_coordsInput.value = "";
-                                if (locationBtn) locationBtn.classList.remove("is-success");
-                                if (addressError) {
-                                    addressError.style.color = "";
-                                    addressError.innerHTML = "أسرع للتوصيل: اختيار موقعك من الخريطة يضمن وصول المندوب إليك بسرعة فائقة.";
-                                }
-                            } else if (event.data && event.data.type === 'CLOSE_LOCATION_MODAL') {
-                                Swal.close();
-                                window.removeEventListener('message', handleProfileMessage);
-                            }
-                        };
-                        window.addEventListener('message', handleProfileMessage);
-                    }
-                });
-            });
-        }
     } catch (error) {
         console.error("خطأ في تهيئة مستمعي الأحداث (profileSetupListeners):", error);
     }
 }
 
-// ----------------------------------------------------
 // 5. Entry Point: Start Module
 // ----------------------------------------------------
 profileInitializeData();

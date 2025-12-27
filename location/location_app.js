@@ -1,37 +1,20 @@
 /**
  * @file location_app.js
  * @description Application entry point for the Location Selection system.
- * This file handles the initial boot sequence and global error management.
- * 
- * @author Antigravity
- * @version 1.0.0
  */
 
-// Initialize application when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("[App] DOM Loaded. Booting Location Application...");
+// Function to start the app
+function bootLocationApp() {
+    console.log("[App] Booting Location Application...");
     try {
-        // Prevent multiple initializations
-        if (window.location_appInitialized) {
-            console.warn('Location app already initialized');
-            return;
-        }
-
+        if (window.location_appInitialized) return;
         window.location_appInitialized = true;
 
-        // Start the application
         if (typeof location_app !== 'undefined' && typeof location_app.init === 'function') {
-            console.log("[App] Modules loaded. Calling location_app.init()...");
             location_app.init();
         } else {
             throw new Error('لم يتم تحميل وحدات التطبيق الأساسية بشكل صحيح.');
         }
-
-        // Add global error handler for uncaught exceptions
-        window.addEventListener('error', (event) => {
-            console.error('Captured global error:', event.error || event.message);
-        });
-
     } catch (error) {
         console.error('Failed to initialize application bootstrapper:', error);
 
@@ -59,4 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
             location_loadingOverlay.style.opacity = '1';
         }
     }
+}
+
+// Initialize application when DOM is ready
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootLocationApp);
+} else {
+    bootLocationApp();
+}
+
+// Add global error handler
+window.addEventListener('error', (event) => {
+    console.error('Captured global error:', event.error || event.message);
 });

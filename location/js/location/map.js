@@ -35,6 +35,37 @@ location_app.location_initMap = function () {
             maxZoom: 19
         }).addTo(this.location_map);
 
+        // Add Recenter Control
+        const recenterControl = L.Control.extend({
+            options: { position: 'topleft' }, // Changed to topleft to be with zoom controls
+            onAdd: function (map) {
+                const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                const button = L.DomUtil.create('a', 'recenter-button', container);
+                button.innerHTML = '<i class="fas fa-crosshairs"></i>';
+                button.href = '#';
+                button.title = 'توسيط الموقع المختار';
+                button.style.width = '30px';
+                button.style.height = '30px';
+                button.style.lineHeight = '30px';
+                button.style.backgroundColor = '#fff';
+                button.style.textAlign = 'center';
+                button.style.display = 'block';
+
+                L.DomEvent.on(button, 'click', L.DomEvent.stop)
+                    .on(button, 'click', function () {
+                        if (location_app.location_marker) {
+                            const latlng = location_app.location_marker.getLatLng();
+                            map.flyTo(latlng, map.getZoom());
+                        } else {
+                            map.flyTo(location_app.location_defaultCoords, location_app.location_defaultZoom);
+                        }
+                    });
+
+                return container;
+            }
+        });
+        this.location_map.addControl(new recenterControl());
+
         if (location_savedLocation) {
             console.log("[Map] Found saved location. Setting view and marker...");
             this.location_map.setView([location_savedLocation.lat, location_savedLocation.lng], location_savedLocation.zoom);
@@ -160,6 +191,17 @@ location_app.location_handleLocationSelection = async function (lat, lng) {
         this.location_saveLocation(lat, lng);
         this.location_updateMarker(lat, lng);
         this.location_map.flyTo([lat, lng], 15);
+
+        // Auto-notify parent if internal save button is hidden or we are in an iframe
+        if (window.parent && window.parent !== window) {
+            console.log("[Map] Broadcasting selection to parent. HideSave state:", this.hideSave);
+            window.parent.postMessage({
+                type: 'LOCATION_SELECTED',
+                coordinates: `${lat}, ${lng}`,
+                lat: lat,
+                lng: lng
+            }, '*');
+        }
 
     } catch (error) {
         console.error('Error in location selection:', error);

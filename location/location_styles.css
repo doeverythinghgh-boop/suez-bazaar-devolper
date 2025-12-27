@@ -140,6 +140,11 @@ body {
     background: rgba(37, 99, 235, 0.05) !important;
 }
 
+.is-embedded .location_btn-close,
+.is-hidesave .location_btn-save {
+    display: none !important;
+}
+
 /* Close button style */
 .location_btn-close {
     position: fixed;
@@ -203,9 +208,37 @@ body {
     border-radius: 1rem;
 }
 
+/* Hide Swal2 Icons and content inside location module */
+.swal2-icon,
+.swal2-icon-content {
+    display: none !important;
+}
+
+/* Recenter control styles */
+.leaflet-control-recenter a {
+    background-color: #fff;
+    width: 30px !important;
+    height: 30px !important;
+    line-height: 30px !important;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: #4b5563;
+}
+
+.leaflet-control-recenter a i {
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.leaflet-control-recenter a:hover {
+    background-color: #f4f4f4;
+    color: var(--location_primary);
+}
+
 /* Map attribution style */
 .leaflet-control-attribution {
-    font-size: 3px !important;
+    font-size: 8px !important;
     opacity: 0.5;
 }
 

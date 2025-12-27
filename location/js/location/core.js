@@ -17,18 +17,33 @@ location_app.init = function () {
         console.log("[Core] Initializing components...");
         this.location_showLoading(true);
 
-        // Check for viewOnly mode from URL parameters
+        // Check for modes from URL parameters
         const params = new URLSearchParams(window.location.search);
         this.viewOnly = params.get('viewOnly') === 'true';
+        this.isEmbedded = params.get('embedded') === 'true';
 
-        if (this.viewOnly) {
-            console.log("[Core] Mode: ViewOnly. Hiding editing controls...");
-            const buttonsToHide = [
-                'location_saveBtn',
-                'location_gpsBtn',
-                'location_resetBtn'
-                // Note: Keep location_closeBtn visible so user can exit the map
-            ];
+        if (this.viewOnly || this.isEmbedded) {
+            const buttonsToHide = [];
+            this.hideSave = params.get('hideSave') === 'true';
+
+            if (this.viewOnly) {
+                console.log("[Core] Mode: ViewOnly. Hiding editing controls...");
+                buttonsToHide.push('location_saveBtn', 'location_gpsBtn', 'location_resetBtn');
+            }
+
+            if (this.isEmbedded) {
+                console.log("[Core] Mode: Embedded. Hiding close button...");
+                const closeBtn = document.getElementById('location_closeBtn');
+                if (closeBtn) {
+                    closeBtn.style.setProperty('display', 'none', 'important');
+                }
+            }
+
+            if (this.hideSave) {
+                console.log("[Core] Mode: HideSave. Hiding internal save button...");
+                buttonsToHide.push('location_saveBtn');
+            }
+
             buttonsToHide.forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.style.display = 'none';

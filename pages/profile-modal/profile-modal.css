@@ -5,22 +5,36 @@ CSS: User Profile Styles
 */
 
 /* Modal Content Styles */
-.profile-content {
-    font-family: "Tajawal", sans-serif;
-    /* ✅ UPDATE: Use Frosted Glass effect for background */
-    background-color: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 20px 30px;
-    border-radius: 20px;
-    animation: profileSlideIn 0.4s ease-out;
-    /* Animation name changed */
-    overflow-x: hidden;
+.profile-modal-wrapper {
+    font-family: "Tajawal";
+    direction: rtl;
+    text-align: right;
+    background-color: var(--bg-color-glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+
+    animation: profileSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     width: 95%;
     max-width: 500px;
-    /* Set max width for container */
-    margin: 20px auto;
-    /* Center container */
+
+    /* Increased margin for better separation */
+    display: block;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+
+}
+
+
+.profile-content {
+    padding: 20px 25px;
+    width: 100%;
+    /* Ensure content fills wrapper */
+    box-sizing: border-box;
+    /* Explicit box-sizing */
+    overflow-y: auto;
+    max-height: calc(90vh - 70px);
 }
 
 .profile-content h3 {
@@ -36,20 +50,19 @@ CSS: User Profile Styles
 }
 
 /* ✅ NEW: Icons inside input fields */
-.profile-form-group .profile-input-icon {
+.profile-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.profile-input-wrapper .profile-input-icon {
     position: absolute;
     top: 50%;
     right: 15px;
-    transform: translateY(calc(-50% + 14px));
-    /* Adjust vertical alignment precisely */
+    transform: translateY(-50%);
     color: var(--icon-color);
     pointer-events: none;
-    /* Prevent interaction with icon */
-}
-
-.profile-form-group input {
-    padding-right: 45px;
-    /* ✅ UPDATE: Add padding to leave space for icon */
+    z-index: 2;
 }
 
 /* Form Group and Field Styles */
@@ -65,80 +78,62 @@ CSS: User Profile Styles
     align-items: center;
 }
 
-.profile-icon-btn {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    width: 45px;
-    height: 45px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
+.profile-input-with-button .profile-form-control {
+    flex: 1;
+}
+
+.profile-section-subtitle {
     font-size: 1.2rem;
-    transition: transform 0.2s, background-color 0.2s;
-    flex-shrink: 0;
-}
-
-.profile-icon-btn:active {
-    transform: scale(0.95);
-}
-
-.profile-location-wrapper {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.profile-location-badge {
-    position: absolute;
-    top: 48px;
-    right: 50%;
-    transform: translateX(50%);
-    background-color: transparent;
     color: var(--primary-color);
-    font-size: 9px;
-    padding: 1px 4px;
-    border-radius: 4px;
-    white-space: nowrap;
+    margin-bottom: 18px;
+    margin-top: 15px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile-section-subtitle::before {
+    content: "";
+    width: 4px;
+    height: 1.2rem;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+}
+
+.profile-map-container {
+    width: 100%;
+    height: 500px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    /* Reduced from 25px */
+    background-color: var(--bg-color-light);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), var(--shadow-soft);
+}
+
+.profile-map-message {
+    font-size: 0.82rem;
+    color: #475569;
+    margin-bottom: 5px;
+    line-height: 1.5;
     font-weight: 500;
-    border: 1px solid var(--primary-color);
-    pointer-events: none;
-    transition: all 0.3s ease;
 }
 
-.profile-success-icon {
-    display: none;
-    font-size: 1rem;
+.profile-map-status {
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-/* Success State */
-.profile-icon-btn.is-success {
-    background-color: #10b981;
-}
-
-.profile-icon-btn.is-success .fa-map-marked-alt {
-    display: none;
-}
-
-.profile-icon-btn.is-success .profile-success-icon {
-    display: block;
-}
-
-.profile-icon-btn.is-success~.profile-location-badge {
-    border: 1px solid #10b981;
-    color: #10b981;
-    font-size: 0;
-    /* Hide text */
-    padding: 0 4px;
-}
-
-.profile-icon-btn.is-success~.profile-location-badge::after {
-    content: "✔";
-    font-size: 14px;
-    display: block;
+.profile-map-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 
 .profile-form-group label {
@@ -151,8 +146,8 @@ CSS: User Profile Styles
 
 .profile-form-group input {
     width: 100%;
-    padding: 14px 45px 14px 15px;
-    /* ✅ UPDATE: Adjust padding to fit icons */
+    padding: 14px 45px 14px 45px;
+    /* Symmetric horizontal padding to balance icons/toggles */
     border: 1px solid var(--border-color-input);
     border-radius: 10px;
     box-sizing: border-box;
@@ -179,11 +174,11 @@ CSS: User Profile Styles
 .profile-toggle-password-icon {
     position: absolute;
     top: 50%;
-    /* ✅ ADJUST: Better alignment with field */
     left: 15px;
     transform: translateY(-50%);
     color: var(--icon-color);
     cursor: pointer;
+    z-index: 2;
 }
 
 /* Footer and Button Styles */
@@ -326,9 +321,13 @@ CSS: User Profile Styles
    ====================================== */
 
 @media screen and (max-width: 480px) {
+    .profile-modal-wrapper {
+        width: 100%;
+
+    }
+
     .profile-content {
         padding: 15px 20px;
-        margin: 10px auto;
     }
 
     .profile-content h3 {
@@ -348,26 +347,24 @@ CSS: User Profile Styles
 
     .profile-modal-footer .profile-delete-btn-small {
         width: 100%;
-        order: 2; /* Smallest button at bottom on mobile */
+        order: 2;
+        /* Smallest button at bottom on mobile */
     }
 
     .profile-modal-footer .profile-save-btn {
         order: 1;
     }
 
+    .profile-map-container {
+        height: 400px;
+    }
+
+    .profile-map-section {
+        margin-top: 15px;
+    }
+
     .profile-input-with-button {
         flex-direction: column;
         align-items: stretch;
-    }
-
-    .profile-location-wrapper {
-        align-self: flex-end;
-        margin-top: 5px;
-    }
-
-    .profile-location-badge {
-        position: static;
-        transform: none;
-        margin-top: 5px;
     }
 }
