@@ -68,7 +68,7 @@ export default async function handler(request) {
       // 1. Fetch Single Product
       if (product_key) {
         sql = `
-          SELECT p.*, u.username as seller_username, u.phone as seller_phone 
+          SELECT p.*, p.realPrice, u.username as seller_username, u.phone as seller_phone 
           FROM marketplace_products p
           JOIN users u ON p.user_key = u.user_key
           WHERE p.product_key = ?

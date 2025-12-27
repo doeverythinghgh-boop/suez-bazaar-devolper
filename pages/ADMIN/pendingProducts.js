@@ -281,6 +281,8 @@ async function previewProduct(key) {
             sellerPhone: p.seller_phone,
             MainCategory: p.MainCategory,
             SubCategory: p.SubCategory,
+            realPrice: p.real_price || p.realPrice,
+            type: p.serviceType,
             type: p.serviceType,
         };
 
