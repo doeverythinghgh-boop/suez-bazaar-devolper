@@ -141,85 +141,20 @@
   z-index: 1;
 }
 
-.register_input-with-button {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+.register_map-container {
+  width: 100%;
+  height: 400px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color-input);
+  margin-bottom: 10px;
+  background-color: var(--bg-color-white);
 }
 
-.register_icon-btn {
-  background-color: var(--primary-color);
-  color: white;
+.register_map-iframe {
+  width: 100%;
+  height: 100%;
   border: none;
-  border-radius: 10px;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  font-size: 1.2rem;
-  transition: transform 0.2s, background-color 0.2s;
-  flex-shrink: 0;
-}
-
-.register_icon-btn:active {
-  transform: scale(0.95);
-}
-
-.register_location-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.register_location-badge {
-  position: absolute;
-  top: 48px;
-  right: 50%;
-  transform: translateX(50%);
-  background-color: transparent;
-  color: var(--primary-color);
-  font-size: 9px;
-  padding: 1px 4px;
-  border-radius: 4px;
-  white-space: nowrap;
-  font-weight: 500;
-  border: 1px solid var(--primary-color);
-  pointer-events: none;
-  transition: all 0.3s ease;
-}
-
-.register_success-icon {
-  display: none;
-  font-size: 1rem;
-}
-
-/* Success State */
-.register_icon-btn.is-success {
-  background-color: #10b981;
-}
-
-.register_icon-btn.is-success .fa-map-marked-alt {
-  display: none;
-}
-
-.register_icon-btn.is-success .register_success-icon {
-  display: block;
-}
-
-.register_icon-btn.is-success~.register_location-badge {
-  border: 1px solid #10b981;
-  color: #10b981;
-  font-size: 0;
-  padding: 0 4px;
-}
-
-.register_icon-btn.is-success~.register_location-badge::after {
-  content: "✔";
-  font-size: 14px;
-  display: block;
 }
 
 .register_btn {
