@@ -125,6 +125,7 @@ if (EDIT_form) {
                 product_quantity: parseInt(quantityInput.value, 10) || 0,
                 original_price: parseFloat(document.getElementById('original-price').value) || null,
                 realPrice: parseFloat(document.getElementById('real-price').value) || null,
+                heavyLoad: document.getElementById('heavy-load')?.checked ? 1 : 0,
                 user_message: normalizeArabicText(sellerMessageTextarea.value.trim()),
                 user_note: normalizeArabicText(notesInput.value.trim()),
                 ImageName: allImageNames.join(','),
@@ -143,6 +144,7 @@ if (EDIT_form) {
                 productData.product_quantity !== (currentProduct.product_quantity || 0) ||
                 productData.original_price !== (currentProduct.original_price || null) ||
                 productData.realPrice !== (currentProduct.realPrice || null) ||
+                productData.heavyLoad !== (currentProduct.heavyLoad || 0) ||
                 productData.user_message !== (currentProduct.user_message || '') ||
                 productData.user_note !== (currentProduct.user_note || '') ||
                 productData.ImageName !== (currentProduct.ImageName || '');

@@ -202,7 +202,8 @@ export default async function handler(request) {
         SubCategory,
         ImageIndex,
         serviceType, // جديد: استقبال نوع الخدمة
-        realPrice // جديد
+        realPrice, // جديد
+        heavyLoad // جديد: يحتاج سيارة
       } = await request.json();
 
       // تحقق بسيط من وجود البيانات الأساسية
@@ -214,8 +215,8 @@ export default async function handler(request) {
       }
 
       await db.execute({
-        sql: "INSERT INTO marketplace_products (productName, user_key, product_key, product_description, product_price, original_price, realPrice, product_quantity, user_message, user_note, ImageName, MainCategory, SubCategory, ImageIndex, serviceType, is_approved) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        args: [productName, user_key, product_key, product_description, parseFloat(product_price), original_price ? parseFloat(original_price) : null, realPrice ? parseFloat(realPrice) : null, parseInt(product_quantity), user_message, user_note, ImageName, parseInt(MainCategory), SubCategory ? parseInt(SubCategory) : null, parseInt(ImageIndex), serviceType || 0, 0]
+        sql: "INSERT INTO marketplace_products (productName, user_key, product_key, product_description, product_price, original_price, realPrice, product_quantity, user_message, user_note, ImageName, MainCategory, SubCategory, ImageIndex, serviceType, is_approved, heavyLoad) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        args: [productName, user_key, product_key, product_description, parseFloat(product_price), original_price ? parseFloat(original_price) : null, realPrice ? parseFloat(realPrice) : null, parseInt(product_quantity), user_message, user_note, ImageName, parseInt(MainCategory), SubCategory ? parseInt(SubCategory) : null, parseInt(ImageIndex), serviceType || 0, 0, parseInt(heavyLoad) || 0]
       });
 
       return new Response(JSON.stringify({ message: "تم إضافة المنتج إلى قاعدة البيانات بنجاح." }), {
@@ -249,7 +250,8 @@ export default async function handler(request) {
         ImageIndex,
         serviceType, // جديد: استقبال نوع الخدمة
         is_approved, // ✅ إضافة: استقبال حالة الموافقة
-        realPrice // جديد
+        realPrice, // جديد
+        heavyLoad // جديد: يحتاج سيارة
       } = await request.json();
 
       // التحقق من وجود مفتاح المنتج
@@ -275,7 +277,8 @@ export default async function handler(request) {
         ImageIndex: ImageIndex !== undefined ? parseInt(ImageIndex) : undefined,
         serviceType: serviceType !== undefined ? parseInt(serviceType) : undefined, // جديد: استقبال نوع الخدمة
         is_approved: is_approved !== undefined ? parseInt(is_approved) : undefined, // ✅ إضافة: السماح بتحديث حالة الموافقة
-        realPrice: realPrice !== undefined ? (realPrice ? parseFloat(realPrice) : null) : undefined
+        realPrice: realPrice !== undefined ? (realPrice ? parseFloat(realPrice) : null) : undefined,
+        heavyLoad: heavyLoad !== undefined ? parseInt(heavyLoad) : undefined
       };
 
       const updateEntries = Object.entries(fieldsToUpdate).filter(([key, value]) => value !== undefined);

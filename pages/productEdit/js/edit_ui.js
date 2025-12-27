@@ -16,6 +16,7 @@ var EDIT_quantityInput = document.getElementById('product-quantity');
 var EDIT_priceInput = document.getElementById('product-price');
 var EDIT_originalPriceInput = document.getElementById('original-price');
 var EDIT_realPriceInput = document.getElementById('real-price');
+var EDIT_heavyLoadCheckbox = document.getElementById('heavy-load');
 
 /**
  * @function EDIT_createPreviewItem

@@ -85,6 +85,13 @@ function productView_viewDetails(productData, options = {}) {
                         realPriceContainer.style.display = "block";
                     }
 
+                    if (dom.heavyLoadValue) {
+                        dom.heavyLoadValue.textContent = productData.heavyLoad == 1 ? "نعم" : "لا";
+                    }
+                    if (dom.heavyLoadContainer) {
+                        dom.heavyLoadContainer.style.display = "block";
+                    }
+
                     // Show the whole info box
                     adminSellerInfo.style.display = "block";
 

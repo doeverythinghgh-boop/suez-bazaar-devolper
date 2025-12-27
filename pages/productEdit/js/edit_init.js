@@ -40,7 +40,7 @@ async function initializeEditProductForm() {
         'original-price': currentProduct.original_price,
         'real-price': currentProduct.realPrice
     };
-    // ... (omitting loop for brevity in instruction, will include in ReplacementContent)
+
     for (const [id, value] of Object.entries(fields)) {
         const el = document.getElementById(id);
         if (el) {
@@ -48,6 +48,11 @@ async function initializeEditProductForm() {
             // Trigger input event to update character counters and clear errors
             el.dispatchEvent(new Event('input'));
         }
+    }
+
+    // Initialize Heavy Load Checkbox
+    if (EDIT_heavyLoadCheckbox) {
+        EDIT_heavyLoadCheckbox.checked = (currentProduct.heavyLoad == 1);
     }
 
     // Load existing images
