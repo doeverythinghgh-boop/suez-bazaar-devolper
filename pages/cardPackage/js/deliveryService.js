@@ -43,8 +43,7 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
 
         const cart = getCart();
         console.log("%c🚀 [DeliveryService] بدء عملية حساب تكاليف التوصيل...", "color: #8e44ad; font-weight: bold;");
-        console.log(`%c� [Locations] مكتب الشحن: (${officeLocation.lat}, ${officeLocation.lng}) | العميل: (${customerLocation.lat}, ${customerLocation.lng})`, "color: #9b59b6;");
-        console.log(`%c�🛒 [CartData] تم استرجاع سلة المشتريات، عدد المنتجات: ${cart.length}`, "color: #9b59b6;");
+        console.log("%c🔍 [Debug] محتويات السلة الحالية:", "color: #e67e22;", cart);
 
         if (!cart || cart.length === 0) {
             return {
@@ -61,26 +60,32 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
         let totalOrderValue = 0;
         let requiresHeavyLoad = false;
 
-        cart.forEach(item => {
+        cart.forEach((item, index) => {
             totalOrderValue += (item.price * item.quantity);
 
-            // Check for heavy load attributes (checking multiple common property names)
+            // 🔍 Debug Item properties
+            console.log(`%c🔎 [Inspection] فحص المنتج #${index + 1}: ${item.productName}`, "color: #3498db;");
+            console.log(`%c   - seller_key: ${item.seller_key}`, "color: #3498db;");
+            console.log(`%c   - seller_lat: ${item.seller_lat}`, "color: #3498db;");
+            console.log(`%c   - seller_lng: ${item.seller_lng}`, "color: #3498db;");
+
+            // Check for heavy load attributes
             if (item.heavy_load || item.heavyLoad || item.isHeavy) {
                 requiresHeavyLoad = true;
             }
 
             // Extract unique seller locations
             if (item.seller_key && !processedSellerKeys.has(item.seller_key)) {
-                // Ensure coordinates exist and are valid numbers
                 if (item.seller_lat && item.seller_lng) {
                     sellerLocations.push({
                         lat: parseFloat(item.seller_lat),
                         lng: parseFloat(item.seller_lng),
-                        // Metadata for debugging/display
                         id: item.seller_key,
                         name: item.sellerName || 'Unknown Seller'
                     });
                     processedSellerKeys.add(item.seller_key);
+                } else {
+                    console.warn(`%c⚠️ [Warning] المنتج "${item.productName}" يفتقد لإحداثيات البائع!`, "color: #e67e22;");
                 }
             }
         });
