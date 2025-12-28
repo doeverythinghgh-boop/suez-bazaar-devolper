@@ -132,6 +132,7 @@ function productView_setupAddToCart(productData, dom) {
         dom.addToCartBtn.onclick = async () => {
             if (showLoginAlert()) {
                 const quantity = parseInt(dom.selectedQuantityInput.value, 10);
+                console.log("[productView_] بيانات المنتج قبل الإضافة للسلة:", productData);
                 const productInfoForCart = {
                     product_key: productData.product_key,
                     productName: productData.productName,
@@ -139,14 +140,17 @@ function productView_setupAddToCart(productData, dom) {
                     original_price: productData.original_price,
                     image: productData.imageSrc[0],
                     seller_key: productData.user_key,
-                    sellerName: productData.sellerName || "",
+                    sellerName: productData.sellerName || productData.seller_username || "",
                 };
 
                 // 🌍 Extract Seller Location Coordinates
-                if (productData.seller_location && productData.seller_location.includes(',')) {
-                    const [lat, lng] = productData.seller_location.split(',');
+                if (productData.seller_location && String(productData.seller_location).includes(',')) {
+                    const [lat, lng] = String(productData.seller_location).split(',');
                     productInfoForCart.seller_lat = parseFloat(lat);
                     productInfoForCart.seller_lng = parseFloat(lng);
+                    console.log(`%c✅ [Location] تم استخراج إحداثيات البائع: (${lat}, ${lng})`, "color: #27ae60; font-weight: bold;");
+                } else {
+                    console.warn("%c⚠️ [Location] تنبيه: المنتج لا يحتوي على إحداثيات بائع صالحة!", "color: #e67e22;");
                 }
 
                 addToCart(productInfoForCart, quantity);
