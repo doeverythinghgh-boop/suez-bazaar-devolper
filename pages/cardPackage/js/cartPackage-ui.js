@@ -157,20 +157,24 @@ lng
                 };
                 console.log("%c✅ [Session] تم العثور على lat/lng مباشرة.", "color: #27ae60;");
             }
-            // Priority 2: Check standard 'location' field (usually "lat,lng" string)
-            else if (window.userSession.location && String(window.userSession.location).includes(',')) {
-                const [lat, lng] = String(window.userSession.location).split(',');
+            // Priority 2: Check standard 'location' field (handle Location or location)
+            const locField = window.userSession.location || window.userSession.Location;
+            if (locField && String(locField).includes(',')) {
+                const [lat, lng] = String(locField).split(',');
                 customerCoords = {
                     lat: parseFloat(lat),
                     lng: parseFloat(lng)
                 };
-                console.log("%c✅ [Session] تم استخراج الموقع من حقل location.", "color: #27ae60;");
+                console.log("%c✅ [Session] تم استخراج الموقع من حقل الموقع (Location/location).", "color: #27ae60;");
             } else {
                 console.warn("%c⚠️ [Session] لم يتم العثور على أي بيانات موقع في الجلسة!", "color: #e67e22;");
-                console.log("%cℹ️ [Session Context]:", "color: #3498db;", {
-                    lat: window.userSession.lat,
-                    lng: window.userSession.lng,
-                    location: window.userSession.location
+                console.log("%c💡 [Tip] يرجى تحديث موقعك من صفحة 'الملف الشخصي' لضمان دقة حسابات التوصيل.", "color: #27ae60; font-weight: bold;");
+                console.log("%cℹ️ [Session Debug]: فحص كافة المفاتيح المحتملة للموقع:", "color: #3498db;", {
+                    "userSession.location": window.userSession.location,
+                    "userSession.lat": window.userSession.lat,
+                    "userSession.lng": window.userSession.lng,
+                    "userSession.Address": window.userSession.Address,
+                    "Raw Keys": Object.keys(window.userSession)
                 });
             }
         }
