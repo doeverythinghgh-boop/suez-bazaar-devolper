@@ -130,8 +130,30 @@
         z-index: 10;
     }
 
+    /* Resize Button */
+    #mainAdver_wrapper .mainAdver_resize {
+        position: absolute;
+        top: 5px;
+        right: 38px; /* Positioned left of the remove button */
+        background-color: rgba(0, 123, 255, 0.9); /* Blue color */
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 10;
+    }
+
     #mainAdver_wrapper .mainAdver_preview:hover .mainAdver_remove,
-    #mainAdver_wrapper .mainAdver_preview.mainAdver_selected .mainAdver_remove {
+    #mainAdver_wrapper .mainAdver_preview.mainAdver_selected .mainAdver_remove,
+    #mainAdver_wrapper .mainAdver_preview:hover .mainAdver_resize,
+    #mainAdver_wrapper .mainAdver_preview.mainAdver_selected .mainAdver_resize {
         opacity: 1;
     }
 
@@ -488,6 +510,20 @@
                 removeImage(state.id);
             };
 
+            // Resize Button (Only for new images)
+            if (!existingUrl) {
+                const resizeBtn = document.createElement('button');
+                resizeBtn.className = 'mainAdver_resize';
+                resizeBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>';
+                resizeBtn.type = 'button';
+                resizeBtn.title = 'تغيير الأبعاد';
+                resizeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    resizeImageUI(state.id);
+                };
+                wrapper.append(resizeBtn);
+            }
+
             // Image Element
             const img = document.createElement('img');
 
@@ -536,6 +572,106 @@
                     }
                 }
             });
+        }
+
+        /**
+         * @function resizeImageUI
+         * @description Opens UI to resize an image.
+         * @param {string} id - The image ID.
+         */
+        async function resizeImageUI(id) {
+            const idx = images.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const imgState = images[idx];
+
+            const { value: formValues } = await Swal.fire({
+                title: 'تغيير أبعاد الصورة',
+                html: `
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                        <div style="flex: 1 1 140px; min-width: 120px; text-align: center;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">العرض (px)</label>
+                            <input id="swal-input-width" class="swal2-input" type="number" value="1000" style="width: 100%; margin: 0; box-sizing: border-box;">
+                        </div>
+                        <div style="flex: 1 1 140px; min-width: 120px; text-align: center;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">الارتفاع (px)</label>
+                            <input id="swal-input-height" class="swal2-input" type="number" value="500" style="width: 100%; margin: 0; box-sizing: border-box;">
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'تغيير',
+                cancelButtonText: 'إلغاء',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input-width').value,
+                        document.getElementById('swal-input-height').value
+                    ]
+                }
+            });
+
+            if (formValues) {
+                const [w, h] = formValues;
+                if (!w || !h) return;
+                
+                // Show loading
+                Swal.fire({ title: 'جاري المعالجة...', didOpen: () => Swal.showLoading() });
+
+                try {
+                    // Logic to resize
+                    // check if local or remote
+                    if (imgState.status === 'uploaded' && !imgState.file) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'تنبيه',
+                            text: 'لا يمكن تعديل حجم الصور المرفوعة مسبقاً بسبب قيود أمنية (CORS). يرجى حذف الصورة وإعادة رفعها لتتمكن من تعديل أبعادها.'
+                        });
+                        return;
+                    }
+                    
+                    let source = imgState.file;
+                     // If we have a compressed blob (from previous resize or compress), use it
+                    if (!source && imgState.compressedBlob) source = imgState.compressedBlob;
+
+                    if (!source) {
+                        Swal.fire('Error', 'تعذر العثور على ملف الصورة الأصلي', 'error');
+                        return;
+                    }
+
+                    // Create bitmap
+                    const bitmap = await createImageBitmap(source);
+                    
+                    // Create canvas with EXACT dimensions
+                    const canvas = document.createElement('canvas');
+                    canvas.width = parseInt(w);
+                    canvas.height = parseInt(h);
+                    const ctx = canvas.getContext('2d');
+
+                    // Draw (Stretch to fit - 100% 100%)
+                    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+                    // Convert to Blob
+                    const isWebP = await webP_Promise;
+                    const newBlob = await new Promise(r => canvas.toBlob(r, isWebP ? 'image/webp' : 'image/jpeg', 0.9)); // High quality for resized ads
+
+                    // Update State
+                    imgState.compressedBlob = newBlob;
+                    // If it was uploaded, mark it as pending upload (essentially new file now) so it gets re-uploaded
+                    imgState.status = 'ready'; 
+                    // Update preview
+                    const newUrl = URL.createObjectURL(newBlob);
+                    const imgEl = imgState._el.querySelector('img');
+                    if(imgEl) imgEl.src = newUrl;
+                    
+                    if(imgState._metaEl) imgState._metaEl.textContent = `Resized (${w}x${h})`;
+
+                    Swal.fire('تم', 'تم تغيير الأبعاد بنجاح. اضغط "نشر" لحفظ التعديلات.', 'success');
+
+                } catch (e) {
+                    console.error(e);
+                    Swal.fire('Error', 'حدث خطأ أثناء المعالجة', 'error');
+                }
+            }
         }
 
         /**
