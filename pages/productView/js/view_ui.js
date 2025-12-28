@@ -140,7 +140,7 @@ function productView_setupAddToCart(productData, dom) {
                     original_price: productData.original_price,
                     image: productData.imageSrc[0],
                     seller_key: productData.user_key,
-                    sellerName: productData.sellerName || productData.seller_username || "",
+                    sellerName: productData.seller_name || productData.sellerName || productData.seller_username || "",
                 };
 
                 // 🌍 Extract Seller Location Coordinates

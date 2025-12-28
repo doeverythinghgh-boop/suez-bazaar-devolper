@@ -630,6 +630,9 @@ function categories_handleProductClick(product, firstImageName) {
             "color: darkcyan"
         );
 
+        // 🔍 RAW Debug Log
+        console.log("%c[Debug RAW Product] البيانات الخام من الـ API:", "color: #8e44ad;", product);
+
         const productDataForModal = {
             product_key: product.product_key,
             productName: product.productName,
@@ -643,7 +646,7 @@ function categories_handleProductClick(product, firstImageName) {
             availableQuantity: product.product_quantity,
             sellerMessage: product.user_message,
             description: product.product_description,
-            sellerName: product.sellerName || product.seller_username,
+            sellerName: product.seller_name || product.sellerName || product.seller_username,
             sellerPhone: product.seller_phone,
             seller_location: product.seller_location,
             MainCategory: product.MainCategory,

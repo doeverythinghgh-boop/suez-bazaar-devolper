@@ -191,7 +191,7 @@ async function initSearchModal(containerId) {
           availableQuantity: productData.product_quantity,
           sellerMessage: productData.user_message,
           description: productData.product_description,
-          sellerName: productData.sellerName || productData.seller_username,
+          sellerName: productData.seller_name || productData.sellerName || productData.seller_username,
           sellerPhone: productData.seller_phone,
           seller_location: productData.seller_location,
           MainCategory: productData.MainCategory, // Pass Main Category ID

@@ -297,7 +297,7 @@ async function previewProduct(key) {
             availableQuantity: p.product_quantity,
             sellerMessage: p.user_message,
             description: p.product_description,
-            sellerName: p.sellerName || p.seller_username,
+            sellerName: p.seller_name || p.sellerName || p.seller_username,
             sellerPhone: p.seller_phone,
             seller_location: p.seller_location,
             MainCategory: p.MainCategory,
