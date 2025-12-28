@@ -305,6 +305,9 @@ async function checkAppVersionAndClearData() {
       // First time visit or storage cleared - just set the version
       localStorage.setItem(VERSION_STORAGE_KEY, latestVersion);
     }
+    
+    // Save the time of check
+    localStorage.setItem('last_version_check_time', Date.now());
   } catch (error) {
     console.error("[VersionCheck] Error checking for updates:", error);
   }
