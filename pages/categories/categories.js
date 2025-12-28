@@ -465,10 +465,7 @@ async function categories_renderProductGallery(galleryCell, products) {
             // Switch Icon
             toggleBtn.innerHTML = isGrid ? '<i class="fas fa-list"></i>' : '<i class="fas fa-th"></i>';
             
-            // Optional: Scroll to top of gallery when switching to grid to see all items
-            if (isGrid) {
-                galleryCell.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+
         });
 
         for (const product of products) {
