@@ -141,6 +141,7 @@ function productView_setupAddToCart(productData, dom) {
                     image: productData.imageSrc[0],
                     seller_key: productData.user_key,
                     sellerName: productData.seller_name || productData.sellerName || productData.seller_username || "",
+                    heavyLoad: productData.heavyLoad || 0,  // ⬅️ إضافة معلومات الحمولة الثقيلة
                 };
 
                 // 🌍 Extract Seller Location Coordinates

@@ -35,18 +35,18 @@ const BASE_FEE = 15;
 const PRICE_PER_KM = 5;
 
 /**
- * Minimum order value required to qualify for free delivery.
- * Orders below this threshold incur an additional low order fee.
+ * Minimum order value threshold for high-value order fee.
+ * Orders with value >= this threshold incur an additional handling fee.
  * @constant {number}
  */
-const MIN_ORDER_VALUE = 200;
+const HIGH_ORDER_VALUE_THRESHOLD = 5000;
 
 /**
- * Additional fee charged for orders below the minimum order value.
- * This encourages customers to meet the minimum threshold.
+ * Additional fee charged for high-value orders (>= 5000 EGP).
+ * This covers extra handling and insurance for expensive orders.
  * @constant {number}
  */
-const LOW_ORDER_FEE = 20;
+const HIGH_ORDER_FEE = 20;
 
 /**
  * Default discount applied to all deliveries.
@@ -224,12 +224,12 @@ function calculateDeliveryCost({
     const distanceCost = totalDistance * PRICE_PER_KM;
 
     // ========================================
-    // STEP 3: Apply Low Order Value Fee
+    // STEP 3: Apply High Order Value Fee
     // ========================================
-    // If order value is below minimum threshold, add penalty fee
-    // This encourages customers to meet minimum order requirements
+    // If order value is >= threshold, add handling fee for expensive orders
+    // This covers extra insurance and careful handling
     const orderValueFee =
-        orderValue < MIN_ORDER_VALUE ? LOW_ORDER_FEE : 0;
+        orderValue >= HIGH_ORDER_VALUE_THRESHOLD ? HIGH_ORDER_FEE : 0;
 
     // ========================================
     // STEP 4: Calculate Special Vehicle Cost

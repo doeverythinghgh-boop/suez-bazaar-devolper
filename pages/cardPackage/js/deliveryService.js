@@ -68,6 +68,7 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
             console.log(`%c   - seller_key: ${item.seller_key}`, "color: #3498db;");
             console.log(`%c   - seller_lat: ${item.seller_lat}`, "color: #3498db;");
             console.log(`%c   - seller_lng: ${item.seller_lng}`, "color: #3498db;");
+            console.log(`%c   - heavyLoad: ${item.heavyLoad || item.heavy_load || 0} ${(item.heavyLoad || item.heavy_load) ? '🚛 (يحتاج شاحنة)' : '🏍️ (دراجة نارية)'}`, "color: #3498db; font-weight: bold;");
 
             // Check for heavy load attributes
             if (item.heavy_load || item.heavyLoad || item.isHeavy) {
