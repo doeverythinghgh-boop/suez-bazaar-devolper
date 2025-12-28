@@ -139,7 +139,7 @@ async function cartPage_updateCartSummary() {
         /*lat
 : 
 29.975149513576273
-lng
+lng 
 : 
 32.53395080566407*/
         const officeCoords = { lat: 29.968897130919654, lng: 32.53395080566407 };
