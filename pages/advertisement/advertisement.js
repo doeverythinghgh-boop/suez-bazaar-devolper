@@ -228,7 +228,7 @@ function buildSlider(container, adImages) {
 
             // Calculate horizontal transform and scale
             // Side slides are smaller and offset
-            const translateX = offset * 40; // 40% of slide width
+            const translateX = offset * 55; // 55% of slide width to accommodate 80% width
             const scale = isActive ? 1 : 0.7;
             // ✅ NEW: Add slight Z-axis offset to give depth and prevent overlap
             const translateZ = -Math.abs(offset) * 50;

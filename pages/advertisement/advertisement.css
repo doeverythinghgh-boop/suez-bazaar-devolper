@@ -5,7 +5,7 @@
   min-height: 150px;
   margin-bottom: 10px;
   overflow: hidden;
-  background: linear-gradient(180deg, var(--bg-color-white) 0%, var(--border-color) 100%);
+  background: var(--bg-color-white);
   width: auto;
   box-shadow: var(--shadow-interactive);
   margin-left: 15px;
@@ -26,10 +26,10 @@
 .ad-slide {
   position: absolute;
   top: 5%;
-  left: 20%;
-  width: 60%;
+  left: 10%;
+  width: 80%;
   height: 100%;
-  background-size: cover;
+  background-size: 100% 100%;
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 12px;
