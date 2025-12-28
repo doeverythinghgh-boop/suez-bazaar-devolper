@@ -146,6 +146,8 @@ lng
 
         // Get Customer Location from Session or use Default
         let customerCoords = { lat: 30.0500, lng: 31.2400 }; // Default fallback
+        console.log("%c🔍 [Debug] فحص جلسة المستخدم للموقع:", "color: #e67e22; font-weight: bold;", window.userSession);
+
         if (window.userSession) {
             // Priority 1: Check if lat/lng exist as direct properties
             if (window.userSession.lat && window.userSession.lng) {
@@ -153,6 +155,7 @@ lng
                     lat: parseFloat(window.userSession.lat),
                     lng: parseFloat(window.userSession.lng)
                 };
+                console.log("%c✅ [Session] تم العثور على lat/lng مباشرة.", "color: #27ae60;");
             }
             // Priority 2: Check standard 'location' field (usually "lat,lng" string)
             else if (window.userSession.location && String(window.userSession.location).includes(',')) {
@@ -161,6 +164,14 @@ lng
                     lat: parseFloat(lat),
                     lng: parseFloat(lng)
                 };
+                console.log("%c✅ [Session] تم استخراج الموقع من حقل location.", "color: #27ae60;");
+            } else {
+                console.warn("%c⚠️ [Session] لم يتم العثور على أي بيانات موقع في الجلسة!", "color: #e67e22;");
+                console.log("%cℹ️ [Session Context]:", "color: #3498db;", {
+                    lat: window.userSession.lat,
+                    lng: window.userSession.lng,
+                    location: window.userSession.location
+                });
             }
         }
 
