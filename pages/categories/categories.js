@@ -434,11 +434,42 @@ async function categories_renderProductGallery(galleryCell, products) {
         console.log(
             `[Products] تم العثور على ${products.length} منتج. جاري بناء المعرض...`
         );
+
+        // 1. Create Control Header
+        const controlsHeader = document.createElement("div");
+        controlsHeader.className = "categories_gallery_controls";
+        
+        // Toggle Button
+        const toggleBtn = document.createElement("button");
+        toggleBtn.className = "categories_view_toggle";
+        toggleBtn.type = "button";
+        toggleBtn.title = "تبديل العرض (شبكة / قائمة)";
+        toggleBtn.innerHTML = '<i class="fas fa-th"></i>'; // Default to Grid icon
+
+        controlsHeader.appendChild(toggleBtn);
+
+        // 2. Create Gallery Container
         const galleryContainer = document.createElement("div");
         galleryContainer.className = "categories_products_gallery_container";
 
+        // 3. Assemble
         galleryCell.innerHTML = "";
+        galleryCell.appendChild(controlsHeader);
         galleryCell.appendChild(galleryContainer);
+
+        // 4. Toggle Logic
+        toggleBtn.addEventListener('click', () => {
+            galleryContainer.classList.toggle('grid-view');
+            const isGrid = galleryContainer.classList.contains('grid-view');
+            
+            // Switch Icon
+            toggleBtn.innerHTML = isGrid ? '<i class="fas fa-list"></i>' : '<i class="fas fa-th"></i>';
+            
+            // Optional: Scroll to top of gallery when switching to grid to see all items
+            if (isGrid) {
+                galleryCell.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
 
         for (const product of products) {
             // Wait until each item is loaded and displayed before moving to the next to ensure sequence

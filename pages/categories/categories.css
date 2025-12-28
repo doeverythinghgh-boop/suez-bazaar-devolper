@@ -195,7 +195,7 @@
 .categories_products_gallery_row td {
     height: 15vh;
     padding: 0px;
-    background-color: var(--bg-color-white);
+    background-color: transparent;    
     border-radius: 12px;
     box-shadow: var(--shadow-soft);
     border: 1px solid var(--border-color);
@@ -210,6 +210,41 @@
     white-space: nowrap;
     padding: 15px;
     -webkit-overflow-scrolling: touch;
+    transition: all 0.3s ease; /* Smooth transition for layout change */
+}
+
+/* Grid View Modifier */
+.categories_products_gallery_container.grid-view {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: hidden; /* Disable horizontal scroll */
+    overflow-y: auto;   /* Enable vertical scroll if needed, though usually height expands */
+    justify-content: center; /* Center items in grid */
+    height: auto;
+    max-height: 60vh; /* Limit height to allow scrolling within the grid area if too many items */
+}
+
+/* Header Controls */
+.categories_gallery_controls {
+    display: flex;
+    justify-content: flex-start; /* Align to Right in RTL (Start of the line) */
+    padding: 5px 15px;
+    margin-bottom: 5px;
+}
+
+.categories_view_toggle {
+    background: transparent;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 5px;
+    transition: transform 0.2s;
+}
+
+.categories_view_toggle:active {
+    transform: scale(0.9);
+    color: var(--primary-color-dark);
 }
 
 .categories_products_gallery_container::-webkit-scrollbar {
