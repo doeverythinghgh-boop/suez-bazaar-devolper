@@ -438,7 +438,7 @@ async function categories_renderProductGallery(galleryCell, products) {
         // 1. Create Control Header
         const controlsHeader = document.createElement("div");
         controlsHeader.className = "categories_gallery_controls";
-        
+
         // Toggle Button
         const toggleBtn = document.createElement("button");
         toggleBtn.className = "categories_view_toggle";
@@ -461,10 +461,10 @@ async function categories_renderProductGallery(galleryCell, products) {
         toggleBtn.addEventListener('click', () => {
             galleryContainer.classList.toggle('grid-view');
             const isGrid = galleryContainer.classList.contains('grid-view');
-            
+
             // Switch Icon
             toggleBtn.innerHTML = isGrid ? '<i class="fas fa-list"></i>' : '<i class="fas fa-th"></i>';
-            
+
 
         });
 
@@ -643,8 +643,9 @@ function categories_handleProductClick(product, firstImageName) {
             availableQuantity: product.product_quantity,
             sellerMessage: product.user_message,
             description: product.product_description,
-            sellerName: product.seller_username,
+            sellerName: product.sellerName || product.seller_username,
             sellerPhone: product.seller_phone,
+            seller_location: product.seller_location,
             MainCategory: product.MainCategory,
             SubCategory: product.SubCategory,
             realPrice: product.realPrice,
