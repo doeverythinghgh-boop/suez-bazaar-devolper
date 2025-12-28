@@ -68,7 +68,7 @@ export default async function handler(request) {
       // 1. Fetch Single Product
       if (product_key) {
         sql = `
-          SELECT p.*, p.realPrice, u.username as seller_username, u.phone as seller_phone 
+          SELECT p.*, p.realPrice, u.username as seller_username, u.phone as seller_phone, u.location as seller_location
           FROM marketplace_products p
           JOIN users u ON p.user_key = u.user_key
           WHERE p.product_key = ?
@@ -84,7 +84,7 @@ export default async function handler(request) {
       // 2. Search / Filter Public Market (or User's Market if user_key provided)
       else if ((searchTerm && searchTerm !== 'null') || (MainCategory && MainCategory !== 'null')) {
         sql = `
-          SELECT p.*, u.username as seller_username, u.phone as seller_phone 
+          SELECT p.*, u.username as seller_username, u.phone as seller_phone, u.location as seller_location
           FROM marketplace_products p
           JOIN users u ON p.user_key = u.user_key
         `;
@@ -143,7 +143,7 @@ export default async function handler(request) {
       // 4. Admin View (Fetch by Status Only)
       else if (status !== null) {
         sql = `
-          SELECT p.*, u.username as seller_username, u.phone as seller_phone 
+          SELECT p.*, u.username as seller_username, u.phone as seller_phone, u.location as seller_location
           FROM marketplace_products p
           JOIN users u ON p.user_key = u.user_key
           WHERE p.is_approved = ?

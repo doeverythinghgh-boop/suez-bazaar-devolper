@@ -7,10 +7,11 @@
 /**
  * @description Loads the cart items from local storage and renders them in the cart page.
  *   Updates the cart summary and handles empty cart state.
+ * @async
  * @function cartPage_loadCart
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function cartPage_loadCart() {
+async function cartPage_loadCart() {
     try {
         const cartPage_cartItemsContainer = document.getElementById('cartPage_cartItemsContainer');
         const cartPage_emptyCart = document.getElementById('cartPage_emptyCart');
@@ -105,7 +106,7 @@ function cartPage_loadCart() {
         });
 
         cartPage_cartItemsContainer.innerHTML = cartPage_cartItemsHTML;
-        cartPage_updateCartSummary();
+        await cartPage_updateCartSummary();
     } catch (error) {
         console.error('حدث خطأ أثناء تحميل السلة:', error);
     }
@@ -113,22 +114,63 @@ function cartPage_loadCart() {
 
 /**
  * @description Updates the cart summary section with the total item count, subtotal, savings, and final total.
+ * Now calculates Smart Delivery cost asynchronously.
+ * @async
  * @function cartPage_updateCartSummary
- * @returns {void}
+ * @returns {Promise<void>}
  */
-function cartPage_updateCartSummary() {
+async function cartPage_updateCartSummary() {
     try {
         const cartPage_itemCount = getCartItemCount();
         const cartPage_subtotal = getCartTotalPrice();
         const cartPage_savings = getCartTotalSavings();
         const cartPage_deliveryFee = 40.00;
-        const cartPage_total = cartPage_subtotal + cartPage_deliveryFee;
 
+        // Update basic values immediately
         document.getElementById('cartPage_itemCount').textContent = cartPage_itemCount;
         document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ج.م';
         document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ج.م';
         document.getElementById('cartPage_deliveryFee').textContent = cartPage_deliveryFee.toFixed(2) + ' ج.م';
-        document.getElementById('cartPage_total').textContent = cartPage_total.toFixed(2) + ' ج.م';
+
+        // 🧠 Calculate Smart Delivery Cost
+        const smartDeliveryElement = document.getElementById('cartPage_smartDeliveryFee');
+
+        // Default Office Coordinates (e.g., Cairo Center) if not defined
+        const officeCoords = { lat: 30.0444, lng: 31.2357 };
+
+        // Get Customer Location from Session or use Default
+        let customerCoords = { lat: 30.0500, lng: 31.2400 }; // Default fallback
+        if (window.userSession && window.userSession.lat && window.userSession.lng) {
+            customerCoords = {
+                lat: parseFloat(window.userSession.lat),
+                lng: parseFloat(window.userSession.lng)
+            };
+        }
+
+        try {
+            // Check if calculateCartDeliveryCost is available
+            if (typeof calculateCartDeliveryCost === 'function') {
+                const deliveryResult = await calculateCartDeliveryCost(officeCoords, customerCoords);
+
+                if (deliveryResult && !deliveryResult.error) {
+                    const smartFee = deliveryResult.totalCost;
+                    smartDeliveryElement.textContent = smartFee.toFixed(2) + ' ج.م';
+
+                    // Final Total uses Smart Fee + Subtotal
+                    const finalTotal = cartPage_subtotal + smartFee;
+                    document.getElementById('cartPage_total').textContent = finalTotal.toFixed(2) + ' ج.م';
+                    return;
+                }
+            }
+        } catch (calcError) {
+            console.error('Error calculating smart delivery:', calcError);
+        }
+
+        // Fallback if smart calculation fails or not available
+        smartDeliveryElement.textContent = '---';
+        const fallbackTotal = cartPage_subtotal + cartPage_deliveryFee;
+        document.getElementById('cartPage_total').textContent = fallbackTotal.toFixed(2) + ' ج.م';
+
     } catch (error) {
         console.error('حدث خطأ أثناء تحديث ملخص السلة:', error);
     }

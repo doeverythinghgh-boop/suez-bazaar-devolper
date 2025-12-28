@@ -1,5 +1,6 @@
 <!-- Cart Page Structure -->
 <link rel="stylesheet" href="pages/cardPackage/cardPackage.css">
+<link rel="stylesheet" href="style/loader.css">
 
 <body style="background-color: var(--bg-color-light);">
     <div id="header-container10" style="height: 70px;margin-left: 20px;margin-right: 20px;"></div>
@@ -31,8 +32,15 @@
                     <span class="cartPage_summary-value" id="cartPage_savings">0.00 ج.م</span>
                 </div>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowDelivery">
-                    <span>خدمة توصيل:</span>
+                    <span>رسوم توصيل ثابتة:</span>
                     <span class="cartPage_summary-value" id="cartPage_deliveryFee">40.00 ج.م</span>
+                </div>
+                <div class="cartPage_summary-row" id="cartPage_summaryRowSmartDelivery"
+                    style="color: var(--primary-color);">
+                    <span>توصيل ذكي (تقديري):</span>
+                    <span class="cartPage_summary-value" id="cartPage_smartDeliveryFee">
+                        <div class="loader-mini" id="cartPage_smartDeliveryLoader"></div>
+                    </span>
                 </div>
                 <div class="cartPage_summary-row total" id="cartPage_summaryRowTotal">
                     <span>المجموع الكلي:</span>
@@ -92,6 +100,11 @@
         <button onclick="this.parentElement.style.display='none'; localStorage.removeItem('showOrderPhotoMessage');"
             style="position:absolute; top:10px; left:10px; background:none; border:none; cursor:pointer; color:#155724; font-size:1.2rem;">&times;</button>
     </div>
+
+    <!-- Delivery Service Modules -->
+    <script src="pages/cardPackage/js/smartDeliveryRoute.js"></script>
+    <script src="pages/cardPackage/js/deliveryCostCalculator.js"></script>
+    <script src="pages/cardPackage/js/deliveryService.js"></script>
 
     <!-- Cart Package JavaScript Modules -->
     <script src="pages/cardPackage/js/cartPackage-api.js"></script>

@@ -139,7 +139,16 @@ function productView_setupAddToCart(productData, dom) {
                     original_price: productData.original_price,
                     image: productData.imageSrc[0],
                     seller_key: productData.user_key,
+                    sellerName: productData.sellerName || "",
                 };
+
+                // 🌍 Extract Seller Location Coordinates
+                if (productData.seller_location && productData.seller_location.includes(',')) {
+                    const [lat, lng] = productData.seller_location.split(',');
+                    productInfoForCart.seller_lat = parseFloat(lat);
+                    productInfoForCart.seller_lng = parseFloat(lng);
+                }
+
                 addToCart(productInfoForCart, quantity);
             }
         };

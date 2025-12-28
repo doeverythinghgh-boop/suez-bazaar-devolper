@@ -13,9 +13,10 @@
 function cartPage_setupEventListeners() {
     try {
         // Cart Updated Event
-        window.addEventListener('cartUpdated', function () {
+        window.addEventListener('cartUpdated', async function () {
             try {
-                cartPage_loadCart();
+                // loadCart calls updateCartSummary which is now async
+                await cartPage_loadCart();
             } catch (error) {
                 console.error('حدث خطأ أثناء معالجة حدث تحديث السلة:', error);
             }

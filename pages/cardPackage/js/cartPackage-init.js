@@ -8,11 +8,13 @@
 var cartPage_currentProductKeyForNote = '';
 
 // Page Initialization
-try {
-    cartPage_loadCart();
-    cartPage_setupEventListeners();
-} catch (error) {
-    console.error('حدث خطأ أثناء تهيئة الصفحة:', error);
-}
+(async () => {
+    try {
+        await cartPage_loadCart();
+        cartPage_setupEventListeners();
+    } catch (error) {
+        console.error('حدث خطأ أثناء تهيئة الصفحة:', error);
+    }
+})();
 
 insertUniqueSnapshot("../pages/header.html", "header-container10", 100);
