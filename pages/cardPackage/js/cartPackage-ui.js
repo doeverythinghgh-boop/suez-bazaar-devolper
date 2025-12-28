@@ -136,15 +136,32 @@ async function cartPage_updateCartSummary() {
         const smartDeliveryElement = document.getElementById('cartPage_smartDeliveryFee');
 
         // Default Office Coordinates (e.g., Cairo Center) if not defined
-        const officeCoords = { lat: 30.0444, lng: 31.2357 };
+        /*lat
+: 
+29.975149513576273
+lng
+: 
+32.53395080566407*/
+        const officeCoords = { lat: 29.968897130919654, lng: 32.53395080566407 };
 
         // Get Customer Location from Session or use Default
         let customerCoords = { lat: 30.0500, lng: 31.2400 }; // Default fallback
-        if (window.userSession && window.userSession.lat && window.userSession.lng) {
-            customerCoords = {
-                lat: parseFloat(window.userSession.lat),
-                lng: parseFloat(window.userSession.lng)
-            };
+        if (window.userSession) {
+            // Priority 1: Check if lat/lng exist as direct properties
+            if (window.userSession.lat && window.userSession.lng) {
+                customerCoords = {
+                    lat: parseFloat(window.userSession.lat),
+                    lng: parseFloat(window.userSession.lng)
+                };
+            }
+            // Priority 2: Check standard 'location' field (usually "lat,lng" string)
+            else if (window.userSession.location && String(window.userSession.location).includes(',')) {
+                const [lat, lng] = String(window.userSession.location).split(',');
+                customerCoords = {
+                    lat: parseFloat(lat),
+                    lng: parseFloat(lng)
+                };
+            }
         }
 
         try {
