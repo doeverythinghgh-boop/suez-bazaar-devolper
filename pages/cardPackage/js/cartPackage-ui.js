@@ -124,13 +124,11 @@ async function cartPage_updateCartSummary() {
         const cartPage_itemCount = getCartItemCount();
         const cartPage_subtotal = getCartTotalPrice();
         const cartPage_savings = getCartTotalSavings();
-        const cartPage_deliveryFee = 40.00;
 
         // Update basic values immediately
         document.getElementById('cartPage_itemCount').textContent = cartPage_itemCount;
         document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ج.م';
         document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ج.م';
-        document.getElementById('cartPage_deliveryFee').textContent = cartPage_deliveryFee.toFixed(2) + ' ج.م';
 
         // 🧠 Calculate Smart Delivery Cost
         const smartDeliveryElement = document.getElementById('cartPage_smartDeliveryFee');
@@ -199,9 +197,8 @@ lng
         }
 
         // Fallback if smart calculation fails or not available
-        smartDeliveryElement.textContent = '---';
-        const fallbackTotal = cartPage_subtotal + cartPage_deliveryFee;
-        document.getElementById('cartPage_total').textContent = fallbackTotal.toFixed(2) + ' ج.م';
+        smartDeliveryElement.textContent = 'غير متاح';
+        document.getElementById('cartPage_total').textContent = cartPage_subtotal.toFixed(2) + ' ج.م';
 
     } catch (error) {
         console.error('حدث خطأ أثناء تحديث ملخص السلة:', error);
