@@ -112,25 +112,34 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
         // 4. Calculate Distance Segments in KM
         // Route path: Office -> Seller1 -> Seller2 ... -> Customer
         const segmentsInKm = [];
+        console.log("%c🚩 [Segments] تفاصيل قطاعات المسار والمسافات البينية:", "color: #8e44ad; font-weight: bold;");
 
         if (optimalRoute.length > 0) {
             // Segment 1: Office to First Seller
             const distOfficeToFirst = calculateDistance(officeLocation, optimalRoute[0]);
-            segmentsInKm.push(distOfficeToFirst * DEG_TO_KM_APPROX);
+            const km1 = distOfficeToFirst * DEG_TO_KM_APPROX;
+            segmentsInKm.push(km1);
+            console.log(`%c   1️⃣ من المكتب 🏢 (${officeLocation.lat}, ${officeLocation.lng}) \n      ⬅️ إلى بائع: ${optimalRoute[0].name} 👤 (${optimalRoute[0].lat}, ${optimalRoute[0].lng}) \n      📏 المسافة: ${km1.toFixed(2)} كم`, "color: #3498db;");
 
             // Intermediate Segments: Between Sellers
             for (let i = 0; i < optimalRoute.length - 1; i++) {
                 const distBetweenSellers = calculateDistance(optimalRoute[i], optimalRoute[i + 1]);
-                segmentsInKm.push(distBetweenSellers * DEG_TO_KM_APPROX);
+                const kmMid = distBetweenSellers * DEG_TO_KM_APPROX;
+                segmentsInKm.push(kmMid);
+                console.log(`%c   🔄 من بائع: ${optimalRoute[i].name} 👤 (${optimalRoute[i].lat}, ${optimalRoute[i].lng}) \n      ⬅️ إلى بائع: ${optimalRoute[i + 1].name} 👤 (${optimalRoute[i + 1].lat}, ${optimalRoute[i + 1].lng}) \n      📏 المسافة: ${kmMid.toFixed(2)} كم`, "color: #3498db;");
             }
 
             // Final Segment: Last Seller to Customer
             const distLastToCustomer = calculateDistance(optimalRoute[optimalRoute.length - 1], customerLocation);
-            segmentsInKm.push(distLastToCustomer * DEG_TO_KM_APPROX);
+            const kmLast = distLastToCustomer * DEG_TO_KM_APPROX;
+            segmentsInKm.push(kmLast);
+            console.log(`%c   🏁 من بائع: ${optimalRoute[optimalRoute.length - 1].name} 👤 (${optimalRoute[optimalRoute.length - 1].lat}, ${optimalRoute[optimalRoute.length - 1].lng}) \n      ⬅️ إلى العميل 🏠 (${customerLocation.lat}, ${customerLocation.lng}) \n      📏 المسافة: ${kmLast.toFixed(2)} كم`, "color: #3498db;");
         } else {
             // Direct Route: Office to Customer (No valid sellers with coordinates)
             const distDirect = calculateDistance(officeLocation, customerLocation);
-            segmentsInKm.push(distDirect * DEG_TO_KM_APPROX);
+            const kmDirect = distDirect * DEG_TO_KM_APPROX;
+            segmentsInKm.push(kmDirect);
+            console.log(`%c   ⚡ مسار مباشر: من المكتب 🏢 (${officeLocation.lat}, ${officeLocation.lng}) \n      ⬅️ إلى العميل 🏠 (${customerLocation.lat}, ${customerLocation.lng}) \n      📏 المسافة: ${kmDirect.toFixed(2)} كم`, "color: #e67e22;");
         }
 
         const totalKm = segmentsInKm.reduce((sum, dist) => sum + dist, 0);
