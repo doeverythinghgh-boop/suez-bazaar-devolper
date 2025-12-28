@@ -261,9 +261,9 @@ async function checkAppVersionAndClearData() {
     const latestVersion = data.version;
     const storedVersion = localStorage.getItem(VERSION_STORAGE_KEY);
 
-    // 2) If versions differ, perform cleanup (excluding localStorage and IndexedDB)
+    // 2) If versions differ, perform aggressive cleanup (excluding localStorage and IndexedDB)
     if (storedVersion && latestVersion !== storedVersion) {
-      console.log(`[VersionCheck] New version detected: ${latestVersion} (Old: ${storedVersion}). Clearing specific data...`);
+      console.log(`[VersionCheck] New version detected: ${latestVersion} (Old: ${storedVersion}). Performing deep cleanup...`);
 
       // A) Clear Session Storage
       sessionStorage.clear();
@@ -277,17 +277,29 @@ async function checkAppVersionAndClearData() {
         document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
       }
 
-      // C) Clear Cache Storage (The most important part for file updates)
+      // C) Unregister ALL Service Workers (Crucial for immediate PWA update)
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+          console.log('[VersionCheck] Service Worker unregistered.');
+        }
+      }
+
+      // D) Clear ALL Cache Storage (The most important part for file updates)
       if ('caches' in window) {
         const cacheNames = await caches.keys();
-        await Promise.all(cacheNames.map(name => caches.delete(name)));
+        await Promise.all(cacheNames.map(name => {
+            console.log(`[VersionCheck] Deleting cache: ${name}`);
+            return caches.delete(name);
+        }));
       }
 
       // Update stored version
       localStorage.setItem(VERSION_STORAGE_KEY, latestVersion);
 
-      // D) Force Reload
-      console.log("[VersionCheck] Cleanup complete. Reloading page...");
+      // E) Force Reload from Server
+      console.log("[VersionCheck] Cleanup complete. Forcing reload from server...");
       window.location.reload(true);
     } else if (!storedVersion) {
       // First time visit or storage cleared - just set the version

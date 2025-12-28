@@ -15,6 +15,8 @@ const STATIC_ASSETS = [
     '/offline.html',
     '/manifest.json',
     '/favicon.ico',
+    '/images/icons/icon-192x192.png',
+    '/images/icons/icon-512x512.png',
     '/style/variables.css',
     '/style/index.css',
     '/notification/page/notifications.css',
