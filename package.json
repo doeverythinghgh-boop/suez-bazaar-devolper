@@ -8,7 +8,8 @@
   "main": "firebase-messaging-sw.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "docs": "jsdoc -r ./js -d ./docs"
+    "docs": "jsdoc -r ./js -d ./docs",
+    "auto-version": "node maintenance/version-watcher.js"
   },
   "repository": {
     "type": "git",
