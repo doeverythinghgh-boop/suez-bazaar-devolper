@@ -1,8 +1,8 @@
 
 /**
- * @file maintenance/version-watcher.js
+ * @file version-watcher.js
  * @description Watches for file changes and auto-increments the version in version.json.
- * @usage node maintenance/version-watcher.js
+ * @usage node version-watcher.js
  */
 
 const fs = require('fs');
