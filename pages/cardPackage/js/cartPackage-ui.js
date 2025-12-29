@@ -242,7 +242,8 @@ function showDeliveryDetails(deliveryResult) {
     const PRICE_PER_KM = 5;
     const HIGH_ORDER_VALUE_THRESHOLD = 5000;
     const HIGH_ORDER_FEE = 20;
-    const DISCOUNT = 10;
+    const DISCOUNT_THRESHOLD = 200;
+    const DISCOUNT = 5;
     const SPECIAL_VEHICLE_FACTOR = 0.5;
     const VEHICLE_FACTORS = { bike: 0, car: 0.25, truck: 0.6 };
     const WEATHER_FACTORS = { normal: 0, light_rain: 0.1, heavy_rain: 0.3 };
@@ -259,6 +260,7 @@ function showDeliveryDetails(deliveryResult) {
     const driverRatingFactor = breakdown.driverRating >= 4.5 ? -0.05 : (breakdown.driverRating >= 4 ? 0 : 0.1);
     const ratingCost = distanceCost * driverRatingFactor;
     const etaCost = distanceCost * (ETA_FACTORS[breakdown.etaType] || 0);
+    const discount = breakdown.orderValue < DISCOUNT_THRESHOLD ? DISCOUNT : 0;
 
     // Build distance breakdown by segments
     let distanceBreakdown = '';
@@ -429,10 +431,17 @@ function showDeliveryDetails(deliveryResult) {
                     <strong style="color: #f57c00;">💳 الرسوم الأساسية:</strong>
                     <span style="font-weight: bold;">+${BASE_FEE.toFixed(2)} ج.م</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #fff59d;">
-                    <strong style="color: #388e3c;">🎁 الخصم:</strong>
-                    <span style="font-weight: bold; color: #388e3c;">-${DISCOUNT.toFixed(2)} ج.م</span>
                 </div>
+                ${discount > 0 ? `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #fff59d;">
+                    <strong style="color: #388e3c;">🎁 الخصم (للطلبات < ${DISCOUNT_THRESHOLD} ج.م):</strong>
+                    <span style="font-weight: bold; color: #388e3c;">-${discount.toFixed(2)} ج.م</span>
+                </div>
+                ` : `
+                <div style="padding-top: 8px; border-top: 1px solid #fff59d; color: #666; font-size: 0.9rem;">
+                    ℹ️ لا يوجد خصم (الطلب ≥ ${DISCOUNT_THRESHOLD} ج.م)
+                </div>
+                `}
             </div>
 
             <hr style="margin: 20px 0; border: none; border-top: 2px solid #e0e0e0;">
@@ -440,10 +449,7 @@ function showDeliveryDetails(deliveryResult) {
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-align: center;">
                 <strong style="font-size: 1.1rem;">💵 التكلفة النهائية: ${totalCost.toFixed(2)} ج.م</strong>
             </div>
-
-            <p style="margin-top: 15px; font-size: 0.85rem; color: #666; text-align: center;">
-                <i class="fas fa-info-circle"></i> التكلفة محسوبة بناءً على معادلة ذكية تأخذ في الاعتبار جميع العوامل المذكورة أعلاه
-            </p>
+            </div>
         </div>
     `;
 

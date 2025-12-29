@@ -49,11 +49,18 @@ const HIGH_ORDER_VALUE_THRESHOLD = 5000;
 const HIGH_ORDER_FEE = 20;
 
 /**
- * Default discount applied to all deliveries.
- * This is subtracted from the final calculated cost.
+ * Minimum order value to qualify for discount.
+ * Only orders below this threshold receive the discount.
  * @constant {number}
  */
-const DISCOUNT = 10;
+const DISCOUNT_THRESHOLD = 200;
+
+/**
+ * Discount applied to orders below the discount threshold.
+ * This helps support small orders and encourages customers.
+ * @constant {number}
+ */
+const DISCOUNT = 5;
 
 /* ============================================================
    2️⃣ IMPACT FACTORS & MULTIPLIERS
@@ -280,7 +287,14 @@ function calculateDeliveryCost({
         distanceCost * (ETA_FACTORS[etaType] || 0);
 
     // ========================================
-    // STEP 10: Calculate Final Total Cost
+    // STEP 10: Calculate Conditional Discount
+    // ========================================
+    // Apply discount only for orders below threshold
+    // This helps support small orders
+    const discount = orderValue < DISCOUNT_THRESHOLD ? DISCOUNT : 0;
+
+    // ========================================
+    // STEP 11: Calculate Final Total Cost
     // ========================================
     // Combine all cost components:
     // - Base fee (fixed)
@@ -292,21 +306,21 @@ function calculateDeliveryCost({
     // - Vehicle type impact (variable)
     // - Driver rating impact (variable)
     // - Speed impact (variable)
-    // - Discount (fixed reduction)
+    // - Discount (conditional)
     const totalCost =
         BASE_FEE +              // Fixed starting fee
         distanceCost +          // Base distance charge
-        orderValueFee +         // Low order penalty (if applicable)
+        orderValueFee +         // High order fee (if applicable)
         specialVehicleCost +    // Special handling (if applicable)
         weatherCost +           // Weather adjustment
         locationCost +          // Zone adjustment
         vehicleCost +           // Vehicle type adjustment
         ratingCost +            // Driver quality adjustment
         etaCost -               // Speed adjustment
-        DISCOUNT;               // Standard discount
+        discount;               // Conditional discount
 
     // ========================================
-    // STEP 11: Ensure Non-Negative Result
+    // STEP 12: Ensure Non-Negative Result
     // ========================================
     // Prevent negative costs (in case discount exceeds total)
     // Minimum delivery cost is always 0

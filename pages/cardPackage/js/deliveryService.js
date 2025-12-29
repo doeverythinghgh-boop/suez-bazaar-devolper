@@ -160,7 +160,7 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
             weather: options.weather || 'normal',
             location: options.locationZone || 'city',
             vehicleType: vehicleType,
-            driverRating: options.driverRating || 5.0, // Default to 5-star driver if not specified
+            driverRating: options.driverRating || 4.3, // Default to 4.3-star driver if not specified
             etaType: options.etaType || 'normal'
         };
 
