@@ -140,6 +140,25 @@ async function cartPage_updateCartSummary() {
         const cartPage_subtotal = getCartTotalPrice();
         const cartPage_savings = getCartTotalSavings();
 
+        // 1. Load Config & Currency FIRST
+        let currency = 'ج.م';
+        let officeCoords = { lat: 29.968897130919654, lng: 32.53395080566407 }; // Fallback
+
+        if (typeof loadDeliveryConfig === 'function') {
+            try {
+                const config = await loadDeliveryConfig();
+                if (config && config.defaults) {
+                    currency = config.defaults.currency_symbol || currency;
+                    if (config.defaults.office_location) {
+                        officeCoords = config.defaults.office_location;
+                        console.log("%c🏢 [Config] تم تحميل موقع المكتب من الإعدادات.", "color: #27ae60;");
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not load delivery config, using fallbacks.", e);
+            }
+        }
+
         // Update basic values immediately
         document.getElementById('cartPage_itemCount').textContent = cartPage_itemCount;
         document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ' + currency;
@@ -148,20 +167,7 @@ async function cartPage_updateCartSummary() {
         // 🧠 Calculate Smart Delivery Cost
         const smartDeliveryElement = document.getElementById('cartPage_smartDeliveryFee');
 
-        // Load Config for Office Coordinates
-        let officeCoords = { lat: 29.968897130919654, lng: 32.53395080566407 }; // Fallback
-
-        if (typeof loadDeliveryConfig === 'function') {
-            try {
-                const config = await loadDeliveryConfig();
-                if (config && config.defaults && config.defaults.office_location) {
-                    officeCoords = config.defaults.office_location;
-                    console.log("%c🏢 [Config] تم تحميل موقع المكتب من الإعدادات.", "color: #27ae60;");
-                }
-            } catch (e) {
-                console.warn("Could not load delivery config for office location, using fallback.");
-            }
-        }
+        // (Office coords already loaded above)
 
         // Get Customer Location from Session or use Default
         let customerCoords = { lat: 30.0500, lng: 31.2400 }; // Default fallback
@@ -259,7 +265,9 @@ function showDeliveryDetails(deliveryResult) {
     const optimalRoute = deliveryResult.optimalRoute || [];
 
     // 🆕 Use configuration from result or fallback to default object
-    const config = deliveryResult.deliveryConfig || {
+    const fullConfig = deliveryResult.deliveryConfig || {};
+    // Extract defaults object where values live
+    const defaults = fullConfig.defaults || {
         base_fee: 15,
         price_per_km: 5,
         high_order_value_threshold: 5000,
@@ -274,33 +282,33 @@ function showDeliveryDetails(deliveryResult) {
         driver_rating_config: { excellent_threshold: 4.5, excellent_discount: -0.05, good_threshold: 4.0, good_factor: 0, poor_factor: 0.1 }
     };
 
-    // Calculate each component using CONFIG
-    const distanceCost = totalDistance * config.price_per_km;
-    const orderValueFee = breakdown.orderValue >= config.high_order_value_threshold ? config.high_order_fee : 0;
-    const specialVehicleCost = breakdown.specialVehicle ? distanceCost * config.special_vehicle_factor : 0;
+    // Calculate each component using DEFAULTS
+    const distanceCost = totalDistance * defaults.price_per_km;
+    const orderValueFee = breakdown.orderValue >= defaults.high_order_value_threshold ? defaults.high_order_fee : 0;
+    const specialVehicleCost = breakdown.specialVehicle ? distanceCost * defaults.special_vehicle_factor : 0;
 
-    const weatherFactor = (config.weather_factors && config.weather_factors[breakdown.weather]) || 0;
+    const weatherFactor = (defaults.weather_factors && defaults.weather_factors[breakdown.weather]) || 0;
     const weatherCost = distanceCost * weatherFactor;
 
-    const locationFactor = (config.location_factors && config.location_factors[breakdown.location]) || 0;
+    const locationFactor = (defaults.location_factors && defaults.location_factors[breakdown.location]) || 0;
     const locationCost = distanceCost * locationFactor;
 
-    const vehicleFactor = (config.vehicle_factors && config.vehicle_factors[breakdown.vehicleType]) || 0;
+    const vehicleFactor = (defaults.vehicle_factors && defaults.vehicle_factors[breakdown.vehicleType]) || 0;
     const vehicleCost = distanceCost * vehicleFactor;
 
     // Driver Rating Logic
     let driverRatingFactor = 0;
-    if (config.driver_rating_config) {
-        if (breakdown.driverRating >= config.driver_rating_config.excellent_threshold) driverRatingFactor = config.driver_rating_config.excellent_discount;
-        else if (breakdown.driverRating >= config.driver_rating_config.good_threshold) driverRatingFactor = config.driver_rating_config.good_factor;
-        else driverRatingFactor = config.driver_rating_config.poor_factor;
+    if (defaults.driver_rating_config) {
+        if (breakdown.driverRating >= defaults.driver_rating_config.excellent_threshold) driverRatingFactor = defaults.driver_rating_config.excellent_discount;
+        else if (breakdown.driverRating >= defaults.driver_rating_config.good_threshold) driverRatingFactor = defaults.driver_rating_config.good_factor;
+        else driverRatingFactor = defaults.driver_rating_config.poor_factor;
     }
     const ratingCost = distanceCost * driverRatingFactor;
 
-    const etaFactor = (config.eta_factors && config.eta_factors[breakdown.etaType]) || 0;
+    const etaFactor = (defaults.eta_factors && defaults.eta_factors[breakdown.etaType]) || 0;
     const etaCost = distanceCost * etaFactor;
 
-    const discount = breakdown.orderValue < config.discount_threshold ? config.discount_value : 0;
+    const discount = breakdown.orderValue < defaults.discount_threshold ? defaults.discount_value : 0;
 
     const currency = defaults.currency_symbol || 'ج.م';
 

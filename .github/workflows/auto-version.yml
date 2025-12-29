@@ -24,35 +24,30 @@ jobs:
       
       - name: Increment version
         run: |
-          # Read current version.json
-          CURRENT_VERSION=$(node -pe "JSON.parse(require('fs').readFileSync('version.json', 'utf8')).version_code")
-          echo "Current version: $CURRENT_VERSION"
-          
-          # Split version into parts (major.minor.patch)
-          IFS='.' read -ra VERSION_PARTS <<< "$CURRENT_VERSION"
-          MAJOR=${VERSION_PARTS[0]}
-          MINOR=${VERSION_PARTS[1]}
-          PATCH=${VERSION_PARTS[2]}
-          
-          # Increment patch version
-          NEW_PATCH=$((PATCH + 1))
-          NEW_VERSION="$MAJOR.$MINOR.$NEW_PATCH"
-          echo "New version: $NEW_VERSION"
-          
-          # Get current timestamp in ISO format
-          TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          
-          # Update version.json with new version and timestamp
-          cat > version.json << EOF
-          {
-            "version_code": "$NEW_VERSION",
-            "notes": "Auto-updated version",
-            "last_updated": "$TIMESTAMP"
-          }
-          EOF
-          
-          echo "Updated version.json successfully"
-          cat version.json
+          node -e '
+            const fs = require("fs");
+            if (fs.existsSync("version.json")) {
+              const fileContent = fs.readFileSync("version.json", "utf8");
+              const data = JSON.parse(fileContent);
+              
+              // Increment patch version
+              const parts = data.version.split(".").map(Number);
+              if (parts.length === 3) {
+                parts[2] += 1;
+                data.version = parts.join(".");
+                data.lastUpdated = new Date().toISOString();
+                
+                fs.writeFileSync("version.json", JSON.stringify(data, null, 2));
+                console.log("Updated version to:", data.version);
+              } else {
+                console.error("Invalid version format:", data.version);
+                process.exit(1);
+              }
+            } else {
+              console.error("version.json not found!");
+              process.exit(1);
+            }
+          '
       
       - name: Configure Git
         run: |
@@ -62,6 +57,6 @@ jobs:
       - name: Commit and push changes
         run: |
           git add version.json
-          NEW_VERSION=$(node -pe "JSON.parse(require('fs').readFileSync('version.json', 'utf8')).version_code")
+          NEW_VERSION=$(node -pe "JSON.parse(require('fs').readFileSync('version.json', 'utf8')).version")
           git commit -m "🤖 Auto-increment version to $NEW_VERSION"
           git push
