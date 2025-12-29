@@ -16,6 +16,7 @@
  * @property {number} totalDistanceKm - Total distance of the route in Kilometers
  * @property {Array<Location>} optimalRoute - The optimized order of sellers to visit
  * @property {Object} costBreakdown - Input parameters used for cost calculation
+ * @property {Object} deliveryConfig - The configuration used for calculation
  */
 
 const DEG_TO_KM_APPROX = 111; // Approximate conversion: 1 degree latitude ~= 111km
@@ -35,6 +36,15 @@ const DEG_TO_KM_APPROX = 111; // Approximate conversion: 1 degree latitude ~= 11
  */
 async function calculateCartDeliveryCost(officeLocation, customerLocation, options = {}) {
     try {
+        // 0. Load Configuration
+        if (typeof loadDeliveryConfig !== 'function') {
+            console.error("loadDeliveryConfig not found. Ensure deliveryConfigLoader.js is loaded.");
+            // Fallback or throw based on preference. Here we throw to ensure config is present.
+            throw new Error("Missing deliveryConfigLoader.js");
+        }
+        const deliveryConfig = await loadDeliveryConfig();
+
+
         // 1. Get Cart Data
         // Assumes getCart() is available globally from cardPackage.js
         if (typeof getCart !== 'function') {
@@ -50,7 +60,8 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
                 totalCost: 0,
                 totalDistanceKm: 0,
                 optimalRoute: [],
-                costBreakdown: null
+                costBreakdown: null,
+                deliveryConfig: deliveryConfig // Pass config even if empty result
             };
         }
 
@@ -95,7 +106,8 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
         sellerLocations.forEach((s, index) => {
             console.log(`%c   - بائع ${index + 1}: ${s.name} | الموقع: (${s.lat}, ${s.lng})`, "color: #9b59b6;");
         });
-        console.log(`%c💰 [OrderValue] إجمالي قيمة المشتريات: ${totalOrderValue.toFixed(2)} ج.م`, "color: #9b59b6;");
+        const currency = (deliveryConfig.defaults && deliveryConfig.defaults.currency_symbol) || 'ج.م';
+        console.log(`%c💰 [OrderValue] إجمالي قيمة المشتريات: ${totalOrderValue.toFixed(2)} ${currency}`, "color: #9b59b6;");
         if (requiresHeavyLoad) console.log("%c⚠️ [HeavyLoad] تنبيه: تم اكتشاف حمولة ثقيلة، سيتم استخدام شاحنة.", "color: #e74c3c; font-weight: bold;");
 
         // 3. Find Optimal Route (TSP)
@@ -117,28 +129,30 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
 
         if (optimalRoute.length > 0) {
             // Segment 1: Office to First Seller
+            const degToKm = (deliveryConfig.defaults && deliveryConfig.defaults.deg_to_km_factor) || DEG_TO_KM_APPROX;
             const distOfficeToFirst = calculateDistance(officeLocation, optimalRoute[0]);
-            const km1 = distOfficeToFirst * DEG_TO_KM_APPROX;
+            const km1 = distOfficeToFirst * degToKm;
             segmentsInKm.push(km1);
             console.log(`%c   1️⃣ من المكتب 🏢 (${officeLocation.lat}, ${officeLocation.lng}) \n      ⬅️ إلى بائع: ${optimalRoute[0].name} 👤 (${optimalRoute[0].lat}, ${optimalRoute[0].lng}) \n      📏 المسافة: ${km1.toFixed(2)} كم`, "color: #3498db;");
 
             // Intermediate Segments: Between Sellers
             for (let i = 0; i < optimalRoute.length - 1; i++) {
                 const distBetweenSellers = calculateDistance(optimalRoute[i], optimalRoute[i + 1]);
-                const kmMid = distBetweenSellers * DEG_TO_KM_APPROX;
+                const kmMid = distBetweenSellers * degToKm;
                 segmentsInKm.push(kmMid);
                 console.log(`%c   🔄 من بائع: ${optimalRoute[i].name} 👤 (${optimalRoute[i].lat}, ${optimalRoute[i].lng}) \n      ⬅️ إلى بائع: ${optimalRoute[i + 1].name} 👤 (${optimalRoute[i + 1].lat}, ${optimalRoute[i + 1].lng}) \n      📏 المسافة: ${kmMid.toFixed(2)} كم`, "color: #3498db;");
             }
 
             // Final Segment: Last Seller to Customer
             const distLastToCustomer = calculateDistance(optimalRoute[optimalRoute.length - 1], customerLocation);
-            const kmLast = distLastToCustomer * DEG_TO_KM_APPROX;
+            const kmLast = distLastToCustomer * degToKm;
             segmentsInKm.push(kmLast);
             console.log(`%c   🏁 من بائع: ${optimalRoute[optimalRoute.length - 1].name} 👤 (${optimalRoute[optimalRoute.length - 1].lat}, ${optimalRoute[optimalRoute.length - 1].lng}) \n      ⬅️ إلى العميل 🏠 (${customerLocation.lat}, ${customerLocation.lng}) \n      📏 المسافة: ${kmLast.toFixed(2)} كم`, "color: #3498db;");
         } else {
             // Direct Route: Office to Customer (No valid sellers with coordinates)
+            const degToKm = (deliveryConfig.defaults && deliveryConfig.defaults.deg_to_km_factor) || DEG_TO_KM_APPROX;
             const distDirect = calculateDistance(officeLocation, customerLocation);
-            const kmDirect = distDirect * DEG_TO_KM_APPROX;
+            const kmDirect = distDirect * degToKm;
             segmentsInKm.push(kmDirect);
             console.log(`%c   ⚡ مسار مباشر: من المكتب 🏢 (${officeLocation.lat}, ${officeLocation.lng}) \n      ⬅️ إلى العميل 🏠 (${customerLocation.lat}, ${customerLocation.lng}) \n      📏 المسافة: ${kmDirect.toFixed(2)} كم`, "color: #e67e22;");
         }
@@ -148,7 +162,10 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
 
         // 5. Prepare Cost Calculation Parameters
         // Determine vehicle type: use 'truck' if heavy items exist, otherwise use user preference or default to 'bike'
-        let vehicleType = options.vehicleType || 'bike';
+        // 🆕 Use defaults from config
+        const defaults = deliveryConfig.defaults || {};
+
+        let vehicleType = options.vehicleType || defaults.vehicle_type || 'bike';
         if (requiresHeavyLoad) {
             vehicleType = 'truck';
         }
@@ -157,11 +174,11 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
             distances: segmentsInKm,
             orderValue: totalOrderValue,
             specialVehicle: requiresHeavyLoad || options.specialVehicle || false,
-            weather: options.weather || 'normal',
-            location: options.locationZone || 'city',
+            weather: options.weather || defaults.weather || 'normal',
+            location: options.locationZone || defaults.location || 'city',
             vehicleType: vehicleType,
-            driverRating: options.driverRating || 4.3, // Default to 4.3-star driver if not specified
-            etaType: options.etaType || 'normal'
+            driverRating: options.driverRating || defaults.driver_rating || 4.3,
+            etaType: options.etaType || defaults.eta_type || 'normal'
         };
 
         // 🧠 [Logic] إظهار قيم المعايير المستخدمة في المعادلات
@@ -172,7 +189,7 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
         console.log(`%c   - سرعة الطلب (ETA): ${costParams.etaType}`, "color: #9b59b6;");
         console.log(`%c   - تقييم السائق: ${costParams.driverRating} ⭐`, "color: #9b59b6;");
         console.log(`%c   - مركبة خاصة: ${costParams.specialVehicle ? 'نعم' : 'لا'}`, "color: #9b59b6;");
-        console.log(`%c   - قيمة الطلب: ${costParams.orderValue.toFixed(2)} ج.م`, "color: #9b59b6;");
+        console.log(`%c   - قيمة الطلب: ${costParams.orderValue.toFixed(2)} ${currency}`, "color: #9b59b6;");
 
         // 6. Calculate Final Cost
         // Uses calculateDeliveryCost from deliveryCostCalculator.js
@@ -180,17 +197,19 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
             throw new Error("calculateDeliveryCost not found. Ensure deliveryCostCalculator.js is loaded.");
         }
 
-        const totalCost = calculateDeliveryCost(costParams);
+        // 🆕 Pass deliveryConfig to the calculator
+        const totalCost = calculateDeliveryCost(costParams, deliveryConfig);
         const totalDistanceKm = segmentsInKm.reduce((sum, dist) => sum + dist, 0);
 
         console.log("%c✨ [FinalCost] اكتمال الحسابات بنجاح!", "color: #8e44ad; font-weight: bold;");
-        console.log(`%c💵 [Total] التكلفة النهائية للتوصيل: ${totalCost.toFixed(2)} ج.م`, "color: #2ecc71; font-weight: bold; font-size: 1.1em;");
+        console.log(`%c💵 [Total] التكلفة النهائية للتوصيل: ${totalCost.toFixed(2)} ${currency}`, "color: #2ecc71; font-weight: bold; font-size: 1.1em;");
 
         return {
             totalCost: parseFloat(totalCost.toFixed(2)),
             totalDistanceKm: parseFloat(totalDistanceKm.toFixed(2)),
             optimalRoute: optimalRoute,
-            costBreakdown: costParams
+            costBreakdown: costParams,
+            deliveryConfig: deliveryConfig // 🆕 Expose config for UI usage
         };
 
     } catch (error) {

@@ -17,6 +17,21 @@ async function cartPage_loadCart() {
         const cartPage_emptyCart = document.getElementById('cartPage_emptyCart');
         const cartPage_cartSummary = document.getElementById('cartPage_cartSummary');
 
+        // Load Global Config
+        let config = {};
+        let currency = 'ج.م';
+        let placeholderImg = 'https://via.placeholder.com/120x120?text=No+Image';
+
+        if (typeof loadDeliveryConfig === 'function') {
+            try {
+                config = await loadDeliveryConfig();
+                if (config && config.defaults) {
+                    currency = config.defaults.currency_symbol || currency;
+                    placeholderImg = config.defaults.placeholder_image || placeholderImg;
+                }
+            } catch (e) { console.warn("Failed to load config in loadCart", e); }
+        }
+
         // فحص دفاعي: إذا لم تكن العناصر موجودة، فهذا يعني أننا لسنا في صفحة السلة
         if (!cartPage_cartItemsContainer || !cartPage_emptyCart || !cartPage_cartSummary) {
             return;
@@ -51,7 +66,7 @@ async function cartPage_loadCart() {
                         <tr>
                             <td style="width: 120px;" id="cartPage_cartItemImage-${cartPage_item.product_key}">
                                 <div class="cartPage_cart-item-image">
-                                    <img id="cartPage_cartItemImg-${cartPage_item.product_key}" src="${cartPage_item.image || 'https://via.placeholder.com/120x120?text=No+Image'}" 
+                                    <img id="cartPage_cartItemImg-${cartPage_item.product_key}" src="${cartPage_item.image || placeholderImg}" 
                                          alt="${cartPage_item.productName}">
                                 </div>
                             </td>
@@ -59,9 +74,9 @@ async function cartPage_loadCart() {
                                 <div class="cartPage_cart-item-info">
                                     <h3 class="cartPage_cart-item-title" id="cartPage_cartItemTitle-${cartPage_item.product_key}">${cartPage_item.productName}</h3>
                                     <div class="cartPage_cart-item-price" id="cartPage_cartItemPriceContainer-${cartPage_item.product_key}">
-                                        <span class="cartPage_current-price" id="cartPage_currentPrice-${cartPage_item.product_key}">${cartPage_item.price.toFixed(2)} ج.م</span>
+                                        <span class="cartPage_current-price" id="cartPage_currentPrice-${cartPage_item.product_key}">${cartPage_item.price.toFixed(2)} ${currency}</span>
                                         ${cartPage_item.original_price && cartPage_item.original_price > cartPage_item.price ?
-                    `<span class="cartPage_original-price" id="cartPage_originalPrice-${cartPage_item.product_key}">${cartPage_item.original_price.toFixed(2)} ج.م</span>` : ''}
+                    `<span class="cartPage_original-price" id="cartPage_originalPrice-${cartPage_item.product_key}">${cartPage_item.original_price.toFixed(2)} ${currency}</span>` : ''}
                                         ${cartPage_discount > 0 ?
                     `<span class="cartPage_discount-badge" id="cartPage_discountBadge-${cartPage_item.product_key}">توفير ${cartPage_discount}%</span>` : ''}
                                     </div>
@@ -127,20 +142,26 @@ async function cartPage_updateCartSummary() {
 
         // Update basic values immediately
         document.getElementById('cartPage_itemCount').textContent = cartPage_itemCount;
-        document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ج.م';
-        document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ج.م';
+        document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ' + currency;
+        document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ' + currency;
 
         // 🧠 Calculate Smart Delivery Cost
         const smartDeliveryElement = document.getElementById('cartPage_smartDeliveryFee');
 
-        // Default Office Coordinates (e.g., Cairo Center) if not defined
-        /*lat
-: 
-29.975149513576273
-lng 
-: 
-32.53395080566407*/
-        const officeCoords = { lat: 29.968897130919654, lng: 32.53395080566407 };
+        // Load Config for Office Coordinates
+        let officeCoords = { lat: 29.968897130919654, lng: 32.53395080566407 }; // Fallback
+
+        if (typeof loadDeliveryConfig === 'function') {
+            try {
+                const config = await loadDeliveryConfig();
+                if (config && config.defaults && config.defaults.office_location) {
+                    officeCoords = config.defaults.office_location;
+                    console.log("%c🏢 [Config] تم تحميل موقع المكتب من الإعدادات.", "color: #27ae60;");
+                }
+            } catch (e) {
+                console.warn("Could not load delivery config for office location, using fallback.");
+            }
+        }
 
         // Get Customer Location from Session or use Default
         let customerCoords = { lat: 30.0500, lng: 31.2400 }; // Default fallback
@@ -198,7 +219,7 @@ lng
 
                     // Final Total uses Smart Fee + Subtotal
                     const finalTotal = cartPage_subtotal + smartFee;
-                    document.getElementById('cartPage_total').textContent = finalTotal.toFixed(2) + ' ج.م';
+                    document.getElementById('cartPage_total').textContent = finalTotal.toFixed(2) + ' ' + currency;
                     return;
                 }
             }
@@ -208,7 +229,7 @@ lng
 
         // Fallback if smart calculation fails or not available
         smartDeliveryElement.textContent = 'غير متاح';
-        document.getElementById('cartPage_total').textContent = cartPage_subtotal.toFixed(2) + ' ج.م';
+        document.getElementById('cartPage_total').textContent = cartPage_subtotal.toFixed(2) + ' ' + currency;
 
     } catch (error) {
         console.error('حدث خطأ أثناء تحديث ملخص السلة:', error);
@@ -237,33 +258,59 @@ function showDeliveryDetails(deliveryResult) {
     const totalCost = deliveryResult.totalCost;
     const optimalRoute = deliveryResult.optimalRoute || [];
 
-    // Constants from deliveryCostCalculator.js
-    const BASE_FEE = 15;
-    const PRICE_PER_KM = 5;
-    const HIGH_ORDER_VALUE_THRESHOLD = 5000;
-    const HIGH_ORDER_FEE = 20;
-    const DISCOUNT_THRESHOLD = 200;
-    const DISCOUNT = 5;
-    const SPECIAL_VEHICLE_FACTOR = 0.5;
-    const VEHICLE_FACTORS = { bike: 0, car: 0.25, truck: 0.6 };
-    const WEATHER_FACTORS = { normal: 0, light_rain: 0.1, heavy_rain: 0.3 };
-    const LOCATION_FACTORS = { city: 0, suburbs: 0.15, outside_city: 0.3 };
-    const ETA_FACTORS = { normal: 0, fast: 0.2, instant: 0.4 };
+    // 🆕 Use configuration from result or fallback to default object
+    const config = deliveryResult.deliveryConfig || {
+        base_fee: 15,
+        price_per_km: 5,
+        high_order_value_threshold: 5000,
+        high_order_fee: 20,
+        discount_threshold: 200,
+        discount_value: 5,
+        special_vehicle_factor: 0.5,
+        vehicle_factors: { bike: 0, car: 0.25, truck: 0.6 },
+        weather_factors: { normal: 0, light_rain: 0.1, heavy_rain: 0.3 },
+        location_factors: { city: 0, suburbs: 0.15, outside_city: 0.3 },
+        eta_factors: { normal: 0, fast: 0.2, instant: 0.4 },
+        driver_rating_config: { excellent_threshold: 4.5, excellent_discount: -0.05, good_threshold: 4.0, good_factor: 0, poor_factor: 0.1 }
+    };
 
-    // Calculate each component
-    const distanceCost = totalDistance * PRICE_PER_KM;
-    const orderValueFee = breakdown.orderValue >= HIGH_ORDER_VALUE_THRESHOLD ? HIGH_ORDER_FEE : 0;
-    const specialVehicleCost = breakdown.specialVehicle ? distanceCost * SPECIAL_VEHICLE_FACTOR : 0;
-    const weatherCost = distanceCost * (WEATHER_FACTORS[breakdown.weather] || 0);
-    const locationCost = distanceCost * (LOCATION_FACTORS[breakdown.location] || 0);
-    const vehicleCost = distanceCost * (VEHICLE_FACTORS[breakdown.vehicleType] || 0);
-    const driverRatingFactor = breakdown.driverRating >= 4.5 ? -0.05 : (breakdown.driverRating >= 4 ? 0 : 0.1);
+    // Calculate each component using CONFIG
+    const distanceCost = totalDistance * config.price_per_km;
+    const orderValueFee = breakdown.orderValue >= config.high_order_value_threshold ? config.high_order_fee : 0;
+    const specialVehicleCost = breakdown.specialVehicle ? distanceCost * config.special_vehicle_factor : 0;
+
+    const weatherFactor = (config.weather_factors && config.weather_factors[breakdown.weather]) || 0;
+    const weatherCost = distanceCost * weatherFactor;
+
+    const locationFactor = (config.location_factors && config.location_factors[breakdown.location]) || 0;
+    const locationCost = distanceCost * locationFactor;
+
+    const vehicleFactor = (config.vehicle_factors && config.vehicle_factors[breakdown.vehicleType]) || 0;
+    const vehicleCost = distanceCost * vehicleFactor;
+
+    // Driver Rating Logic
+    let driverRatingFactor = 0;
+    if (config.driver_rating_config) {
+        if (breakdown.driverRating >= config.driver_rating_config.excellent_threshold) driverRatingFactor = config.driver_rating_config.excellent_discount;
+        else if (breakdown.driverRating >= config.driver_rating_config.good_threshold) driverRatingFactor = config.driver_rating_config.good_factor;
+        else driverRatingFactor = config.driver_rating_config.poor_factor;
+    }
     const ratingCost = distanceCost * driverRatingFactor;
-    const etaCost = distanceCost * (ETA_FACTORS[breakdown.etaType] || 0);
-    const discount = breakdown.orderValue < DISCOUNT_THRESHOLD ? DISCOUNT : 0;
+
+    const etaFactor = (config.eta_factors && config.eta_factors[breakdown.etaType]) || 0;
+    const etaCost = distanceCost * etaFactor;
+
+    const discount = breakdown.orderValue < config.discount_threshold ? config.discount_value : 0;
+
+    const currency = defaults.currency_symbol || 'ج.م';
+
+    // ... HTML construction ... (Updated to use currency variable)
+    // Note: Since showDeliveryDetails is a massive template literal block, best to replace 'ج.م' with '${currency}'
 
     // Build distance breakdown by segments
     let distanceBreakdown = '';
+    // ... (unchanged distance breakdown logic) ...
+
     if (breakdown.distances && breakdown.distances.length > 0) {
         const segments = breakdown.distances;
         let segmentHTML = '<div style="padding: 8px 0;">';
@@ -313,142 +360,143 @@ function showDeliveryDetails(deliveryResult) {
         <div style="text-align: right; direction: rtl; font-size: 0.95rem;">
             <h3 style="color: var(--primary-color); margin-bottom: 15px;">📊 تفاصيل حساب خدمة التوصيل</h3>
             
-            <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <strong style="display: block; margin-bottom: 10px;">📏 مراحل التوصيل:</strong>
-                ${distanceBreakdown}
-                <hr style="margin: 10px 0; border: none; border-top: 1px dashed #ccc;">
-                <div style="display: flex; align-items: center; margin-top: 10px;">
-                    <span style="flex: 1; font-weight: bold;">المسافة الكلية:</span>
-                    <span style="font-weight: bold; color: #2196F3; font-size: 1.1rem;">${totalDistance.toFixed(2)} كم</span>
+            <div style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
+                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <strong style="display: block; margin-bottom: 10px;">📏 مراحل التوصيل:</strong>
+                    ${distanceBreakdown}
+                    <hr style="margin: 10px 0; border: none; border-top: 1px dashed #ccc;">
+                    <div style="display: flex; align-items: center; margin-top: 10px;">
+                        <span style="flex: 1; font-weight: bold;">المسافة الكلية:</span>
+                        <span style="font-weight: bold; color: #2196F3; font-size: 1.1rem;">${totalDistance.toFixed(2)} كم</span>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة المسافة (${totalDistance.toFixed(2)} × ${defaults.price_per_km}):</span>
+                        <span style="font-weight: bold; color: #4caf50;">+${distanceCost.toFixed(2)} ${currency}</span>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة المسافة (${totalDistance.toFixed(2)} × ${PRICE_PER_KM}):</span>
-                    <span style="font-weight: bold; color: #4caf50;">+${distanceCost.toFixed(2)} ج.م</span>
-                </div>
-            </div>
 
-            <div style="background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>🚗 نوع المركبة:</strong>
-                    <span>${breakdown.vehicleType === 'truck' ? '🚛 شاحنة' :
+                <div style="background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>🚗 نوع المركبة:</strong>
+                        <span>${breakdown.vehicleType === 'truck' ? '🚛 شاحنة' :
             breakdown.vehicleType === 'car' ? '🚗 سيارة' : '🏍️ دراجة نارية'}</span>
+                    </div>
+                    ${vehicleCost > 0 ? `
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #bbdefb;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(vehicleFactor * 100).toFixed(0)}%):</span>
+                        <span style="font-weight: bold; color: #f44336;">+${vehicleCost.toFixed(2)} ${currency}</span>
+                    </div>
+                    ` : ''}
                 </div>
-                ${vehicleCost > 0 ? `
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #bbdefb;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(VEHICLE_FACTORS[breakdown.vehicleType] * 100).toFixed(0)}%):</span>
-                    <span style="font-weight: bold; color: #f44336;">+${vehicleCost.toFixed(2)} ج.م</span>
-                </div>
-                ` : ''}
-            </div>
 
-            <div style="background: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>💰 قيمة الطلب:</strong>
-                    <span>${breakdown.orderValue.toFixed(2)} ج.م</span>
+                <div style="background: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>💰 قيمة الطلب:</strong>
+                        <span>${breakdown.orderValue.toFixed(2)} ${currency}</span>
+                    </div>
+                    ${orderValueFee > 0 ? `
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffe0b2;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">رسوم طلب كبير (أكبر من أو يساوي ${defaults.high_order_value_threshold}):</span>
+                        <span style="font-weight: bold; color: #f44336;">+${orderValueFee.toFixed(2)} ${currency}</span>
+                    </div>
+                    ` : `
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffe0b2; color: #4caf50; font-size: 0.9rem;">
+                        ✓ لا توجد رسوم إضافية (الطلب أقل من ${defaults.high_order_value_threshold} ${currency})
+                    </div>
+                    `}
                 </div>
-                ${orderValueFee > 0 ? `
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffe0b2;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">رسوم طلب كبير (أكبر من أو يساوي ${HIGH_ORDER_VALUE_THRESHOLD}):</span>
-                    <span style="font-weight: bold; color: #f44336;">+${orderValueFee.toFixed(2)} ج.م</span>
-                </div>
-                ` : `
-                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffe0b2; color: #4caf50; font-size: 0.9rem;">
-                    ✓ لا توجد رسوم إضافية (الطلب أقل من ${HIGH_ORDER_VALUE_THRESHOLD} ج.م)
-                </div>
-                `}
-            </div>
 
-            <div style="background: #f3e5f5; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>🌦️ حالة الطقس:</strong>
-                    <span>${breakdown.weather === 'heavy_rain' ? '🌧️ أمطار غزيرة' :
+                <div style="background: #f3e5f5; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>🌦️ حالة الطقس:</strong>
+                        <span>${breakdown.weather === 'heavy_rain' ? '🌧️ أمطار غزيرة' :
             breakdown.weather === 'light_rain' ? '🌦️ أمطار خفيفة' : '☀️ طقس عادي'}</span>
+                    </div>
+                    ${weatherCost > 0 ? `
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e1bee7;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(weatherFactor * 100).toFixed(0)}%):</span>
+                        <span style="font-weight: bold; color: #f44336;">+${weatherCost.toFixed(2)} ${currency}</span>
+                    </div>
+                    ` : ''}
                 </div>
-                ${weatherCost > 0 ? `
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e1bee7;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(WEATHER_FACTORS[breakdown.weather] * 100).toFixed(0)}%):</span>
-                    <span style="font-weight: bold; color: #f44336;">+${weatherCost.toFixed(2)} ج.م</span>
-                </div>
-                ` : ''}
-            </div>
 
-            <div style="background: #e8f5e9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>📍 المنطقة:</strong>
-                    <span>${breakdown.location === 'outside_city' ? '🏞️ خارج المدينة' :
+                <div style="background: #e8f5e9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>📍 المنطقة:</strong>
+                        <span>${breakdown.location === 'outside_city' ? '🏞️ خارج المدينة' :
             breakdown.location === 'suburbs' ? '🏘️ الضواحي' : '🏙️ داخل المدينة'}</span>
+                    </div>
+                    ${locationCost > 0 ? `
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #c8e6c9;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(locationFactor * 100).toFixed(0)}%):</span>
+                        <span style="font-weight: bold; color: #f44336;">+${locationCost.toFixed(2)} ${currency}</span>
+                    </div>
+                    ` : ''}
                 </div>
-                ${locationCost > 0 ? `
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #c8e6c9;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(LOCATION_FACTORS[breakdown.location] * 100).toFixed(0)}%):</span>
-                    <span style="font-weight: bold; color: #f44336;">+${locationCost.toFixed(2)} ج.م</span>
-                </div>
-                ` : ''}
-            </div>
 
-            <div style="background: #fce4ec; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>⚡ سرعة التوصيل:</strong>
-                    <span>${breakdown.etaType === 'instant' ? '🚀 فوري' :
+                <div style="background: #fce4ec; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>⚡ سرعة التوصيل:</strong>
+                        <span>${breakdown.etaType === 'instant' ? '🚀 فوري' :
             breakdown.etaType === 'fast' ? '⚡ سريع' : '🕐 عادي'}</span>
+                    </div>
+                    ${etaCost > 0 ? `
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f8bbd0;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(etaFactor * 100).toFixed(0)}%):</span>
+                        <span style="font-weight: bold; color: #f44336;">+${etaCost.toFixed(2)} ${currency}</span>
+                    </div>
+                    ` : ''}
                 </div>
-                ${etaCost > 0 ? `
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f8bbd0;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(ETA_FACTORS[breakdown.etaType] * 100).toFixed(0)}%):</span>
-                    <span style="font-weight: bold; color: #f44336;">+${etaCost.toFixed(2)} ج.م</span>
+
+                ${breakdown.specialVehicle ? `
+                <div style="background: #ffebee; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #f44336;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>⚠️ مركبة خاصة:</strong>
+                        <span>نعم (حمولة ثقيلة)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffcdd2;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(defaults.special_vehicle_factor * 100).toFixed(0)}%):</span>
+                        <span style="font-weight: bold; color: #f44336;">+${specialVehicleCost.toFixed(2)} ${currency}</span>
+                    </div>
                 </div>
                 ` : ''}
-            </div>
 
-            ${breakdown.specialVehicle ? `
-            <div style="background: #ffebee; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #f44336;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>⚠️ مركبة خاصة:</strong>
-                    <span>نعم (حمولة ثقيلة)</span>
+                <div style="background: #c8e6c9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>⭐ تقييم السائق:</strong>
+                        <span>${breakdown.driverRating.toFixed(1)} نجوم</span>
+                    </div>
+                    ${ratingCost !== 0 ? `
+                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #a5d6a7;">
+                        <span style="flex: 1; color: #666; font-size: 0.9rem;">${ratingCost > 0 ? 'رسوم إضافية' : 'خصم'} (${(driverRatingFactor * 100).toFixed(0)}%):</span>
+                        <span style="font-weight: bold; color: ${ratingCost > 0 ? '#f44336' : '#4caf50'};">${ratingCost > 0 ? '+' : ''}${ratingCost.toFixed(2)} ${currency}</span>
+                    </div>
+                    ` : ''}
                 </div>
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffcdd2;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(SPECIAL_VEHICLE_FACTOR * 100).toFixed(0)}%):</span>
-                    <span style="font-weight: bold; color: #f44336;">+${specialVehicleCost.toFixed(2)} ج.م</span>
-                </div>
-            </div>
-            ` : ''}
 
-            <div style="background: #c8e6c9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <strong>⭐ تقييم السائق:</strong>
-                    <span>${breakdown.driverRating.toFixed(1)} نجوم</span>
+                <div style="background: #fff9c4; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #fbc02d;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <strong style="color: #f57c00;">💳 الرسوم الأساسية:</strong>
+                        <span style="font-weight: bold;">+${defaults.base_fee.toFixed(2)} ${currency}</span>
+                    </div>
                 </div>
-                ${ratingCost !== 0 ? `
-                <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #a5d6a7;">
-                    <span style="flex: 1; color: #666; font-size: 0.9rem;">${ratingCost > 0 ? 'رسوم إضافية' : 'خصم'} (${(driverRatingFactor * 100).toFixed(0)}%):</span>
-                    <span style="font-weight: bold; color: ${ratingCost > 0 ? '#f44336' : '#4caf50'};">${ratingCost > 0 ? '+' : ''}${ratingCost.toFixed(2)} ج.م</span>
+                    ${discount > 0 ? `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #fff59d;">
+                        <strong style="color: #388e3c;">🎁 الخصم (للطلبات < ${defaults.discount_threshold} ${currency}):</strong>
+                        <span style="font-weight: bold; color: #388e3c;">-${discount.toFixed(2)} ${currency}</span>
+                    </div>
+                    ` : `
+                    <div style="padding-top: 8px; border-top: 1px solid #fff59d; color: #666; font-size: 0.9rem;">
+                        ℹ️ لا يوجد خصم (الطلب ≥ ${defaults.discount_threshold} ${currency})
+                    </div>
+                    `}
                 </div>
-                ` : ''}
-            </div>
 
-            <div style="background: #fff9c4; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #fbc02d;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <strong style="color: #f57c00;">💳 الرسوم الأساسية:</strong>
-                    <span style="font-weight: bold;">+${BASE_FEE.toFixed(2)} ج.م</span>
-                </div>
-                </div>
-                ${discount > 0 ? `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #fff59d;">
-                    <strong style="color: #388e3c;">🎁 الخصم (للطلبات < ${DISCOUNT_THRESHOLD} ج.م):</strong>
-                    <span style="font-weight: bold; color: #388e3c;">-${discount.toFixed(2)} ج.م</span>
-                </div>
-                ` : `
-                <div style="padding-top: 8px; border-top: 1px solid #fff59d; color: #666; font-size: 0.9rem;">
-                    ℹ️ لا يوجد خصم (الطلب ≥ ${DISCOUNT_THRESHOLD} ج.م)
-                </div>
-                `}
-            </div>
+                <hr style="margin: 20px 0; border: none; border-top: 2px solid #e0e0e0;">
 
-            <hr style="margin: 20px 0; border: none; border-top: 2px solid #e0e0e0;">
-
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-align: center;">
-                <strong style="font-size: 1.1rem;">💵 التكلفة النهائية: ${totalCost.toFixed(2)} ج.م</strong>
-            </div>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-align: center;">
+                    <strong style="font-size: 1.1rem;">💵 التكلفة النهائية: ${totalCost.toFixed(2)} ${currency}</strong>
+                </div>
             </div>
         </div>
     `;
@@ -456,7 +504,7 @@ function showDeliveryDetails(deliveryResult) {
     Swal.fire({
         html: detailsHTML,
         width: '600px',
-        confirmButtonText: 'فهمت',
+        confirmButtonText: 'موافق',
         confirmButtonColor: 'var(--primary-color)',
         showCloseButton: true,
         customClass: {
