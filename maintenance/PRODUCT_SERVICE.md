@@ -412,7 +412,7 @@ function generateSearchResultHTML(product) {
 ### قيم حقل `orderType`:
 | القيمة | النوع | المصدر | السلوك في الـ Stepper |
 | :--- | :--- | :--- | :--- |
-| **`0`** | **منتج (Product)** | `cardPackage.js` | عرض تقليدي للكميات والأسعار |
+| **`0`** | **منتج (Product)** | `cartPackage-checkout.js` | عرض تقليدي للكميات والأسعار |
 | **`1`** | **خدمة (Service)** | `view2_submit.js` | إظهار أدوات التسعير وصور الطلب المرفقة |
 
 ---
