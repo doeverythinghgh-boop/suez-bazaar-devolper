@@ -38,6 +38,7 @@ function updateVersion() {
 
                     fs.writeFileSync(VERSION_FILE, JSON.stringify(data, null, 2));
                     console.log(`\x1b[32m[Auto-Version] 🚀 Change detected! Version bumped: ${oldVersion} -> ${data.version}\x1b[0m`);
+                    console.log(`\x1b[32m[Auto-Version] 📅 Date updated to: ${data.lastUpdated}\x1b[0m`);
                 }
             }
         }
@@ -61,9 +62,9 @@ function watchDirectory(dir) {
         // Debounce update
         if (timeout) clearTimeout(timeout);
         timeout = setTimeout(() => {
-            console.log(`\x1b[36m[Watcher] File changed: ${filename}\x1b[0m`);
+            console.log(`\x1b[36m[Watcher] File changed: ${filename} (Processing in 3s...)\x1b[0m`);
             updateVersion();
-        }, 500); // Wait 500ms after last change to update
+        }, 3000); // Wait 3000ms after last change to update
     });
 
     // Recursively watch subdirectories
