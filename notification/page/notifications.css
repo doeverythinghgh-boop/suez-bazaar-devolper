@@ -216,8 +216,8 @@
 .switch {
     position: relative;
     display: inline-block;
-    width: 50px;
-    height: 24px;
+    width: 44px; /* ✅ تعديل الحجم ليكون أكثر تناسقاً */
+    height: 22px;
 }
 
 .switch input {
@@ -233,9 +233,10 @@
     right: 0;
     left: 0;
     bottom: 0;
-    background-color: var(--text-muted);
+    background-color: #ccc; /* ✅ لون صلب كبديل */
     transition: .4s;
     border-radius: 34px;
+    border: 1px solid #bbb; /* ✅ إضافة برواز خفيف لضمان الظهور */
 }
 
 .slider:before {
@@ -243,19 +244,21 @@
     content: "";
     height: 16px;
     width: 16px;
-    right: 4px;
-    bottom: 4px;
-    background-color: var(--bg-color-white);
+    right: 2px;
+    bottom: 2px;
+    background-color: white;
     transition: .4s;
     border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
-input:checked+.slider {
-    background-color: var(--success-color);
+input:checked + .slider {
+    background-color: #28a745; /* ✅ أخضر صلب للتفعيل */
+    border-color: #218838;
 }
 
-input:checked+.slider:before {
-    transform: translateX(-26px);
+input:checked + .slider:before {
+    transform: translateX(-22px); /* ✅ تعديل المسافة بناءً على العرض الجديد */
 }
 
 /* --- إعدادات الإشعارات --- */
