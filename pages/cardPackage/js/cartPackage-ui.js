@@ -164,8 +164,24 @@ async function cartPage_updateCartSummary() {
         document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ' + currency;
         document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ' + currency;
 
+        // 🚛 Fixed Delivery Fee (40 EGP)
+        const FIXED_DELIVERY_FEE = 40;
+        const fixedDeliveryElement = document.getElementById('cartPage_fixedDeliveryFee');
+        if (fixedDeliveryElement) {
+            fixedDeliveryElement.textContent = FIXED_DELIVERY_FEE.toFixed(2) + ' ' + currency;
+        }
+
         // 🧠 Calculate Smart Delivery Cost
+        const smartDeliveryRow = document.getElementById('cartPage_summaryRowSmartDelivery');
         const smartDeliveryElement = document.getElementById('cartPage_smartDeliveryFee');
+
+        // Check for Admin
+        const user = window.userSession;
+        const isAdmin = user && (typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
+
+        if (smartDeliveryRow) {
+            smartDeliveryRow.style.display = isAdmin ? 'flex' : 'none';
+        }
 
         // (Office coords already loaded above)
 
@@ -223,8 +239,8 @@ async function cartPage_updateCartSummary() {
                         detailsBtn.onclick = () => showDeliveryDetails(deliveryResult);
                     }
 
-                    // Final Total uses Smart Fee + Subtotal
-                    const finalTotal = cartPage_subtotal + smartFee;
+                    // Final Total = Subtotal + Fixed Fee (35 EGP) for all users
+                    const finalTotal = cartPage_subtotal + FIXED_DELIVERY_FEE;
                     document.getElementById('cartPage_total').textContent = finalTotal.toFixed(2) + ' ' + currency;
                     return;
                 }
@@ -233,9 +249,10 @@ async function cartPage_updateCartSummary() {
             console.error('Error calculating smart delivery:', calcError);
         }
 
-        // Fallback if smart calculation fails or not available
-        smartDeliveryElement.textContent = 'غير متاح';
-        document.getElementById('cartPage_total').textContent = cartPage_subtotal.toFixed(2) + ' ' + currency;
+        // Fallback or Non-Admin state: Final Total is always Subtotal + Fixed Fee
+        if (smartDeliveryElement) smartDeliveryElement.textContent = 'غير متاح';
+        const finalTotalFallback = cartPage_subtotal + FIXED_DELIVERY_FEE;
+        document.getElementById('cartPage_total').textContent = finalTotalFallback.toFixed(2) + ' ' + currency;
 
     } catch (error) {
         console.error('حدث خطأ أثناء تحديث ملخص السلة:', error);

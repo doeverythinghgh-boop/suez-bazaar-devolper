@@ -79,6 +79,12 @@
             "subId": 4,
             "description": "عضوية افون الجديدة"
         }
+        ,
+        {
+            "mainId": 23,
+            "subId": 4,
+            "description": "عضوية ماى واي الجديدة"
+        }
     ],
     "settings": {
         "hidePrice": true,

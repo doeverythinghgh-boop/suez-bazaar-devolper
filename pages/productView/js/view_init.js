@@ -11,7 +11,7 @@
  */
 function productView_viewDetails(productData, options = {}) {
     try {
-        console.log("[productView_] عرض تفاصيل المنتج...", options.showAddToCart);
+        console.log(`[productView_] عرض تفاصيل المنتج: ${productData.productName} (MainID: ${productData.MainCategory})`);
 
         // Get fresh DOM elements
         const dom = productView_getDomElements();
@@ -22,7 +22,8 @@ function productView_viewDetails(productData, options = {}) {
             originalPriceContainer, originalPrice,
             mainImage, thumbnailsContainer,
             realPriceContainer, realPrice,
-            adminSellerInfo, adminSellerName, adminSellerKey
+            adminSellerInfo, adminSellerName, adminSellerKey,
+            adminMainCategory, adminSubCategory
         } = dom;
 
         const showAddToCart = options.showAddToCart !== false; // Default is true
@@ -92,6 +93,15 @@ function productView_viewDetails(productData, options = {}) {
                         dom.heavyLoadContainer.style.display = "block";
                     }
 
+                    // Populate category names asynchronously
+                    if (adminMainCategory || adminSubCategory) {
+                        productView_getCategoryNames(productData.MainCategory, productData.SubCategory)
+                            .then(names => {
+                                if (adminMainCategory) adminMainCategory.textContent = names.main;
+                                if (adminSubCategory) adminSubCategory.textContent = names.sub;
+                            });
+                    }
+
                     // Show the whole info box
                     adminSellerInfo.style.display = "block";
 
@@ -107,9 +117,35 @@ function productView_viewDetails(productData, options = {}) {
         } else {
             if (adminSellerInfo) adminSellerInfo.style.display = "none";
         }
-
     } catch (error) {
         console.error("productView_viewDetails - خطأ عام في عرض التفاصيل:", error);
+    }
+}
+
+/**
+ * @function productView_getCategoryNames
+ * @description Fetches category and subcategory names from list.json.
+ * @param {number|string} mainId
+ * @param {number|string} subId
+ * @returns {Promise<{main: string, sub: string}>}
+ */
+async function productView_getCategoryNames(mainId, subId) {
+    try {
+        const response = await fetch("shared/list.json");
+        const data = await response.json();
+        const mainCat = data.categories.find(c => String(c.id) === String(mainId));
+        if (!mainCat) return { main: "غير معروفة", sub: "-" };
+
+        let subName = "-";
+        if (subId && mainCat.subcategories) {
+            const subCat = mainCat.subcategories.find(s => String(s.id) === String(subId));
+            if (subCat) subName = subCat.title;
+        }
+
+        return { main: mainCat.title, sub: subName };
+    } catch (e) {
+        console.error("Error fetching category names:", e);
+        return { main: "خطأ في التحميل", sub: "خطأ في التحميل" };
     }
 }
 

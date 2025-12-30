@@ -32,6 +32,8 @@ function productView_getDomElements() {
         adminSellerInfo: document.getElementById("productView_admin_seller_info"),
         adminSellerName: document.getElementById("productView_admin_seller_name"),
         adminSellerKey: document.getElementById("productView_admin_seller_key"),
+        adminMainCategory: document.getElementById("productView_admin_main_category"),
+        adminSubCategory: document.getElementById("productView_admin_sub_category"),
         heavyLoadContainer: document.getElementById("productView_heavy_load_container"),
         heavyLoadValue: document.getElementById("productView_heavy_load_value"),
     };

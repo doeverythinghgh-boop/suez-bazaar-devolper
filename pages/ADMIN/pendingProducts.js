@@ -53,7 +53,7 @@ async function fetchPendingItems() {
                     <img src="${imgUrl}" class="pending-product-image" alt="${p.productName}">
                     <div class="pending-product-details">
                         <div class="pending-product-title">${p.productName}</div>
-                        <div class="pending-product-info"><strong>البائع:</strong> ${p.seller_username || 'غير معروف'} (${p.seller_phone || '-'})</div>
+                        <div class="pending-product-info"><strong>البائع:</strong> ${p.seller_name || 'غير معروف'} (${p.seller_phone || '-'})</div>
                         <div class="pending-product-info"><strong>السعر:</strong> ${p.product_price} جنيه</div>
                         <div class="pending-product-info">${p.product_description.substring(0, 80)}...</div>
                     </div>
@@ -120,7 +120,7 @@ async function fetchPublishedItems() {
                         <span style="color:#777; font-size:0.85em">${p.product_price} EGP</span>
                     </td>
                     <td>
-                        ${p.seller_username || 'Unknown'}<br>
+                        ${p.seller_name || 'Unknown'}<br>
                         <span style="color:#777; font-size:0.85em">${p.seller_phone || '-'}</span>
                     </td>
                     <td>
