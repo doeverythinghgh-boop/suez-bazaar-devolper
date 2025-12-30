@@ -22,27 +22,26 @@
  * @see userSession
  */
 async function setupFCM() {
+    console.log('[Dev] 📡 [FCM] جاري بدء تهيئة نظام الإشعارات setupFCM...');
     try {
-        // [تحديث] إزالة التحقق من fcmInitialized للسماح بإعادة التهيئة عند تحديث الصفحة
-        // if (sessionStorage.getItem("fcmInitialized")) {
-        //     console.log("[FCM] تم التهيئة مسبقًا – سيتم التخطي.");
-        //     return;
-        // }
-
         // التأكد من المستخدم
         if (!userSession || !userSession.user_key) {
             console.warn("[FCM] لا يوجد مستخدم مسجل — إلغاء العملية.");
             return;
         }
+        console.log(`[Dev] 📡 [FCM] المستخدم موجود (user_key: ${userSession.user_key}).`);
 
         // أولوية التهيئة على أندرويد
         if (window.Android && typeof window.Android.onUserLoggedIn === "function") {
+            console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة أندرويد (WebView).');
             await setupFirebaseAndroid();
         } else {
+            console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة ويب (Browser).');
             await setupFirebaseWeb();
         }
 
-        sessionStorage.setItem("fcmInitialized", "1");
+        sessionStorage.setItem("fcm_token_setup_done", "1");
+        console.log('[Dev] 📡 [FCM] تم الانتهاء من دالة setupFCM بنجاح.');
     } catch (error) {
         console.error("[FCM] خطأ فادح في setupFCM:", error);
     }
@@ -108,12 +107,13 @@ async function registerServiceWorker() {
  * @see userSession
  */
 async function setupFirebaseAndroid() {
-    console.log("[Android FCM] تهيئة FCM للاندرويد...");
+    console.log("[Dev] 📱 [Android FCM] بدء تهيئة FCM للأندرويد...");
 
     const existingToken = localStorage.getItem("android_fcm_key");
 
     if (!existingToken) {
-        console.log("[Android FCM] لا يوجد توكن — طلب توكن جديد من النظام...");
+        console.log("[Dev] 📱 [Android FCM] الخطوة 1: لا يوجد توكن محفوظ محلياً.");
+        console.log("[Dev] 📱 [Android FCM] الخطوة 2: طلب التوكن من النظام عبر window.Android.onUserLoggedIn...");
 
         // طلب التوكن من WebView
         try {
@@ -123,13 +123,16 @@ async function setupFirebaseAndroid() {
         }
 
         // انتظار تخزين التوكن من النظام
+        console.log("[Dev] 📱 [Android FCM] الخطوة 3: في انتظار وصول التوكن من تطبيق الأندرويد (waitForFcmKey)...");
         await waitForFcmKey(async (newToken) => {
-            console.log("[Android FCM] تم الحصول على التوكن:", newToken);
+            console.log("[Dev] 📱 [Android FCM] الخطوة 4: تم استلام التوكن من النظام بنجاح.");
+            console.log("[Dev] 📱 [Android FCM] الخطوة 5: جاري مزامنة التوكن الجديد مع الخادم...");
             await sendTokenToServer(userSession.user_key, newToken, "android");
         }, 10000); // timeout
 
     } else {
-        console.log("[Android FCM] التوكن موجود محليًا:", existingToken);
+        console.log("[Dev] 📱 [Android FCM] التوكن موجود محليًا مسبقاً، لا حاجة لطلب جديد.");
+        console.log("[Dev] 📱 [Android FCM] التوكن: ", existingToken.substring(0, 10) + "...");
     }
 }
 
@@ -153,27 +156,32 @@ async function setupFirebaseAndroid() {
  * @see userSession
  */
 async function setupFirebaseWeb() {
-    console.log("[Web FCM] تهيئة FCM للويب...");
+    console.log("[Dev] 🌏 [Web FCM] بدء تهيئة FCM للويب...");
 
     try {
         // تسجيل SW
+        console.log("[Dev] 🌏 [Web FCM] الخطوة 1: تسجيل الـ Service Worker (registerServiceWorker)...");
         const swReg = await registerServiceWorker();
-        if (!swReg) return;
+        if (!swReg) {
+            console.error("[Dev] 🌏 [Web FCM] فشل تسجيل الـ Service Worker.");
+            return;
+        }
 
-        // استيراد Firebase ديناميكيًا (تحميل السكربتات العالمية)
-        // ملاحظة: إصدارات v8 UMD تقوم بتعيين المتغير العام 'firebase' عند تحميلها ولا تدعم التصدير عبر ES Modules بشكل قياسي.
+        // استيراد Firebase ديناميكيًا
         if (!window.firebase) {
+            console.log("[Dev] 🌏 [Web FCM] الخطوة 2: تحميل مكتبات Firebase الخارجية...");
             await import("../assets/libs/firebase/firebase-app-8.10.1.js");
             await import("../assets/libs/firebase/firebase-messaging-8.10.1.js");
         }
 
         const firebase = window.firebase;
         if (!firebase) {
-            console.error("[FCM] فشل تحميل مكتبة Firebase.");
+            console.error("[Dev] 🌏 [Web FCM] فشل تحميل مكتبة Firebase بعد المحاولة.");
             return;
         }
 
         // تكوين Firebase
+        console.log("[Dev] 🌏 [Web FCM] الخطوة 3: تهيئة Firebase App مع الإعدادات...");
         const firebaseConfig = {
             apiKey: "AIzaSyClapclT8_4UlPvM026gmZbYCiXaiBDUYk",
             authDomain: "suze-bazaar-notifications.firebaseapp.com",
@@ -186,43 +194,20 @@ async function setupFirebaseWeb() {
 
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
+            console.log("[Dev] 🌏 [Web FCM] تم إنشاء تطبيق Firebase جديد.");
         }
         const messaging = firebase.messaging();
 
-        // استقبال إشعار foreground
-        messaging.onMessage((payload) => {
-            console.log('%c[FCM Web] 🔔 تم استقبال رسالة أثناء التصفح (Foreground):', 'color: #00e676; font-weight: bold; font-size: 14px;', payload);
-            console.log('[FCM Web] تفاصيل الرسالة:', JSON.stringify(payload, null, 2));
-
-            // البيانات قد تكون في notification أو data حسب نوع الرسالة
-            const data = payload.notification || payload.data || {};
-
-
-            if (typeof addNotificationLog === "function") {
-                addNotificationLog({
-                    messageId: payload.messageId || `web_${Date.now()}`,
-                    type: "received",
-                    title: data.title,
-                    body: data.body,
-                    timestamp: new Date(),
-                    status: "unread",
-                    relatedUser: { key: "admin", name: "الإدارة" },
-                    payload: payload.data, // الاحتفاظ بالبيانات الخام
-                });
-            }
-        });
-
         // طلب الإذن
+        console.log("[Dev] 🌏 [Web FCM] الخطوة 4: فحص وطلب إذن المتصفح (Notification.requestPermission)...");
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
-            console.warn("[FCM] المستخدم رفض الإذن. الحالة الحالية:", permission);
-            if (permission === 'denied') {
-                console.error("[FCM] الإذن محظور بشكل دائم في المتصفح.");
-            }
+            console.warn("[Dev] 🌏 [Web FCM] تم رفض الإذن من المستخدم.");
             return;
         }
 
-        // تحديث: دائماً نطلب التوكن الحالي من FCM ونرسله للخادم لضمان المزامنة
+        // طلب التوكن من FCM
+        console.log("[Dev] 🌏 [Web FCM] الخطوة 5: جاري طلب التوكن من سيرفرات Google FCM...");
         const currentToken = await messaging.getToken({
             vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY",
             serviceWorkerRegistration: swReg
@@ -231,17 +216,19 @@ async function setupFirebaseWeb() {
         if (currentToken) {
             const savedToken = localStorage.getItem("fcm_token");
 
-            // إذا كان التوكن مختلفاً أو غير محفوظ محلياً، نحدثه محلياً
             if (savedToken !== currentToken) {
+                console.log("[Dev] 🌏 [Web FCM] الخطوة 6: التوكن جديد أو تغير، جاري حفظه في التخزين المحلي.");
                 localStorage.setItem("fcm_token", currentToken);
-                console.log("[FCM Web] تم تحديث التوكن المحلي.");
+            } else {
+                console.log("[Dev] 🌏 [Web FCM] الخطوة 6: التوكن مطابق لما هو محفوظ محلياً.");
             }
 
-            // إرسال التوكن للخادم (دائماً لضمان وجوده في قاعدة البيانات)
-            console.log("[FCM Web] جاري مزامنة التوكن مع الخادم...");
+            // إرسال التوكن للخادم
+            console.log("[Dev] 🌏 [Web FCM] الخطوة 7: جاري إرسال/تحديث التوكن في قاعدة بيانات السيرفر (sendTokenToServer)...");
             await sendTokenToServer(userSession.user_key, currentToken, "web");
+            console.log("[Dev] 🌏 [Web FCM] تم الانتهاء من تهيئة الويب بنجاح.");
         } else {
-            console.warn("[FCM Web] لم يتم استلام أي توكن.");
+            console.warn("[Dev] 🌏 [Web FCM] تم الاتصال ولكن لم يتم استلام أي توكن.");
         }
 
     } catch (err) {

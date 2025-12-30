@@ -1123,27 +1123,34 @@ const NotificationPage = {
      * @description تهيئة حالة مفتاح التحكم الرئيسي بناءً على localStorage وأذونات المتصفح
      */
     initMasterToggle() {
+        console.log('[Dev] 🔍 الخطوة 1: بدء تهيئة مفتاح التحكم الرئيسي للإشعارات...');
         try {
             if (this.elements.masterToggle) {
                 const storedEnabled = localStorage.getItem('notifications_enabled');
+                console.log(`[Dev] 🔍 الخطوة 2: القيمة المخزنة في localStorage هي: ${storedEnabled}`);
+                
                 let isEnabled = false;
 
                 // 1. التحقق من الإذن الفعلي للمتصفح أولاً
                 const hasPermission = 'Notification' in window && Notification.permission === 'granted';
+                console.log(`[Dev] 🔍 الخطوة 3: هل إذن المتصفح/النظام (OS Permission) ممنوح حالياً؟ ${hasPermission}`);
 
                 if (storedEnabled === 'true' && hasPermission) {
+                    console.log('[Dev] ✅ الحالة: مفعل (مطابق للتخزين وإذن النظام)');
                     isEnabled = true;
                 } else if (storedEnabled === 'true' && !hasPermission) {
-                    // إذا كان مسجلاً كمفعل ولكن الإذن مفقود، نقوم بتعطيله مؤقتاً
                     console.warn('[Notifications] الإذن مفقود بالرغم من ضبط التفعيل في التخزين.');
+                    console.log('[Dev] ⚠️ الحالة: معطل (تجاهل التخزين بسبب نقص إذن النظام/المتصفح)');
                     isEnabled = false;
                 } else if (storedEnabled === 'false') {
+                    console.log('[Dev] 🚫 الحالة: معطل يدوياً من التخزين');
                     isEnabled = false;
                 } else {
-                    // الحالة الافتراضية (أول مرة) - نعتمد على الإذن
+                    console.log('[Dev] ℹ️ الحالة: أول مرة، الاعتماد على الإذن الحالي');
                     isEnabled = hasPermission;
                 }
 
+                console.log(`[Dev] 🔍 الخطوة 4: تحديث واجهة المفتاح لتصبح: ${isEnabled ? 'ON' : 'OFF'}`);
                 this.elements.masterToggle.checked = isEnabled;
                 this.updateToggleUI(isEnabled);
             }
@@ -1176,16 +1183,20 @@ const NotificationPage = {
      * @async
      */
     async toggleNotificationsStatus(isEnabled) {
+        console.log(`[Dev] 🚀 الخطوة 1: طلب تغيير حالة الإشعارات إلى: ${isEnabled ? 'تفعيل' : 'تعطيل'}`);
         try {
             if (isEnabled) {
+                console.log('[Dev] 🚀 الخطوة 2: استدعاء دالة enableNotifications...');
                 await this.enableNotifications();
             } else {
+                console.log('[Dev] 🚀 الخطوة 2: استدعاء دالة disableNotifications...');
                 await this.disableNotifications();
             }
         } catch (error) {
             console.error('[Notifications] خطأ في تبديل حالة الإشعارات:', error);
             // إعادة المفتاح لحالته السابقة عند الفشل
             if (this.elements.masterToggle) {
+                console.log('[Dev] ❌ فشل التغيير، إعادة حالة المفتاح...');
                 this.elements.masterToggle.checked = !isEnabled;
             }
         }
@@ -1196,16 +1207,18 @@ const NotificationPage = {
      * @async
      */
     async enableNotifications() {
+        console.log('[Dev] ⚙️ بدء عملية التفعيل (Enable Notifications)...');
         try {
             // 1. فحص حالة الإذن الحالية
             if ('Notification' in window) {
                 const currentPermission = Notification.permission;
-                console.log(`[Notifications] حالة الإذن الحالية: ${currentPermission}`);
+                console.log(`[Dev] ⚙️ الخطوة 1: فحص إذن المتصفح/النظام (System Permission). الحالة الحالية: ${currentPermission}`);
 
                 if (currentPermission === 'denied') {
+                    console.warn('[Dev] 🚫 إذن النظام مرفوض مسبقاً (Blocked at System Level)');
                     // إذا كان مرفوضاً، نتحقق إذا كان أندرويد لإعادة الطلب برمجياً
                     if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
-                        console.log('[Notifications] إعادة طلب الإذن عبر أندرويد...');
+                        console.log('[Dev] ⚙️ الخطوة 1-A: بيئة أندرويد - جاري استدعاء طلب إذن النظام (OS Permission Request)...');
                         window.Android.requestNotificationPermission();
                         // ننتظر قليلاً ثم ننهي الدالة لأن الطلب سيحدث في النظام
                         Swal.fire({
@@ -1217,6 +1230,7 @@ const NotificationPage = {
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
                     } else {
+                        console.log('[Dev] ⚙️ الخطوة 1-B: بيئة ويب - لا يمكن طلب الإذن برمجياً بعد الرفض.');
                         // في الويب، لا يمكن إعادة طلب الإذن إذا تم رفضه (Blocked)
                         Swal.fire({
                             icon: 'warning',
@@ -1230,6 +1244,7 @@ const NotificationPage = {
                 }
             }
 
+            console.log('[Dev] ⚙️ الخطوة 2: إظهار رسالة جاري التفعيل للمستخدم...');
             Swal.fire({
                 title: 'جاري تفعيل الإشعارات...',
                 allowOutsideClick: false,
@@ -1240,15 +1255,19 @@ const NotificationPage = {
 
             // 2. طلب الإذن (في حال لم يتم منحه ولم يكن محظوراً)
             if ('Notification' in window) {
+                console.log('[Dev] ⚙️ الخطوة 3: استدعاء Notification.requestPermission()...');
                 const permission = await Notification.requestPermission();
+                console.log(`[Dev] ⚙️ الخطوة 4: نتيجة طلب الإذن: ${permission}`);
                 if (permission !== 'granted') {
                     throw new Error('تم رفض إذن الإشعارات من المتصفح');
                 }
             }
 
             // 3. تفعيل FCM (سيقوم بجلب التوكن وإرساله للسيرفر)
+            console.log('[Dev] ⚙️ الخطوة 5: استدعاء setupFCM() لبدء تهيئة التوكن...');
             if (typeof setupFCM === 'function') {
                 await setupFCM();
+                console.log('[Dev] ⚙️ الخطوة 6: تم اكتمال setupFCM بنجاح.');
                 localStorage.setItem('notifications_enabled', 'true');
                 this.updateToggleUI(true);
                 
@@ -1264,6 +1283,7 @@ const NotificationPage = {
             }
         } catch (error) {
             console.error('[Notifications] فشل التفعيل:', error);
+            console.log('[Dev] ❌ فشل التفعيل في مكان ما، مراجعة الخطوات السابقة.');
             Swal.fire({
                 icon: 'error',
                 title: 'فشل التفعيل',
@@ -1278,7 +1298,9 @@ const NotificationPage = {
      * @async
      */
     async disableNotifications() {
+        console.log('[Dev] 🛑 بدء عملية التعطيل (Disable Notifications)...');
         try {
+            console.log('[Dev] 🛑 الخطوة 1: طلب تأكيد التعطيل من المستخدم...');
             const result = await Swal.fire({
                 title: 'هل تريد تعطيل الإشعارات؟',
                 text: 'لن تصلك تنبيهات بخصوص الرسائل الجديدة',
@@ -1291,10 +1313,12 @@ const NotificationPage = {
             });
 
             if (result.isConfirmed) {
+                console.log('[Dev] 🛑 الخطوة 2: تم التأكيد. جاري تحديث التخزين والواجهة...');
                 localStorage.setItem('notifications_enabled', 'false');
                 this.updateToggleUI(false);
                 
                 // مسح التوكن محلياً لضمان عدم استخدامه
+                console.log('[Dev] 🛑 الخطوة 3: مسح توكنات FCM المحفوظة محلياً (fcm_token, android_fcm_key)...');
                 localStorage.removeItem('fcm_token');
                 localStorage.removeItem('android_fcm_key');
 
@@ -1305,12 +1329,14 @@ const NotificationPage = {
                     timer: 2000,
                     showConfirmButton: false
                 });
+                console.log('[Dev] 🛑 تم الانتهاء من التعطيل بنجاح.');
             } else {
+                console.log('[Dev] 🛑 تم إلغاء التعطيل من قبل المستخدم، استعادة حالة المفتاح.');
                 // إعادة المفتاح لوضع التفعيل إذا ألغى المستخدم
                 if (this.elements.masterToggle) this.elements.masterToggle.checked = true;
             }
         } catch (error) {
-            console.error('[Notifications] فشل التعطيل:', error);
+            console.error('[Notifications] خطأ في تعطيل الإشعارات:', error);
         }
     },
 
