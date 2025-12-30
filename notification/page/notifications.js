@@ -142,7 +142,9 @@ const NotificationPage = {
                 receivedCountEl: document.getElementById('received-count'),
                 
                 // مفتاح التحكم الجديد
-                masterToggle: document.getElementById('notification-master-toggle')
+                masterToggle: document.getElementById('notification-master-toggle'),
+                toggleTitle: document.getElementById('toggle-title'),
+                toggleDesc: document.getElementById('toggle-desc')
             };
         } catch (error) {
             console.error('[Notifications] خطأ في تهيئة العناصر:', error);
@@ -1049,16 +1051,53 @@ const NotificationPage = {
      */
 
     /**
-     * @description تهيئة حالة مفتاح التحكم الرئيسي بناءً على localStorage
+     * @description تهيئة حالة مفتاح التحكم الرئيسي بناءً على localStorage وأذونات المتصفح
      */
     initMasterToggle() {
         try {
             if (this.elements.masterToggle) {
-                const isEnabled = localStorage.getItem('notifications_enabled') !== 'false';
+                const storedEnabled = localStorage.getItem('notifications_enabled');
+                let isEnabled = false;
+
+                // 1. التحقق من الإذن الفعلي للمتصفح أولاً
+                const hasPermission = 'Notification' in window && Notification.permission === 'granted';
+
+                if (storedEnabled === 'true' && hasPermission) {
+                    isEnabled = true;
+                } else if (storedEnabled === 'true' && !hasPermission) {
+                    // إذا كان مسجلاً كمفعل ولكن الإذن مفقود، نقوم بتعطيله مؤقتاً
+                    console.warn('[Notifications] الإذن مفقود بالرغم من ضبط التفعيل في التخزين.');
+                    isEnabled = false;
+                } else if (storedEnabled === 'false') {
+                    isEnabled = false;
+                } else {
+                    // الحالة الافتراضية (أول مرة) - نعتمد على الإذن
+                    isEnabled = hasPermission;
+                }
+
                 this.elements.masterToggle.checked = isEnabled;
+                this.updateToggleUI(isEnabled);
             }
         } catch (error) {
             console.error('[Notifications] خطأ في تهيئة مفتاح التحكم:', error);
+        }
+    },
+
+    /**
+     * @description تحديث واجهة مفتاح التحكم (النصوص) بناءً على الحالة
+     * @param {boolean} isEnabled 
+     */
+    updateToggleUI(isEnabled) {
+        if (!this.elements.toggleTitle || !this.elements.toggleDesc) return;
+
+        if (isEnabled) {
+            this.elements.toggleTitle.textContent = 'الإشعارات مفعلة';
+            this.elements.toggleTitle.style.color = 'var(--text-color-dark)';
+            this.elements.toggleDesc.textContent = 'ستصلك تنبيهات الرسائل والتحديثات فور صدورها.';
+        } else {
+            this.elements.toggleTitle.textContent = 'تفعيل الإشعارات';
+            this.elements.toggleTitle.style.color = 'var(--text-color-medium)';
+            this.elements.toggleDesc.textContent = 'قم بالتفعيل لاستلام تنبيهات الرسائل والتحديثات.';
         }
     },
 
@@ -1109,6 +1148,7 @@ const NotificationPage = {
             if (typeof setupFCM === 'function') {
                 await setupFCM();
                 localStorage.setItem('notifications_enabled', 'true');
+                this.updateToggleUI(true);
                 
                 Swal.fire({
                     icon: 'success',
@@ -1150,6 +1190,7 @@ const NotificationPage = {
 
             if (result.isConfirmed) {
                 localStorage.setItem('notifications_enabled', 'false');
+                this.updateToggleUI(false);
                 
                 // مسح التوكن محلياً لضمان عدم استخدامه
                 localStorage.removeItem('fcm_token');
