@@ -258,6 +258,34 @@ input:checked+.slider:before {
     transform: translateX(-26px);
 }
 
+/* --- إعدادات الإشعارات --- */
+.notifications-settings {
+    background-color: var(--bg-color-white, #ffffff);
+    margin: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.settings-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    color: var(--text-color-dark, #050505);
+}
+
+.settings-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-color-medium, #65676b);
+}
+
 /* --- تصميم عصري للإشعارات (شات) --- */
 
 /* حاوية القائمة الرئيسية */

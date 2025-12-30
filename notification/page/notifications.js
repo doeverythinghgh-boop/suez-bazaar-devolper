@@ -90,6 +90,9 @@ const NotificationPage = {
             // بدء التحديث التلقائي
             this.startAutoRefresh();
 
+            // تهيئة مفتاح التحكم الرئيسي
+            this.initMasterToggle();
+
             console.log('[Notifications] تم تهيئة الصفحة بنجاح');
         } catch (error) {
             console.error('[Notifications] خطأ في التهيئة:', error);
@@ -136,7 +139,10 @@ const NotificationPage = {
                 totalCountEl: document.getElementById('total-count'),
                 unreadCountEl: document.getElementById('unread-count'),
                 sentCountEl: document.getElementById('sent-count'),
-                receivedCountEl: document.getElementById('received-count')
+                receivedCountEl: document.getElementById('received-count'),
+                
+                // مفتاح التحكم الجديد
+                masterToggle: document.getElementById('notification-master-toggle')
             };
         } catch (error) {
             console.error('[Notifications] خطأ في تهيئة العناصر:', error);
@@ -313,6 +319,13 @@ const NotificationPage = {
             if (this.elements.clearFiltersBtn) {
                 this.elements.clearFiltersBtn.addEventListener('click', () => {
                     this.clearFilters();
+                });
+            }
+
+            // حدث مفتاح التحكم الرئيسي
+            if (this.elements.masterToggle) {
+                this.elements.masterToggle.addEventListener('change', async (e) => {
+                    await this.toggleNotificationsStatus(e.target.checked);
                 });
             }
 
@@ -1034,6 +1047,129 @@ const NotificationPage = {
     /**
      * @returns {string}
      */
+
+    /**
+     * @description تهيئة حالة مفتاح التحكم الرئيسي بناءً على localStorage
+     */
+    initMasterToggle() {
+        try {
+            if (this.elements.masterToggle) {
+                const isEnabled = localStorage.getItem('notifications_enabled') !== 'false';
+                this.elements.masterToggle.checked = isEnabled;
+            }
+        } catch (error) {
+            console.error('[Notifications] خطأ في تهيئة مفتاح التحكم:', error);
+        }
+    },
+
+    /**
+     * @description تبديل حالة الإشعارات (تفعيل/تعطيل)
+     * @param {boolean} isEnabled 
+     * @async
+     */
+    async toggleNotificationsStatus(isEnabled) {
+        try {
+            if (isEnabled) {
+                await this.enableNotifications();
+            } else {
+                await this.disableNotifications();
+            }
+        } catch (error) {
+            console.error('[Notifications] خطأ في تبديل حالة الإشعارات:', error);
+            // إعادة المفتاح لحالته السابقة عند الفشل
+            if (this.elements.masterToggle) {
+                this.elements.masterToggle.checked = !isEnabled;
+            }
+        }
+    },
+
+    /**
+     * @description تفعيل الإشعارات: طلب إذن ومزامنة التوكن
+     * @async
+     */
+    async enableNotifications() {
+        try {
+            Swal.fire({
+                title: 'جاري تفعيل الإشعارات...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            // 1. طلب الإذن (في حال لم يتم منحه)
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                if (permission !== 'granted') {
+                    throw new Error('تم رفض إذن الإشعارات من المتصفح');
+                }
+            }
+
+            // 2. تفعيل FCM (سيقوم بجلب التوكن وإرساله للسيرفر)
+            if (typeof setupFCM === 'function') {
+                await setupFCM();
+                localStorage.setItem('notifications_enabled', 'true');
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم التفعيل',
+                    text: 'ستصلك الإشعارات فور صدورها',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error('نظام الإشعارات غير متوفر حالياً');
+            }
+        } catch (error) {
+            console.error('[Notifications] فشل التفعيل:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'فشل التفعيل',
+                text: error.message || 'حدث خطأ أثناء محاولة تفعيل الإشعارات'
+            });
+            if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
+        }
+    },
+
+    /**
+     * @description تعطيل الإشعارات: مسح التوكن محلياً وعالمياً
+     * @async
+     */
+    async disableNotifications() {
+        try {
+            const result = await Swal.fire({
+                title: 'هل تريد تعطيل الإشعارات؟',
+                text: 'لن تصلك تنبيهات بخصوص الرسائل الجديدة',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'نعم، قم بالتعطيل',
+                cancelButtonText: 'إلغاء'
+            });
+
+            if (result.isConfirmed) {
+                localStorage.setItem('notifications_enabled', 'false');
+                
+                // مسح التوكن محلياً لضمان عدم استخدامه
+                localStorage.removeItem('fcm_token');
+                localStorage.removeItem('android_fcm_key');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم التعطيل',
+                    text: 'تم إيقاف استقبال الإشعارات على هذا الجهاز',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                // إعادة المفتاح لوضع التفعيل إذا ألغى المستخدم
+                if (this.elements.masterToggle) this.elements.masterToggle.checked = true;
+            }
+        } catch (error) {
+            console.error('[Notifications] فشل التعطيل:', error);
+        }
+    },
 
     /**
      * @description حماية النص من HTML Injection
