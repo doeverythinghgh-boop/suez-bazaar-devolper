@@ -201,6 +201,10 @@ async function initializeAdminPanel() {
         loader.style.display = 'none';
         tableContainer.style.display = 'block';
 
+        // ✅ Show broadcast section
+        var broadcastSection = document.getElementById('admin-panel-broadcast-section');
+        if (broadcastSection) broadcastSection.style.display = 'block';
+
         // ✅ Add Click to Copy Feature
         const tbody = document.getElementById('admin-panel-users-tbody');
         if (tbody) {
@@ -552,5 +556,89 @@ window.sendAdminNotification = async (userKey) => {
  * @see getUsersTokens
  * @see sendNotificationsToTokens
  */
+
+/**
+ * @function sendBroadcastNotification
+ * @description Sends a notification to all users in the system who have an FCM token.
+ * @returns {Promise<void>}
+ */
+window.sendBroadcastNotification = async function () {
+    var inputElement = document.getElementById('broadcast-message-input');
+    var messageBody = inputElement ? inputElement.value.trim() : '';
+
+    if (!messageBody) {
+        Swal.fire({
+            toast: true,
+            icon: 'warning',
+            title: 'الرجاء كتابة نص الرسالة',
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000
+        });
+        return;
+    }
+
+    var result = await Swal.fire({
+        title: 'تأكيد الإرسال الجماعي',
+        text: 'هل أنت متأكد من إرسال هذه الرسالة لجميع المستخدمين؟ قد تستغرق هذه العملية بعض الوقت حسب عدد المستخدمين.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'نعم، أرسل للجميع',
+        cancelButtonText: 'إلغاء',
+        confirmButtonColor: 'var(--primary-color)',
+        cancelButtonColor: 'var(--danger-color)'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+        Swal.fire({
+            title: 'جاري التحضير...',
+            text: 'يتم جلب بيانات المستخدمين وتجهيز الإشعارات...',
+            allowOutsideClick: false,
+            didOpen: function () {
+                Swal.showLoading();
+            }
+        });
+
+        // 1. Fetch all users to identify those with FCM tokens
+        var users = await getAllUsers_();
+        var userKeysWithTokens = users.filter(function (u) { return u.hasFCMToken; }).map(function (u) { return u.user_key; });
+
+        if (userKeysWithTokens.length === 0) {
+            Swal.fire('تنبيه', 'لا يوجد مستخدمون لديهم توكن إشعارات (FCM Token) مسجل حالياً في النظام.', 'info');
+            return;
+        }
+
+        // 2. Get all valid tokens for these users
+        var tokens = await getUsersTokens(userKeysWithTokens);
+
+        if (!tokens || tokens.length === 0) {
+            Swal.fire('خطأ', 'فشل جلب توكنات المستخدمين من السيرفر.', 'error');
+            return;
+        }
+
+        // 3. Send Notification
+        var notificationTitle = (window.notificationMessages && window.notificationMessages.admin_manual)
+            ? window.notificationMessages.admin_manual.title
+            : "إشعار عام من الإدارة";
+
+        await sendNotificationsToTokens(tokens, notificationTitle, messageBody);
+
+        Swal.fire({
+            icon: 'success',
+            title: 'تم الإرسال بنجاح',
+            text: 'تم إرسال الرسالة بنجاح إلى ' + tokens.length + ' جهاز.',
+            confirmButtonText: 'موافق'
+        });
+
+        // Clear input after success
+        if (inputElement) inputElement.value = '';
+
+    } catch (error) {
+        console.error('[sendBroadcastNotification] Error:', error);
+        Swal.fire('خطأ', 'حدث خطأ غير متوقع أثناء إرسال الرسائل الجماعية. يرجى المحاولة مرة أخرى.', 'error');
+    }
+};
 
 initializeAdminPanel();

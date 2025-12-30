@@ -89,7 +89,7 @@
 }
 
 /* Table rows */
-#admin-panel-users-tbody tr:hover {
+#admin-panel-users-tbody tr:active {
     background-color: #f1f3f5;
 }
 
@@ -144,8 +144,9 @@
     font-family: var(--font-family-main);
 }
 
-.btn-delivery-status:hover {
+.btn-delivery-status:active {
     opacity: 0.9;
+    filter: brightness(0.95);
 }
 
 /* Seller - Blue */
@@ -161,6 +162,64 @@
 /* Both - Orange/Gold for flexibility */
 .btn-role-both {
     background-color: #fd7e14;
+}
+
+/* Broadcast Section Styling */
+.admin-panel-broadcast-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--bg-color-light);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.admin-panel-sub-title {
+    color: var(--text-color-dark);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.broadcast-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.broadcast-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.broadcast-textarea:focus {
+    border-color: var(--primary-color);
+}
+
+.btn-broadcast-send {
+    background-color: var(--primary-color);
+    width: fit-content;
+    min-width: 180px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    align-self: flex-start;
+}
+
+.btn-broadcast-send:active {
+    filter: brightness(0.9);
+}
+
+.btn-broadcast-send i {
+    margin-left: 8px;
 }
 
 /* Buttons content */
