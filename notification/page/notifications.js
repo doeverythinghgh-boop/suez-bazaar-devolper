@@ -120,11 +120,5 @@ const NotificationPage = {
     }
 };
 
-// تهيئة الصفحة عند تحميل DOM
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        NotificationPage.init();
-    });
-} else {
-    NotificationPage.init();
-}
+// ملاحظة: تم نقل منطق التهيئة (NotificationPage.init) إلى نهاية ملف notifications-actions.js 
+// لضمان تحميل كافة الوحدات الفرعية (UI, Logic, Actions) قبل البدء.
