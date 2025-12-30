@@ -465,6 +465,30 @@ input:checked + .slider:before {
     /* رمادي للغير مقروء */
 }
 
+/* زر الحذف */
+.delete-notification-btn {
+    background: none;
+    border: none;
+    color: var(--text-color-light, #bcc0c4);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, transform 0.2s;
+    margin-right: 4px; /* مسافة بسيطة عن ايقونة القراءة */
+}
+
+.delete-notification-btn:active {
+    color: var(--danger-color, #dc3545);
+    transform: scale(1.1);
+}
+
+.delete-notification-btn i {
+    pointer-events: none;
+}
+
 /* الحالات المختلفة */
 .state-container {
     text-align: center;

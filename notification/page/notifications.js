@@ -366,6 +366,12 @@ const NotificationPage = {
                     console.error('[Notifications] خطأ عند تغيير حالة الظهور:', innerError);
                 }
             });
+
+            // حدث حذف إشعار
+            window.addEventListener('notificationDeleted', (event) => {
+                console.log('[Notifications] تم حذف إشعار:', event.detail.id);
+                this.refreshNotifications();
+            });
         } catch (error) {
             console.error('[Notifications] خطأ في إعداد مستمعي الأحداث:', error);
         }
@@ -749,11 +755,23 @@ const NotificationPage = {
                     <span class="read-status ${statusClass}" title="تغيير الحالة">
                         <i class="fas ${statusIcon}"></i>
                     </span>
+                    <button class="delete-notification-btn" title="حذف الرسالة">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
                 </div>
             `;
 
             // إضافة مستمع حدث للنقر لتبديل الحالة (للمحاكاة)
             const statusEl = element.querySelector('.read-status');
+            
+            // إضافة مستمع حدث للحذف
+            const deleteBtn = element.querySelector('.delete-notification-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.deleteNotification(notification.id, element);
+                });
+            }
 
             return element;
         } catch (error) {
@@ -816,6 +834,57 @@ const NotificationPage = {
         } catch (error) {
             console.error('[Notifications] خطأ في تحديث حالة الإشعار:', error);
             // لا نظهر خطأ للمستخدم هنا لأن التغيير البصري قد حدث بالفعل
+        }
+    },
+
+    /**
+     * @description حذف إشعار محدد
+     * @param {number} id
+     * @param {HTMLElement} element
+     * @async
+     */
+    async deleteNotification(id, element) {
+        try {
+            const result = await Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم حذف هذه الرسالة نهائياً من جهازك.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'نعم، احذفها',
+                cancelButtonText: 'إلغاء',
+                customClass: { popup: 'fullscreen-swal' }
+            });
+
+            if (result.isConfirmed) {
+                // حذف من قاعدة البيانات
+                if (typeof deleteNotificationFromDB === 'function') {
+                    await deleteNotificationFromDB(id);
+                }
+
+                // حذف من الواجهة مع تأثير حركي
+                element.style.transform = 'translateX(100px)';
+                element.style.opacity = '0';
+                
+                setTimeout(() => {
+                    element.remove();
+                    // تحديث الحالة والإحصائيات
+                    this.state.notifications = this.state.notifications.filter(n => n.id !== id);
+                    this.state.filteredNotifications = this.state.filteredNotifications.filter(n => n.id !== id);
+                    this.updateStats(this.state.notifications);
+                    
+                    // إظهار حالة فارغة إذا كانت آخر رسالة
+                    if (this.state.filteredNotifications.length === 0) {
+                        this.showEmptyState();
+                    }
+                }, 300);
+
+                this.showToast('تم حذف الرسالة بنجاح', 'success');
+            }
+        } catch (error) {
+            console.error('[Notifications] خطأ في حذف الإشعار:', error);
+            this.showToast('فشل حذف الرسالة', 'error');
         }
     },
     /**

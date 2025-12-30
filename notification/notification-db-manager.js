@@ -356,3 +356,38 @@ async function markAllNotificationsAsReadInDB() {
     };
   });
 }
+
+/**
+ * @description يحذف إشعاراً محدداً من قاعدة البيانات بواسطة معرفه.
+ * @function deleteNotificationFromDB
+ * @param {number} id - معرف الإشعار المراد حذفه
+ * @returns {Promise<void>}
+ * @async
+ * @throws {string} - رسالة خطأ في حالة فشل الحذف.
+ * @see initDB
+ * @see NOTIFICATIONS_STORE
+ */
+async function deleteNotificationFromDB(id) {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([NOTIFICATIONS_STORE], 'readwrite');
+    const store = transaction.objectStore(NOTIFICATIONS_STORE);
+    const request = store.delete(id);
+
+    request.onsuccess = () => {
+      console.log(`[DB] تم حذف الإشعار ${id} بنجاح.`);
+      // إرسال حدث لتنبيه الواجهات
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('notificationDeleted', {
+          detail: { id }
+        }));
+      }
+      resolve();
+    };
+
+    request.onerror = (event) => {
+      console.error('[DB] فشل حذف الإشعار:', event.target.error);
+      reject('فشل حذف الإشعار.');
+    };
+  });
+}
