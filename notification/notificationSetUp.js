@@ -215,7 +215,10 @@ async function setupFirebaseWeb() {
         // طلب الإذن
         const permission = await Notification.requestPermission();
         if (permission !== "granted") {
-            console.warn("[FCM] المستخدم رفض الإذن.");
+            console.warn("[FCM] المستخدم رفض الإذن. الحالة الحالية:", permission);
+            if (permission === 'denied') {
+                console.error("[FCM] الإذن محظور بشكل دائم في المتصفح.");
+            }
             return;
         }
 

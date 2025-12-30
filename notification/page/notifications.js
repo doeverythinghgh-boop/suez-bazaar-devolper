@@ -1093,7 +1093,7 @@ const NotificationPage = {
         if (isEnabled) {
             this.elements.toggleTitle.textContent = 'الإشعارات مفعلة';
             this.elements.toggleTitle.style.color = 'var(--text-color-dark)';
-            this.elements.toggleDesc.textContent = 'ستصلك تنبيهات الرسائل والتحديثات فور صدورها.';
+            this.elements.toggleDesc.textContent = 'ستصلك تنبيهات الرسائل وتحديثات طلباتك فور صدورها.';
         } else {
             this.elements.toggleTitle.textContent = 'تفعيل الإشعارات';
             this.elements.toggleTitle.style.color = 'var(--text-color-medium)';
@@ -1128,6 +1128,39 @@ const NotificationPage = {
      */
     async enableNotifications() {
         try {
+            // 1. فحص حالة الإذن الحالية
+            if ('Notification' in window) {
+                const currentPermission = Notification.permission;
+                console.log(`[Notifications] حالة الإذن الحالية: ${currentPermission}`);
+
+                if (currentPermission === 'denied') {
+                    // إذا كان مرفوضاً، نتحقق إذا كان أندرويد لإعادة الطلب برمجياً
+                    if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
+                        console.log('[Notifications] إعادة طلب الإذن عبر أندرويد...');
+                        window.Android.requestNotificationPermission();
+                        // ننتظر قليلاً ثم ننهي الدالة لأن الطلب سيحدث في النظام
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'إذن النظام مطلوب',
+                            text: 'يرجى السماح بالإشعارات من نافذة النظام التي ستظهر الآن.',
+                            confirmButtonText: 'حسناً'
+                        });
+                        if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
+                        return;
+                    } else {
+                        // في الويب، لا يمكن إعادة طلب الإذن إذا تم رفضه (Blocked)
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'الإشعارات محظورة',
+                            html: 'لقد قمت بحظر الإشعارات مسبقاً. يرجى فك الحظر من <b>إعدادات المتصفح</b> (أيقونة القفل بجانب الرابط) لتتمكن من استقبال التنبيهات.',
+                            confirmButtonText: 'فهمت'
+                        });
+                        if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
+                        return;
+                    }
+                }
+            }
+
             Swal.fire({
                 title: 'جاري تفعيل الإشعارات...',
                 allowOutsideClick: false,
@@ -1136,7 +1169,7 @@ const NotificationPage = {
                 }
             });
 
-            // 1. طلب الإذن (في حال لم يتم منحه)
+            // 2. طلب الإذن (في حال لم يتم منحه ولم يكن محظوراً)
             if ('Notification' in window) {
                 const permission = await Notification.requestPermission();
                 if (permission !== 'granted') {
@@ -1144,7 +1177,7 @@ const NotificationPage = {
                 }
             }
 
-            // 2. تفعيل FCM (سيقوم بجلب التوكن وإرساله للسيرفر)
+            // 3. تفعيل FCM (سيقوم بجلب التوكن وإرساله للسيرفر)
             if (typeof setupFCM === 'function') {
                 await setupFCM();
                 localStorage.setItem('notifications_enabled', 'true');
