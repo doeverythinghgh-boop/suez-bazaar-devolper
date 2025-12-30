@@ -334,7 +334,7 @@ Object.assign(NotificationPage, {
                         return;
                     } else {
                         console.log('[Dev] ⚙️ الخطوة 1-B: بيئة ويب - لا يمكن طلب الإذن برمجياً بعد الرفض.');
-                        Swal.fire({ icon: 'warning', title: 'الإشعارات محظورة', html: 'لقد قمت بحظر الإشعارات مسبقاً. يرجى فك الحظر من إعدادات المتصفح لتتمكن من استقبال التنبيهات.', confirmButtonText: 'فهمت' });
+                        Swal.fire({ icon: 'warning', title: 'الإشعارات محظورة', html: 'لقد قمت بحظر الإشعارات مسبقاً. يرجى فك الحظر اذهب الي الاعدادات ثم اختر التطبيق وفعل الاشعارات لتتمكن من استقبال التنبيهات.', confirmButtonText: 'فهمت' });
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
                     }
