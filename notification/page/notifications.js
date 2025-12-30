@@ -1097,7 +1097,7 @@ const NotificationPage = {
         } else {
             this.elements.toggleTitle.textContent = 'تفعيل الإشعارات';
             this.elements.toggleTitle.style.color = 'var(--text-color-medium)';
-            this.elements.toggleDesc.textContent = 'قم بالتفعيل لاستلام تنبيهات الرسائل والتحديثات.';
+            this.elements.toggleDesc.textContent = 'قم بالتفعيل لاستلام تنبيهات الرسائل والتحديثات الخاصة بطلباتك.';
         }
     },
 
