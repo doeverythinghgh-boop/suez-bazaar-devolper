@@ -292,7 +292,7 @@
       "subcategories": [
         {
           "id": 1,
-          "title": "السيارات",
+          "title": "خدمات السيارات",
           "icon": "fas fa-car-side"
         },
         {
@@ -312,32 +312,32 @@
         },
         {
           "id": 2,
-          "title": "الدراجات",
+          "title": "خدمات الدراجات",
           "icon": "fas fa-motorcycle"
         },
         {
           "id": 3,
-          "title": "قطع الغيار والمحركات والزيوت",
+          "title": "خدمات قطع الغيار والمحركات والزيوت",
           "icon": "fas fa-cogs"
         },
         {
           "id": 4,
-          "title": "إكسسوارات وكماليات المركبات",
+          "title": "خدمات إكسسوارات وكماليات المركبات",
           "icon": "fas fa-car-battery"
         },
         {
           "id": 7,
-          "title": "إطارات وعجلات المركبات",
+          "title": "خدمات إطارات وعجلات المركبات",
           "icon": "fas fa-dot-circle"
         },
         {
           "id": 8,
-          "title": "أنظمة الصوت والمرئيات للمركبات",
+          "title": "خدمات أنظمة الصوت والمرئيات للمركبات",
           "icon": "fas fa-volume-up"
         },
         {
           "id": 10,
-          "title": "مركبات مائية",
+          "title": "خدمات مركبات مائية",
           "icon": "fas fa-ship"
         }
       ]
@@ -416,27 +416,27 @@
       "subcategories": [
         {
           "id": 1,
-          "title": "شقق ومنازل للبيع",
+          "title": "خدمات شقق ومنازل للبيع",
           "icon": "fas fa-home"
         },
         {
           "id": 7,
-          "title": "شليهات و فلل",
+          "title": "خدمات شليهات و فلل",
           "icon": "fas fa-house-chimney-window"
         },
         {
           "id": 2,
-          "title": "شقق ومنازل للإيجار",
+          "title": "خدمات شقق ومنازل للإيجار",
           "icon": "fas fa-key"
         },
         {
           "id": 3,
-          "title": "أراضي وعقارات تجارية",
+          "title": "خدمات أراضي وعقارات تجارية",
           "icon": "fas fa-map-marked-alt"
         },
         {
           "id": 4,
-          "title": "مكاتب ومساحات عمل",
+          "title": "خدمات مكاتب ومساحات عمل",
           "icon": "fas fa-building"
         },
         {

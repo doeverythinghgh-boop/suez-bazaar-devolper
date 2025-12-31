@@ -1,7 +1,9 @@
 {
     "serviceMainCategories": [
         6,
-        20
+        20,
+        7,
+        16
     ],
     "serviceSubCategories": [
         {
@@ -25,21 +27,6 @@
             "description": "تصميم جرافيك وتصوير"
         },
         {
-            "mainId": 7,
-            "subId": 3,
-            "description": "خدمات الشحن والتوصيل"
-        },
-        {
-            "mainId": 7,
-            "subId": 5,
-            "description": "خدمات صيانة المركبات"
-        },
-        {
-            "mainId": 7,
-            "subId": 6,
-            "description": "خدمات تأجير المركبات"
-        },
-        {
             "mainId": 12,
             "subId": 5,
             "description": "خدمات رعاية وتدريب الحيوانات"
@@ -48,16 +35,6 @@
             "mainId": 13,
             "subId": 7,
             "description": "خدمات التغليف والتنسيق"
-        },
-        {
-            "mainId": 16,
-            "subId": 5,
-            "description": "خدمات الوساطة العقارية"
-        },
-        {
-            "mainId": 16,
-            "subId": 6,
-            "description": "خدمات التصميم والديكور الداخلي"
         },
         {
             "mainId": 17,
@@ -78,8 +55,7 @@
             "mainId": 45,
             "subId": 4,
             "description": "عضوية افون الجديدة"
-        }
-        ,
+        },
         {
             "mainId": 23,
             "subId": 4,
