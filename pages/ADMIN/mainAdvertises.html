@@ -743,13 +743,15 @@
 
             // 2. Load images based on manifest
             if (manifest && Array.isArray(manifest) && manifest.length > 0) {
-                const adData = typeof name === 'object' ? name : { img: name, query: '' };
-                const finalName = adData.img || adData;
-                const id = genId();
-                // Status 'uploaded' means image exists on R2
-                images.push({ id, status: 'uploaded', fileName: finalName, query: adData.query || '' });
-                originalImageNames.push(finalName);
-                createPreview(images[images.length - 1], `${R2_PUBLIC_URL}/${finalName}`);
+                manifest.forEach(item => {
+                    const adData = typeof item === 'object' ? item : { img: item, query: '' };
+                    const finalName = adData.img || adData;
+                    const id = genId();
+                    // Status 'uploaded' means image exists on R2
+                    images.push({ id, status: 'uploaded', fileName: finalName, query: adData.query || '' });
+                    originalImageNames.push(finalName);
+                    createPreview(images[images.length - 1], `${R2_PUBLIC_URL}/${finalName}`);
+                });
             } else {
                 // If no manifest found or empty
                 // Do not guess anymore, start with empty list.
