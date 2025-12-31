@@ -22,7 +22,34 @@ async function sendOrder2Excution() {
             return;
         }
 
-        // 4. Calculate Total Amount and Generate Order Key
+        // 4. Group by Seller and check limitPackage
+        const sellerGroups = {};
+        cart.forEach(item => {
+            if (!sellerGroups[item.seller_key]) {
+                sellerGroups[item.seller_key] = {
+                    sellerName: item.sellerName || "بائع غير معروف",
+                    total: 0,
+                    limit: parseFloat(item.sellerLimitPackage) || 0
+                };
+            }
+            sellerGroups[item.seller_key].total += item.price * item.quantity;
+        });
+
+        // Validate each seller's limit
+        for (const sellerKey in sellerGroups) {
+            const group = sellerGroups[sellerKey];
+            if (group.total < group.limit) {
+                Swal.fire({
+                    title: "تنبيه: حد الباقة",
+                    text: `عذراً، لا يمكن الشراء من البائع "${group.sellerName}" بأقل من ${group.limit.toFixed(2)} جنيه. مجموع مشترياتك الحالية منه هو ${group.total.toFixed(2)} جنيه.`,
+                    icon: "warning",
+                    confirmButtonText: "موافق"
+                });
+                return; // Stop execution
+            }
+        }
+
+        // 5. Calculate Total Amount and Generate Order Key
         const cartPage_subtotal = cart.reduce(
             (sum, item) => sum + item.price * item.quantity,
             0
