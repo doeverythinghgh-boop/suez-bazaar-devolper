@@ -1,17 +1,18 @@
 /**
  * @file api/users.js
- * @description نقطة النهاية (API Endpoint) لإدارة المستخدمين.
+ * @description API Endpoint for user management.
  * 
- * هذا الملف يعمل كواجهة خلفية (Serverless Function على Vercel) ويتولى كافة العمليات المتعلقة بالمستخدمين:
- * - POST: إنشاء مستخدم جديد مع التحقق من عدم تكرار رقم الهاتف.
- * - GET: جلب بيانات جميع المستخدمين أو مستخدم معين باستخدام رقم الهاتف.
- * - PUT: تحديث بيانات مجموعة من المستخدمين (مثل ترقيتهم إلى بائعين).
- * - OPTIONS: معالجة طلبات CORS Preflight.
+ * This file acts as a serverless backend (Vercel Edge Function) and handles all user-related operations:
+ * - POST: Create a new user with phone number uniqueness check, or verify password.
+ * - GET: Fetch data for all users or a specific user by phone number/role.
+ * - PUT: Update user data (bulk update for sellers or individual profile update).
+ * - OPTIONS: Handle CORS Preflight requests.
+ * - DELETE: Delete a user by user_key.
  */
 import { createClient } from "@libsql/client/web";
 
 /**
- * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @description Edge Function configuration for Vercel.
  * @type {object}
  * @const
  */
@@ -20,7 +21,7 @@ export const config = {
 };
 
 /**
- * @description عميل قاعدة البيانات المستخدم للاتصال بقاعدة بيانات Turso.
+ * @description Database client for connecting to Turso DB.
  * @type {import("@libsql/client/web").Client}
  * @const
  * @see createClient
@@ -31,7 +32,7 @@ const db = createClient({
 });
 
 /**
- * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @description CORS headers to allow requests from any origin.
  * @type {object}
  * @const
  */
@@ -42,18 +43,11 @@ const corsHeaders = {
 };
 
 /**
- * @description نقطة نهاية API لإدارة المستخدمين (الإنشاء، الاستعلام، التحديث، الحذف).
- *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
- *   وطلبات `POST` لإنشاء مستخدمين جدد أو التحقق من كلمات المرور،
- *   وطلبات `GET` لجلب جميع المستخدمين أو مستخدمين معينين،
- *   وطلبات `PUT` لتحديث بيانات المستخدمين (فردي أو جماعي)،
- *   وطلبات `DELETE` لحذف المستخدمين.
+ * @description API endpoint handler for user management (Create, Query, Update, Delete).
  * @function handler
- * @param {Request} request - كائن طلب HTTP الوارد.
- * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @param {Request} request - Incoming HTTP request object.
+ * @returns {Promise<Response>} - HTTP response object.
  * @async
- * @throws {Response} - Returns an HTTP response with an error status (400, 401, 404, 405, 409, 500) if validation fails or an unexpected error occurs.
- * @see createClient
  */
 export default async function handler(request) {
   if (request.method === "OPTIONS") {
@@ -67,7 +61,7 @@ export default async function handler(request) {
     if (request.method === "POST") {
       const { action, phone, password, username, user_key, address, location } = await request.json();
 
-      // ✅ الحالة 1: التحقق من كلمة المرور
+      // Case 1: Password Verification
       if (action === 'verify') {
         console.log("[Logic] Entered: Verify user password.");
         if (!phone || !password) {
@@ -87,13 +81,13 @@ export default async function handler(request) {
           });
         }
 
-        // أرجع بيانات المستخدم كاملة عند النجاح
+        // Return full user data on success
         return new Response(JSON.stringify(result.rows[0]), {
           status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         });
       }
 
-      // ✅ الحالة 2: إنشاء مستخدم جديد (السلوك الافتراضي)
+      // Case 2: Create New User (Default Behavior)
       console.log("[Logic] Entered: Add new user.");
       if (!username || !phone || !user_key) {
         return new Response(JSON.stringify({ error: "الاسم ورقم الهاتف والرقم التسلسلي مطلوبان" }), {
@@ -122,9 +116,9 @@ export default async function handler(request) {
     } else if (request.method === "GET") {
       const { searchParams } = new URL(request.url);
       const phone = searchParams.get('phone');
-      const role = searchParams.get('role'); // ✅ جديد: استقبال معامل "role"
+      const role = searchParams.get('role');
 
-      // إذا تم توفير رقم هاتف، ابحث عن مستخدم معين
+      // Search for a specific user if phone is provided
       if (phone) {
         const result = await db.execute({
           sql: "SELECT id, username, phone, is_seller, user_key, Password, Address, location, limitPackage, isDelevred FROM users WHERE phone = ?",
@@ -142,7 +136,7 @@ export default async function handler(request) {
         });
       }
 
-      // ✅ جديد: إذا تم توفير دور، قم بالفلترة بناءً عليه
+      // Filter by role if provided
       if (role) {
         const result = await db.execute({
           sql: `
@@ -156,8 +150,8 @@ export default async function handler(request) {
         return new Response(JSON.stringify(result.rows), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      // إذا لم يتم توفير رقم هاتف، أرجع جميع المستخدمين
-      // ✅ إصلاح: استخدام LEFT JOIN لجلب fcm_token مع كل مستخدم إن وجد.
+      // Return all users if no phone/role provided
+      // Use LEFT JOIN to fetch fcm_token with each user
       const result = await db.execute(`
         SELECT 
           u.id, u.username, u.phone, u.is_seller, u.user_key, u.Address, u.location, u.Password,
@@ -167,7 +161,8 @@ export default async function handler(request) {
         FROM users u
         LEFT JOIN user_tokens ut ON u.user_key = ut.user_key
       `);
-      // ✅ جديد: إضافة حقل phone_link لتسهيل الاستخدام في الواجهة الأمامية
+
+      // Add phone_link field for UI convenience
       const usersWithPhoneLink = result.rows.map(user => ({
         ...user,
         phone_link: `tel:${user.phone}`
@@ -178,7 +173,7 @@ export default async function handler(request) {
     } else if (request.method === "PUT") {
       const updatesData = await request.json();
 
-      // الحالة 1: تحديث مجموعة مستخدمين (مثل ترقية البائعين)
+      // Case 1: Bulk Update Users (e.g., Promote to Seller)
       if (Array.isArray(updatesData)) {
         console.log("[Logic] Entered: Bulk update users (is_seller).");
         if (updatesData.length === 0) {
@@ -204,13 +199,13 @@ export default async function handler(request) {
           throw e;
         }
       }
-      // الحالة 2: تحديث بيانات مستخدم واحد
+      // Case 2: Individual User Profile Update
       else if (typeof updatesData === 'object' && updatesData.user_key) {
         console.log(`[Logic] Entered: Update single user profile for key: ${updatesData.user_key}`);
         console.log(`[Logic] updatesData content: ${JSON.stringify(updatesData)}`);
         const { user_key, username, phone, password, address, location, limitPackage, isDelevred } = updatesData;
 
-        // إذا تم تغيير رقم الهاتف، تحقق من أنه غير مستخدم
+        // Verify phone number uniqueness if it is being changed
         if (phone) {
           const existingUser = await db.execute({
             sql: "SELECT user_key FROM users WHERE phone = ? AND user_key != ?",
@@ -223,7 +218,7 @@ export default async function handler(request) {
           }
         }
 
-        // بناء جملة التحديث ديناميكيًا لتحديث الحقول المقدمة فقط
+        // Build update SQL dynamically for provided fields
         let sql = "UPDATE users SET ";
         const args = [];
         if (username !== undefined) { sql += "username = ?, "; args.push(username); }
@@ -234,11 +229,11 @@ export default async function handler(request) {
         if (limitPackage !== undefined) { sql += "limitPackage = ?, "; args.push(limitPackage); }
         if (isDelevred !== undefined) { sql += "isDelevred = ?, "; args.push(isDelevred); }
 
-        sql = sql.slice(0, -2); // إزالة الفاصلة الأخيرة
+        sql = sql.slice(0, -2); // Remove last comma
         sql += " WHERE user_key = ?";
         args.push(user_key);
 
-        // التحقق من وجود حقول للتحديث قبل تنفيذ الاستعلام
+        // Check if there are any fields to update
         if (args.length <= 1) {
           return new Response(JSON.stringify({ error: "لا توجد بيانات لتحديثها." }), {
             status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -260,7 +255,7 @@ export default async function handler(request) {
         });
       }
 
-      // بفضل ON DELETE CASCADE في قاعدة البيانات، سيتم حذف جميع البيانات المرتبطة بالمستخدم تلقائيًا
+      // Foreign key constraints with ON DELETE CASCADE will handle related data
       const { rowsAffected } = await db.execute({
         sql: "DELETE FROM users WHERE user_key = ?",
         args: [user_key],
