@@ -620,7 +620,6 @@
           "icon": "fas fa-user-plus"
         }
       ]
-
     },
     {
       "id": 20,
@@ -742,6 +741,28 @@
           "id": 8,
           "title": "تاجر 1",
           "icon": "fas fa-warehouse"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "title": "اعمال الخير",
+      "icon": "fas fa-hand-holding-heart",
+      "subcategories": [
+        {
+          "id": 1,
+          "title": "كرتونة الخير",
+          "icon": "fas fa-box"
+        },
+        {
+          "id": 2,
+          "title": "اطعام الخير",
+          "icon": "fas fa-utensils"
+        },
+        {
+          "id": 3,
+          "title": "ملابس الخير",
+          "icon": "fas fa-shirt"
         }
       ]
     }
