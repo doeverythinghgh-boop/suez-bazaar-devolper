@@ -60,6 +60,87 @@ async function profileHandleChangePasswordCheck() {
 }
 
 /**
+ * Handles the "Seller Options" button click.
+ * Shows a SweetAlert2 modal to configure self-delivery and order limit.
+ * @async
+ */
+async function profileHandleSellerOptions() {
+    try {
+        const els = profileGetElements();
+        const user = window.userSession;
+        if (!els.sellerOptionsBtn || !user) return;
+
+        const currentIsDelevred = els.isDelevredInput.value;
+        const currentLimitPackage = els.limitPackageInput.value;
+
+        const { value: formValues } = await Swal.fire({
+            title: "إعدادات البائع",
+            html: `
+                <div style="text-align: right; direction: rtl;">
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">هل لديك خدمة توصيل خاصة بك؟</label>
+                        <select id="swal-profile_is-delevred" class="swal2-input" style="width: 100%; margin: 0;">
+                            <option value="0" ${currentIsDelevred == "0" ? "selected" : ""}>لا (الاعتماد على مناديب التطبيق)</option>
+                            <option value="1" ${currentIsDelevred == "1" ? "selected" : ""}>نعم (أقوم بالتوصيل بنفسي)</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">هل تضع حداً أدنى لطلبات الشراء؟</label>
+                        <select id="swal-profile_has-limit" class="swal2-input" style="width: 100%; margin: 0;">
+                            <option value="no" ${currentLimitPackage == "0" ? "selected" : ""}>لا يوجد حد أدنى</option>
+                            <option value="yes" ${currentLimitPackage != "0" ? "selected" : ""}>نعم، يوجد حد أدنى</option>
+                        </select>
+                    </div>
+                    <div id="swal-profile_limit-container" style="display: ${currentLimitPackage != "0" ? "block" : "none"};">
+                        <label style="display: block; margin-bottom: 8px; font-weight: bold;">الحد الأدنى للطلب (ج.م):</label>
+                        <input type="number" id="swal-profile_limit-value" class="swal2-input" style="width: 100%; margin: 0;" value="${currentLimitPackage}" placeholder="مثلاً: 100">
+                    </div>
+                </div>
+            `,
+            focusConfirm: false,
+            showCancelButton: true,
+            confirmButtonText: "حفظ الإعدادات",
+            cancelButtonText: "إلغاء",
+            customClass: { popup: 'fullscreen-swal' },
+            didOpen: () => {
+                const hasLimitSelect = document.getElementById("swal-profile_has-limit");
+                const limitContainer = document.getElementById("swal-profile_limit-container");
+                hasLimitSelect.addEventListener("change", (e) => {
+                    limitContainer.style.display = e.target.value === "yes" ? "block" : "none";
+                });
+            },
+            preConfirm: () => {
+                const isDelevred = document.getElementById("swal-profile_is-delevred").value;
+                const hasLimit = document.getElementById("swal-profile_has-limit").value;
+                const limitValue = document.getElementById("swal-profile_limit-value").value;
+
+                if (hasLimit === "yes" && (!limitValue || limitValue <= 0)) {
+                    Swal.showValidationMessage("يرجى إدخال قيمة صحيحة للحد الأدنى");
+                    return false;
+                }
+
+                return {
+                    isDelevred: parseInt(isDelevred),
+                    limitPackage: hasLimit === "yes" ? parseFloat(limitValue) : 0
+                };
+            }
+        });
+
+        if (formValues) {
+            els.isDelevredInput.value = formValues.isDelevred;
+            els.limitPackageInput.value = formValues.limitPackage;
+
+            // Update UI feedback on the button
+            const isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
+            els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${isSet ? "(تم الضبط ✅)" : ""}`;
+            els.sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
+        }
+    } catch (error) {
+        console.error("Error in profileHandleSellerOptions:", error);
+    }
+}
+
+/**
  * Handles the save changes request.
  * Performs final validation and calls the update API.
  * @async
@@ -106,6 +187,17 @@ async function profileHandleSaveChanges() {
 
     if (els.changePasswordCheckbox?.checked && password) {
         updatedData.password = password;
+    }
+
+    // Include Seller Options
+    const newIsDelevred = parseInt(els.isDelevredInput?.value || 0);
+    const newLimitPackage = parseFloat(els.limitPackageInput?.value || 0);
+
+    if (newIsDelevred !== (user.isDelevred || 0)) {
+        updatedData.isDelevred = newIsDelevred;
+    }
+    if (newLimitPackage !== (user.limitPackage || 0)) {
+        updatedData.limitPackage = newLimitPackage;
     }
 
     // Check if any actual changes were made

@@ -24,6 +24,16 @@ function profileInitializeData() {
         if (els.confirmPasswordInput) els.confirmPasswordInput.value = "";
         if (els.passwordErrorDiv) els.passwordErrorDiv.textContent = "";
 
+        // Initialize seller options
+        if (els.isDelevredInput) els.isDelevredInput.value = user.isDelevred !== undefined ? user.isDelevred : 0;
+        if (els.limitPackageInput) els.limitPackageInput.value = user.limitPackage !== undefined ? user.limitPackage : 0;
+
+        if (els.sellerOptionsBtn) {
+            const isSet = (user.isDelevred == 1 || user.limitPackage > 0);
+            els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${isSet ? "(تم الضبط ✅)" : ""}`;
+            if (isSet) els.sellerOptionsBtn.style.background = "#d1fae5";
+        }
+
         // Restore saved location
         let initialCoords = user.location || user.Location || user.Coordinates || user.coordinates || user.user_location || "";
         if (!initialCoords) {

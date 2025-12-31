@@ -147,6 +147,80 @@ if (register_form) {
       },
     });
 
+    // Seller Options Logic
+    const register_sellerOptionsBtn = document.getElementById("register_seller-options-btn");
+    const register_isDelevredInput = document.getElementById("register_is-delevred");
+    const register_limitPackageInput = document.getElementById("register_limit-package");
+
+    if (register_sellerOptionsBtn) {
+      register_sellerOptionsBtn.addEventListener("click", async () => {
+        const { value: formValues } = await Swal.fire({
+          title: "إعدادات البائع",
+          html: `
+        <div style="text-align: right; direction: rtl;">
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: bold;">هل لديك خدمة توصيل خاصة بك؟</label>
+            <select id="swal_is-delevred" class="swal2-input" style="width: 100%; margin: 0;">
+              <option value="0" ${register_isDelevredInput.value == "0" ? "selected" : ""}>لا (الاعتماد على مناديب التطبيق)</option>
+              <option value="1" ${register_isDelevredInput.value == "1" ? "selected" : ""}>نعم (أقوم بالتوصيل بنفسي)</option>
+            </select>
+          </div>
+          <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-weight: bold;">هل تضع حداً أدنى لطلبات الشراء؟</label>
+            <select id="swal_has-limit" class="swal2-input" style="width: 100%; margin: 0;">
+              <option value="no" ${register_limitPackageInput.value == "0" ? "selected" : ""}>لا يوجد حد أدنى</option>
+              <option value="yes" ${register_limitPackageInput.value != "0" ? "selected" : ""}>نعم، يوجد حد أدنى</option>
+            </select>
+          </div>
+          <div id="swal_limit-container" style="display: ${register_limitPackageInput.value != "0" ? "block" : "none"};">
+            <label style="display: block; margin-bottom: 8px; font-weight: bold;">الحد الأدنى للطلب (ج.م):</label>
+            <input type="number" id="swal_limit-value" class="swal2-input" style="width: 100%; margin: 0;" value="${register_limitPackageInput.value}" placeholder="مثلاً: 100">
+          </div>
+        </div>
+      `,
+          focusConfirm: false,
+          showCancelButton: true,
+          confirmButtonText: "حفظ الإعدادات",
+          cancelButtonText: "إلغاء",
+          customClass: { popup: 'fullscreen-swal' },
+          didOpen: () => {
+            const hasLimitSelect = document.getElementById("swal_has-limit");
+            const limitContainer = document.getElementById("swal_limit-container");
+            hasLimitSelect.addEventListener("change", (e) => {
+              limitContainer.style.display = e.target.value === "yes" ? "block" : "none";
+            });
+          },
+          preConfirm: () => {
+            const isDelevred = document.getElementById("swal_is-delevred").value;
+            const hasLimit = document.getElementById("swal_has-limit").value;
+            const limitValue = document.getElementById("swal_limit-value").value;
+
+            if (hasLimit === "yes" && (!limitValue || limitValue <= 0)) {
+              Swal.showValidationMessage("يرجى إدخال قيمة صحيحة للحد الأدنى");
+              return false;
+            }
+
+            return {
+              isDelevred: parseInt(isDelevred),
+              limitPackage: hasLimit === "yes" ? parseFloat(limitValue) : 0
+            };
+          }
+        });
+
+        if (formValues) {
+          register_isDelevredInput.value = formValues.isDelevred;
+          register_limitPackageInput.value = formValues.limitPackage;
+
+          // Update UI feedback on the button
+          const statusText = formValues.isDelevred === 1 || formValues.limitPackage > 0
+            ? " (تم ضبط الإعدادات ✅)"
+            : " (لا توجد إعدادات خاصة)";
+          register_sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${statusText}`;
+          register_sellerOptionsBtn.style.background = "#d1fae5";
+        }
+      });
+    }
+
     if (!register_confirmedPassword) return;
 
     // 3. Create User
@@ -158,6 +232,8 @@ if (register_form) {
       password: register_password.value,
       address: register_address.value.trim(),
       location: document.getElementById("register_coords")?.value || "",
+      isDelevred: parseInt(register_isDelevredInput.value),
+      limitPackage: parseFloat(register_limitPackageInput.value),
     };
 
     // 4. Submit

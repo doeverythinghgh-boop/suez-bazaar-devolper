@@ -21,6 +21,9 @@ function profileGetElements() {
         // Controls
         changePasswordCheckbox: document.getElementById("profile-change-password-checkbox"),
         passwordFieldsContainer: document.getElementById("profile-password-fields-container"),
+        sellerOptionsBtn: document.getElementById("profile-seller-options-btn"),
+        isDelevredInput: document.getElementById("profile-is-delevred"),
+        limitPackageInput: document.getElementById("profile-limit-package"),
         saveButton: document.getElementById("profile-save-button"),
         deleteButton: document.getElementById("profile-delete-account-button"),
 

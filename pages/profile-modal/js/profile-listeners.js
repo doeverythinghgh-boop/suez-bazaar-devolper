@@ -19,6 +19,10 @@ function profileSetupListeners() {
             els.changePasswordCheckbox.addEventListener("click", profileHandleChangePasswordCheck);
         }
 
+        if (els.sellerOptionsBtn) {
+            els.sellerOptionsBtn.addEventListener("click", profileHandleSellerOptions);
+        }
+
         if (els.saveButton) {
             els.saveButton.addEventListener("click", profileHandleSaveChanges);
         }

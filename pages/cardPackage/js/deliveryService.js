@@ -86,9 +86,13 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
                 requiresHeavyLoad = true;
             }
 
-            // Extract unique seller locations
+            // Extract unique seller locations only if they don't deliver themselves
             if (item.seller_key && !processedSellerKeys.has(item.seller_key)) {
-                if (item.seller_lat && item.seller_lng) {
+                const isSelfDelivering = parseInt(item.sellerIsDelevred || item.isDelevred) === 1;
+
+                if (isSelfDelivering) {
+                    console.log(`%c🚚 [Self-Delivery] البائع "${item.sellerName}" يقوم بالتوصيل بنفسه. تم استثناؤه من مسار المندوب.`, "color: #27ae60; font-weight: bold;");
+                } else if (item.seller_lat && item.seller_lng) {
                     sellerLocations.push({
                         lat: parseFloat(item.seller_lat),
                         lng: parseFloat(item.seller_lng),

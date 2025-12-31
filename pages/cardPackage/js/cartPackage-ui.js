@@ -164,9 +164,17 @@ async function cartPage_updateCartSummary() {
         document.getElementById('cartPage_subtotal').textContent = cartPage_subtotal.toFixed(2) + ' ' + currency;
         document.getElementById('cartPage_savings').textContent = cartPage_savings.toFixed(2) + ' ' + currency;
 
-        // 🚛 Fixed Delivery Fee (40 EGP)
-        const FIXED_DELIVERY_FEE = 40;
+        // 🚛 Fixed Delivery Fee Logic
+        const cart = getCart();
+        const needsSystemDelivery = cart.some(item => parseInt(item.sellerIsDelevred || item.isDelevred) !== 1);
+
+        const FIXED_DELIVERY_FEE = needsSystemDelivery ? 40 : 0;
+        const fixedDeliveryRow = document.getElementById('cartPage_summaryRowFixedDelivery');
         const fixedDeliveryElement = document.getElementById('cartPage_fixedDeliveryFee');
+
+        if (fixedDeliveryRow) {
+            fixedDeliveryRow.style.display = needsSystemDelivery ? 'flex' : 'none';
+        }
         if (fixedDeliveryElement) {
             fixedDeliveryElement.textContent = FIXED_DELIVERY_FEE.toFixed(2) + ' ' + currency;
         }
@@ -180,7 +188,8 @@ async function cartPage_updateCartSummary() {
         const isAdmin = user && (typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
 
         if (smartDeliveryRow) {
-            smartDeliveryRow.style.display = isAdmin ? 'flex' : 'none';
+            // Only show smart delivery to admin AND if there are items needing delivery
+            smartDeliveryRow.style.display = (isAdmin && needsSystemDelivery) ? 'flex' : 'none';
         }
 
         // (Office coords already loaded above)
