@@ -127,7 +127,7 @@ export default async function handler(request) {
       // إذا تم توفير رقم هاتف، ابحث عن مستخدم معين
       if (phone) {
         const result = await db.execute({
-          sql: "SELECT id, username, phone, is_seller, user_key, Password, Address, location FROM users WHERE phone = ?",
+          sql: "SELECT id, username, phone, is_seller, user_key, Password, Address, location, limitPackage, isDelevred FROM users WHERE phone = ?",
           args: [phone],
         });
 
@@ -161,6 +161,7 @@ export default async function handler(request) {
       const result = await db.execute(`
         SELECT 
           u.id, u.username, u.phone, u.is_seller, u.user_key, u.Address, u.location, u.Password,
+          u.limitPackage, u.isDelevred,
            ut.fcm_token,
     ut.platform  
         FROM users u
@@ -206,7 +207,8 @@ export default async function handler(request) {
       // الحالة 2: تحديث بيانات مستخدم واحد
       else if (typeof updatesData === 'object' && updatesData.user_key) {
         console.log(`[Logic] Entered: Update single user profile for key: ${updatesData.user_key}`);
-        const { user_key, username, phone, password, address, location } = updatesData;
+        console.log(`[Logic] updatesData content: ${JSON.stringify(updatesData)}`);
+        const { user_key, username, phone, password, address, location, limitPackage, isDelevred } = updatesData;
 
         // إذا تم تغيير رقم الهاتف، تحقق من أنه غير مستخدم
         if (phone) {
@@ -224,11 +226,13 @@ export default async function handler(request) {
         // بناء جملة التحديث ديناميكيًا لتحديث الحقول المقدمة فقط
         let sql = "UPDATE users SET ";
         const args = [];
-        if (username) { sql += "username = ?, "; args.push(username); }
-        if (phone) { sql += "phone = ?, "; args.push(phone); }
-        if (password) { sql += "Password = ?, "; args.push(password); }
+        if (username !== undefined) { sql += "username = ?, "; args.push(username); }
+        if (phone !== undefined) { sql += "phone = ?, "; args.push(phone); }
+        if (password !== undefined) { sql += "Password = ?, "; args.push(password); }
         if (address !== undefined) { sql += "Address = ?, "; args.push(address); }
         if (location !== undefined) { sql += "location = ?, "; args.push(location); }
+        if (limitPackage !== undefined) { sql += "limitPackage = ?, "; args.push(limitPackage); }
+        if (isDelevred !== undefined) { sql += "isDelevred = ?, "; args.push(isDelevred); }
 
         sql = sql.slice(0, -2); // إزالة الفاصلة الأخيرة
         sql += " WHERE user_key = ?";

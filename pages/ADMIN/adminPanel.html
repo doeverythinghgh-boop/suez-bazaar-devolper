@@ -33,6 +33,8 @@
             <th>لديه توكن FCM</th>
             <th>منصة التوكن</th>
             <th>حالة التوصيل</th>
+            <th>حد الباقة</th>
+            <th>حالة التسليم</th>
             <th>إرسال إشعار</th>
             <th>دخول</th>
           </tr>
@@ -47,8 +49,10 @@
     <div id="admin-panel-broadcast-section" class="admin-panel-broadcast-container" style="display: none;">
       <h2 class="admin-panel-sub-title">إرسال رسالة لجميع المستخدمين</h2>
       <div class="broadcast-form">
-        <textarea id="broadcast-message-input" placeholder="اكتب نص الرسالة هنا لإرسالها لجميع المستخدمين دفعة واحدة..." class="broadcast-textarea"></textarea>
-        <button id="send-broadcast-btn" class="btn-delivery-status btn-broadcast-send" onclick="sendBroadcastNotification()">
+        <textarea id="broadcast-message-input" placeholder="اكتب نص الرسالة هنا لإرسالها لجميع المستخدمين دفعة واحدة..."
+          class="broadcast-textarea"></textarea>
+        <button id="send-broadcast-btn" class="btn-delivery-status btn-broadcast-send"
+          onclick="sendBroadcastNotification()">
           <i class="fas fa-bullhorn"></i> إرسال للجميع
         </button>
       </div>

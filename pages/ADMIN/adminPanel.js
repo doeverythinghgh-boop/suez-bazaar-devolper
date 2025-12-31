@@ -87,7 +87,9 @@ async function getAllUsers_() {
                 hasFCMToken: !!user.fcm_token,
                 tokenPlatform: user.platform ? user.platform : "None",
                 isSeller: status.isSeller,
-                isDelivery: status.isDelivery
+                isDelivery: status.isDelivery,
+                limitPackage: user.limitPackage || 0,
+                isDelevred: user.isDelevred || 0
             };
             return processedUser;
         });
@@ -144,6 +146,27 @@ function populateUsersTable(users) {
 
         const loginAction = `<button class="btn-delivery-status" style="background-color: #17a2b8;" onclick="loginAsUser('${user.user_key}')">دخول</button>`;
 
+        // ✅ New fields logic
+        const limitAction = `
+            <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
+                <input type="number" id="limit-input-${user.user_key}" value="${user.limitPackage}" style="padding: 5px; width: 70px; border: 1px solid #ccc; border-radius: 4px;">
+                <button class="btn-delivery-status" style="background-color: #28a745; color: #fff; padding: 5px 10px;" onclick="updateUserField('${user.user_key}', 'limitPackage')">
+                   <i class="fas fa-save"></i>
+                </button>
+            </div>
+        `;
+
+        const deliveryStatusAction = `
+            <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+                <label style="font-size: 0.8em; color: #333; cursor: pointer;">
+                    <input type="radio" name="isDelevred-${user.user_key}" value="1" ${user.isDelevred == 1 ? 'checked' : ''} onchange="updateUserField('${user.user_key}', 'isDelevred', this.value)"> نعم
+                </label>
+                <label style="font-size: 0.8em; color: #333; cursor: pointer;">
+                    <input type="radio" name="isDelevred-${user.user_key}" value="0" ${user.isDelevred == 0 ? 'checked' : ''} onchange="updateUserField('${user.user_key}', 'isDelevred', this.value)"> لا
+                </label>
+            </div>
+        `;
+
         // Input and Button for Notification
         const notifyAction = `
             <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
@@ -163,6 +186,8 @@ function populateUsersTable(users) {
             <td class="${tokenClass}">${tokenText}</td>
             <td>${user.tokenPlatform || 'N/A'}</td>
             <td style="text-align: center;">${deliveryAction}</td>
+            <td style="text-align: center;">${limitAction}</td>
+            <td style="text-align: center;">${deliveryStatusAction}</td>
             <td style="text-align: center;">${notifyAction}</td>
             <td style="text-align: center;">${loginAction}</td>
         `;
@@ -462,6 +487,20 @@ window.handleToggleRelation = async (sellerKey, deliveryKey, newStatus, modalOwn
  */
 window.loginAsUser = async (targetUserKey) => {
     try {
+        // Confirmation before proceeding
+        var result = await Swal.fire({
+            title: 'تأكيد الدخول',
+            text: 'هل أنت متأكد من رغبتك في الدخول بحساب هذا المستخدم؟ سيتم تسجيل خروجك الحالي.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'نعم، دخول',
+            cancelButtonText: 'إلغاء',
+            confirmButtonColor: 'var(--primary-color)',
+            cancelButtonColor: 'var(--danger-color)'
+        });
+
+        if (!result.isConfirmed) return;
+
         Swal.fire({
             title: 'جاري تبديل المستخدم...',
             text: 'سيتم تسجيل الخروج وتنظيف البيانات الحالية...',
@@ -638,6 +677,72 @@ window.sendBroadcastNotification = async function () {
     } catch (error) {
         console.error('[sendBroadcastNotification] Error:', error);
         Swal.fire('خطأ', 'حدث خطأ غير متوقع أثناء إرسال الرسائل الجماعية. يرجى المحاولة مرة أخرى.', 'error');
+    }
+};
+
+/**
+ * @function updateUserField
+ * @description Updates a specific field for a user via the API.
+ * @param {string} userKey - The user key to identify the user.
+ * @param {string} fieldName - The name of the field to update (limitPackage or isDelevred).
+ * @param {any} [value] - The value to update (optional, will read from input if not provided).
+ * @returns {Promise<void>}
+ */
+window.updateUserField = async (userKey, fieldName, value) => {
+    try {
+        var finalValue = value;
+
+        // If field is limitPackage, get value from input if not provided
+        if (fieldName === 'limitPackage' && value === undefined) {
+            var input = document.getElementById(`limit-input-${userKey}`);
+            if (input) {
+                finalValue = parseFloat(input.value);
+            }
+        } else if (fieldName === 'isDelevred') {
+            finalValue = parseInt(value, 10);
+        }
+
+        if (finalValue === undefined || isNaN(finalValue)) {
+            Swal.fire('تنبيه', 'يرجى إدخال قيمة صحيحة', 'warning');
+            return;
+        }
+
+        // Show loading
+        Swal.showLoading();
+
+        var body = {
+            user_key: userKey
+        };
+        body[fieldName] = finalValue;
+
+        console.log('[updateUserField] Sending update request:', body);
+
+        var response = await fetch(`${baseURL}/api/users`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+        });
+
+        var result = await response.json();
+
+        if (response.ok) {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true
+            });
+            Toast.fire({ icon: 'success', title: 'تم التحديث بنجاح' });
+        } else {
+            throw new Error(result.error || 'فشل تحديث البيانات');
+        }
+
+    } catch (error) {
+        console.error('[updateUserField] Error:', error);
+        Swal.fire('خطأ', error.message || 'حدث خطأ أثناء التحديث', 'error');
     }
 };
 

@@ -1,17 +1,16 @@
-
-
-
-
-/* رسالة الترحيب */ 
+/* رسالة الترحيب */
 #dash-welcome-message {
   /* ✅ تعديل: مظهر أبسط وأكثر حداثة */
   font-size: 1.8rem;
   font-weight: 600;
-  color: var(--dark-blue); /* ✅ تعديل: استخدام لون مناسب من المتغيرات */
+  color: var(--dark-blue);
+  /* ✅ تعديل: استخدام لون مناسب من المتغيرات */
   margin-bottom: 35px;
-  border-bottom: none; /* إزالة الخط السفلي */
+  border-bottom: none;
+  /* إزالة الخط السفلي */
   padding-bottom: 0;
-  text-align: center; /* ✅ تأكيد: توسيط النص */
+  text-align: center;
+  /* ✅ تأكيد: توسيط النص */
 }
 
 /* حاوية مجموعات الأزرار */
@@ -20,35 +19,33 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
   gap: 15px;
-      align-items: center;
-    justify-content: center;
-    justify-items: center
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
 }
 
 /* تصميم الأزرار الموحد */
 .dash-button {
-  /* ✅ تعديل: ترتيب الأيقونة والنص عموديًا */
-  display: flex; /* استخدام flex لإظهار/إخفاء الأزرار بشكل صحيح */
-  flex-direction: column; /* جعل المحتوى عموديًا */
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px; /* تقليل المسافة بين الأيقونة والنص */
+  gap: 4px;
   padding: 10px;
-  font-size: 8px; /* ✅ تعديل: تصغير حجم الخط */
+  font-size: 8px;
   font-weight: 500;
   font-family: "Tajawal", sans-serif;
-  color: #1f68a9; /* ✅ تعديل: تغيير لون الخط */
-  background-color: transparent; /* خلفية شفافة */
-  border: none; /* بدون حدود */
+  color: #1f68a9;
+  background-color: transparent;
+  border: none;
   border-radius: 10px;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.2s ease;
   text-decoration: none;
 }
 
-/* ✅ جديد: تأثير عند مرور الفأرة */
 .dash-button:hover {
-  background-color: #f0f2f5; /* خلفية رمادية خفيفة عند المرور */
+  background-color: #f0f2f5;
 }
 
 .dash-button:active {
@@ -56,14 +53,24 @@
 }
 
 .dash-button i {
-  font-size: 2.2em; /* ✅ تعديل: تكبير حجم الأيقونة */
-  color: #007bff; /* ✅ جديد: تغيير لون الأيقونة إلى الأزرق */
+  font-size: 2.2em;
+  color: #007bff;
 }
 
-/* ✅ جديد: تخصيص لون زر تسجيل الخروج */
+/* تخصيص لون زر تسجيل الخروج */
 #dash-logout-btn-alt {
-  color: #dc3545; /* لون أحمر للنص */
+  color: #dc3545;
 }
+
 #dash-logout-btn-alt i {
-  color: #dc3545; /* لون أحمر للأيقونة */
+  color: #dc3545;
+}
+
+/* تخصيص لون زر لوحة المسؤول باللون الأخضر */
+#dash-admin-panel-btn {
+  color: #28a745;
+}
+
+#dash-admin-panel-btn i {
+  color: #28a745;
 }
