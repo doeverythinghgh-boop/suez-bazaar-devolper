@@ -522,29 +522,7 @@ async function salesMovement_checkProductKeyChanges() {
                 console.log('✅ تم جلب بيانات المنتج:', product);
 
                 // تحضير بيانات المنتج
-                const productDataForModal = {
-                    product_key: product.product_key,
-                    productName: product.productName,
-                    user_key: product.user_key,
-                    pricePerItem: product.product_price,
-                    original_price: product.original_price,
-                    imageSrc: product.ImageName
-                        ? product.ImageName.split(",").map(
-                            (name) => getPublicR2FileUrl(name)
-                        )
-                        : [],
-                    availableQuantity: product.product_quantity,
-                    sellerMessage: product.user_message,
-                    description: product.product_description,
-                    sellerName: product.seller_name || product.sellerName || product.seller_username,
-                    sellerPhone: product.seller_phone,
-                    seller_location: product.seller_location,
-                    MainCategory: product.MainCategory,
-                    SubCategory: product.SubCategory,
-                    realPrice: product.realPrice,
-                    heavyLoad: product.heavyLoad || product.heavy_load,
-                    type: product.serviceType,
-                };
+                const productDataForModal = mapProductData(product);
 
                 // تحديث الجلسة وعرض المنتج باستخدام النظام الحديث
                 loadProductView(productDataForModal, { showAddToCart: false });

@@ -282,30 +282,7 @@ async function previewProduct(key) {
         }
 
         // Map keys exactly as search.html does for compatibility with productViewLayout
-        const productDataForModal = {
-            product_key: p.product_key,
-            productName: p.productName,
-            user_key: p.user_key,
-            pricePerItem: p.product_price,
-            original_price: p.original_price,
-            imageSrc: p.ImageName
-                ? p.ImageName.split(",").map(
-                    (name) =>
-                        `https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev/${name}`
-                )
-                : [],
-            availableQuantity: p.product_quantity,
-            sellerMessage: p.user_message,
-            description: p.product_description,
-            sellerName: p.seller_name || p.sellerName || p.seller_username,
-            sellerPhone: p.seller_phone,
-            seller_location: p.seller_location,
-            MainCategory: p.MainCategory,
-            SubCategory: p.SubCategory,
-            realPrice: p.real_price || p.realPrice,
-            heavyLoad: p.heavy_load || p.heavyLoad,
-            type: p.serviceType,
-        };
+        const productDataForModal = mapProductData(p);
 
         // Use modern loadProductView which handles state and layout
         if (typeof loadProductView === 'function') {

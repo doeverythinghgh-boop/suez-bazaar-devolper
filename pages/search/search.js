@@ -177,29 +177,7 @@ async function initSearchModal(containerId) {
         );
 
         // Restructure product data for modal
-        const productDataForModal = {
-          product_key: productData.product_key,
-          productName: productData.productName,
-          user_key: productData.user_key,
-          pricePerItem: productData.product_price, // Use product_price
-          original_price: productData.original_price,
-          imageSrc: productData.ImageName
-            ? productData.ImageName.split(",").map(
-              (name) => getPublicR2FileUrl(name)
-            )
-            : [],
-          availableQuantity: productData.product_quantity,
-          sellerMessage: productData.user_message,
-          description: productData.product_description,
-          sellerName: productData.seller_name || productData.sellerName || productData.seller_username,
-          sellerPhone: productData.seller_phone,
-          seller_location: productData.seller_location,
-          MainCategory: productData.MainCategory, // Pass Main Category ID
-          SubCategory: productData.SubCategory, // Pass Sub Category ID
-          realPrice: productData.realPrice,
-          heavyLoad: productData.heavyLoad || productData.heavy_load,
-          type: productData.serviceType,
-        };
+        const productDataForModal = mapProductData(productData);
 
         // Use new loadProductView function
         loadProductView(productDataForModal, true);
