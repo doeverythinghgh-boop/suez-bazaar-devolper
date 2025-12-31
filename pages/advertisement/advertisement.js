@@ -205,7 +205,7 @@ function buildSlider(container, adImages) {
                 console.log(`[AdverModule] النقر على إعلان بكلمة بحث: ${query}`);
                 localStorage.setItem('pendingSearchQuery', query);
                 if (typeof mainLoader === 'function') {
-                    mainLoader('pages/search/search.html');
+                    mainLoader('pages/search/search.html', 'index-search-container', 0, undefined, 'showHomeIcon', true);
                 } else {
                     window.location.hash = '#/pages/search/search.html';
                 }
