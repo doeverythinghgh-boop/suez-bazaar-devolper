@@ -59,7 +59,7 @@ export default async function handler(request) {
     console.log(`[Request Start] Method: ${request.method}, URL: ${request.url}`);
 
     if (request.method === "POST") {
-      const { action, phone, password, username, user_key, address, location } = await request.json();
+      const { action, phone, password, username, user_key, address, location, isDelevred, limitPackage } = await request.json();
 
       // Case 1: Password Verification
       if (action === 'verify') {
@@ -106,8 +106,17 @@ export default async function handler(request) {
       }
 
       await db.execute({
-        sql: "INSERT INTO users (username, phone, user_key, Password, Address, location) VALUES (?, ?, ?, ?, ?, ?)",
-        args: [username, phone, user_key, password || null, address || null, location || null]
+        sql: "INSERT INTO users (username, phone, user_key, Password, Address, location, isDelevred, limitPackage) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        args: [
+          username,
+          phone,
+          user_key,
+          password || null,
+          address || null,
+          location || null,
+          isDelevred || 0,
+          limitPackage || 0
+        ]
       });
 
       return new Response(JSON.stringify({ message: "تم إضافة المستخدم بنجاح ✅" }), {
