@@ -1,7 +1,7 @@
 import { createClient } from "@libsql/client/web";
 
 /**
- * @description إعدادات تهيئة الوظيفة كـ Edge Function لـ Vercel.
+ * @description Vercel Edge Function configuration.
  * @type {object}
  * @const
  */
@@ -10,7 +10,7 @@ export const config = {
 };
 
 /**
- * @description عميل قاعدة البيانات المستخدم للاتصال بقاعدة بيانات Turso.
+ * @description Database client for connecting to Turso DB.
  * @type {import("@libsql/client/web").Client}
  * @const
  * @see createClient
@@ -21,7 +21,7 @@ const db = createClient({
 });
 
 /**
- * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
+ * @description CORS headers to allow requests from any origin.
  * @type {object}
  * @const
  */
@@ -32,17 +32,16 @@ const corsHeaders = {
 };
 
 /**
- * @description نقطة نهاية API لإدارة المنتجات (الاستعلام، الإضافة، التحديث، الحذف).
- *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS،
- *   وطلبات `GET` لجلب المنتجات بناءً على معايير مختلفة (مفتاح المستخدم، مصطلحات البحث، الفئات)،
- *   وطلبات `POST` لإضافة منتج جديد،
- *   وطلبات `PUT` لتحديث منتج موجود،
- *   وطلبات `DELETE` لحذف منتج.
+ * @description API endpoint handler for product management (Query, Add, Update, Delete).
+ *   Handles `OPTIONS` for CORS preflight,
+ *   `GET` requests for fetching products (by user_key, search term, categories, etc.),
+ *   `POST` requests for adding new products,
+ *   `PUT` requests for updating existing products,
+ *   `DELETE` requests for removing products.
  * @function handler
- * @param {Request} request - كائن طلب HTTP الوارد.
- * @returns {Promise<Response>} - وعد (Promise) يحتوي على كائن استجابة HTTP.
+ * @param {Request} request - Incoming HTTP request object.
+ * @returns {Promise<Response>} - HTTP response object.
  * @async
- * @throws {Response} - Returns an HTTP response with an error status (400, 404, 405, 500) if validation fails or an unexpected error occurs during database operations.
  */
 export default async function handler(request) {
   if (request.method === "OPTIONS") {
@@ -53,14 +52,14 @@ export default async function handler(request) {
     try {
       const { searchParams } = new URL(request.url);
       const user_key = searchParams.get('user_key');
-      // ✅ جديد: استقبال معاملات البحث الجديدة
+      // Receive search and filter parameters
       const searchTerm = searchParams.get('searchTerm');
       const MainCategory = searchParams.get('MainCategory');
       const SubCategory = searchParams.get('SubCategory');
-      const product_key = searchParams.get('product_key'); // ✅ إصلاح: استقبال معامل مفتاح المنتج
-      const status = searchParams.get('status'); // ✅ جديد: استقبال معامل الحالة
+      const product_key = searchParams.get('product_key');
+      const status = searchParams.get('status');
 
-      // ✅ جديد: تسجيل معايير البحث المستلمة لتسهيل التصحيح
+      // Logging search criteria for debugging
       console.log(`[API: /api/products GET] Received request with params: searchTerm='${searchTerm}', MainCategory='${MainCategory}', SubCategory='${SubCategory}', user_key='${user_key}', status='${status}', product_key='${product_key}'`);
 
       let sql, args;
@@ -102,7 +101,7 @@ export default async function handler(request) {
           args.push(parseInt(status));
         }
 
-        // ✅ FIX: Filter by user_key if provided (Search within User's products)
+        // Filter by user_key if provided (Search within User's products)
         if (user_key) {
           whereClauses.push("p.user_key = ?");
           args.push(user_key);
@@ -163,26 +162,25 @@ export default async function handler(request) {
         return new Response(JSON.stringify([]), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      // ✅ جديد: تسجيل جملة SQL النهائية والوسائط قبل التنفيذ
+      // Log final SQL and arguments before execution
       console.log(`[API: /api/products GET] Executing SQL: ${sql}`);
       console.log(`[API: /api/products GET] With arguments:`, args);
 
       const { rows } = await db.execute({
-        sql: sql, // تم بناء جملة SQL في الخطوات السابقة
+        sql: sql,
         args: args,
       });
 
-      // ✅ جديد: تسجيل عدد النتائج التي تم العثور عليها
+      // Log the number of results found
       console.log(`[API: /api/products GET] Found ${rows.length} products.`);
 
-      // ✅ إصلاح: إذا كان الطلب لمنتج واحد، أرجع الكائن مباشرة وليس مصفوفة
+      // Return single object if product_key was requested, otherwise array
       if (product_key) {
         return new Response(JSON.stringify(rows[0] || null), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
       return new Response(JSON.stringify(rows), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     } catch (err) {
-      // ✅ جديد: تسجيل الخطأ بشكل أوضح
       console.error('[API: /api/products GET] An error occurred:', err);
       return new Response(JSON.stringify({ error: "حدث خطأ أثناء جلب المنتجات: " + err.message }), {
         status: 500,
@@ -207,12 +205,12 @@ export default async function handler(request) {
         MainCategory,
         SubCategory,
         ImageIndex,
-        serviceType, // جديد: استقبال نوع الخدمة
-        realPrice, // جديد
-        heavyLoad // جديد: يحتاج سيارة
+        serviceType,
+        realPrice,
+        heavyLoad
       } = await request.json();
 
-      // تحقق بسيط من وجود البيانات الأساسية
+      // Basic validation
       if (!user_key || !product_key || !MainCategory || !productName) {
         return new Response(JSON.stringify({ error: "البيانات الأساسية للمنتج مطلوبة." }), {
           status: 400,
@@ -242,25 +240,25 @@ export default async function handler(request) {
   if (request.method === "PUT") {
     try {
       const {
-        productName, // جديد
+        productName,
         product_key,
         product_description,
         product_price,
         product_quantity,
-        original_price, // ✅ إضافة: استقبال السعر قبل الخصم
+        original_price,
         user_message,
         user_note,
         ImageName,
         MainCategory,
         SubCategory,
         ImageIndex,
-        serviceType, // جديد: استقبال نوع الخدمة
-        is_approved, // ✅ إضافة: استقبال حالة الموافقة
-        realPrice, // جديد
-        heavyLoad // جديد: يحتاج سيارة
+        serviceType,
+        is_approved,
+        realPrice,
+        heavyLoad
       } = await request.json();
 
-      // التحقق من وجود مفتاح المنتج
+      // Check for product key
       if (!product_key) {
         return new Response(JSON.stringify({ error: "مفتاح المنتج مطلوب للتحديث." }), {
           status: 400,
@@ -268,12 +266,12 @@ export default async function handler(request) {
         });
       }
 
-      // بناء جملة التحديث ديناميكيًا
+      // Build dynamic update object
       const fieldsToUpdate = {
         productName,
         product_description,
         product_price: product_price !== undefined ? parseFloat(product_price) : undefined,
-        original_price: original_price !== undefined ? (original_price ? parseFloat(original_price) : null) : undefined, // ✅ إضافة: معالجة السعر قبل الخصم
+        original_price: original_price !== undefined ? (original_price ? parseFloat(original_price) : null) : undefined,
         product_quantity: product_quantity !== undefined ? parseInt(product_quantity) : undefined,
         user_message,
         user_note,
@@ -281,8 +279,8 @@ export default async function handler(request) {
         MainCategory: MainCategory !== undefined ? parseInt(MainCategory) : undefined,
         SubCategory: SubCategory !== undefined ? parseInt(SubCategory) || null : undefined,
         ImageIndex: ImageIndex !== undefined ? parseInt(ImageIndex) : undefined,
-        serviceType: serviceType !== undefined ? parseInt(serviceType) : undefined, // جديد: استقبال نوع الخدمة
-        is_approved: is_approved !== undefined ? parseInt(is_approved) : undefined, // ✅ إضافة: السماح بتحديث حالة الموافقة
+        serviceType: serviceType !== undefined ? parseInt(serviceType) : undefined,
+        is_approved: is_approved !== undefined ? parseInt(is_approved) : undefined,
         realPrice: realPrice !== undefined ? (realPrice ? parseFloat(realPrice) : null) : undefined,
         heavyLoad: heavyLoad !== undefined ? parseInt(heavyLoad) : undefined
       };
