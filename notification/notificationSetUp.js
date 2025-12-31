@@ -29,15 +29,16 @@ async function setupFCM() {
             console.warn("[FCM] لا يوجد مستخدم مسجل — إلغاء العملية.");
             return;
         }
-        console.log(`[Dev] 📡 [FCM] المستخدم موجود (user_key: ${userSession.user_key}).`);
+        const currentUserId = userSession.user_key;
+        console.log(`[Dev] 📡 [FCM] المستخدم موجود (user_key: ${currentUserId}).`);
 
         // أولوية التهيئة على أندرويد
         if (window.Android && typeof window.Android.onUserLoggedIn === "function") {
             console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة أندرويد (WebView).');
-            await setupFirebaseAndroid();
+            await setupFirebaseAndroid(currentUserId);
         } else {
             console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة ويب (Browser).');
-            await setupFirebaseWeb();
+            await setupFirebaseWeb(currentUserId);
         }
 
         sessionStorage.setItem("fcm_token_setup_done", "1");
@@ -101,12 +102,13 @@ async function registerServiceWorker() {
  * @function setupFirebaseAndroid
  * @async
  * @returns {Promise<void>}
+ * @param {string} userId - The unique identifier of the user.
  * @throws {Error} - If `waitForFcmKey` or `sendTokenToServer` encounters an error.
  * @see waitForFcmKey
  * @see sendTokenToServer
  * @see userSession
  */
-async function setupFirebaseAndroid() {
+async function setupFirebaseAndroid(userId) {
     console.log("[Dev] 📱 [Android FCM] بدء تهيئة FCM للأندرويد...");
 
     const existingToken = localStorage.getItem("android_fcm_key");
@@ -117,7 +119,7 @@ async function setupFirebaseAndroid() {
 
         // طلب التوكن من WebView
         try {
-            window.Android.onUserLoggedIn(userSession.user_key);
+            window.Android.onUserLoggedIn(userId);
         } catch (e) {
             console.error("[Android FCM] خطأ أثناء استدعاء onUserLoggedIn:", e);
         }
@@ -127,7 +129,7 @@ async function setupFirebaseAndroid() {
         await waitForFcmKey(async (newToken) => {
             console.log("[Dev] 📱 [Android FCM] الخطوة 4: تم استلام التوكن من النظام بنجاح.");
             console.log("[Dev] 📱 [Android FCM] الخطوة 5: جاري مزامنة التوكن الجديد مع الخادم...");
-            await sendTokenToServer(userSession.user_key, newToken, "android");
+            await sendTokenToServer(userId, newToken, "android");
         }, 10000); // timeout
 
     } else {
@@ -149,13 +151,14 @@ async function setupFirebaseAndroid() {
  * @function setupFirebaseWeb
  * @async
  * @returns {Promise<void>}
+ * @param {string} userId - The unique identifier of the user.
  * @throws {Error} - If Firebase libraries fail to load, permissions are denied, or token operations fail.
  * @see registerServiceWorker
  * @see addNotificationLog
  * @see sendTokenToServer
  * @see userSession
  */
-async function setupFirebaseWeb() {
+async function setupFirebaseWeb(userId) {
     console.log("[Dev] 🌏 [Web FCM] بدء تهيئة FCM للويب...");
 
     try {
@@ -225,7 +228,11 @@ async function setupFirebaseWeb() {
 
             // إرسال التوكن للخادم
             console.log("[Dev] 🌏 [Web FCM] الخطوة 7: جاري إرسال/تحديث التوكن في قاعدة بيانات السيرفر (sendTokenToServer)...");
-            await sendTokenToServer(userSession.user_key, currentToken, "web");
+            if (userId) {
+                await sendTokenToServer(userId, currentToken, "web");
+            } else {
+                console.warn("[FCM Web] تم إلغاء الإرسال للسيرفر: userId غير موجود.");
+            }
             console.log("[Dev] 🌏 [Web FCM] تم الانتهاء من تهيئة الويب بنجاح.");
         } else {
             console.warn("[Dev] 🌏 [Web FCM] تم الاتصال ولكن لم يتم استلام أي توكن.");
