@@ -157,24 +157,28 @@ if (register_form) {
         const { value: formValues } = await Swal.fire({
           title: "إعدادات البائع",
           html: `
-        <div style="text-align: right; direction: rtl;">
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">هل لديك خدمة توصيل خاصة بك؟</label>
-            <select id="swal_is-delevred" class="swal2-input" style="width: 100%; margin: 0;">
+        <div style="text-align: right; direction: rtl; font-family: 'Tajawal', sans-serif;">
+          <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
+            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; color: #1e293b; font-size: 1rem;">
+              <i class="fas fa-truck-moving" style="color: #10b981;"></i> هل لديك خدمة توصيل خاصة بك؟
+            </label>
+            <select id="swal_is-delevred" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;">
               <option value="0" ${register_isDelevredInput.value == "0" ? "selected" : ""}>لا (الاعتماد على مناديب التطبيق)</option>
               <option value="1" ${register_isDelevredInput.value == "1" ? "selected" : ""}>نعم (أقوم بالتوصيل بنفسي)</option>
             </select>
           </div>
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">هل تضع حداً أدنى لطلبات الشراء؟</label>
-            <select id="swal_has-limit" class="swal2-input" style="width: 100%; margin: 0;">
+          <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 0px; border: 1px solid #e2e8f0;">
+            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; color: #1e293b; font-size: 1rem;">
+              <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> هل تضع حداً أدنى لطلبات الشراء؟
+            </label>
+            <select id="swal_has-limit" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;">
               <option value="no" ${register_limitPackageInput.value == "0" ? "selected" : ""}>لا يوجد حد أدنى</option>
-              <option value="yes" ${register_limitPackageInput.value != "0" ? "selected" : ""}>نعم، يوجد حد أدنى</option>
+              <option value="yes" ${register_limitPackageInput.value != "0" ? "selected" : ""}>نعم، يوجد حد أدنى للطلب</option>
             </select>
-          </div>
-          <div id="swal_limit-container" style="display: ${register_limitPackageInput.value != "0" ? "block" : "none"};">
-            <label style="display: block; margin-bottom: 8px; font-weight: bold;">الحد الأدنى للطلب (ج.م):</label>
-            <input type="number" id="swal_limit-value" class="swal2-input" style="width: 100%; margin: 0;" value="${register_limitPackageInput.value}" placeholder="مثلاً: 100">
+            <div id="swal_limit-container" style="margin-top: 15px; display: ${register_limitPackageInput.value != "0" ? "block" : "none"};">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #64748b; font-size: 0.9rem;">الحد الأدنى للطلب (ج.م):</label>
+              <input type="number" id="swal_limit-value" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;" value="${register_limitPackageInput.value}" placeholder="مثلاً: 100">
+            </div>
           </div>
         </div>
       `,
@@ -182,7 +186,11 @@ if (register_form) {
           showCancelButton: true,
           confirmButtonText: "حفظ الإعدادات",
           cancelButtonText: "إلغاء",
-          customClass: { popup: 'fullscreen-swal' },
+          customClass: {
+            popup: 'modern-swal-popup',
+            confirmButton: 'modern-swal-confirm',
+            cancelButton: 'modern-swal-cancel'
+          },
           didOpen: () => {
             const hasLimitSelect = document.getElementById("swal_has-limit");
             const limitContainer = document.getElementById("swal_limit-container");
@@ -212,11 +220,11 @@ if (register_form) {
           register_limitPackageInput.value = formValues.limitPackage;
 
           // Update UI feedback on the button
-          const statusText = formValues.isDelevred === 1 || formValues.limitPackage > 0
-            ? " (تم ضبط الإعدادات ✅)"
-            : " (لا توجد إعدادات خاصة)";
+          const isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
+          const statusText = isSet ? " (تم ضبط الإعدادات ✅)" : " (لا توجد إعدادات خاصة)";
           register_sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${statusText}`;
-          register_sellerOptionsBtn.style.background = "#d1fae5";
+          register_sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
+          register_sellerOptionsBtn.style.borderStyle = isSet ? "solid" : "dashed";
         }
       });
     }
