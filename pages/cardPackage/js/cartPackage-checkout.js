@@ -41,7 +41,7 @@ async function sendOrder2Excution() {
             if (group.total < group.limit) {
                 Swal.fire({
                     title: "تنبيه: حد الباقة",
-                    text: `عذراً، لا يمكن الشراء من البائع "${group.sellerName}" بأقل من ${group.limit.toFixed(2)} جنيه. مجموع مشترياتك الحالية منه هو ${group.total.toFixed(2)} جنيه.`,
+                    text: `عذراً، لا يمكن الشراء من البائع بأقل من ${group.limit.toFixed(2)} جنيه. مجموع مشترياتك الحالية منه هو ${group.total.toFixed(2)} جنيه.`,
                     icon: "warning",
                     confirmButtonText: "موافق"
                 });
