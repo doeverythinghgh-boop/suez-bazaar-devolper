@@ -309,6 +309,15 @@ async function initSearchModal(containerId) {
     setTimeout(() => searchModalInput.focus(), 50);
   }
 
+  // ✅ NEW: Handle incoming search request from advertisements
+  const pendingQuery = localStorage.getItem('pendingSearchQuery');
+  if (pendingQuery) {
+    console.log(`[SearchModal] اكتشاف بحث معلق من إعلان: ${pendingQuery}`);
+    searchModalInput.value = pendingQuery;
+    localStorage.removeItem('pendingSearchQuery'); // Clear to prevent loops
+    setTimeout(() => performSearch(), 100); // Small delay to ensure everything is ready
+  }
+
   // Developer message: Init complete
   console.log(
     "%c[SearchModal] اكتملت التهيئة. نافذة البحث جاهزة.",

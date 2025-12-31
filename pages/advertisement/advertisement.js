@@ -97,7 +97,13 @@ async function initAdverModule(container, forceRefresh = false) {
             const manifestData = await manifestRes.json();
             if (Array.isArray(manifestData)) {
                 console.log('%c[AdverModule] تم تحميل البيان.', 'color: green;', manifestData);
-                manifestData.forEach(img => fetchedImages.push(getPublicR2FileUrl(img)));
+                manifestData.forEach(item => {
+                    const adData = typeof item === 'object' ? item : { img: item, query: '' };
+                    fetchedImages.push({
+                        url: getPublicR2FileUrl(adData.img),
+                        query: adData.query || ''
+                    });
+                });
                 fetchSuccess = true;
             } else {
                 console.warn("[AdverModule] تنسيق البيان غير صالح.");
@@ -150,7 +156,7 @@ async function initAdverModule(container, forceRefresh = false) {
  *   Creates slides, dots, and navigation buttons, handles auto-play and manual interactions.
  * @function buildSlider
  * @param {HTMLElement} container - DOM element to contain the slider.
- * @param {string[]} adImages - Array of ad image URLs.
+ * @param {Object[]} adImages - Array of ad image objects {url, query}.
  * @returns {void}
  * @see goToSlide
  * @see startAutoPlay
@@ -185,11 +191,26 @@ function buildSlider(container, adImages) {
     const nextButton = container.querySelector('.ad-slider-nav.next');
 
     // Create slides and dots
-    adImages.forEach((imageUrl, index) => {
+    adImages.forEach((imageData, index) => {
         const slide = document.createElement('div');
         slide.className = 'ad-slide';
-        slide.style.backgroundImage = `url(${imageUrl})`;
+        slide.style.backgroundImage = `url(${imageData.url})`;
+        slide.dataset.query = imageData.query || '';
         track.appendChild(slide);
+
+        // ✅ NEW: Handle click for search redirection
+        slide.addEventListener('click', () => {
+            const query = slide.dataset.query;
+            if (query && query.trim() !== '') {
+                console.log(`[AdverModule] النقر على إعلان بكلمة بحث: ${query}`);
+                localStorage.setItem('pendingSearchQuery', query);
+                if (typeof mainLoader === 'function') {
+                    mainLoader('pages/search/search.html');
+                } else {
+                    window.location.hash = '#/pages/search/search.html';
+                }
+            }
+        });
 
         // ✅ NEW: Add events to pause auto-play on hold
         slide.addEventListener('mousedown', pauseAutoPlay);

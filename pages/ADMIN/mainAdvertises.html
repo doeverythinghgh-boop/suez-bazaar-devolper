@@ -134,8 +134,10 @@
     #mainAdver_wrapper .mainAdver_resize {
         position: absolute;
         top: 5px;
-        right: 38px; /* Positioned left of the remove button */
-        background-color: rgba(0, 123, 255, 0.9); /* Blue color */
+        right: 38px;
+        /* Positioned left of the remove button */
+        background-color: rgba(0, 123, 255, 0.9);
+        /* Blue color */
         color: white;
         border: none;
         border-radius: 50%;
@@ -542,7 +544,16 @@
                 meta.textContent = 'New'; // New image being added
             }
 
-            wrapper.append(removeBtn, img, meta);
+            // Search Query Input
+            const queryInput = document.createElement('input');
+            queryInput.type = 'text';
+            queryInput.className = 'swal2-input mainAdver_query-input';
+            queryInput.placeholder = 'كلمة البحث (اختياري)';
+            queryInput.style.cssText = 'width: 100%; margin: 5px 0; height: 35px; font-size: 0.85rem; padding: 5px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ddd;';
+            queryInput.value = state.query || '';
+            queryInput.onchange = (e) => state.query = e.target.value;
+
+            wrapper.append(removeBtn, img, queryInput, meta);
             els.previewsEl.appendChild(wrapper);
 
             // Bind element to state to facilitate updates
@@ -613,7 +624,7 @@
             if (formValues) {
                 const [w, h] = formValues;
                 if (!w || !h) return;
-                
+
                 // Show loading
                 Swal.fire({ title: 'جاري المعالجة...', didOpen: () => Swal.showLoading() });
 
@@ -628,9 +639,9 @@
                         });
                         return;
                     }
-                    
+
                     let source = imgState.file;
-                     // If we have a compressed blob (from previous resize or compress), use it
+                    // If we have a compressed blob (from previous resize or compress), use it
                     if (!source && imgState.compressedBlob) source = imgState.compressedBlob;
 
                     if (!source) {
@@ -640,7 +651,7 @@
 
                     // Create bitmap
                     const bitmap = await createImageBitmap(source);
-                    
+
                     // Create canvas with EXACT dimensions
                     const canvas = document.createElement('canvas');
                     canvas.width = parseInt(w);
@@ -657,13 +668,13 @@
                     // Update State
                     imgState.compressedBlob = newBlob;
                     // If it was uploaded, mark it as pending upload (essentially new file now) so it gets re-uploaded
-                    imgState.status = 'ready'; 
+                    imgState.status = 'ready';
                     // Update preview
                     const newUrl = URL.createObjectURL(newBlob);
                     const imgEl = imgState._el.querySelector('img');
-                    if(imgEl) imgEl.src = newUrl;
-                    
-                    if(imgState._metaEl) imgState._metaEl.textContent = `Resized (${w}x${h})`;
+                    if (imgEl) imgEl.src = newUrl;
+
+                    if (imgState._metaEl) imgState._metaEl.textContent = `Resized (${w}x${h})`;
 
                     Swal.fire('تم', 'تم تغيير الأبعاد بنجاح. اضغط "نشر" لحفظ التعديلات.', 'success');
 
@@ -689,7 +700,7 @@
                 if (!file.type.startsWith('image/')) continue; // Ignore non-image files
 
                 const id = genId();
-                const state = { id, file, compressedBlob: null, status: 'pending' };
+                const state = { id, file, compressedBlob: null, status: 'pending', query: '' };
                 images.push(state);
                 createPreview(state);
 
@@ -732,13 +743,13 @@
 
             // 2. Load images based on manifest
             if (manifest && Array.isArray(manifest) && manifest.length > 0) {
-                manifest.forEach(name => {
-                    const id = genId();
-                    // Status 'uploaded' means image exists on R2
-                    images.push({ id, status: 'uploaded', fileName: name });
-                    originalImageNames.push(name);
-                    createPreview(images[images.length - 1], `${R2_PUBLIC_URL}/${name}`);
-                });
+                const adData = typeof name === 'object' ? name : { img: name, query: '' };
+                const finalName = adData.img || adData;
+                const id = genId();
+                // Status 'uploaded' means image exists on R2
+                images.push({ id, status: 'uploaded', fileName: finalName, query: adData.query || '' });
+                originalImageNames.push(finalName);
+                createPreview(images[images.length - 1], `${R2_PUBLIC_URL}/${finalName}`);
             } else {
                 // If no manifest found or empty
                 // Do not guess anymore, start with empty list.
@@ -858,20 +869,19 @@
                 // Step 1: Process images (Upload new + Keep old)
                 for (const imgState of images) {
                     if (imgState.status === 'uploaded') {
-                        // Image already exists: keep its name as is
-                        newManifest.push(imgState.fileName);
+                        // Image already exists: keep its name and update query
+                        newManifest.push({ img: imgState.fileName, query: imgState.query || '' });
                     } else if (imgState.status === 'ready' && imgState.compressedBlob) {
                         // New image: generate a unique name for it
-                        // We use Timestamp + Random to ensure uniqueness and avoid cache issues
                         const ext = imgState.compressedBlob.type === 'image/webp' ? 'webp' : 'jpg';
                         const uniqueName = `ad_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
 
                         // Add to upload list
                         uploads.push({ blob: imgState.compressedBlob, name: uniqueName });
                         // Add to manifest
-                        newManifest.push(uniqueName);
+                        newManifest.push({ img: uniqueName, query: imgState.query || '' });
 
-                        // Update item status locally (although we will reload)
+                        // Update item status locally
                         imgState.fileName = uniqueName;
                         imgState.status = 'uploaded';
                     }
@@ -888,12 +898,11 @@
                 const mBlob = new Blob([JSON.stringify(newManifest)], { type: 'application/json' });
                 await uploadFile2cf(mBlob, 'advertisements.json');
 
-                // Step 3: Cleanup unused files (Smart Delete)
-                // We only delete files that were present (originalImageNames) and are no longer in the new list (newManifest)
-                const filesToDelete = originalImageNames.filter(oldName => !newManifest.includes(oldName));
+                // Step 3: Cleanup unused files
+                const currentNamesInManifest = newManifest.map(m => m.img);
+                const filesToDelete = originalImageNames.filter(oldName => !currentNamesInManifest.includes(oldName));
 
                 if (filesToDelete.length > 0) {
-                    console.log("حذف الملفات اليتيمة (غير المستخدمة):", filesToDelete);
                     const deletePromises = filesToDelete.map(name => deleteFile2cf(name).catch(e => console.warn(e)));
                     await Promise.all(deletePromises);
                 }
@@ -902,11 +911,11 @@
                 if (addUpdate) await addUpdate("تحديث الإعلانات");
 
                 Swal.fire('تم!', 'تم تحديث الإعلانات بنجاح.', 'success');
-                loadImages(); // Reload to update UI with new data
+                loadImages();
 
             } catch (err) {
                 console.error('خطأ في الرفع', err);
-                state.status = 'error';
+                Swal.fire('خطأ', 'فشل رفع البيانات.', 'error');
             }
         };
 
