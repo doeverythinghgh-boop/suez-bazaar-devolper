@@ -142,8 +142,32 @@ ProductStateManager.getState()
 - **الوظيفة:** الحصول على نسخة كاملة من الحالة الداخلية (أغراض التطوير وتصحيح الأخطاء)
 
 ---
-
-### 3. الدوال الرئيسية: `globalVariable.js`
+ 
+ ### 3. وحدة تحويل البيانات الموحدة: `productMapper.js`
+ 
+ **الموقع:** [`js/PRODUCT_SERVICE/productMapper.js`](/bazaar/js/PRODUCT_SERVICE/productMapper.js)
+ 
+ تهدف هذه الوحدة إلى توحيد شكل بيانات المنتج القادمة من مختلف نقاط الـ API لضمان توافقها مع واجهات العرض وسلة التسوق، مما يلغي الحاجة لمعالجة البيانات يدوياً في كل صفحة.
+ 
+ #### الدوال الرئيسية:
+ 
+ ##### `mapProductData(rawProduct)`
+ ```javascript
+ function mapProductData(rawProduct)
+ ```
+ - **الوظيفة:** تحويل كائن الـ API الخام إلى تنسيق واجهة العرض الموحد.
+ - **المعاملات:**
+   - `rawProduct`: كائن البيانات القادم مباشرة من الـ API (يدعم مسميات مختلفة للحقول).
+ - **الإرجاع:** `object` - كائن المنتج الموحد.
+ 
+ **مميزات المحول:**
+ - **توحيد مسميات الحقول:** يتعامل مع الاختلافات بين `product_price` و `pricePerItem`.
+ - **معالجة الصور:** يقوم بتحويل مصفوفة الأسماء `ImageName` إلى روابط كاملة تلقائياً.
+ - **دعم الحقول الجديدة:** يضمن تمرير حقول مثل `limitPackage` و `isDelevred` و `heavyLoad` بشكل ثابت.
+ 
+ ---
+ 
+ ### 4. الدوال الرئيسية: `globalVariable.js`
 
 **الموقع:** [`js/globalVariable.js`](/bazaar/js/globalVariable.js)
 
@@ -423,8 +447,9 @@ function generateSearchResultHTML(product) {
 | :--- | :--- | :--- | :--- |
 | **عرض منتج/خدمة** | `loadProductView()` | `ProductStateManager` | - |
 | **إضافة/تعديل** | `loadProductForm()` | `ProductStateManager` | - |
+| **تحويل البيانات** | `mapProductData()` | `productMapper.js` | - |
 | **إرسال طلب منتج** | `fetch('/api/orders')` | سلة المشتريات | `0` |
 | **إرسال طلب خدمة** | `fetch('/api/orders')` | واجهة الخدمات | `1` |
 
 ---
-*آخر تحديث للوثيقة: ديسمبر 2025 - توحيد نظام إدارة الحالة*
+*آخر تحديث للوثيقة: ديسمبر 2025 - توحيد نظام تحويل وإدارة البيانات*
