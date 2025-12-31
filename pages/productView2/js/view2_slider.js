@@ -54,6 +54,17 @@ function pv2_buildSlider(images, dom) {
     if (images.length > 1) {
         prevBtn.style.display = 'flex';
         nextBtn.style.display = 'flex';
+
+        // ✅ NEW: Bind navigation buttons
+        prevBtn.onclick = (e) => {
+            e.stopPropagation();
+            pv2_goToSlide(pv2_sliderState.currentIndex - 1);
+        };
+        nextBtn.onclick = (e) => {
+            e.stopPropagation();
+            pv2_goToSlide(pv2_sliderState.currentIndex + 1);
+        };
+
         pv2_startAutoPlay();
     } else {
         sliderDots.style.display = 'none';
