@@ -252,7 +252,22 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (userSession) {
         // [A] If user is logged in, redirect to dashboard.
         const userContainer = document.getElementById("index-user-container");
+        const isCurrentlyInUserContainer = (LOADER_REGISTRY[LOADER_REGISTRY.length - 1] === "index-user-container");
+        const isDashboardVisible = document.getElementById("dash-welcome-message");
+
         if (userContainer && userContainer.innerHTML.trim() === "" && LOADER_REGISTRY.length < 2) {
+          mainLoader(
+            "pages/user-dashboard.html",
+            "index-user-container",
+            0,
+            undefined,
+            "showHomeIcon",
+            true
+          );
+        } else if (isCurrentlyInUserContainer && !isDashboardVisible) {
+          // If we are in the user container but the main dashboard isn't visible,
+          // it means we are in a sub-page (like profile-modal). Reload dashboard.
+          console.log("[Navigation] Sub-page detected in user container, reloading dashboard root.");
           mainLoader(
             "pages/user-dashboard.html",
             "index-user-container",

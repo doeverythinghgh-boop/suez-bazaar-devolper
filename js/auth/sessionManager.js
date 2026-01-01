@@ -119,7 +119,8 @@ const SessionManager = {
         // 3. Clear Containers (Local helper or importing logic)
         const containerIds = [
             "index-home-container", "index-search-container", "index-user-container",
-            "index-product-container", "index-cardPackage-container", "index-myProducts-container"
+            "index-productView-container", "index-productAdd-container", "index-productEdit-container",
+            "index-cardPackage-container", "index-myProducts-container"
         ];
         containerIds.forEach(id => {
             const el = document.getElementById(id);

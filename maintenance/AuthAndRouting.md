@@ -91,7 +91,50 @@
 
 ---
 
-## 6. أفضل الممارسات (Best Practices)
+## 7. خريطة الحاويات والصفحات (Container-Page Map)
+
+يوضح الجدول التالي العلاقة بين المعرفات الفريدة للحاويات والصفحات التي يتم تحميلها بداخلها، مما يسهل تتبع تدفق البيانات وواجهة المستخدم:
+
+### أ. الحاويات الرئيسية (Root Containers)
+تتواجد هذه الحاويات في ملف `index.html` وتغطي الوظائف الأساسية للتطبيق:
+
+*   **`index-home-container`**: المحتوى الرئيسي / الصفحة الرئيسية (`pages/home.html`)
+*   **`index-search-container`**: البحث والفلاتر (`pages/search/search.html`)
+*   **`index-notifications-container`**: إشعارات المستخدم (`notification/page/notifications.html`)
+*   **`index-salesMovement-container`**: حركة المبيعات والتقارير (`pages/sales-movement/sales-movement.html`)
+*   **`index-cardPackage-container`**: السلة / حقيبة التسوق (`pages/cardPackage/cardPackage.html`)
+*   **`index-productView-container`**: عرض تفاصيل المنتجات والخدمات:
+    *   `pages/productView/product.html`
+    *   `pages/productView2/productView2.html`
+*   **`index-productAdd-container`**: إضافة منتجات أو خدمات جديدة:
+    *   `pages/productAdd/productAdd.html`
+    *   `pages/productAdd2/productAdd2.html`
+*   **`index-productEdit-container`**: تعديل المنتجات أو الخدمات الحالية:
+    *   `pages/productEdit/productEdit.html`
+    *   `pages/productEdit2/productEdit2.html`
+*   **`index-user-container`**: الجلسة: دخول، تسجيل، لوحة التحكم، الإدارة:
+    *   `pages/login/login.html`
+    *   `pages/register/register.html`
+    *   `pages/user-dashboard.html`
+    *   `pages/profile-modal/profile-modal.html`
+    *   `pages/ADMIN/adminPanel.html`
+    *   `pages/ADMIN/mainAdvertises.html`
+    *   `pages/ADMIN/pendingProducts.html`
+    *   `notification/page/admainNotificationsetting.html`
+*   **`index-contact-container`**: الدعم والمساعدة (`pages/contact.html`)
+*   **`index-myProducts-container`**: قائمة منتجات البائع (`pages/product2Me/product2Me.html`)
+
+### ب. الحاويات الداخلية (Nested Containers)
+حاويات ثانوية تتواجد داخل صفحات فرعية لتحميل مكونات جزئية:
+
+*   **`advertisement`**: داخل `pages/home.html` -> تحميل `pages/advertisement/advertisement.html`
+*   **`categories00`**: داخل `pages/home.html` -> تحميل `pages/categories/categories.html`
+*   **`dash-header-container`**: داخل `pages/user-dashboard.html` -> تحميل `pages/header.html`
+*   **`header-container1X`**: داخل `pages/login/login.html` -> تحميل `pages/header.html`
+
+---
+
+## 8. أفضل الممارسات (Best Practices)
 
 1.  **في التوجيه**: استخدم `reload: true` فقط عند الحاجة لتحديث البيانات المباشرة، ويفضل دائماً تمرير الـ Callback كـ String.
 2.  **في المصادقة**: لا تقم بتعديل `window.userSession` يدوياً أبداً؛ استخدم دوال `SessionManager`.

@@ -82,7 +82,7 @@ function loadProductView(productData, options = {}) {
 
   mainLoader(
     pagePath,
-    "index-product-container",
+    "index-productView-container",
     0,
     undefined,
     "showHomeIcon",
@@ -122,9 +122,12 @@ function loadProductForm(options = {}) {
 
   console.log(`[ProductForm] تحميل صفحة ${editMode ? 'تعديل' : 'إضافة'} ${isService ? 'خدمة' : 'منتج'} للفئة ${categories.mainId}/${categories.subId}`);
 
+  // Determine target container
+  var targetContainer = editMode ? "index-productEdit-container" : "index-productAdd-container";
+
   mainLoader(
     pagePath,
-    "index-product-container",
+    targetContainer,
     0,
     undefined,
     "showHomeIcon",
