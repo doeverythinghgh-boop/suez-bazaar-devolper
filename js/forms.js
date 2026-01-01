@@ -17,7 +17,7 @@
  * @description Stores the IDs of containers that have been loaded, maintaining their order.
  * This registry is used to manage dynamic content loading and navigation history.
  */
-const LOADER_REGISTRY = [];
+var LOADER_REGISTRY = [];
 
 /**
  * @description Hide all registered containers except current one, and check if container needs loading or just displaying.

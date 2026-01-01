@@ -251,14 +251,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       if (userSession) {
         // [A] If user is logged in, redirect to dashboard.
-        mainLoader(
-          "pages/user-dashboard.html",
-          "index-user-container",
-          0,
-          undefined,
-          "showHomeIcon",
-          true
-        );
+        const userContainer = document.getElementById("index-user-container");
+        if (userContainer && userContainer.innerHTML.trim() === "" && LOADER_REGISTRY.length < 2) {
+          mainLoader(
+            "pages/user-dashboard.html",
+            "index-user-container",
+            0,
+            undefined,
+            "showHomeIcon",
+            true
+          );
+        } else {
+          console.log("Navigating back to previous container");
+          containerGoBack();
+        }
       } else {
         // [B] If user is not logged in, redirect to login page.
         mainLoader(
