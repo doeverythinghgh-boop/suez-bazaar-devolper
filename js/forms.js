@@ -237,7 +237,7 @@ async function mainLoader(
         const container = document.getElementById(containerId);
         const currentLoadedUrl = container ? container.getAttribute('data-page-url') : null;
 
-        if (!reload && currentLoadedUrl === pageUrl && LOADER_REGISTRY.includes(containerId)) {
+        if (!reload && currentLoadedUrl === pageUrl) {
             console.log(`[SmartLoader] الصفحة ${pageUrl} موجودة بالفعل في ${containerId}، سيتم الإظهار فقط.`);
             profileHandleRegistry(containerId, false);
             profileExecuteCallback(callbackName);
@@ -374,7 +374,10 @@ function containerGoBack() {
         }
 
         // Clean current container content if still in DOM
-        profileClearOldContent(currentContainerId);
+        // Exception: Preserve Add/Edit containers to keep drafts alive
+        if (currentContainerId !== "index-productAdd-container" && currentContainerId !== "index-productEdit-container") {
+            profileClearOldContent(currentContainerId);
+        }
 
         // Show previous container
         const previousContainer = document.getElementById(previousContainerId);

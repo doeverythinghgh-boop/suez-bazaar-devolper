@@ -146,7 +146,7 @@ async function showAddProductModal() {
     const activeUrl = addContainer ? addContainer.getAttribute("data-page-url") : null;
     const hasCategories = !!ProductStateManager.getSelectedCategories();
 
-    if (activeUrl && hasCategories && LOADER_REGISTRY.includes("index-productAdd-container")) {
+    if (activeUrl && hasCategories) {
       console.log("[AddProduct] تم اكتشاف مسودة نشطة، تخطي نافذة اختيار الفئة.");
       loadProductForm({ editMode: false });
       return;
