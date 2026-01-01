@@ -87,6 +87,39 @@ const ProductStateManager = {
     },
 
     /**
+     * @description Resolve category names from IDs.
+     * @function resolveCategoryNames
+     * @returns {Promise<{main: string, sub: string}>} Object with main and sub category titles.
+     * @async
+     */
+    async resolveCategoryNames() {
+        const selected = this.getSelectedCategories();
+        if (!selected || !selected.mainId || !selected.subId) return { main: '', sub: '' };
+
+        try {
+            const response = await fetch('./shared/list.json');
+            if (!response.ok) throw new Error('Failed to load categories');
+            const data = await response.json();
+            const categories = data.categories || [];
+
+            const mainCat = categories.find(c => String(c.id) === String(selected.mainId));
+            let subTitle = '';
+            if (mainCat && mainCat.subcategories) {
+                const subCat = mainCat.subcategories.find(s => String(s.id) === String(selected.subId));
+                if (subCat) subTitle = subCat.title;
+            }
+
+            return {
+                main: mainCat ? mainCat.title : '',
+                sub: subTitle
+            };
+        } catch (error) {
+            console.error('[ProductState] Error resolving category names:', error);
+            return { main: '', sub: '' };
+        }
+    },
+
+    /**
      * @description Get current state (for debugging).
      * @function getState
      * @returns {object} Current state object.

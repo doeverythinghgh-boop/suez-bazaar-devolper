@@ -19,6 +19,37 @@
     padding-bottom: 15px;
 }
 
+.add2_category_badges {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: -15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.add2_category_badge {
+    background-color: #3498db;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.add2_category_badge_sub {
+    background-color: #e67e22;
+}
+
+.add2_category_badge i {
+    font-size: 11px;
+    opacity: 0.9;
+}
+
 .add2_product_modal__title i {
     color: #3498db;
     margin-left: 10px;

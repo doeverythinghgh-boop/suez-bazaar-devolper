@@ -7,8 +7,14 @@
 
 <div class="add2_product_modal" role="dialog" aria-modal="true" aria-labelledby="add2_product_title"
     id="add2_product_modal_container">
-    <h2 class="add2_product_modal__title" id="add2_product_title"><i class="fas fa-cart-plus" id="add2_icon_title"></i>
+    <h2 class="add2_product_modal__title" id="add2_product_title"><i class="fas fa-concierge-bell"
+            id="add2_icon_title"></i>
         إضافة خدمة جديدة</h2>
+
+    <!-- Selected Category Badges -->
+    <div id="add2_category_display" class="add2_category_badges">
+        <!-- Will be populated dynamically -->
+    </div>
 
     <form class="add2_product_modal__form" id="add2_product_form" novalidate>
         <!-- Image Upload Module -->
@@ -84,8 +90,10 @@
 
 
         <!-- Submit Button -->
-        <div class="add2_product_modal__submit_container" id="add2_submit_container">
+        <div class="add2_product_modal__submit_container" id="add2_submit_container"
+            style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
             <button type="submit" class="add2_btn add2_btn_primary" id="add2_btn_submit">اضف الخدمة الآن</button>
+            <button type="button" class="add2_btn add2_btn_ghost" id="add2_btn_discard">تجاهل التعديلات</button>
         </div>
     </form>
 </div>

@@ -246,3 +246,72 @@ add1_realPriceInput.addEventListener('input', () => {
         console.error('[Add1] Error on real price input:', error);
     }
 });
+// Discard Button Logic
+var add1_btnDiscard = document.getElementById('add1_btn_discard');
+if (add1_btnDiscard) {
+    add1_btnDiscard.addEventListener('click', () => {
+        try {
+            Swal.fire({
+                title: 'تجاهل التعديلات؟',
+                text: "سيتم مسح كافة البيانات والعودة للوحة التحكم.",
+                icon: 'warning',
+                iconColor: '#f39c12',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                cancelButtonColor: '#bdc3c7',
+                confirmButtonText: '<i class="fas fa-trash-alt"></i> نعم، تجاهل',
+                cancelButtonText: 'تراجع',
+                background: '#ffffff',
+                customClass: {
+                    title: 'swal-modern-title',
+                    popup: 'swal-modern-popup'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    if (window.ProductStateManager) {
+                        ProductStateManager.setSelectedCategories(null, null);
+                    }
+                    const container = document.getElementById('index-productAdd-container');
+                    if (container) {
+                        container.removeAttribute('data-page-url');
+                        container.innerHTML = '';
+                    }
+                    if (window.containerGoBack) {
+                        containerGoBack();
+                    }
+                }
+            });
+        } catch (error) {
+            console.error('[Add1] Error in discard button logic:', error);
+        }
+    });
+}
+
+/**
+ * @function add1_renderCategories
+ * @description Fetches and displays selected category names as badges.
+ */
+async function add1_renderCategories() {
+    try {
+        if (!window.ProductStateManager) return;
+        const names = await ProductStateManager.resolveCategoryNames();
+        const display = document.getElementById('add1_category_display');
+        if (!display || !names.main) return;
+
+        display.innerHTML = `
+            <div class="add1_category_badge">
+                <i class="fas fa-layer-group"></i> ${names.main}
+            </div>
+            ${names.sub ? `
+                <div class="add1_category_badge add1_category_badge_sub">
+                    <i class="fas fa-tags"></i> ${names.sub}
+                </div>
+            ` : ''}
+        `;
+    } catch (error) {
+        console.error('[Add1] Error rendering categories:', error);
+    }
+}
+
+// Initial call
+add1_renderCategories();

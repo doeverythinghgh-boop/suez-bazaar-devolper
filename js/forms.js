@@ -240,6 +240,7 @@ async function mainLoader(
         if (!reload && currentLoadedUrl === pageUrl) {
             console.log(`[SmartLoader] الصفحة ${pageUrl} موجودة بالفعل في ${containerId}، سيتم الإظهار فقط.`);
             profileHandleRegistry(containerId, false);
+            if (container) container.style.display = "block"; // [Fix] Ensure container is visible when re-activated
             profileExecuteCallback(callbackName);
             return;
         }

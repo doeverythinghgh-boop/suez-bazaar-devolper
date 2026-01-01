@@ -10,6 +10,11 @@
     <h2 class="add1_product_modal__title" id="add1_product_title"><i class="fas fa-cart-plus" id="add1_icon_title"></i>
         إضافة منتج جديد</h2>
 
+    <!-- Selected Category Badges -->
+    <div id="add1_category_display" class="add1_category_badges">
+        <!-- Will be populated dynamically -->
+    </div>
+
     <form class="add1_product_modal__form" id="add1_product_form" novalidate>
         <!-- Image Upload Module -->
         <section class="add1_product_modal__form_group" aria-labelledby="add1_images_heading" id="add1_section_images">
@@ -41,7 +46,8 @@
         <!-- Product Name Field -->
         <div class="add1_product_modal__form_group" id="add1_group_product_name">
             <label for="add1_product_name" class="add1_product_modal__label" id="add1_label_product_name"><i
-                    class="fas fa-signature" id="add1_icon_product_name"></i> اسم المنتج (اكتب اسمًا واضحًا للمنتج)</label>
+                    class="fas fa-signature" id="add1_icon_product_name"></i> اسم المنتج (اكتب اسمًا واضحًا
+                للمنتج)</label>
             <input type="text" id="add1_product_name" name="product-name" class="add1_product_modal__input"
                 maxlength="100" placeholder="كلمات اسم المنتج هامة لظهور منتجك في البحث." required>
             <div id="add1_product_name_char_counter" class="add1_product_modal__char_counter">0 / 100</div>
@@ -121,8 +127,10 @@
         </div>
 
         <!-- Submit Button -->
-        <div class="add1_product_modal__submit_container" id="add1_submit_container">
+        <div class="add1_product_modal__submit_container" id="add1_submit_container"
+            style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
             <button type="submit" class="add1_btn add1_btn_primary" id="add1_btn_submit">اضف المنتج الآن</button>
+            <button type="button" class="add1_btn add1_btn_ghost" id="add1_btn_discard">تجاهل التعديلات</button>
         </div>
     </form>
 </div>

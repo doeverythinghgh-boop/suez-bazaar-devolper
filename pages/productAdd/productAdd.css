@@ -34,6 +34,37 @@
     /* Ensure it behaves like a block */
 }
 
+.add1_category_badges {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: -15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.add1_category_badge {
+    background-color: #3498db;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.add1_category_badge_sub {
+    background-color: #27ae60;
+}
+
+.add1_category_badge i {
+    font-size: 11px;
+    opacity: 0.9;
+}
+
 .add1_product_modal__title i {
     color: #3498db;
     margin-left: 10px;
