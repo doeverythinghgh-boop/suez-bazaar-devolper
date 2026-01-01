@@ -256,29 +256,21 @@ document.addEventListener("DOMContentLoaded", async () => {
         const isCurrentlyInUserContainer = (LOADER_REGISTRY[LOADER_REGISTRY.length - 1] === "index-user-container");
         const isDashboardVisible = document.getElementById("dash-welcome-message");
 
-        if (userContainer && userContainer.innerHTML.trim() === "" && LOADER_REGISTRY.length < 2) {
+        if (!isCurrentlyInUserContainer || !isDashboardVisible) {
+          // [1] If we are not in user container OR dashboard is not visible, load it.
+          console.log("[Navigation] Loading user dashboard.");
           mainLoader(
             "pages/user-dashboard.html",
             "index-user-container",
             0,
             undefined,
             "showHomeIcon",
-            true
-          );
-        } else if (isCurrentlyInUserContainer && !isDashboardVisible) {
-          // If we are in the user container but the main dashboard isn't visible,
-          // it means we are in a sub-page (like profile-modal). Reload dashboard.
-          console.log("[Navigation] Sub-page detected in user container, reloading dashboard root.");
-          mainLoader(
-            "pages/user-dashboard.html",
-            "index-user-container",
-            0,
-            undefined,
-            "showHomeIcon",
-            true
+            true // Force reload to clear any old content (like register form)
           );
         } else {
-          console.log("Navigating back to previous container");
+          // [2] If already on dashboard, we can either stay or go back. 
+          // Keeping containerGoBack here only if we are SURE we are on dashboard.
+          console.log("[Navigation] Already on dashboard, going back.");
           containerGoBack();
         }
       } else {
