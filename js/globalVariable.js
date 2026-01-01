@@ -131,7 +131,7 @@ function loadProductForm(options = {}) {
     0,
     undefined,
     "showHomeIcon",
-    true
+    editMode ? true : false // Smart Loading: Only reload on Edit mode to fetch fresh data
   );
 }
 

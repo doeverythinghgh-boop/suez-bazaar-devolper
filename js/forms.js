@@ -232,6 +232,18 @@ async function mainLoader(
     reload = false
 ) {
     try {
+        // [Smart Loading Logic] 
+        // If not forcing reload, check if this specific URL is already loaded in this container
+        const container = document.getElementById(containerId);
+        const currentLoadedUrl = container ? container.getAttribute('data-page-url') : null;
+
+        if (!reload && currentLoadedUrl === pageUrl && LOADER_REGISTRY.includes(containerId)) {
+            console.log(`[SmartLoader] الصفحة ${pageUrl} موجودة بالفعل في ${containerId}، سيتم الإظهار فقط.`);
+            profileHandleRegistry(containerId, false);
+            profileExecuteCallback(callbackName);
+            return;
+        }
+
         // 1. Registry management and hiding other containers
         const skipLoading = profileHandleRegistry(containerId, reload);
 
@@ -245,7 +257,6 @@ async function mainLoader(
             profileClearOldContent(containerId);
         }
 
-        const container = document.getElementById(containerId);
         if (!container) {
             console.error("لم يتم العثور على العنصر: " + containerId);
             return;
@@ -304,6 +315,9 @@ async function mainLoader(
         if (currentLoader) currentLoader.remove();
         buffer.remove(); // Remove the now-empty buffer
         container.classList.remove('main-loader-active');
+
+        // [Smart Loading Update] Tag the container with the successfully loaded URL
+        container.setAttribute('data-page-url', pageUrl);
 
         // Final output log of load process
         console.log(
