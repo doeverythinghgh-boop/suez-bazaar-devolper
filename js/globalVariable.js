@@ -141,6 +141,16 @@ function loadProductForm(options = {}) {
  */
 async function showAddProductModal() {
   try {
+    // [Skip logic] Check if a draft is already active in the add container
+    const addContainer = document.getElementById("index-productAdd-container");
+    const activeUrl = addContainer ? addContainer.getAttribute("data-page-url") : null;
+    const hasCategories = !!ProductStateManager.getSelectedCategories();
+
+    if (activeUrl && hasCategories && LOADER_REGISTRY.includes("index-productAdd-container")) {
+      console.log("[AddProduct] تم اكتشاف مسودة نشطة، تخطي نافذة اختيار الفئة.");
+      loadProductForm({ editMode: false });
+      return;
+    }
 
     const result = await CategoryModal.show();
     if (result.status === 'success') {
