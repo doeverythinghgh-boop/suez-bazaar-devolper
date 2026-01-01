@@ -232,6 +232,47 @@ function EDIT_attachEventListeners() {
             }
         };
     }
+
+    // Discard Button Logic
+    const editBtnDiscard = document.getElementById('edit_btn_discard');
+    if (editBtnDiscard) {
+        editBtnDiscard.onclick = () => {
+            try {
+                Swal.fire({
+                    title: 'تجاهل التعديلات؟',
+                    text: "سيتم مسح التغييرات والعودة للوحة التحكم.",
+                    icon: 'warning',
+                    iconColor: '#f39c12',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e74c3c',
+                    cancelButtonColor: '#bdc3c7',
+                    confirmButtonText: '<i class="fas fa-trash-alt"></i> نعم، تجاهل',
+                    cancelButtonText: 'تراجع',
+                    background: '#ffffff',
+                    customClass: {
+                        title: 'swal-modern-title',
+                        popup: 'swal-modern-popup'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (window.ProductStateManager) {
+                            ProductStateManager.setSelectedCategories(null, null);
+                        }
+                        const container = document.getElementById('index-productEdit-container');
+                        if (container) {
+                            container.removeAttribute('data-page-url');
+                            container.innerHTML = '';
+                        }
+                        if (window.containerGoBack) {
+                            containerGoBack();
+                        }
+                    }
+                });
+            } catch (error) {
+                console.error('[Edit] Error in discard button logic:', error);
+            }
+        };
+    }
 }
 
 /**
@@ -291,3 +332,32 @@ async function EDIT_openDesktopCamera() {
 
 // Map to global for compatibility
 window.productModule.createPreviewItem = EDIT_createPreviewItem;
+
+/**
+ * @function EDIT_renderCategories
+ * @description Fetches and displays selected category names as badges.
+ */
+async function EDIT_renderCategories() {
+    try {
+        if (!window.ProductStateManager) return;
+        const names = await ProductStateManager.resolveCategoryNames();
+        const display = document.getElementById('edit_category_display');
+        if (!display || !names.main) return;
+
+        display.innerHTML = `
+            <div class="edit_category_badge">
+                <i class="fas fa-layer-group"></i> ${names.main}
+            </div>
+            ${names.sub ? `
+                <div class="edit_category_badge edit_category_badge_sub">
+                    <i class="fas fa-tags"></i> ${names.sub}
+                </div>
+            ` : ''}
+        `;
+    } catch (error) {
+        console.error('[Edit] Error rendering categories:', error);
+    }
+}
+
+// Initial call
+EDIT_renderCategories();

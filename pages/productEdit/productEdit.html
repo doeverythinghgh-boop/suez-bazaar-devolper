@@ -8,6 +8,11 @@
 <div class="edit-product-modal" role="dialog" aria-modal="true" aria-labelledby="editProductTitle">
     <h2 class="edit-product-modal__title" id="editProductTitle"><i class="fas fa-edit"></i> تعديل المنتج</h2>
 
+    <!-- Selected Category Badges -->
+    <div id="edit_category_display" class="edit_category_badges">
+        <!-- Will be populated dynamically -->
+    </div>
+
     <form class="edit-product-modal__form" id="edit-product-form" novalidate>
         <!-- Image Upload Module -->
         <section class="edit-product-modal__form-group" aria-labelledby="imagesHeading">
@@ -116,8 +121,10 @@
         </div>
 
         <!-- Submit Button -->
-        <div class="edit-product-modal__submit-container">
+        <div class="edit-product-modal__submit-container"
+            style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
             <button type="submit" class="btn btn-warning">حفظ التعديلات</button>
+            <button type="button" class="btn btn-ghost" id="edit_btn_discard">تجاهل التعديلات</button>
         </div>
     </form>
 </div>

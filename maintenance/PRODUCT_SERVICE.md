@@ -141,6 +141,19 @@ ProductStateManager.getState()
 ```
 - **الوظيفة:** الحصول على نسخة كاملة من الحالة الداخلية (أغراض التطوير وتصحيح الأخطاء)
 
+##### `resolveCategoryNames()`
+```javascript
+async ProductStateManager.resolveCategoryNames()
+```
+- **الوظيفة:** جلب أسماء الفئات الرئيسية والفرعية المخزنة حالياً من `shared/list.json`
+- **الإرجاع:** `Promise<{main: string, sub: string}>` - كائن يحتوي على أسماء الفئات
+- **الاستخدام:** في صفحات الإضافة والتعديل لعرض بطاقات الفئات المختارة بشكل مرئي للمستخدم
+- **مثال:**
+```javascript
+const names = await ProductStateManager.resolveCategoryNames();
+// { main: "الملابس والأزياء", sub: "ملابس نسائية" }
+```
+
 ---
  
  ### 3. وحدة تحويل البيانات الموحدة: `productMapper.js`
