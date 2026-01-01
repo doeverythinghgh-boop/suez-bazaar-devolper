@@ -16,12 +16,19 @@ async function loadPage(params) {
         userSession = SessionManager.getUser();
 
         // Check if a user is already logged in.
-        if (Number(userSession?.is_seller) >= 1) {
+        if (userSession) {
             // Attempt to initialize notifications for the current user if logged in.
-            if (typeof initializeNotifications === "function") {
-                //  initializeNotifications();
+            if (typeof mainLoader === "function") {
+                mainLoader(
+                    "pages/user-dashboard.html",
+                    "index-user-container",
+                    0,
+                    undefined,
+                    "showHomeIcon",
+                    true
+                );
             }
-            // Stop execution to allow for redirection (redirection should happen elsewhere)
+            // Stop execution to allow for redirection
             return;
         }
 

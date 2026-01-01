@@ -249,7 +249,8 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
   function handleLoginButtonClick() {
     try {
-      if (userSession) {
+      const currentUser = SessionManager.getUser();
+      if (currentUser) {
         // [A] If user is logged in, redirect to dashboard.
         const userContainer = document.getElementById("index-user-container");
         const isCurrentlyInUserContainer = (LOADER_REGISTRY[LOADER_REGISTRY.length - 1] === "index-user-container");
@@ -371,7 +372,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   checkImpersonationMode();
 
   // [Step 9] Auto-initialize FCM if user is already logged in and notifications are enabled.
-  if (userSession && userSession.user_key) {
+  const currentUser = SessionManager.getUser();
+  if (currentUser && currentUser.user_key) {
     const notificationsEnabled = localStorage.getItem('notifications_enabled') !== 'false';
     if (notificationsEnabled) {
       setupFCM();

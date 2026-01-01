@@ -3,6 +3,24 @@
  * @description Handles new user registration functionality, including form validation, password confirmation, and serial number generation for user keys.
  */
 
+// [Immediate Check] Redirect to dashboard if user is already logged in.
+(function() {
+    const currentUser = typeof SessionManager !== 'undefined' ? SessionManager.getUser() : null;
+    if (currentUser) {
+        console.log("[Register] User already logged in, redirecting to dashboard.");
+        if (typeof mainLoader === 'function') {
+            mainLoader(
+                "pages/user-dashboard.html",
+                "index-user-container",
+                0,
+                undefined,
+                "showHomeIcon",
+                true
+            );
+        }
+    }
+})();
+
 var register_form = document.getElementById("register_form");
 var register_username = document.getElementById("register_username");
 var register_phone = document.getElementById("register_phone");
