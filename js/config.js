@@ -25,7 +25,7 @@ window.VERCEL_URL = "https://suez-bazaar.vercel.app";
 window.allowedHosts = [
   "127.0.0.1",
   "localhost",
-  "bazaar-bk1.pages.dev",
+  "suez-bazaar.pages.dev",
   "appassets.androidplatform.net",
   "doeverythinghgh-boop.github.io",
   "suez-bazaar.vercel.app",
