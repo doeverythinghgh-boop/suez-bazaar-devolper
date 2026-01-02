@@ -15,14 +15,14 @@
  * @type {string}
  * @var
  */
-var VERCEL_URL = "https://suez-bazaar.vercel.app";
+window.VERCEL_URL = "https://suez-bazaar.vercel.app";
 
 /**
  * @description List of domain names allowed to use the Vercel URL.
  * @type {string[]}
  * @var
  */
-var allowedHosts = [
+window.allowedHosts = [
   "127.0.0.1",
   "localhost",
   "bazaar-bk1.pages.dev",
@@ -37,7 +37,7 @@ var allowedHosts = [
  * @type {string}
  * @var
  */
-var baseURL = allowedHosts.includes(location.hostname) ? VERCEL_URL : "";
+window.baseURL = window.allowedHosts.includes(location.hostname) ? window.VERCEL_URL : "";
 
 /**
  * @description List of user IDs with administrative privileges.
