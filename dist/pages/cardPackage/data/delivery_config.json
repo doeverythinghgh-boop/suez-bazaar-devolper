@@ -1,0 +1,54 @@
+{
+    "weather_factors": {
+        "normal": 0,
+        "light_rain": 0.1,
+        "heavy_rain": 0.3
+    },
+    "location_factors": {
+        "city": 0,
+        "suburbs": 0.15,
+        "outside_city": 0.3
+    },
+    "vehicle_factors": {
+        "bike": 0,
+        "car": 0.25,
+        "truck": 0.6
+    },
+    "eta_factors": {
+        "normal": 0,
+        "fast": 0.2,
+        "instant": 0.4
+    },
+    "driver_rating_config": {
+        "excellent_threshold": 4.5,
+        "excellent_discount": -0.05,
+        "good_threshold": 4.0,
+        "good_factor": 0,
+        "poor_factor": 0.1
+    },
+    "defaults": {
+        "base_fee": 15,
+        "price_per_km": 5,
+        "high_order_value_threshold": 5000,
+        "high_order_fee": 20,
+        "discount_threshold": 200,
+        "discount_value": 5,
+        "special_vehicle_factor": 0.5,
+        "vehicle_type": "bike",
+        "weather": "normal",
+        "location": "city",
+        "eta_type": "normal",
+        "driver_rating": 4.3,
+        "office_location": {
+            "lat": 29.968897130919654,
+            "lng": 32.53395080566407
+        },
+        "default_customer_location": {
+            "lat": 30.0500,
+            "lng": 31.2400
+        },
+        "currency_symbol": "ج.م",
+        "placeholder_image": "https://via.placeholder.com/120x120?text=No+Image",
+        "deg_to_km_factor": 111
+    }
+}

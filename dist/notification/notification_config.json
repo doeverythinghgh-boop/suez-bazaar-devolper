@@ -1,0 +1,58 @@
+{
+  "purchase": {
+    "label": "شراء (Purchase)",
+    "buyer": false,
+    "admin": true,
+    "seller": true,
+    "delivery": false
+  },
+  "step-review": {
+    "label": "مراجعة (Review)",
+    "buyer": false,
+    "admin": false,
+    "seller": false,
+    "delivery": false
+  },
+  "step-cancelled": {
+    "label": "ملغي (Cancelled)",
+    "buyer": false,
+    "admin": true,
+    "seller": true,
+    "delivery": false
+  },
+  "step-confirmed": {
+    "label": "تأكيد (Confirmed)",
+    "buyer": true,
+    "admin": true,
+    "seller": false,
+    "delivery": true
+  },
+  "step-rejected": {
+    "label": "مرفوض (Rejected)",
+    "buyer": true,
+    "admin": true,
+    "seller": false,
+    "delivery": false
+  },
+  "step-shipped": {
+    "label": "شحن (Shipped)",
+    "buyer": true,
+    "admin": true,
+    "seller": false,
+    "delivery": false
+  },
+  "step-delivered": {
+    "label": "تسليم (Delivered)",
+    "buyer": false,
+    "admin": true,
+    "seller": true,
+    "delivery": false
+  },
+  "step-returned": {
+    "label": "مرتجع (Returned)",
+    "buyer": false,
+    "admin": true,
+    "seller": true,
+    "delivery": false
+  }
+}

@@ -1,0 +1,341 @@
+/* ======================================
+CSS: User Profile Styles
+✅ UPDATE: Styles updated for a modern and attractive design
+======================================
+*/
+
+/* Modal Content Styles */
+.profile-modal-wrapper {
+    font-family: "Tajawal";
+    direction: rtl;
+    text-align: right;
+    background-color: var(--bg-color-light);
+    width: 100%;
+}
+
+
+.profile-content {
+    padding: 20px 25px;
+    width: 100%;
+    /* Ensure content fills wrapper */
+    box-sizing: border-box;
+    /* Explicit box-sizing */
+    overflow-y: auto;
+
+}
+
+.profile-content h3 {
+    font-family: "Tajawal", sans-serif;
+    font-size: clamp(24px, 5vw, 28px);
+    /* ✅ UPDATE: Responsive font size */
+    margin-top: 0;
+    margin-bottom: 25px;
+    color: var(--dark-blue);
+    text-align: center;
+    font-weight: 700;
+    /* ✅ NEW: Increase font weight for title */
+}
+
+/* ✅ NEW: Icons inside input fields */
+.profile-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.profile-input-wrapper .profile-input-icon {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    color: var(--icon-color);
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Form Group and Field Styles */
+.profile-form-group {
+    margin-bottom: 20px;
+    text-align: right;
+    position: relative;
+}
+
+.profile-input-with-button {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.profile-input-with-button .profile-form-control {
+    flex: 1;
+}
+
+
+
+
+.profile-map-container {
+    width: 100%;
+    height: 500px;
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    margin-bottom: 10px;
+    /* Reduced from 25px */
+    background-color: var(--bg-color-light);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05), var(--shadow-soft);
+}
+
+.profile-map-message {
+    font-size: 0.82rem;
+    color: #475569;
+    margin-bottom: 5px;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+.profile-map-status {
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.profile-map-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.profile-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: var(--dark-blue);
+    font-size: 0.9rem;
+}
+
+.profile-form-group input {
+    width: 100%;
+    padding: 14px 45px 14px 45px;
+    /* Symmetric horizontal padding to balance icons/toggles */
+    border: 1px solid var(--border-color-input);
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-family: "Tajawal", sans-serif;
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    background-color: var(--bg-color-white);
+}
+
+/* ✅ NEW: Improve field appearance on focus */
+.profile-form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-focus);
+}
+
+.profile-error-message {
+    color: var(--danger-color);
+    font-size: 12px;
+    margin-top: 5px;
+    min-height: 15px;
+}
+
+.profile-toggle-password-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: var(--icon-color);
+    cursor: pointer;
+    z-index: 2;
+}
+
+/* Footer and Button Styles */
+.profile-modal-footer {
+    display: flex;
+    justify-content: center;
+    /* ✅ ADJUST: Center buttons */
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    /* ✅ NEW: Gap between buttons */
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.profile-modal-footer .profile-button {
+    width: fit-content;
+    /* ✅ ADJUST: Make buttons fill available space */
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    padding: 15px;
+    font-size: 1rem;
+}
+
+.profile-modal-footer .profile-button i {
+    margin-left: 8px;
+    /* ✅ NEW: Space between icon and text */
+}
+
+/* ✅ UPDATE: Save button design as primary button */
+.profile-modal-footer .profile-save-btn {
+    background-color: transparent;
+    color: var(--primary-color);
+    box-shadow: var(--shadow-interactive);
+}
+
+/* ✅ UPDATE: Delete button design as secondary warning button */
+.profile-modal-footer .profile-delete-btn-small {
+    background-color: transparent;
+    color: var(--danger-color, #dc3545);
+    border: 1px solid var(--danger-color-light);
+    flex-grow: 0;
+    /* Prevent button stretching */
+    width: auto;
+    padding: 15px 20px;
+}
+
+.profile-button:active {
+    transform: translateY(2px);
+    box-shadow: none;
+}
+
+/* ✅ NEW: Elegant visual separator */
+.profile-separator {
+    height: 1px;
+    background-color: var(--border-color);
+    margin: 25px 0;
+}
+
+/* Modern Checkbox Styles */
+/* ✅ IMPROVE: More modern checkbox appearance */
+.profile-form-group-checkbox {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin: 20px 0;
+    user-select: none;
+}
+
+/* Hide the default checkbox */
+.profile-form-group-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+/* Style the label to act as the custom checkbox container */
+.profile-form-group-checkbox label {
+    position: relative;
+    padding-right: 35px;
+    font-size: 16px;
+    color: var(--dark-blue);
+    cursor: pointer;
+}
+
+/* Create the custom checkbox box */
+.profile-form-group-checkbox label::before {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background-color: var(--bg-color-white);
+    transition: all 0.2s ease-in-out;
+}
+
+/* Create the checkmark icon (hidden by default) */
+.profile-form-group-checkbox label::after {
+    content: "✔";
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%) scale(0);
+    font-size: 16px;
+    color: white;
+    transition: transform 0.2s ease-in-out;
+}
+
+/* Reveal and style when checked */
+.profile-form-group-checkbox input[type="checkbox"]:checked+label::before {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.profile-form-group-checkbox input[type="checkbox"]:checked+label::after {
+    transform: translateY(-50%) scale(1);
+}
+
+/* Animation for modal content */
+@keyframes profileSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ======================================
+   Media Queries for Responsiveness
+   ====================================== */
+
+@media screen and (max-width: 480px) {
+    .profile-modal-wrapper {
+        width: 100%;
+
+    }
+
+    .profile-content {
+        padding: 15px 20px;
+    }
+
+    .profile-content h3 {
+        margin-bottom: 20px;
+    }
+
+    .profile-modal-footer {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .profile-modal-footer .profile-button {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+
+    .profile-modal-footer .profile-delete-btn-small {
+        width: 100%;
+        order: 2;
+        /* Smallest button at bottom on mobile */
+    }
+
+    .profile-modal-footer .profile-save-btn {
+        order: 1;
+    }
+
+    .profile-map-container {
+        height: 400px;
+    }
+
+    .profile-map-section {
+        margin-top: 15px;
+    }
+
+    .profile-input-with-button {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}

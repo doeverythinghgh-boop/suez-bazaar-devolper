@@ -1,0 +1,61 @@
+<!--
+@file pages/ADMIN/adminPanel.html
+@description Admin Dashboard Panel for User Management. Displays a table of users and allows admin actions.
+-->
+<!-- Scripts -->
+<script src="../../assets/libs/sweetalert2/sweetalert2.all.min.js"></script>
+<!-- Styles -->
+<link rel="stylesheet" href="/pages/ADMIN/adminPanel.css" />
+<script src="/pages/ADMIN/adminPanel.js"></script>
+
+<body>
+
+  <div class="admin-panel-container">
+    <h1 class="admin-panel-title">لوحة تحكم المسؤول - إدارة المستخدمين <span id="selected-user-display"
+        style="font-size: 0.8em; color: var(--primary-color);"></span></h1>
+
+    <!-- Loader Indicator -->
+    <div id="admin-panel-loader" class="admin-panel-loader-container">
+      <div class="admin-panel-loader"></div>
+      <p>جاري تحميل بيانات المستخدمين...</p>
+    </div>
+
+    <!-- Table Container -->
+    <div class="admin-panel-table-container" id="admin-panel-table-container" style="display: none;">
+      <table class="admin-panel-users-table" id="admin-panel-users-table">
+        <thead class="admin-panel-table-header">
+          <tr>
+            <th>المفتاح الفريد</th>
+            <th>اسم المستخدم</th>
+            <th>رقم الهاتف</th>
+            <th>كلمة المرور</th>
+            <th>العنوان</th>
+            <th>لديه توكن FCM</th>
+            <th>منصة التوكن</th>
+            <th>حالة التوصيل</th>
+            <th>حد الباقة</th>
+            <th>حالة التسليم</th>
+            <th>إرسال إشعار</th>
+            <th>دخول</th>
+          </tr>
+        </thead>
+        <tbody id="admin-panel-users-tbody">
+          <!-- Rows will be populated here via JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Broadcast Message Section -->
+    <div id="admin-panel-broadcast-section" class="admin-panel-broadcast-container" style="display: none;">
+      <h2 class="admin-panel-sub-title">إرسال رسالة لجميع المستخدمين</h2>
+      <div class="broadcast-form">
+        <textarea id="broadcast-message-input" placeholder="اكتب نص الرسالة هنا لإرسالها لجميع المستخدمين دفعة واحدة..."
+          class="broadcast-textarea"></textarea>
+        <button id="send-broadcast-btn" class="btn-delivery-status btn-broadcast-send"
+          onclick="sendBroadcastNotification()">
+          <i class="fas fa-bullhorn"></i> إرسال للجميع
+        </button>
+      </div>
+    </div>
+  </div>
+</body>

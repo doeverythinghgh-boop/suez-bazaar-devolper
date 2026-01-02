@@ -1,0 +1,3 @@
+Please place the following icon files here:
+- icon-192x192.png
+- icon-512x512.png

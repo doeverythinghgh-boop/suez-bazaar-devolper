@@ -1,0 +1,706 @@
+/**
+ * @file notifications.css
+ * @description أنماط صفحة الإشعارات
+ */
+
+/* الحاوية الرئيسية */
+.notifications-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--bg-primary);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    min-height: 80vh;
+}
+
+/* الهيدر */
+.notifications-header {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
+    color: var(--bg-color-white);
+    padding: var(--spacing-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.notifications-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.1;
+}
+
+.header-content {
+    position: relative;
+    z-index: 1;
+}
+
+.header-title {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.header-title h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+}
+
+.header-title i {
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 0.75rem;
+    border-radius: 50%;
+}
+
+/* إحصائيات الهيدر */
+.header-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: var(--border-radius-sm);
+    padding: var(--spacing-sm);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s, background 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    opacity: 0.9;
+}
+
+/* أدوات التحكم */
+.controls-bar {
+    background: var(--bg-color-white);
+    padding: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.controls-group {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: var(--bg-secondary);
+    padding: 0.5rem var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.controls-group label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.controls-group select,
+.controls-group input {
+    border: none;
+    background: transparent;
+    padding: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    outline: none;
+    min-width: 120px;
+}
+
+.controls-group input {
+    width: 200px;
+}
+
+.controls-group input::placeholder {
+    color: var(--text-muted);
+}
+
+/* أزرار التحكم */
+.control-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin-right: auto;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: var(--primary-600);
+    color: var(--bg-color-white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-700);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-tertiary);
+}
+
+.btn-danger {
+    background: var(--danger-color);
+    color: var(--bg-color-white);
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.btn-refresh {
+    position: relative;
+}
+
+.btn-refresh.refreshing i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* تبديل التحديث التلقائي */
+.toggle-switch {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px; /* ✅ تعديل الحجم ليكون أكثر تناسقاً */
+    height: 22px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: #ccc; /* ✅ لون صلب كبديل */
+    transition: .4s;
+    border-radius: 34px;
+    border: 1px solid #bbb; /* ✅ إضافة برواز خفيف لضمان الظهور */
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    right: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background-color: #28a745; /* ✅ أخضر صلب للتفعيل */
+    border-color: #218838;
+}
+
+input:checked + .slider:before {
+    transform: translateX(-22px); /* ✅ تعديل المسافة بناءً على العرض الجديد */
+}
+
+/* --- إعدادات الإشعارات --- */
+.notifications-settings {
+    background-color: var(--bg-color-white, #ffffff);
+    margin: 15px;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.settings-info h3 {
+    margin: 0 0 5px 0;
+    font-size: 1rem;
+    color: var(--text-color-dark, #050505);
+}
+
+.settings-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-color-medium, #65676b);
+}
+
+/* --- تصميم عصري للإشعارات (شات) --- */
+
+/* حاوية القائمة الرئيسية */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    /* ✅ تعديل: زيادة المسافة الرأسية بين الرسائل */
+    align-items: center;
+    /* ✅ جديد: توسيط المحتوى أفقيًا للسماح للرسائل بالانكماش */
+    padding: 20px 15px;
+    background-color: var(--bg-color-light, #f0f2f5);
+    min-height: 100vh;
+    font-family: var(--font-primary, "Tajawal", sans-serif);
+    overflow-x: hidden;
+}
+
+/* فاصل التاريخ */
+.date-divider {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+    position: relative;
+    z-index: 1;
+}
+
+.date-divider span {
+    background-color: var(--border-color-soft, #e4e6eb);
+    color: var(--text-color-medium, #65676b);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    backdrop-filter: blur(5px);
+}
+
+/* فقاعة الإشعار الأساسية */
+.notification-item {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text-color-dark, #050505);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    animation: notification-pop-in 0.3s ease-out;
+    transition: transform 0.2s;
+    margin-top: 15px;
+}
+
+.notification-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    /* ظل أعمق عند التحويم */
+}
+
+@keyframes notification-pop-in {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* === الرسائل المستلمة (وارد) - تظهر على اليمين في العربية === */
+.notification-item.received {
+    align-self: flex-end;
+    /* ✅ تعديل: flex-end لليمين في RTL */
+    background-color: var(--bg-color-white, #ffffff);
+    border-top-right-radius: 4px;
+    /* زاوية حادة لإنشاء "ذيل" الرسالة */
+    margin-right: 8px;
+    /* مسافة لإظهار الذيل */
+}
+
+/* ✅ جديد: إنشاء "ذيل" الرسالة المستلمة باستخدام عنصر زائف */
+.notification-item.received::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -8px;
+    border: 8px solid transparent;
+    border-top-color: var(--bg-color-white, #ffffff);
+    /* لون مطابق للخلفية */
+    border-left: 0;
+    border-bottom: 0;
+}
+
+/* === الرسائل المرسلة (صادر) - تظهر على اليسار في العربية === */
+.notification-item.sent {
+    align-self: flex-start;
+    /* ✅ تعديل: flex-start لليسار في RTL */
+    background-color: #dcf8c6;
+    /* لون أخضر فاتح مميز للرسائل الصادرة */
+    border-top-left-radius: 4px;
+    /* زاوية حادة لإنشاء "ذيل" الرسالة */
+    margin-left: 8px;
+}
+
+/* ✅ جديد: إنشاء "ذيل" الرسالة المرسلة */
+.notification-item.sent::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -8px;
+    border: 8px solid transparent;
+    border-top-color: #dcf8c6;
+    /* لون مطابق للخلفية */
+    border-right: 0;
+    border-bottom: 0;
+}
+
+/* اسم المرسل */
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2px;
+}
+
+.sender-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--primary-color, #007bff);
+    /* لون مميز للاسم */
+}
+
+/* نص الرسالة */
+.notification-body p {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* البيانات الوصفية (الوقت والحالة) */
+.notification-meta {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+    opacity: 0.8;
+}
+
+.notification-time {
+    font-size: 0.7rem;
+    color: var(--text-color-medium, #65676b);
+}
+
+/* أيقونات حالة القراءة */
+.read-status {
+    font-size: 0.9rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+.read-status.read {
+    color: var(--info-color, #3498db);
+    /* أزرق للقراءة */
+}
+
+.read-status.unread {
+    color: var(--text-color-light, #bcc0c4);
+    /* رمادي للغير مقروء */
+}
+
+/* زر الحذف */
+.delete-notification-btn {
+    background: none;
+    border: none;
+    color: var(--text-color-light, #bcc0c4);
+    cursor: pointer;
+    padding: 4px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s, transform 0.2s;
+    margin-right: 4px; /* مسافة بسيطة عن ايقونة القراءة */
+}
+
+.delete-notification-btn:active {
+    color: var(--danger-color, #dc3545);
+    transform: scale(1.1);
+}
+
+.delete-notification-btn i {
+    pointer-events: none;
+}
+
+/* الحالات المختلفة */
+.state-container {
+    text-align: center;
+    padding: var(--spacing-xl);
+    display: none;
+    margin-top: 20px;
+}
+
+.empty-state,
+.loading-state,
+.error-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.empty-state i,
+.loading-state i,
+.error-state i {
+    font-size: 4rem;
+    color: var(--primary-300);
+    opacity: 0.5;
+}
+
+.empty-state p {
+    color: #1b46e5;
+}
+
+.error-state i {
+    color: var(--danger-color);
+}
+
+.empty-state h3,
+.loading-state h3,
+.error-state h3 {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.error-message {
+    color: var(--danger-color);
+    background: var(--danger-color-light);
+    padding: var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* رسائل Toast */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    /* تغيير من left إلى right لدعم RTL بشكل أفضل */
+    left: auto;
+    background: var(--bg-color-white);
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 300px;
+    max-width: 90vw;
+    z-index: 9999;
+    /* رفع الطبقة لتظهر فوق العناصر الأخرى */
+    animation: slideIn 0.3s ease;
+    border-right: 4px solid var(--info-color);
+    direction: rtl;
+    /* تأكيد الاتجاه */
+}
+
+.toast-success {
+    border-right-color: var(--success-color);
+}
+
+.toast-error {
+    border-right-color: var(--danger-color);
+}
+
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    flex: 1;
+}
+
+.toast-content i {
+    color: var(--info-color);
+}
+
+.toast-success .toast-content i {
+    color: var(--success-color);
+}
+
+.toast-error .toast-content i {
+    color: var(--danger-color);
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0 0.25rem;
+    line-height: 1;
+}
+
+.toast-close:hover {
+    color: var(--text-primary);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        /* الدخول من اليمين */
+        opacity: 0;
+    }
+
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* التمرير */
+.notifications-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notifications-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.notifications-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+/* إخفاء العناصر غير المستخدمة تماماً */
+.controls-bar,
+.header-stats {
+    display: none !important;
+}
+
+/* التجاوب */
+@media (max-width: 768px) {
+    body {
+        padding: var(--spacing-xs);
+    }
+
+    .notifications-container {
+        border-radius: var(--border-radius-sm);
+    }
+
+    .header-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .controls-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--spacing-sm);
+    }
+
+    .control-buttons {
+        margin-right: 0;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .controls-group {
+        justify-content: space-between;
+    }
+
+    .controls-group input {
+        width: 100%;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .notification-meta {
+        gap: 0.5rem;
+    }
+
+    .toast {
+        left: var(--spacing-xs);
+        right: var(--spacing-xs);
+        min-width: auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+        text-align: center;
+    }
+
+    .notification-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+
+    .notification-actions {
+        align-self: flex-end;
+    }
+}

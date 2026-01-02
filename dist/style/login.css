@@ -1,0 +1,250 @@
+/* ملاحظة: لا يسمح باستخدام تأثيرات hover في هذا المشروع. */
+
+/* === تصميم جديد ومحسّن لصفحة تسجيل الدخول === */
+
+/* 1. خلفية الصفحة وتخطيطها العام */
+@keyframes gradient-animation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.login-page-wrapper {
+  font-family: "Tajawal", sans-serif;
+  /* جديد: خلفية متحركة جذابة */
+  background-size: 400% 400%;
+  animation: gradient-animation 15s ease infinite;
+  min-height: 100vh;
+  display: flex; /* ✅ تعديل: تغيير طريقة المحاذاة العمودية */
+  align-items: flex-start; /* محاذاة المحتوى إلى الأعلى */
+  justify-content: center;
+  padding: 20px; /* ✅ تعديل: إضافة حشو علوي لدفع النموذج للأسفل قليلًا */
+
+  box-sizing: border-box;
+}
+
+/* 2. حاوية النموذج الرئيسية (البطاقة) */
+.login-container {
+  background-color: #ffffff;
+  width: 100%;
+  /* تعديل: إزالة الارتفاع الأدنى الثابت ليتناسب مع المحتوى */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0; /* إزالة الحشو من هذه الحاوية */
+  background: none; /* جعل هذه الحاوية شفافة */
+}
+
+/* 3. عنوان النموذج (تسجيل الدخول) */
+.login-container h2 {
+  margin-top: 0;
+  margin-bottom: 40px; /* زيادة المسافة السفلية */
+  color: #03478f; /* لون أغمق وأكثر وضوحًا */
+  font-size: clamp(28px, 6vw, 36px); /* تكبير حجم الخط */
+  font-weight: 700;
+  text-align: center;
+}
+
+/* 4. النموذج نفسه */
+.login-container form {
+  width: 100%;
+  max-width: 420px; /* تعديل العرض الأقصى */
+  /* جديد: تأثير زجاجي شفاف */
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 40px;
+  border-radius: 20px; /* حواف أكثر دائرية */
+  /* جديد: ظل أكثر نعومة وعمقًا */
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* 5. مجموعة حقل الإدخال (العنوان والحقل) */
+.form-group {
+  margin-bottom: 20px;
+  text-align: right; /* Align labels to the right */
+ 
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #03478f; /* لون رمادي داكن */
+  font-size: 0.9rem;
+}
+
+/* 6. حقول الإدخال */
+.form-group input {
+  width: 100%; /* تعديل: العرض الكامل للحاوية */
+  padding: 14px 45px 14px 15px; /* مساحة للأيقونة على اليمين */
+  border: 1px solid #d1d5db; /* لون إطار أفتح */
+  border-radius: 10px; /* زيادة دائرية الحواف */
+  box-sizing: border-box;
+  font-family: "Tajawal", sans-serif;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: #ffffff; /* تعديل: خلفية بيضاء نقية */
+}
+
+/* حاوية الأيقونة داخل حقل الإدخال */
+.form-group {
+  position: relative;
+}
+
+/* Wrapper for password input to position the icon */
+.password-wrapper {
+  position: relative;
+}
+
+/* Adjust password input padding to make space for the icon */
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+  padding-left: 40px; /* Space for the icon on the left (for RTL) */
+}
+
+/* أيقونات حقول الإدخال */
+.form-group .fa-phone,
+.form-group .fa-user {
+  /* تعديل: تحسين محاذاة الأيقونة */
+  position: absolute;
+  top: 50%;
+  right: 15px; /* لليمين في RTL */
+  transform: translateY(calc(-50% + 14px)); /* ضبط المحاذاة العمودية بدقة */
+  color: #9ca3af;
+  cursor: pointer;
+
+}
+
+/* Style for input fields with validation errors */
+.form-group input.input-error {
+  border-color: #dc3545; /* Red border for error */
+}
+
+.form-group input.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.25); /* Red shadow on focus */
+}
+
+/* Style for the error message below the input */
+.error-message {
+  color: #dc3545; /* Red color for error text */
+  font-size: 12px;
+  margin-top: 5px;
+  min-height: 15px; /* Reserve space to prevent layout shifts */
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #3b82f6; /* تعديل: لون أزرق متناسق */
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+}
+
+/* 7. زر تسجيل الدخول */
+.login-btn {
+  width: 100%;
+  padding: 15px;
+  font-size: clamp(16px, 4vw, 18px); /* Responsive font size */
+  margin-top: 10px;
+  border: none;
+  color: white;
+  /* تعديل: تدرج لوني أكثر حيوية */
+  background-image: linear-gradient(to right, #3b82f6, #60a5fa);
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.login-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+/* 8. تذييل النموذج (روابط إضافية) */
+.form-footer {
+  margin-top: 25px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
+}
+
+/* رابط "سجل الآن": يظهر كإجراء ثانوي أساسي */
+.form-footer-link {
+  color: #007bff; /* لون أزرق واضح */
+  font-size: 14px; /* تعديل: توحيد حجم الخط */
+  text-decoration: none;
+}
+
+/* رابط "الدخول كضيف": يظهر كخيار بديل وأقل أهمية */
+.guest-login-link {
+  color: #007bff; /* لون رمادي لجعله أقل بروزًا */
+  font-size: 14px;
+  border-top: 1px solid #e5e7eb; /* خط فاصل أغمق قليلاً */
+  padding-top: 15px; /* مسافة فوق الرابط */
+  width: 100%; /* جعله يمتد على عرض الحاوية */
+  text-align: center; /* توسيط النص */
+  text-decoration: none;
+}
+.toggle-password {
+  position: absolute;
+  top: 50%;
+  left: 15px; /* لليسار في RTL */
+  transform: translateY(calc(-50% + 14px)); /* ضبط المحاذاة العمودية بدقة */
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+#password {
+  padding-left: 45px; /* مساحة لأيقونة العين على اليسار */
+}
+
+.form-footer a strong {
+  font-weight: 700;
+}
+
+/* === Back to Home Button (in Header) === */
+.back-to-home-btn {
+  display: flex;
+  flex-direction: column; /* جعل الأيقونة والنص بترتيب عمودي */
+  align-items: center;
+  gap: 2px; /* تقليل المسافة بين الأيقونة والنص */
+  font-family: "Tajawal", sans-serif;
+  /* font-size will be controlled by child elements */
+  font-weight: bold;
+  color: #03478f; /* ✅ تعديل: تغيير لون الزر إلى الأزرق */
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 20px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.back-to-home-btn i {
+  font-size: 16px;
+  margin-bottom: 2px; /* إضافة مسافة صغيرة أسفل الأيقونة */
+}
+
+.back-to-home-btn span {
+  font-size: 12px; /* تصغير حجم خط النص */
+  white-space: nowrap; /* منع النص من الانقسام إلى سطرين */
+}
+
+/* Media query for very small screens */
+@media (max-width: 480px) {
+  .login-container form {
+    padding: 30px 25px; /* تقليل الحشو للشاشات الصغيرة جدًا */
+    /* جديد: إزالة الظل والحدود على الشاشات الصغيرة جدًا */
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none; /* For Safari compatibility */
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+}

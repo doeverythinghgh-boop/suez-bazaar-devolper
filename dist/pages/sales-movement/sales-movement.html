@@ -1,0 +1,70 @@
+<link rel="stylesheet" href="pages/sales-movement/sales-movement.css">
+
+<div class="salesMovement_container" style="background-color: var(--bg-color-light);">
+
+    <div class="salesMovement_filterContainer">
+        <div class="salesMovement_radioGroup">
+            <div class="salesMovement_radioOption">
+                <label for="salesMovement_buyer" class="salesMovement_radioLabel">
+                    <i class="fas fa-shopping-cart"></i>
+                    <div class="salesMovement_radioTextWrapper">
+                        <input type="radio" id="salesMovement_buyer" name="salesMovement_userType" value="buyer">
+                        <span>مشتري</span>
+                    </div>
+                </label>
+            </div>
+            <div class="salesMovement_radioOption">
+                <label for="salesMovement_seller" class="salesMovement_radioLabel">
+                    <i class="fas fa-store"></i>
+                    <div class="salesMovement_radioTextWrapper">
+                        <input type="radio" id="salesMovement_seller" name="salesMovement_userType" value="seller">
+                        <span>بائع</span>
+                    </div>
+                </label>
+            </div>
+            <div class="salesMovement_radioOption">
+                <label for="salesMovement_delivery" class="salesMovement_radioLabel">
+                    <i class="fas fa-truck"></i>
+                    <div class="salesMovement_radioTextWrapper">
+                        <input type="radio" id="salesMovement_delivery" name="salesMovement_userType"
+                            value="delivery">
+                        <span>توصيل</span>
+                    </div>
+                </label>
+            </div>
+            <div class="salesMovement_radioOption" id="salesMovement_adminOption" style="display: none;">
+                <label for="salesMovement_admin" class="salesMovement_radioLabel">
+                    <i class="fas fa-user-shield"></i>
+                    <div class="salesMovement_radioTextWrapper">
+                        <input type="radio" id="salesMovement_admin" name="salesMovement_userType" value="admin">
+                        <span>مسؤول</span>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <button id="salesMovement_refreshButton" class="salesMovement_refreshBtn">
+            <i class="fas fa-sync-alt salesMovement_refreshIcon"></i>
+            <span>تحديث</span>
+        </button>
+    </div>
+
+    <!-- Orders display container -->
+    <div id="salesMovement_ordersContainer" class="salesMovement_ordersContainer">
+        <!-- Order cards will be added here dynamically -->
+    </div>
+</div>
+
+<!-- Modal for displaying order details -->
+<div id="salesMovement_orderModal" class="salesMovement_modal" style="background-color: var(--bg-color-light);">
+    <div class="salesMovement_modalContent">
+        <button class="salesMovement_closeBtn" id="salesMovement_closeModal">
+            <span><i class="fas fa-times"></i></span>
+        </button>
+        <div id="salesMovement_modalBody" class="salesMovement_modalBody">
+            <!-- Order details will be added here dynamically -->
+        </div>
+    </div>
+</div>
+
+<script src="pages/sales-movement/sales-movement.js"></script>

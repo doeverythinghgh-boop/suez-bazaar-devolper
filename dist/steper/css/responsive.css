@@ -1,0 +1,136 @@
+/* ============================================
+   التصميم المتجاوب (Responsive Design) - Enhanced
+   ============================================ */
+
+/* للأجهزة اللوحية (Tablets) واللاب توب الصغير */
+@media (max-width: 1024px) {
+    .step_container {
+        padding: 1.5rem;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+        margin-bottom: 2rem;
+    }
+
+    .step-item {
+        min-width: 80px;
+    }
+
+    .step-circle {
+        width: 48px;
+        height: 48px;
+        font-size: 1.1rem;
+    }
+
+    .step-label {
+        font-size: 0.85rem;
+    }
+}
+
+/* الأجهزة المحمولة (Large Mobile) */
+@media (max-width: 768px) {
+    .step_container {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    /* تحسين شريط التمرير */
+    .stepper-wrapper {
+        justify-content: flex-start;
+        /* مهم للتمرير */
+        padding: 20px;
+        gap: 0.5rem;
+    }
+
+    .step-item {
+        flex: 0 0 90px;
+        /* عرض ثابت لكل خطوة لضمان التمرير */
+        width: auto;
+    }
+
+    .step-item:not(:last-child)::after {
+        width: 100%;
+        left: -50%;
+    }
+
+    .step-circle {
+        width: 42px;
+        height: 42px;
+        font-size: 1rem;
+    }
+}
+
+/* الأجهزة المحمولة الصغيرة (Small Mobile) */
+@media (max-width: 480px) {
+    .step_container {
+        padding: 0.5rem;
+    }
+
+    h1 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+    }
+
+    .stepper-container {
+        padding: 0.5rem 0;
+    }
+
+    .stepper-wrapper {
+        padding: 20px;
+    }
+
+    .step-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 0.85rem;
+        border-width: 2px;
+    }
+
+    .step-circle i {
+        font-size: 0.8rem;
+    }
+
+    .step-label {
+        font-size: 0.7rem;
+        margin-top: 0.3rem;
+    }
+
+    .step-item:not(:last-child)::after {
+        top: 18px;
+        /* نصف 36px */
+        height: 2px;
+    }
+
+    .step-description {
+        font-size: 0.7rem;
+        margin-top: 5px;
+    }
+}
+
+/* شاشات صغيرة جداً (مثل الساعات أو نوافذ iframe ضيقة للغاية) */
+@media (max-width: 320px) {
+    .step-item {
+        flex: 0 0 75px;
+    }
+
+    .step-label {
+        font-size: 0.6rem;
+    }
+}
+
+/* إخفاء شريط التمرير ولكن السماح باللمس (اختياري، لجمالية أكثر) */
+.stepper-wrapper {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.stepper-wrapper::-webkit-scrollbar {
+    display: none;
+}

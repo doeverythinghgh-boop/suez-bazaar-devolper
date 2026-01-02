@@ -1,0 +1,640 @@
+.salesMovement_container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.salesMovement_filterContainer {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.salesMovement_radioGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+}
+
+.salesMovement_radioOption {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 3px 8px;
+    min-height: auto;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.salesMovement_radioOption:has(input[type="radio"]:checked) {
+    border-color: #667eea;
+    background: transparent;
+}
+
+.salesMovement_radioOption input[type="radio"] {
+    opacity: 1;
+    position: static;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 0;
+    accent-color: #667eea;
+}
+
+.salesMovement_radioLabel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    width: auto;
+    padding: 0;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: #333;
+    font-weight: 500;
+    font-size: 14px;
+    min-height: auto;
+    box-shadow: none;
+    cursor: pointer;
+    transition: none;
+}
+
+.salesMovement_radioLabel i {
+    font-size: 18px;
+    color: #333;
+}
+
+.salesMovement_radioLabel:has(input[type="radio"]:checked) i {
+    color: #667eea;
+}
+
+.salesMovement_radioTextWrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.salesMovement_radioTextWrapper input[type="radio"] {
+    opacity: 1;
+    position: static;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    margin: 0;
+    accent-color: #667eea;
+}
+
+/* Update checked styles to work with input inside label */
+.salesMovement_radioLabel:has(input[type="radio"]:checked) {
+    background: transparent;
+    border-color: transparent;
+    color: #667eea;
+    font-weight: 600;
+    box-shadow: none;
+    transform: none;
+}
+
+.salesMovement_radioLabel:has(input[type="radio"]:checked) span {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.salesMovement_radioLabel:has(input[type="radio"]:active) {
+    transform: none;
+}
+
+/* ========================================
+   Orders Container & Cards Styling
+   ======================================== */
+
+.salesMovement_ordersContainer {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+    width: 100%;
+}
+
+.salesMovement_orderCard {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #eee;
+}
+
+.salesMovement_orderCard::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #667eea;
+}
+
+.salesMovement_orderCard:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.salesMovement_cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.salesMovement_cardIcon {
+    font-size: 24px;
+    color: #667eea;
+}
+
+.salesMovement_cardTitle {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.salesMovement_cardBody {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.salesMovement_cardInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.salesMovement_cardInfo span:first-child {
+    font-weight: 500;
+    color: #667eea;
+}
+
+.salesMovement_cardInfo span:last-child {
+    color: #333;
+}
+
+/* Loading state */
+.salesMovement_loading {
+    text-align: center;
+    padding: 40px;
+    font-size: 18px;
+    color: #667eea;
+    animation: salesMovement_pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes salesMovement_pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Empty state */
+.salesMovement_emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.salesMovement_emptyState .salesMovement_emptyIcon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.salesMovement_emptyState .salesMovement_emptyText {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+/* ========================================
+   Modal/Popup Styling
+   ======================================== */
+
+.salesMovement_modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    animation: salesMovement_fadeIn 0.3s ease;
+}
+
+.salesMovement_modal.salesMovement_show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes salesMovement_fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.salesMovement_modalContent {
+    background: white;
+    border-radius: 20px;
+    /*padding: 25px;*/
+    max-width: 90%;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+    animation: salesMovement_slideUp 0.3s ease;
+}
+
+@keyframes salesMovement_slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.salesMovement_closeBtn {
+    position: relative;
+    top: auto;
+    right: auto;
+    margin: 0 auto 10px auto;
+    display: flex;
+    background: #667eea;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 28px;
+    color: white;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+}
+
+.salesMovement_closeBtn:active {
+    transform: scale(0.95);
+}
+
+.salesMovement_modalBody {
+    margin-top: 0;
+    min-height: 70vh;
+    /*max-height: min-content;*/
+}
+
+.salesMovement_modalTitle {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+    color: #667eea;
+}
+
+.salesMovement_modalSection {
+    margin-bottom: 25px;
+}
+
+.salesMovement_modalSectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #667eea;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.salesMovement_modalInfo {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.salesMovement_modalInfoLabel {
+    font-weight: 500;
+    color: #666;
+}
+
+.salesMovement_modalInfoValue {
+    font-weight: 600;
+    color: #333;
+}
+
+.salesMovement_productItem {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 12px;
+    border-left: 4px solid #667eea;
+    transition: all 0.2s ease;
+}
+
+.salesMovement_productName {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.salesMovement_productDetails {
+    display: flex;
+    gap: 15px;
+    font-size: 14px;
+    color: #666;
+}
+
+.salesMovement_productDetails span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* ========================================
+   Responsive Design - Media Queries
+   ======================================== */
+
+/* Very small screens (small phones) - less than 360px */
+@media screen and (max-width: 359px) {
+    .salesMovement_container {
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .salesMovement_filterContainer {
+        margin-bottom: 15px;
+    }
+
+    .salesMovement_radioGroup {
+        gap: 8px;
+    }
+
+    .salesMovement_radioOption {
+        padding: 3px 6px;
+        border-radius: 5px;
+        min-height: auto;
+        font-size: 12px;
+    }
+
+    .salesMovement_radioLabel {
+        font-size: 12px;
+    }
+
+    .salesMovement_ordersContainer {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .salesMovement_orderCard {
+        padding: 15px;
+    }
+
+    .salesMovement_modalContent {
+        width: 95%;
+        padding: 20px;
+    }
+}
+
+/* Small mobile phones - 360px to 479px */
+@media screen and (min-width: 360px) and (max-width: 479px) {
+    .salesMovement_container {
+        padding: 18px;
+        border-radius: 12px;
+    }
+
+    .salesMovement_filterContainer {
+        margin-bottom: 16px;
+    }
+
+    .salesMovement_radioGroup {
+        gap: 10px;
+    }
+
+    .salesMovement_radioOption {
+        padding: 3px 7px;
+        border-radius: 6px;
+        min-height: auto;
+        font-size: 13px;
+    }
+
+    .salesMovement_radioLabel {
+        font-size: 13px;
+    }
+
+    .salesMovement_ordersContainer {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+}
+
+/* Medium mobile phones - 480px to 767px */
+@media screen and (min-width: 480px) and (max-width: 767px) {
+    .salesMovement_container {
+        padding: 22px;
+        border-radius: 13px;
+    }
+
+    .salesMovement_filterContainer {
+        margin-bottom: 18px;
+    }
+
+    .salesMovement_radioGroup {
+        gap: 12px;
+    }
+
+    .salesMovement_radioOption {
+        padding: 3px 7px;
+        border-radius: 6px;
+        min-height: auto;
+        font-size: 13px;
+    }
+
+    .salesMovement_radioLabel {
+        font-size: 13px;
+    }
+
+    .salesMovement_ordersContainer {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 18px;
+    }
+}
+
+/* Small tablets (Portrait) - 768px to 991px */
+@media screen and (min-width: 768px) and (max-width: 991px) {
+    .salesMovement_container {
+        padding: 25px;
+        border-radius: 14px;
+    }
+
+    .salesMovement_filterContainer {
+        margin-bottom: 19px;
+    }
+
+    .salesMovement_radioGroup {
+        gap: 15px;
+    }
+
+    .salesMovement_radioOption {
+        padding: 3px 8px;
+        border-radius: 6px;
+        min-height: auto;
+        font-size: 14px;
+    }
+
+    .salesMovement_ordersContainer {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+/* Large tablets and small screens - 992px to 1199px */
+@media screen and (min-width: 992px) and (max-width: 1199px) {
+    .salesMovement_container {
+        padding: 28px;
+    }
+
+    .salesMovement_radioOption {
+        min-height: auto;
+        font-size: 14px;
+    }
+}
+
+/* Large screens - 1200px to 1599px */
+@media screen and (min-width: 1200px) and (max-width: 1599px) {
+    .salesMovement_container {
+        padding: 30px;
+    }
+
+    .salesMovement_radioOption {
+        min-height: auto;
+        font-size: 14px;
+    }
+}
+
+/* Very large screens - larger than 1600px */
+@media screen and (min-width: 1600px) {
+    .salesMovement_container {
+        padding: 35px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+
+
+    .salesMovement_radioOption {
+        padding: 3px 8px;
+        font-size: 14px;
+        min-height: auto;
+    }
+
+    .salesMovement_radioGroup {
+        gap: 20px;
+    }
+}
+
+/* Improvements for touch devices */
+@media (hover: none) and (pointer: coarse) {
+    .salesMovement_radioOption {
+        min-height: 36px;
+        padding: 6px 10px;
+    }
+
+    .salesMovement_radioOption:active {
+        transform: scale(0.98);
+    }
+}
+
+/* Landscape mode for phones */
+@media screen and (max-width: 767px) and (orientation: landscape) {
+    .salesMovement_container {
+        padding: 15px 25px;
+    }
+
+    .salesMovement_radioGroup {
+        gap: 10px;
+    }
+
+    .salesMovement_radioLabel {
+        padding: 10px 12px;
+        min-height: 42px;
+        font-size: 13px;
+    }
+}
+
+/* Refresh Button Style */
+.salesMovement_refreshBtn {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    color: #667eea;
+    border: 1px solid #667eea;
+    padding: 3px 8px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+.salesMovement_refreshBtn:active {
+    background: transparent;
+    transform: scale(0.98);
+}
+
+.salesMovement_refreshIcon {
+    font-size: 18px;
+    transition: transform 0.5s ease;
+}
+
+.salesMovement_refreshIcon i {
+    color: #667eea;
+}

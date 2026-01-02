@@ -1,0 +1,189 @@
+/*
+  @file css/categories.css
+  @description أنماط خاصة بقسم الفئات في الصفحة الرئيسية.
+  - تصميم جدول الفئات الرئيسي.
+  - تصميم شريط الفئات الفرعية.
+*/
+
+/* === قسم الفئات في الصفحة الرئيسية === */
+.categories-section {
+  padding: 0px 0 40px 0; /* ✅ تعديل: تقليل الحشو العلوي إلى 0px */
+  background-color: #f9f9f9; /* Slightly off-white background */
+  text-align: center;
+}
+
+.categories-title {
+  font-family: "Tajawal", sans-serif;
+  font-size: clamp(24px, 5vw, 32px);
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+/* === أنماط جدول الفئات (التصميم المعتمد حالياً) === */
+.categories-table {
+  width: 100%;
+  border-collapse: separate; /* للسماح بالمسافات بين الخلايا */
+  border-spacing: 15px; /* تقليل المسافة بين الخلايا لتناسب العرض الكامل */
+  margin-top: 0px;
+  table-layout: fixed; /* لضمان توزيع الأعمدة بالتساوي */
+}
+
+/* تأثير الدخول المتدرج لصفوف الفئات الرئيسية عند تحميل الصفحة */
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.main-category-row {
+  animation: fadeInRow 0.5s ease-out forwards;
+  opacity: 0; /* إخفاء الصف مبدئيًا لتبدأ الحركة */
+}
+
+/* خلية الفئة الرئيسية في الجدول */
+.categories-table td {
+  border: 1px solid #e9ecef; /* إطار ناعم ومحايد */
+  padding: 20px;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #f9f9f9; /* خلفية بيضاء نظيفة */
+  border-radius: 12px; /* زوايا دائرية أنعم */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* ظل خفيف وناعم */
+  transition: transform 0.3s ease, box-shadow 0.5s ease, opacity 0.3s ease, border-color 0.5s ease; /* انتقالات سلسة */
+}
+
+.main-category-row .category-cell.has-subcategories {
+  cursor: pointer;
+}
+
+/* تنسيق الخلايا غير النشطة عند اختيار فئة معينة */
+.categories-tbody.selection-active .main-category-row .category-cell:not(.active-category) {
+  opacity: 0.5; /* ✅ تعديل: جعل الخلايا غير النشطة باهتة للتركيز */
+  transform: none; /* إزالة أي تأثيرات تحويل */
+  pointer-events: none; /* منع التفاعل مع الخلايا الباهتة */
+}
+.main-category-row .category-cell.active-category {
+  /* ✅ تحسين: استخدام إطار متدرج وظل أكثر بروزًا للتمييز الفائق */
+  border: 1px solid #9bc1eb;
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.25);
+    opacity: 1; /* ✅ إضافة: ضمان أن الخلية النشطة غير باهتة */
+}
+
+/* تغيير لون الأيقونة والنص داخل الخلية النشطة */
+.main-category-row .category-cell.active-category .category-cell-content i {
+  color: #007bff; /* جعل لون الأيقونة أزرق ليتماشى مع الإطار */
+}
+.main-category-row .category-cell.active-category .category-cell-content span {
+  color: #4a5568;
+}
+
+/* أيقونة الفئة الرئيسية */
+.category-cell-content i {
+  font-size: 2rem; /* ✅ تعديل: تصغير حجم الأيقونة قليلاً */
+  color: #007bff; /* لون أزرق يتناسب مع الهوية */
+  transition: color 0.3s ease;
+}
+
+/* نص اسم الفئة الرئيسية أسفل الأيقونة */
+.category-cell-content span {
+  font-size: 0.6rem; /* ✅ تعديل: تصغير حجم الخط ليتناسب مع البطاقة الأصغر */
+  color: #4a5568; /* ✅ تعديل: استخدام لون رمادي داكن ومحايد لتباين أفضل */
+  font-weight: 600; /* وزن خط متوسط */
+}
+
+/* حاوية محتوى خلية الفئة (أيقونة + نص) */
+.category-cell-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* === أنماط صف الفئات الفرعية === */
+.sub-category-row td {
+  padding: 0;
+  /* إزالة الخلفية والحدود والظل لدمجها بصريًا مع الخلية النشطة */
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* حركة انزلاق وظهور تدريجي للفئات الفرعية */
+@keyframes slide-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* حاوية شريط الفئات الفرعية الأفقي (التصميم المعتمد) */
+.subcategories-container {
+  display: flex;
+  flex-wrap: nowrap; /* جديد: منع العناصر من النزول لسطر جديد */
+  overflow-x: auto; /* إضافة شريط تمرير أفقي عند الحاجة */
+  justify-content: flex-start; /* جديد: محاذاة العناصر من بداية الشريط */
+  gap: 15px;
+  padding: 20px;
+  -webkit-overflow-scrolling: touch; /* لتحسين التمرير على أجهزة اللمس */
+}
+
+/* تنسيق شريط التمرير الأفقي ليكون أنعم */
+.subcategories-container::-webkit-scrollbar {
+  height: 6px; /* ارتفاع الشريط */
+}
+
+.subcategories-container::-webkit-scrollbar-track {
+  background: transparent; /* جعل مسار الشريط شفافًا */
+}
+
+.subcategories-container::-webkit-scrollbar-thumb {
+  background-color: #d1d9e6; /* لون مقبض التمرير */
+  border-radius: 10px;
+}
+
+/* عنصر الفئة الفرعية في الشريط الأفقي */
+.subcategory-item {
+  background-color: #f9f9f9;
+  border: 1px solid #e9ecef;
+  padding: 10px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: #007bff; /* لون النص بنفس لون الإطار */
+  font-weight: 500;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+  white-space: nowrap; /* جديد: منع التفاف النص داخل العنصر الواحد */
+}
+
+.subcategory-item:active {
+  background-color: #e6f2ff; /* تغيير طفيف في الخلفية عند الضغط */
+}
+
+/* تصغير حجم النص في جميع الفئات الفرعية مع الحفاظ على حجم الأيقونة */
+.subcategory-item {
+  font-size: 0.8em; /* تصغير حجم الخط العام للعنصر */
+}
+.subcategory-item i {
+  font-size: 1.2em; /* إعادة حجم الأيقونة إلى حجم أكبر قليلاً ليتناسب مع النص الأصغر */
+}
+
+/* === أنماط لتمييز الفئة الفرعية النشطة (المختارة) === */
+.subcategory-item.active {
+  border: 1px solid #9bc1eb; /* إطار أزرق سميك وواضح للتمييز */
+  box-shadow: 0 0 5px 0px rgba(0, 123, 255, 0.25);
+}
+.subcategory-item.active i {
+  color: #007bff; /* جعل لون الأيقونة أزرق ليتماشى مع الإطار */
+}

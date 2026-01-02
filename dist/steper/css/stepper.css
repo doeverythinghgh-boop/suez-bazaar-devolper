@@ -1,0 +1,222 @@
+/* ============================================
+   شريط التقدم (Stepper Styles)
+   ============================================ */
+.stepper-container {
+    width: 100%;
+    padding: 1.5rem 0;
+}
+
+.stepper-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0;
+    position: relative;
+    padding: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+}
+
+/* عنصر الخطوة الفردي */
+.step-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+    transition: all var(--transition-normal);
+}
+
+/* الخط الرابط بين الخطوات */
+.step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 27px;
+    /* محاذاة الخط مع منتصف الدائرة */
+    left: -50%;
+    /* الاتجاه لليسار بسبب RTL */
+    width: 100%;
+    height: 3px;
+    background: var(--border-light);
+    z-index: -1;
+    transition: all var(--transition-normal);
+}
+
+/* تلوين الخط عند اكتمال الخطوة */
+.step-item.completed:not(:last-child)::after {
+    background: linear-gradient(90deg, var(--color-confirmed) 0%, var(--color-confirmed) 100%);
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+}
+
+/* تلوين الخط عند تفعيل الخطوة */
+.step-item.active:not(:last-child)::after {
+    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary) 100%);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* دائرة الخطوة */
+.step-circle {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #f5f6fa 0%, #e9ecf8 100%);
+    border: 3px solid var(--border-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    position: relative;
+    z-index: 3;
+    transition: all var(--transition-normal);
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.step-circle i {
+    font-size: 1.3rem;
+}
+
+/* إعداد أيقونات Font Awesome */
+.step-circle::before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    display: inline-block;
+}
+
+/* تنسيق الدائرة عند التفعيل (Active) */
+.step-item.active .step-circle {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #8b9ef5 100%);
+    border-color: var(--color-primary);
+    color: #ffffff;
+    transform: scale(1.12);
+    /* تكبير بسيط */
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.35),
+        0 0 0 4px rgba(102, 126, 234, 0.15);
+}
+
+/* تنسيق الدائرة عند الاكتمال (Completed) */
+.step-item.completed .step-circle {
+    background: linear-gradient(135deg, var(--color-confirmed) 0%, #66bb6a 100%);
+    border-color: var(--color-confirmed);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+/* ============================================
+   تنسيقات خاصة لكل حالة (Specific Step Styles)
+   ============================================ */
+
+/* مراجعة */
+.step-item.review .step-circle {
+    background: linear-gradient(135deg, var(--color-review) 0%, #ffb085 100%);
+    border-color: var(--color-review);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(255, 154, 118, 0.2);
+}
+
+/* مؤكد */
+.step-item.confirmed .step-circle {
+    background: linear-gradient(135deg, var(--color-confirmed) 0%, #66bb6a 100%);
+    border-color: var(--color-confirmed);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+}
+
+/* شُحن */
+.step-item.shipped .step-circle {
+    background: linear-gradient(135deg, var(--color-shipped) 0%, #4dd9ff 100%);
+    border-color: var(--color-shipped);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 212, 255, 0.2);
+}
+
+/* تم التسليم */
+.step-item.delivered .step-circle {
+    background: linear-gradient(135deg, var(--color-delivered) 0%, #3ec8af 100%);
+    border-color: var(--color-delivered);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(26, 188, 156, 0.2);
+}
+
+/* ملغي */
+.step-item.cancelled .step-circle {
+    background: linear-gradient(135deg, var(--color-cancelled) 0%, #ff8a8a 100%);
+    border-color: var(--color-cancelled);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+}
+
+/* تأثير نبض لخطوة "ملغي" عند وجود منتجات ملغاة */
+.step-item.cancelled.has-cancelled-products .step-circle {
+    animation: shake 2s ease-in-out infinite;
+}
+
+/* تأثير اهتزاز لخطوة "مرفوض" عند وجود منتجات مرفوضة */
+.step-item.rejected.has-rejected-products .step-circle {
+    animation: shake 2s ease-in-out infinite;
+}
+
+/* تأثير اهتزاز لخطوة "مرتجع" عند وجود منتجات مرتجعة */
+.step-item.returned.has-returned-products .step-circle {
+    animation: shake 2s ease-in-out infinite;
+}
+
+/* مرفوض */
+.step-item.rejected .step-circle {
+    background: linear-gradient(135deg, var(--color-rejected) 0%, #f36258 100%);
+    border-color: var(--color-rejected);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+/* مرتجع */
+.step-item.returned .step-circle {
+    background: linear-gradient(135deg, var(--color-returned) 0%, #b378cc 100%);
+    border-color: var(--color-returned);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(155, 89, 182, 0.2);
+}
+
+/* 
+   ملاحظة هامة: تم إزالة تأثيرات Hover عمداً.
+   السبب: لضمان تجربة مستخدم متسقة عبر الأجهزة التي تعمل باللمس (Touch Devices)
+   والأجهزة التي تستخدم الفأرة. الاعتماد على Focus و Active أفضل لسهولة الوصول.
+*/
+
+.step-circle:focus {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+/* ============================================
+   تسميات ووصف الخطوات (Labels & Descriptions)
+   ============================================ */
+.step-label {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+    transition: color var(--transition-normal);
+}
+
+.step-item.active .step-label {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+.step-item.completed .step-label {
+    color: var(--color-confirmed);
+}
+
+.step-description {
+    margin-top: 0.35rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+    width: 100%;
+    line-height: 1.4;
+}

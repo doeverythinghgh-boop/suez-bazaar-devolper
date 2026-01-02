@@ -1,0 +1,102 @@
+<link rel="stylesheet" href="pages/productEdit2/productEdit2.css">
+
+<!--
+@file pages/productEdit2.html
+@description Service Edit Page. Handles updating existing services (no price/quantity), managing images, and saving changes.
+-->
+
+<div class="edit-product-modal" role="dialog" aria-modal="true" aria-labelledby="editProductTitle">
+    <h2 class="edit-product-modal__title" id="editProductTitle"><i class="fas fa-edit"></i> تعديل الخدمة</h2>
+
+    <!-- Selected Category Badges -->
+    <div id="edit2_category_display" class="edit2_category_badges">
+        <!-- Will be populated dynamically -->
+    </div>
+
+    <form class="edit-product-modal__form" id="edit-product-form" novalidate>
+        <!-- Image Upload Module -->
+        <section class="edit-product-modal__form-group" aria-labelledby="imagesHeading">
+            <label id="imagesHeading" class="edit-product-modal__label"><i class="fas fa-images"></i> صور
+                الخدمة</label>
+
+            <div class="edit-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group"
+                aria-label="منطقة رفع الصور">
+                <div class="edit-product-modal__uploader-actions">
+                    <!-- input with capture to enable mobile camera -->
+                    <input class="edit-product-modal__hidden-file" id="file-input" type="file" accept="image/*" multiple
+                        aria-hidden="true">
+
+                    <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i
+                            class="fas fa-folder-open"></i></button>
+                    <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn"
+                        title="التقاط من الكاميرا"><i class="fas fa-camera"></i></button>
+
+                </div>
+
+                <div class="edit-product-modal__hint">المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp. </div>
+
+                <div class="edit-product-modal__previews" id="previews" aria-live="polite" aria-atomic="false">
+                    <div class="edit-product-modal__loading" id="images-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <div>جاري تحميل الصور...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Service Name Field -->
+        <div class="edit-product-modal__form-group">
+            <label for="product-name" class="edit-product-modal__label"><i class="fas fa-signature"></i> اسم
+                الخدمة</label>
+            <input type="text" id="product-name" name="product-name" class="edit-product-modal__input" maxlength="100"
+                placeholder="اكتب اسمًا واضحًا للخدمة..." required>
+            <div id="product-name-char-counter" class="edit-product-modal__char-counter">0 / 100</div>
+        </div>
+
+        <!-- Service Description Field -->
+        <div class="edit-product-modal__form-group">
+            <label for="product-description" class="edit-product-modal__label"><i class="fas fa-file-alt"></i>
+                وصف الخدمة</label>
+            <textarea id="product-description" name="product-description" class="edit-product-modal__textarea" rows="4"
+                maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
+            <div id="description-char-counter" class="edit-product-modal__char-counter">0 / 400</div>
+        </div>
+
+        <!-- Seller Message Field -->
+        <div class="edit-product-modal__form-group">
+            <label for="seller-message" class="edit-product-modal__label"><i class="fas fa-comment-dots"></i> رسالة
+                من مقدم الخدمة</label>
+            <input type="text" id="seller-message" name="seller-message" class="edit-product-modal__input"
+                maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للعميل...">
+            <div id="seller-message-char-counter" class="edit-product-modal__char-counter">0 / 100</div>
+        </div>
+
+        <!-- Notes Field -->
+        <div class="edit-product-modal__form-group">
+            <label for="product-notes" class="edit-product-modal__label"><i class="fas fa-sticky-note"></i>
+                ملاحظات</label>
+            <input type="text" id="product-notes" name="product-notes" class="edit-product-modal__input" maxlength="100"
+                placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
+            <div id="notes-char-counter" class="edit-product-modal__char-counter">0 / 100</div>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="edit-product-modal__submit-container"
+            style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+            <button type="submit" class="btn btn-warning">حفظ التعديلات</button>
+            <button type="button" class="btn btn-ghost" id="edit2_btn_discard">تجاهل التعديلات</button>
+        </div>
+    </form>
+</div>
+
+<!-- Camera Container -->
+<div id="camera-modal-container"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+</div>
+
+<script src="pages/productEdit2/js/edit2_config.js"></script>
+<script src="pages/productEdit2/js/edit2_utils.js"></script>
+<script src="pages/productEdit2/js/edit2_image.js"></script>
+<script src="pages/productEdit2/js/edit2_ui.js"></script>
+<script src="pages/productEdit2/js/edit2_submit.js"></script>
+<script src="pages/productEdit2/js/edit2_init.js"></script>

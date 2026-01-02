@@ -1,0 +1,163 @@
+.notifiSetting_container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--bg-color-white);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--shadow-interactive);
+}
+
+header {
+    margin-bottom: 30px;
+    text-align: center;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 20px;
+}
+
+h1 {
+    margin: 0;
+    color: var(--dark-blue);
+}
+
+.notifiSetting_description {
+    color: var(--text-color-light);
+    margin-top: 10px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: var(--bg-color-white);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th,
+td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: var(--dark-blue);
+    color: var(--bg-color-white);
+    font-weight: 600;
+}
+
+/* Hover effect removed per design rules */
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+.notifiSetting_checkbox-wrapper {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--border-color-input);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    background: var(--bg-color-white);
+}
+
+input[type="checkbox"]:checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+input[type="checkbox"]:checked::after {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--bg-color-white);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+input[type="checkbox"]:disabled {
+    background-color: var(--bg-color-light);
+    border-color: var(--border-color-strong);
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Status Indicators */
+.notifiSetting_event-name {
+    font-weight: bold;
+    color: var(--dark-blue);
+    text-align: right;
+    padding-right: 20px;
+}
+
+.notifiSetting_controls {
+    margin-top: 30px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+}
+
+.notifiSetting_btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.notifiSetting_btn-reset {
+    background-color: var(--danger-color);
+    color: var(--bg-color-white);
+}
+
+.notifiSetting_btn-reset:active {
+    background-color: var(--danger-color-dark);
+}
+
+.notifiSetting_toast {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--text-color-dark);
+    color: var(--bg-color-white);
+    padding: 12px 24px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+.notifiSetting_toast.notifiSetting_show {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .notifiSetting_container {
+        padding: 15px;
+    }
+
+    th,
+    td {
+        padding: 10px 5px;
+        font-size: 14px;
+    }
+
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+}

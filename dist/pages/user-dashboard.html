@@ -1,0 +1,123 @@
+<link rel="stylesheet" href="style/user-dashboard.css" />
+<style>
+    /*
+  * ========================================
+  * Modern Styles for User Dashboard
+  * ========================================
+  */
+
+
+
+    #dash-welcome-message {
+        text-align: center;
+        color: var(--dark-blue, #03478f);
+        font-size: clamp(24px, 5vw, 32px);
+        /* Responsive font size */
+        font-weight: 700;
+        margin-bottom: 40px;
+        animation: fadeInDown 0.5s ease-out;
+    }
+
+    /* --- Action Buttons Grid --- */
+
+
+    /* --- Button Styling --- */
+    .dash-button {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        /* Gap between icon and text */
+        padding: 0px;
+        font-size: 0.8rem;
+        max-width: fit-content;
+        font-weight: 600;
+        color: var(--dark-blue, #03478f);
+        background-color: transparent;
+        /* More rounded corners */
+        cursor: pointer;
+        text-align: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .dash-button i {
+        font-size: 2rem;
+        /* Increase icon size */
+        color: var(--primary-color, #007bff);
+    }
+
+    .dash-button:active {
+        transform: scale(0.96);
+        box-shadow: var(--shadow-interactive);
+        border-color: var(--primary-color-light);
+    }
+
+    /* Highlight logout button */
+
+    #dash-logout-btn-alt i {
+        color: var(--danger-color, #dc3545);
+    }
+</style>
+
+<!-- Container to dynamically display header -->
+<!-- 
+@file pages/user-dashboard.html
+@description User Dashboard page acting as a central hub for user actions (profile editing, admin panel access, logout).
+-->
+<div id="dash-header-container" style="height: 70px"></div>
+
+<div id="dash-profile-modal-container" class="modal">
+    <!-- Profile edit content will be filled here -->
+</div>
+
+
+<h2 id="dash-welcome-message"></h2>
+<!-- Main container for buttons split into groups -->
+<!-- ✅ EDIT: Grid container for all buttons -->
+<div id="dash-action-buttons" class="dash-action-buttons">
+    <!-- General User buttons -->
+    <button id="dash-edit-profile-btn" class="dash-button">
+        <i class="fas fa-user-cog"></i> تعديل البيانات
+    </button>
+
+    <button id="index-gifts-btn" class="dash-button">
+        <i class="fas fa-gift"></i> هدايا
+    </button>
+
+    <!-- Admin/Seller buttons -->
+    <button id="dash-add-product-btn" class="dash-button">
+        <i class="fas fa-plus"></i> إضافة منتج
+    </button>
+
+    <button id="dash-view-my-products-btn" class="dash-button">
+        <i class="fas fa-archive"></i> منتجاتي
+    </button>
+
+    <button id="dash-admin-panel-btn" class="dash-button">
+        <i class="fas fa-user-shield"></i> لوحة المسؤول
+    </button>
+
+    <!-- Support buttons -->
+    <button id="index-contact-btn" class="dash-button">
+        <i class="fas fa-phone"></i> تواصل معنا
+    </button>
+
+    <!-- Logout button -->
+    <button id="dash-logout-btn-alt" class="dash-button">
+        <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+    </button>
+</div>
+
+<!-- ✅ NEW: Link page-specific JavaScript file -->
+<script src="js/user-dashboard.js"></script>
+
+
+<script>
+    /**
+     * @description Dynamically inserts the header component into the dashboard page.
+     */
+    insertUniqueSnapshot("pages/header.html", "dash-header-container", 300);
+
+</script>

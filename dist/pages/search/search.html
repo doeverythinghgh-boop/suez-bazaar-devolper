@@ -1,0 +1,89 @@
+<!--
+@file pages/search/search.html
+@description Search Modal Component. Provides product search functionality with category filters, sorting, and results display.
+-->
+<link rel="stylesheet" href="pages/search/search.css">
+
+<div id="search-modal-content" class="search-modal-content">
+  <table id="search-layout-table" style="width: 100%; border-spacing: 10px; table-layout: fixed">
+    <tbody id="search-layout-tbody">
+      <!-- First Row: Main and Sub Categories -->
+      <tr id="search-filters-row">
+        <td id="search-main-category-cell">
+          <div id="search-main-category-filter-group" class="search-filter-group">
+            <i id="search-main-category-filter-icon" class="fas fa-layer-group search-filter-icon"></i>
+            <select id="search-main-category-filter" class="search-category-filter" aria-label="الفئة الرئيسية">
+              <option id="search-main-category-default-option" value="">
+                كل الاسواق الرئيسية
+              </option>
+            </select>
+          </div>
+        </td>
+        <td id="search-sub-category-cell">
+          <div class="search-filter-group" id="search-sub-category-filter-group">
+            <i id="search-sub-category-filter-icon" class="fas fa-tags search-filter-icon"></i>
+            <select id="search-sub-category-filter" class="search-category-filter" disabled aria-label="الفئة الفرعية">
+              <option id="search-sub-category-default-option" value="">
+                كل الاسواق الفرعية
+              </option>
+            </select>
+          </div>
+        </td>
+      </tr>
+      <!-- Second Row: Search Field -->
+      <tr id="search-input-row">
+        <td id="search-input-cell" colspan="2">
+          <div id="search-modal-input-container" class="search-modal-input-container" style="padding-right: 0px">
+            <i class="fas fa-search search-modal-input-icon" id="search-input-icon" aria-hidden="true"></i>
+            <input type="search" id="search-modal-input" placeholder="اكتب اسم المنتج الذي تبحث عنه..."
+              autocomplete="off" />
+          </div>
+        </td>
+      </tr>
+      <!-- Third Row: Sort Filter and Search Button -->
+      <tr id="search-action-row">
+        <td id="search-sort-cell">
+          <div id="search-sort-filter-group" class="search-filter-group">
+            <i id="search-sort-filter-icon" class="fas fa-sort-amount-down search-filter-icon"></i>
+            <select id="search-sort-filter" class="search-category-filter" aria-label="ترتيب حسب">
+              <option id="search-sort-default" value="default">
+                الترتيب الافتراضي
+              </option>
+              <option id="search-sort-price-asc" value="price-asc">
+                الأقل سعراً
+              </option>
+              <option id="search-sort-price-desc" value="price-desc">
+                الأعلى سعراً
+              </option>
+            </select>
+          </div>
+        </td>
+        <td id="search-button-cell">
+          <button id="search-perform-search-btn" class="search-button" aria-label="بحث"
+            style="width: 100%; height: 50px; border-radius: 50px">
+            <i id="search-button-icon" class="fas fa-search"></i>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div id="search-results-container"></div>
+</div>
+
+<script src="pages/search/search.js"></script>
+<script>
+    // Ensure initSearchModal is called if it was expected to be called by the loader identifying the function in the script text.
+    // Since we moved it to a separate file, we might need to explicitly call it here IF mainLoader doesn't automatically call it global functions.
+    // However, looking at the original code, it was NOT called. 
+    // It's possible mainLoader's callback ("true" passed as argument?) triggers something?
+    // Let's assume it works like register.html where code at top level runs.
+    // BUT initSearchModal is a FUNCTION. 
+    // Let's call it here just in case, or check if I should auto-run it.
+    // "register.js" had code at top level. "search.js" has code inside a function.
+    // I will add a call to initSearchModal() at the end of this script block to be safe, 
+    // mimicking what mainLoader likely did or ensuring it runs when this HTML is loaded.
+    
+    if (typeof initSearchModal === 'function') {
+        initSearchModal(); 
+    }
+</script>

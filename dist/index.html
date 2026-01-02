@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="index-html-root">
+
+<head id="index-page-head">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="index-page-title">Suez Bazaar</title>
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- PWA Manifest & iOS Support -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007bff" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Suez Bazaar">
+  <link rel="apple-touch-icon" href="images/icons/icon-192x192.png">
+
+  <!-- 1. Third Party CSS & Fonts Performance -->
+  <link rel="stylesheet" href="/assets/fontawesome/css/all.css" />
+
+  <!-- 2. Core Variables & Base Styles -->
+  <link rel="stylesheet" href="/style/variables.css" />
+  <link rel="stylesheet" href="/style/index.css">
+  <link rel="stylesheet" href="/notification/page/notifications.css">
+
+  <!---region main javaScript files (Ordered by Dependency)---->
+
+  <!-- 1. Third Party Libraries -->
+  <script src="/assets/libs/sweetalert2/sweetalert2.all.min.js" defer></script>
+
+  <!-- 2. Configuration & Globals (No Dependencies) -->
+  <script src="/js/config.js" defer></script>
+  <script src="/js/globalVariable.js" defer></script>
+
+  <!-- 3. Core Utilities (Low Dependency) -->
+  <script src="/js/network.js" defer></script>
+  <script src="/js/tools.js" defer></script>
+  <script src="/js/cloudFileManager.js" defer></script>
+
+  <!-- 4. Data & State Management -->
+  <script src="/notification/notification-db-manager.js" defer></script>
+  <script src="/js/PRODUCT_SERVICE/serviceCategoryHelper.js" defer></script>
+  <script src="/js/PRODUCT_SERVICE/productStateManager.js" defer></script>
+  <script src="/js/PRODUCT_SERVICE/productMapper.js" defer></script>
+
+  <!-- 5. Core Business Logic & Auth -->
+  <script src="/js/auth/uiHelpers.js" defer></script>
+  <script src="/js/auth/validators.js" defer></script>
+  <script src="/js/auth/sessionManager.js" defer></script>
+  <script src="/js/auth.js" defer></script>
+  <script src="/notification/notificationTools.js" defer></script>
+
+  <!-- 6. Feature Modules -->
+  <script src="/js/forms.js" defer></script>
+  <script src="/pages/cardPackage/js/cardPackage.js" defer></script>
+  <script src="/js/connectUsers.js" defer></script>
+  <script src="/js/connectProduct.js" defer></script>
+  <script src="/pages/category/categoryModal.js" defer></script>
+  <script src="/pages/ADMIN/pendingProducts.js" defer></script>
+
+  <!-- 7. Initialization & Page Specific Logic -->
+  <script src="/notification/notificationSetUp.js" defer></script>
+  <script src="/notification/page/notification-global.js" defer></script>
+  <script src="/notification/page/notifications.js" defer></script>
+  <script src="/notification/page/notifications-ui.js" defer></script>
+  <script src="/notification/page/notifications-logic.js" defer></script>
+  <script src="/notification/page/notifications-actions.js" defer></script>
+
+  <!-- 8. Application Entry Point (Last) -->
+  <script src="/js/install-prompt.js" defer></script>
+  <script src="/js/index.js" defer></script>
+
+  <!---end region main javaScript files---->
+
+</head>
+
+<body id="index-app-body">
+
+  <header class="index-app-header" id="index-app-header">
+    <!-- زر تسجيل الدخول -->
+    <button class="index-header-login-btn" id="index-login-btn">
+      <i class="fas fa-user-circle index-user-icon" id="index-login-icon"></i>
+      <span id="index-login-text">تسجيل الدخول</span>
+    </button>
+
+    <!-- زر الرئيسية -->
+    <button class="index-header-login-btn" id="index-home-btn">
+      <i class="fas fa-home index-user-icon" id="index-home-icon"></i>
+      <span id="index-home-text">الرئيسية</span>
+    </button>
+
+    <!-- زر البحث -->
+    <button class="index-header-login-btn" id="index-search-btn">
+      <i class="fas fa-search index-user-icon" id="index-search-icon"></i>
+      <span id="index-search-text">بحث</span>
+    </button>
+
+    <!-- زر الإشعارات -->
+    <button class="index-header-login-btn" id="index-notifications-btn">
+      <i class="fas fa-bell index-user-icon" id="index-notifications-icon"></i>
+      <span class="cart-badge" id="notifications-badge">0</span>
+      <span id="index-notifications-text">إشعارات</span>
+    </button>
+
+    <!-- زر السلة -->
+    <button class="index-header-login-btn" id="index-cart-btn">
+      <i class="fas fa-shopping-cart index-user-icon" id="index-cart-icon"></i>
+      <span id="index-cart-text">السلة</span>
+    </button>
+
+    <!-- زر حركة المشتريات -->
+    <button class="index-header-login-btn" id="index-sales-movement-btn">
+      <i class="fas fa-history index-user-icon" id="index-sales-icon"></i>
+      <span id="index-sales-text">طلبات</span>
+    </button>
+
+    <!-- زر تواصل معنا (تم نقله للوحة التحكم) -->
+  </header>
+
+  <div id="index-home-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-search-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-user-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-productView-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-productAdd-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-productEdit-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-cardPackage-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-myProducts-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-contact-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-notifications-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-salesMovement-container" style="background-color: var(--bg-color-light);"></div>
+  <div id="index-orderPhoto-container" style="background-color: var(--bg-color-light);"></div>
+
+
+</body>
+
+</html>

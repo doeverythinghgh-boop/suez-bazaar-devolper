@@ -1,0 +1,48 @@
+/* ============================================
+   الرسوم المتحركة (Animations)
+   ============================================ */
+
+/* تأثير النبض (Pulse) */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7),
+                0 0 15px rgba(1, 24, 10, 0.4);
+  }
+  50% {
+    transform: scale(1.2);
+    box-shadow: 0 0 0 12px rgba(46, 204, 113, 0),
+                0 0 30px rgba(46, 204, 113, 0.25);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(46, 204, 113, 0),
+                0 0 15px rgba(5, 92, 41, 0.4);
+  }
+}
+
+
+/* تأثير الاهتزاز (Shake) - للتنبيه */
+@keyframes shake {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  15% {
+    transform: translateY(-4px);
+  }
+  30% {
+    transform: translateY(4px);
+  }
+  45% {
+    transform: translateY(-3px);
+  }
+  60% {
+    transform: translateY(3px);
+  }
+  75% {
+    transform: translateY(-2px);
+  }
+  90% {
+    transform: translateY(2px);
+  }
+}

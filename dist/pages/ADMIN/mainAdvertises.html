@@ -1,0 +1,928 @@
+<style>
+    /* Scoped styles for the Advertisement Manager fragment */
+    #mainAdver_wrapper {
+        background-color: #f8f9fa;
+        color: #333;
+        line-height: 1.5;
+        padding: 20px;
+        width: 100%;
+        /* Previously min-height: 100vh caused layout issues in embedded view. 
+           Now letting it flow naturally or take full available height */
+        min-height: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Header */
+    #mainAdver_wrapper .mainAdver_header {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        padding: 25px 30px;
+        text-align: center;
+        border-radius: 8px;
+        /* Added border radius since it's inside a container now */
+        margin-bottom: 20px;
+    }
+
+    #mainAdver_wrapper .mainAdver_header h1 {
+        font-size: 2.2rem;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 0;
+    }
+
+    #mainAdver_wrapper .mainAdver_header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+
+    /* Main Content Area */
+    #mainAdver_wrapper .mainAdver_mainContent {
+        padding: 10px;
+        /* Reduced padding as wrapper has padding */
+    }
+
+    /* Image Uploader Area */
+    #mainAdver_wrapper .mainAdver_imageUploader {
+        background-color: #fff;
+        /* Changed to white for contrast */
+        border: 2px dashed #dee2e6;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        transition: background-color 0.3s;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+
+    #mainAdver_wrapper .mainAdver_dropzoneText {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1.2rem;
+    }
+
+    #mainAdver_wrapper .mainAdver_hint {
+        color: #6c757d;
+        font-size: 0.95rem;
+        margin-top: 10px;
+    }
+
+    /* Uploader Actions */
+    #mainAdver_wrapper .mainAdver_uploaderActions {
+        margin-top: 1rem;
+        border-top: 1px solid #e9ecef;
+        padding-top: 1rem;
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    /* Previews Grid */
+    #mainAdver_wrapper .mainAdver_previews {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 10px;
+        padding: 10px;
+        margin-top: 1rem;
+        width: 100%;
+        min-height: 150px;
+        /* Fixed min-height */
+        max-height: 400px;
+        overflow-y: auto;
+        background-color: #f0f2f5;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+
+    /* Preview Card */
+    #mainAdver_wrapper .mainAdver_preview {
+        position: relative;
+        width: 100%;
+        /* Removed fixed aspect-ratio to allow height for input */
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s ease, opacity 0.2s ease;
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Remove Button */
+    #mainAdver_wrapper .mainAdver_remove {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: rgba(220, 53, 69, 0.9);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 10;
+    }
+
+    /* Resize Button */
+    #mainAdver_wrapper .mainAdver_resize {
+        position: absolute;
+        top: 5px;
+        right: 38px;
+        /* Positioned left of the remove button */
+        background-color: rgba(0, 123, 255, 0.9);
+        /* Blue color */
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s;
+        z-index: 10;
+    }
+
+    #mainAdver_wrapper .mainAdver_preview:hover .mainAdver_remove,
+    #mainAdver_wrapper .mainAdver_preview.mainAdver_selected .mainAdver_remove,
+    #mainAdver_wrapper .mainAdver_preview:hover .mainAdver_resize,
+    #mainAdver_wrapper .mainAdver_preview.mainAdver_selected .mainAdver_resize {
+        opacity: 1;
+    }
+
+    /* Preview Image */
+    #mainAdver_wrapper .mainAdver_preview img {
+        width: 100%;
+        height: 110px;
+        /* Fixed height for image area */
+        object-fit: cover;
+        display: block;
+    }
+
+    /* Meta Info */
+    #mainAdver_wrapper .mainAdver_meta {
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        font-size: 0.7rem;
+        padding: 4px;
+        text-align: center;
+        width: 100%;
+    }
+
+    #mainAdver_wrapper .mainAdver_hiddenFile {
+        display: none;
+    }
+
+    /* Buttons */
+    .mainAdver_btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .mainAdver_btnPrimary {
+        background-color: #007bff;
+        color: white;
+    }
+
+    .mainAdver_btnGhost {
+        background: transparent;
+        color: #495057;
+        border: 1px solid #dee2e6;
+    }
+
+    .mainAdver_btnIcon {
+        padding: 10px;
+        border-radius: 50%;
+        width: 45px;
+        height: 45px;
+    }
+
+    /* Submit Container */
+    #mainAdver_wrapper .mainAdver_submitContainer {
+        margin-top: 30px;
+        text-align: center;
+        padding: 20px;
+        border-top: 1px solid #eee;
+    }
+
+    /* Info Box */
+    #mainAdver_wrapper .mainAdver_infoBox {
+        background-color: #e9f7fe;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+        border-left: 4px solid #3498db;
+        border-right: none;
+        margin-bottom: 2rem;
+    }
+
+    #mainAdver_wrapper .mainAdver_infoBox h3 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 0;
+    }
+
+    #mainAdver_wrapper .mainAdver_infoBox ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #mainAdver_wrapper .mainAdver_infoBox li {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    #mainAdver_wrapper .mainAdver_infoBox li i {
+        color: #3498db;
+        min-width: 20px;
+    }
+
+    /* Camera Modal - scoped to be robust */
+    #mainAdver_cameraModalContainer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.9);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        /* Ensure it's on top of everything */
+    }
+
+    #mainAdver_cameraModalContainer .mainAdver_cameraModalContent {
+        background-color: white;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 700px;
+        padding: 20px;
+        position: relative;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+</style>
+
+<!-- Main Wrapper for the Fragment -->
+<div id="mainAdver_wrapper">
+
+
+    <div class="mainAdver_mainContent">
+        <!-- System Info -->
+        <div class="mainAdver_infoBox">
+            <h3><i class="fas fa-info-circle"></i> معلومات النظام</h3>
+            <ul>
+                <li><i class="fas fa-check-circle"></i> الحد الأقصى للصور: 10 صور</li>
+                <li><i class="fas fa-check-circle"></i> التنسيقات المدعومة: جميع تنسيقات الصور</li>
+                <li><i class="fas fa-check-circle"></i> يتم ضغط الصور تلقائياً</li>
+            </ul>
+        </div>
+
+        <form id="mainAdver_form" novalidate onsubmit="return false;">
+            <!-- Upload Module -->
+            <section class="mainAdver_formGroup">
+                <div class="mainAdver_imageUploader" id="mainAdver_imageUploader">
+
+
+                    <input class="mainAdver_hiddenFile" id="mainAdver_fileInput" type="file" accept="image/*" multiple>
+
+                    <div class="mainAdver_uploaderActions">
+                        <button type="button" class="mainAdver_btn mainAdver_btnGhost mainAdver_btnIcon"
+                            id="mainAdver_pickFilesBtn" title="اختر صورًا">
+                            <i class="fas fa-folder-open"></i>
+                        </button>
+                        <button type="button" class="mainAdver_btn mainAdver_btnGhost mainAdver_btnIcon"
+                            id="mainAdver_takePhotoBtn" title="التقاط من الكاميرا">
+                            <i class="fas fa-camera"></i>
+                        </button>
+                        <button type="button" class="mainAdver_btn mainAdver_btnGhost mainAdver_btnIcon"
+                            id="mainAdver_clearAllBtn" title="مسح الكل">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+
+                    <div class="mainAdver_previews" id="mainAdver_previews">
+                        <div id="mainAdver_imagesLoader"
+                            style="text-align:center; padding: 20px; display: none; color: #666;">
+                            <i class="fas fa-spinner fa-spin fa-2x"></i><br>جاري التحميل...
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Submit Button -->
+            <div class="mainAdver_submitContainer">
+                <button type="submit" class="mainAdver_btn mainAdver_btnPrimary"
+                    style="padding: 12px 40px; font-size: 1.1rem;">
+                    <i class="fas fa-paper-plane"></i> نشر الإعلان الآن
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Camera Modal Container -->
+<div id="mainAdver_cameraModalContainer"></div>
+
+<script>
+    // Ensure the script is clean and isolated (Isolated Scope) to avoid variable conflicts
+    (function () {
+        /**
+         * @function addUpdate
+         * @description Adds a new record to the `updates` table in the database.
+         * Used to log the time of the last important data change (like ad updates) to help with caching management.
+         * @param {string} text - The text to record in the update.
+         * @returns {Promise<Object>} - A Promise that resolves to the server response object, or an error object on failure.
+         * @see apiFetch
+         */
+        async function addUpdate(text) {
+            return await apiFetch('/api/updates', {
+                method: 'POST',
+                body: { txt: text },
+            });
+        }
+        /**
+         * ------------------------------------------------------------------
+         * Configuration & Settings
+         * ------------------------------------------------------------------
+         */
+        // Max image dimensions (to maintain performance and reduce storage size)
+        const IMAGE_MAX_WIDTH = 1600;
+        const IMAGE_MAX_HEIGHT = 1600;
+        // Image compression quality (0.75 means 75% quality)
+        const IMAGE_QUALITY = 0.75;
+        // Maximum number of allowed files to upload
+        const MAX_FILES = 10;
+        // Public URL for Cloudflare R2 service
+        const R2_PUBLIC_URL = 'https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev';
+
+        /**
+         * ------------------------------------------------------------------
+         * Application State
+         * ------------------------------------------------------------------
+         */
+        // Array to store current image objects (whether new or existing)
+        let images = [];
+        // To store original image names upon loading
+        let originalImageNames = [];
+        // Counter to generate temporary unique IDs for items
+        let idCounter = 1;
+
+        /**
+         * ------------------------------------------------------------------
+         * UI Elements
+         * ------------------------------------------------------------------
+         */
+        const els = {
+            fileInput: document.getElementById('mainAdver_fileInput'),
+            pickFilesBtn: document.getElementById('mainAdver_pickFilesBtn'),
+            takePhotoBtn: document.getElementById('mainAdver_takePhotoBtn'),
+            clearAllBtn: document.getElementById('mainAdver_clearAllBtn'),
+            previewsEl: document.getElementById('mainAdver_previews'),
+            uploaderEl: document.getElementById('mainAdver_imageUploader'),
+            form: document.getElementById('mainAdver_form'),
+            loader: document.getElementById('mainAdver_imagesLoader'),
+            cameraModal: document.getElementById('mainAdver_cameraModalContainer')
+        };
+
+        /**
+         * ------------------------------------------------------------------
+         * Helper Functions
+         * ------------------------------------------------------------------
+         */
+
+        /**
+         * @function genId
+         * @description Generates a temporary unique ID for an image.
+         * @returns {string} The generated ID.
+         */
+        function genId() { return 'ad_img_' + (Date.now() + idCounter++); }
+
+        /**
+         * @function checkWebP
+         * @description Checks browser support for WebP format and ImageBitmap creation.
+         * This helps determine the appropriate compression mechanism.
+         * @returns {Promise<boolean>} True if supported, false otherwise.
+         */
+        async function checkWebP() {
+            try {
+                if (!self.createImageBitmap) return false;
+                const blob = await fetch('data:image/webp;base64,UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA==')
+                    .then(r => r.blob()).catch(() => null);
+                if (!blob) return false;
+                await createImageBitmap(blob);
+                return true;
+            } catch { return false; }
+        }
+        // Store WebP check result in a Promise for later use
+        const webP_Promise = checkWebP();
+
+        /**
+         * ------------------------------------------------------------------
+         * Core Functions
+         * ------------------------------------------------------------------
+         */
+
+        /**
+         * @function compressImage
+         * @description Compresses and resizes an image to fit specified standards.
+         * Attempts to convert to WebP if supported, otherwise uses JPEG.
+         * @param {File} file - The original image file.
+         * @returns {Promise<Blob|File>} - The compressed image as a Blob, or the original file on failure.
+         */
+        async function compressImage(file) {
+            try {
+                const bitmap = await createImageBitmap(file);
+                let { width, height } = bitmap;
+
+                // Calculate scaling ratio to maintain aspect ratio
+                const ratio = Math.min(1, IMAGE_MAX_WIDTH / width, IMAGE_MAX_HEIGHT / height);
+                const w = Math.round(width * ratio);
+                const h = Math.round(height * ratio);
+
+                // Create Canvas for drawing
+                const canvas = document.createElement('canvas');
+                canvas.width = w; canvas.height = h;
+                const ctx = canvas.getContext('2d');
+
+                // White background for JPEG images (to avoid black backgrounds for transparent images)
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(bitmap, 0, 0, w, h);
+
+                const isWebP = await webP_Promise;
+                // Convert to WebP or JPEG
+                const blob = await new Promise(r => canvas.toBlob(r, isWebP ? 'image/webp' : 'image/jpeg', IMAGE_QUALITY));
+
+                // Clean up memory
+                try { bitmap.close(); } catch { }
+
+                return blob;
+            } catch (err) {
+                console.warn("فشل الضغط، جاري استخدام الصورة الأصلية.", err);
+                return file;
+            }
+        }
+
+        /**
+         * @function createPreview
+         * @description Creates a preview card for an image in the UI.
+         * @param {Object} state - The image state object.
+         * @param {string|null} existingUrl - URL of the image if it already exists (optional).
+         */
+        function createPreview(state, existingUrl = null) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mainAdver_preview';
+            wrapper.dataset.id = state.id;
+
+            // Remove Button
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'mainAdver_remove';
+            removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+            removeBtn.type = 'button';
+            removeBtn.onclick = (e) => {
+                e.stopPropagation();
+                removeImage(state.id);
+            };
+
+            // Resize Button (Only for new images)
+            if (!existingUrl) {
+                const resizeBtn = document.createElement('button');
+                resizeBtn.className = 'mainAdver_resize';
+                resizeBtn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i>';
+                resizeBtn.type = 'button';
+                resizeBtn.title = 'تغيير الأبعاد';
+                resizeBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    resizeImageUI(state.id);
+                };
+                wrapper.append(resizeBtn);
+            }
+
+            // Image Element
+            const img = document.createElement('img');
+
+            // Info Bar (Status rectangle below image)
+            const meta = document.createElement('div');
+            meta.className = 'mainAdver_meta';
+
+            if (existingUrl) {
+                img.src = existingUrl;
+                meta.textContent = 'Published'; // Image already exists on server
+            } else {
+                // Read local file and display it
+                const r = new FileReader();
+                r.onload = e => img.src = e.target.result;
+                r.readAsDataURL(state.file);
+                meta.textContent = 'New'; // New image being added
+            }
+
+            // Search Query Input
+            const queryInput = document.createElement('input');
+            queryInput.type = 'text';
+            queryInput.className = 'swal2-input mainAdver_query-input';
+            queryInput.placeholder = 'كلمة البحث (اختياري)';
+            queryInput.style.cssText = 'width: 100%; margin: 5px 0; height: 35px; font-size: 0.85rem; padding: 5px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ddd;';
+            queryInput.value = state.query || '';
+            queryInput.onchange = (e) => state.query = e.target.value;
+
+            wrapper.append(removeBtn, img, queryInput, meta);
+            els.previewsEl.appendChild(wrapper);
+
+            // Bind element to state to facilitate updates
+            state._el = wrapper;
+            state._metaEl = meta;
+        }
+
+        /**
+         * @function removeImage
+         * @description Removes an image from the list (locally only until saved).
+         * @param {string} id - The image ID.
+         */
+        function removeImage(id) {
+            Swal.fire({
+                title: 'حذف الصورة؟',
+                text: "لن يتم حذفها من الخادم حتى تضغط على 'نشر'.",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'نعم',
+                cancelButtonText: 'لا'
+            }).then(res => {
+                if (res.isConfirmed) {
+                    const idx = images.findIndex(x => x.id === id);
+                    if (idx > -1) {
+                        if (images[idx]._el) images[idx]._el.remove();
+                        images.splice(idx, 1);
+                    }
+                }
+            });
+        }
+
+        /**
+         * @function resizeImageUI
+         * @description Opens UI to resize an image.
+         * @param {string} id - The image ID.
+         */
+        async function resizeImageUI(id) {
+            const idx = images.findIndex(x => x.id === id);
+            if (idx === -1) return;
+            const imgState = images[idx];
+
+            const { value: formValues } = await Swal.fire({
+                title: 'تغيير أبعاد الصورة',
+                html: `
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                        <div style="flex: 1 1 140px; min-width: 120px; text-align: center;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">العرض (px)</label>
+                            <input id="swal-input-width" class="swal2-input" type="number" value="1000" style="width: 100%; margin: 0; box-sizing: border-box;">
+                        </div>
+                        <div style="flex: 1 1 140px; min-width: 120px; text-align: center;">
+                            <label style="display:block; margin-bottom:5px; font-weight:bold;">الارتفاع (px)</label>
+                            <input id="swal-input-height" class="swal2-input" type="number" value="500" style="width: 100%; margin: 0; box-sizing: border-box;">
+                        </div>
+                    </div>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'تغيير',
+                cancelButtonText: 'إلغاء',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input-width').value,
+                        document.getElementById('swal-input-height').value
+                    ]
+                }
+            });
+
+            if (formValues) {
+                const [w, h] = formValues;
+                if (!w || !h) return;
+
+                // Show loading
+                Swal.fire({ title: 'جاري المعالجة...', didOpen: () => Swal.showLoading() });
+
+                try {
+                    // Logic to resize
+                    // check if local or remote
+                    if (imgState.status === 'uploaded' && !imgState.file) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'تنبيه',
+                            text: 'لا يمكن تعديل حجم الصور المرفوعة مسبقاً بسبب قيود أمنية (CORS). يرجى حذف الصورة وإعادة رفعها لتتمكن من تعديل أبعادها.'
+                        });
+                        return;
+                    }
+
+                    let source = imgState.file;
+                    // If we have a compressed blob (from previous resize or compress), use it
+                    if (!source && imgState.compressedBlob) source = imgState.compressedBlob;
+
+                    if (!source) {
+                        Swal.fire('Error', 'تعذر العثور على ملف الصورة الأصلي', 'error');
+                        return;
+                    }
+
+                    // Create bitmap
+                    const bitmap = await createImageBitmap(source);
+
+                    // Create canvas with EXACT dimensions
+                    const canvas = document.createElement('canvas');
+                    canvas.width = parseInt(w);
+                    canvas.height = parseInt(h);
+                    const ctx = canvas.getContext('2d');
+
+                    // Draw (Stretch to fit - 100% 100%)
+                    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+                    // Convert to Blob
+                    const isWebP = await webP_Promise;
+                    const newBlob = await new Promise(r => canvas.toBlob(r, isWebP ? 'image/webp' : 'image/jpeg', 0.9)); // High quality for resized ads
+
+                    // Update State
+                    imgState.compressedBlob = newBlob;
+                    // If it was uploaded, mark it as pending upload (essentially new file now) so it gets re-uploaded
+                    imgState.status = 'ready';
+                    // Update preview
+                    const newUrl = URL.createObjectURL(newBlob);
+                    const imgEl = imgState._el.querySelector('img');
+                    if (imgEl) imgEl.src = newUrl;
+
+                    if (imgState._metaEl) imgState._metaEl.textContent = `Resized (${w}x${h})`;
+
+                    Swal.fire('تم', 'تم تغيير الأبعاد بنجاح. اضغط "نشر" لحفظ التعديلات.', 'success');
+
+                } catch (e) {
+                    console.error(e);
+                    Swal.fire('Error', 'حدث خطأ أثناء المعالجة', 'error');
+                }
+            }
+        }
+
+        /**
+         * @function handleNewFiles
+         * @description Handles newly added files (via drag & drop or selection).
+         * @param {FileList} fileList - List of selected files.
+         */
+        async function handleNewFiles(fileList) {
+            if (images.length + fileList.length > MAX_FILES) {
+                Swal.fire('Alert', `الحد الأقصى هو ${MAX_FILES} صورة.`, 'warning');
+                return;
+            }
+
+            for (const file of fileList) {
+                if (!file.type.startsWith('image/')) continue; // Ignore non-image files
+
+                const id = genId();
+                const state = { id, file, compressedBlob: null, status: 'pending', query: '' };
+                images.push(state);
+                createPreview(state);
+
+                // Start compression
+                state.status = 'compressing';
+                state.compressedBlob = await compressImage(file);
+                state.status = 'ready';
+                if (state._metaEl) state._metaEl.textContent = 'جاهز'; // Ready for upload
+            }
+            els.fileInput.value = ''; // Clear input to allow picking the same file again
+        }
+
+        /**
+         * ------------------------------------------------------------------
+         * Initialization
+         * ------------------------------------------------------------------
+         */
+
+        /**
+         * @function loadImages
+         * @description Loads current images from the server and displays them.
+         * Uses `advertisements.json` (manifest) as the primary reference.
+         * If the manifest fails, it logs a warning.
+         */
+        async function loadImages() {
+            els.previewsEl.innerHTML = '';
+            els.previewsEl.appendChild(els.loader);
+            els.loader.style.display = 'block';
+
+            images = [];
+            originalImageNames = [];
+
+            // 1. Attempt to fetch manifest file (advertisements.json)
+            let manifest = [];
+            try {
+                // Add timestamp to avoid caching
+                const res = await fetch(`${R2_PUBLIC_URL}/advertisements.json?t=${Date.now()}`);
+                if (res.ok) manifest = await res.json();
+            } catch { }
+
+            // 2. Load images based on manifest
+            if (manifest && Array.isArray(manifest) && manifest.length > 0) {
+                manifest.forEach(item => {
+                    const adData = typeof item === 'object' ? item : { img: item, query: '' };
+                    const finalName = adData.img || adData;
+                    const id = genId();
+                    // Status 'uploaded' means image exists on R2
+                    images.push({ id, status: 'uploaded', fileName: finalName, query: adData.query || '' });
+                    originalImageNames.push(finalName);
+                    createPreview(images[images.length - 1], `${R2_PUBLIC_URL}/${finalName}`);
+                });
+            } else {
+                // If no manifest found or empty
+                // Do not guess anymore, start with empty list.
+                console.warn("لم يتم العثور على ملف manifest أو أنه فارغ.");
+            }
+
+            els.loader.style.display = 'none';
+        }
+
+        /**
+         * ------------------------------------------------------------------
+         * Event Handlers
+         * ------------------------------------------------------------------
+         */
+        els.pickFilesBtn.onclick = () => els.fileInput.click();
+        els.fileInput.onchange = (e) => handleNewFiles(e.target.files);
+        els.clearAllBtn.onclick = () => {
+            Swal.fire({
+                title: 'حذف الكل؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم'
+            }).then(r => {
+                if (r.isConfirmed) {
+                    images = [];
+                    els.previewsEl.innerHTML = '';
+                    els.previewsEl.appendChild(els.loader);
+                }
+            });
+        };
+
+        // (Drag & Drop functionality removed as requested)
+
+        // Camera (Unified Logic)
+        els.takePhotoBtn.onclick = () => {
+            // For phones: Use native camera interface
+            if (/Mobi|Android/i.test(navigator.userAgent)) {
+                els.fileInput.setAttribute('capture', 'environment');
+                els.fileInput.click();
+                return;
+            }
+            // For desktops: Open custom camera window
+            openDesktopCamera();
+        };
+
+        /**
+         * @function openDesktopCamera
+         * @description Opens the desktop camera window using WebRTC.
+         */
+        async function openDesktopCamera() {
+            const html = `
+                <div class="mainAdver_cameraModalContent">
+                    <button id="camClose" style="position:absolute;top:10px;right:10px;border:none;background:none;font-size:20px;">&times;</button>
+                    <video id="camVideo" autoplay playsinline style="width:100%;border-radius:10px;background:#000;"></video>
+                    <div style="text-align:center;margin-top:10px;">
+                        <button id="camSnap" class="mainAdver_btn mainAdver_btnPrimary">Caputre</button>
+                    </div>
+                </div>
+             `;
+            els.cameraModal.innerHTML = html;
+            els.cameraModal.style.display = 'flex';
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const v = document.getElementById('camVideo');
+                v.srcObject = stream;
+
+                document.getElementById('camClose').onclick = () => {
+                    stream.getTracks().forEach(t => t.stop());
+                    els.cameraModal.style.display = 'none';
+                };
+
+                document.getElementById('camSnap').onclick = () => {
+                    const cvs = document.createElement('canvas');
+                    cvs.width = v.videoWidth; cvs.height = v.videoHeight;
+                    cvs.getContext('2d').drawImage(v, 0, 0);
+                    cvs.toBlob(blob => {
+                        const f = new File([blob], `cam_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                        handleNewFiles([f]);
+                        document.getElementById('camClose').click();
+                    }, 'image/jpeg', 0.9);
+                };
+            } catch (e) {
+                console.error(e);
+                els.cameraModal.style.display = 'none';
+            }
+        }
+
+        /**
+         * ------------------------------------------------------------------
+         * Submission Logic
+         * ------------------------------------------------------------------
+         */
+        els.form.onsubmit = async (e) => {
+            e.preventDefault();
+
+            // Sort images based on their order in DOM
+            const domIds = Array.from(els.previewsEl.querySelectorAll('.mainAdver_preview')).map(x => x.dataset.id);
+            images.sort((a, b) => domIds.indexOf(a.id) - domIds.indexOf(b.id));
+
+            Swal.fire({
+                title: 'جاري النشر...',
+                didOpen: () => Swal.showLoading(),
+                allowOutsideClick: false
+            });
+
+            try {
+                // --- Smart Sync Strategy ---
+                // Instead of deleting everything and re-uploading, we will do the following:
+                // 1. Upload only new images with unique names.
+                // 2. Update the manifest file with the new order.
+                // 3. Delete only images that are no longer in the list.
+
+                const newManifest = []; // To store the final list of names
+                const uploads = []; // To store new upload operations
+
+                // Step 1: Process images (Upload new + Keep old)
+                for (const imgState of images) {
+                    if (imgState.status === 'uploaded') {
+                        // Image already exists: keep its name and update query
+                        newManifest.push({ img: imgState.fileName, query: imgState.query || '' });
+                    } else if (imgState.status === 'ready' && imgState.compressedBlob) {
+                        // New image: generate a unique name for it
+                        const ext = imgState.compressedBlob.type === 'image/webp' ? 'webp' : 'jpg';
+                        const uniqueName = `ad_${Date.now()}_${Math.floor(Math.random() * 1000)}.${ext}`;
+
+                        // Add to upload list
+                        uploads.push({ blob: imgState.compressedBlob, name: uniqueName });
+                        // Add to manifest
+                        newManifest.push({ img: uniqueName, query: imgState.query || '' });
+
+                        // Update item status locally
+                        imgState.fileName = uniqueName;
+                        imgState.status = 'uploaded';
+                    }
+                }
+
+                // Execute upload operations for new images
+                if (uploads.length > 0) {
+                    for (const up of uploads) {
+                        await uploadFile2cf(up.blob, up.name);
+                    }
+                }
+
+                // Step 2: Update manifest (advertisements.json)
+                const mBlob = new Blob([JSON.stringify(newManifest)], { type: 'application/json' });
+                await uploadFile2cf(mBlob, 'advertisements.json');
+
+                // Step 3: Cleanup unused files
+                const currentNamesInManifest = newManifest.map(m => m.img);
+                const filesToDelete = originalImageNames.filter(oldName => !currentNamesInManifest.includes(oldName));
+
+                if (filesToDelete.length > 0) {
+                    const deletePromises = filesToDelete.map(name => deleteFile2cf(name).catch(e => console.warn(e)));
+                    await Promise.all(deletePromises);
+                }
+
+                // Step 4: Notifications and Update
+                if (addUpdate) await addUpdate("تحديث الإعلانات");
+
+                Swal.fire('تم!', 'تم تحديث الإعلانات بنجاح.', 'success');
+                loadImages();
+
+            } catch (err) {
+                console.error('خطأ في الرفع', err);
+                Swal.fire('خطأ', 'فشل رفع البيانات.', 'error');
+            }
+        };
+
+        // --- Startup ---
+        loadImages();
+
+    })();
+</script>

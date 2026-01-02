@@ -1,0 +1,19 @@
+/*
+  @file css/register-page.css
+  @description أنماط خاصة بصفحة إنشاء حساب جديد (register.html).
+*/
+
+/* تنسيق حاوية كلمة المرور مع أيقونة العين */
+.password-container {
+  position: relative;
+}
+.password-container input {
+  padding-left: 40px; /* مساحة للأيقونة على اليسار (لـ RTL) */
+}
+.toggle-password {
+  position: absolute;
+  left: 15px; /* لليمين في RTL */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}

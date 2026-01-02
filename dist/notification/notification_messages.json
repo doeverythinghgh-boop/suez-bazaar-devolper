@@ -1,0 +1,109 @@
+{
+    "purchase": {
+        "admin": {
+            "title": "طلب شراء جديد",
+            "body": "تم استلام طلب جديد رقم #${orderId}. تحقق من التفاصيل في لوحة التحكم."
+        },
+        "seller": {
+            "title": "مبيعات جديدة!",
+            "body": "طلب شراء. تفقد الطلبات الآن."
+        }
+    },
+    "steps": {
+        "step-review": {
+            "buyer": {
+                "title": "تم استلام طلبك",
+                "body": "تم استلام طلبك${orderIdText}. يرجى مراجعة المنتجات."
+            }
+        },
+        "step-confirmed": {
+            "buyer": {
+                "title": "تم تأكيد الطلب",
+                "body": "تم تأكيد طلبك${orderIdText} من قبل البائع. جاري التجهيز للشحن."
+            },
+            "delivery": {
+                "title": "طلب جديد للتوصيل",
+                "body": "تم تأكيد طلب${orderIdText} وجاهز للشحن. يرجى الاستعداد للتوصيل."
+            },
+            "seller": {
+                "title": "تم تأكيد الطلب",
+                "body": "تم تأكيد الطلب${orderIdText}، يرجى الاستعداد."
+            }
+        },
+        "step-shipped": {
+            "buyer": {
+                "title": "تم شحن الطلب",
+                "body": "تم شحن طلبك${orderIdText}. في الطريق إليك!"
+            },
+            "delivery": {
+                "title": "تم الشحن",
+                "body": "تم شحن الطلب${orderIdText}. يرجى التوصيل للعميل."
+            }
+        },
+        "step-delivered": {
+            "buyer": {
+                "title": "تم التسليم",
+                "body": "تم تسليم طلبك${orderIdText} بنجاح. نتمنى أن تكون راضياً عن الخدمة."
+            },
+            "delivery": {
+                "title": "تم التسليم",
+                "body": "تم تسليم الطلب${orderIdText} بنجاح."
+            },
+            "seller": {
+                "title": "تم تسليم الطلب",
+                "body": "تم تسليم الطلب${orderIdText} بنجاح للعميل."
+            }
+        },
+        "step-cancelled": {
+            "seller": {
+                "title": "منتجات ملغاة",
+                "body": "المشتري ألغى بعض منتجاتك في الطلب${orderIdText}."
+            }
+        },
+        "step-rejected": {
+            "buyer": {
+                "title": "منتجات مرفوضة",
+                "body": "تم رفض بعض المنتجات من طلبك${orderIdText} لعدم توفرها."
+            }
+        },
+        "step-returned": {
+            "seller": {
+                "title": "منتجات مرتجعة",
+                "body": "المشتري أرجع بعض منتجاتك من الطلب${orderIdText}."
+            }
+        },
+        "general_update": {
+            "admin": {
+                "title": "تحديث حالة الطلب",
+                "body": "تم تفعيل مرحلة \"${stepName}\"${orderIdText}${userInfo}."
+            },
+            "buyer": {
+                "title": "تحديث الطلب",
+                "body": "تم تحديث حالة طلبك${orderIdText} إلى: ${stepName}"
+            },
+            "delivery": {
+                "title": "تحديث الطلب",
+                "body": "تم تحديث حالة الطلب${orderIdText} إلى: ${stepName}"
+            },
+            "seller": {
+                "title": "تحديث الطلب",
+                "body": "تم تحديث حالة الطلب${orderIdText} إلى: ${stepName}"
+            }
+        }
+    },
+    "admin_manual": {
+        "title": "إشعار من الإدارة"
+    },
+    "new-item-added": {
+        "admin": {
+            "title": "إضافة جديدة في المتجر",
+            "body": "تم إضافة ${itemType} جديد: ${itemName} (مفتاح المنتج: ${itemKey}) بواسطة ${userName} (مفتاح المستخدم: ${userKey})."
+        }
+    },
+    "item-updated": {
+        "admin": {
+            "title": "تعديل في المتجر",
+            "body": "تم تعديل ${itemType}: ${itemName} (مفتاح المنتج: ${itemKey}) بواسطة ${userName}. يرجى مراجعة التعديلات."
+        }
+    }
+}

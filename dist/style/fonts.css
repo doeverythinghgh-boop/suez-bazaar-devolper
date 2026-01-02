@@ -1,0 +1,20 @@
+/**
+ * @file style/fonts.css
+ * @description Local font definitions for Tajawal.
+ */
+
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/Tajawal-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Tajawal';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../assets/fonts/Tajawal-Bold.ttf') format('truetype');
+}

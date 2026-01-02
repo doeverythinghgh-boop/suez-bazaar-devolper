@@ -1,0 +1,236 @@
+/* Core variables inspired by the project */
+:root {
+    --primary-color: #007bff;
+    --bg-color-light: #f8f9fa;
+    --text-color-dark: #343a40;
+    --border-color: #dee2e6;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --font-family-main: "Tajawal", sans-serif;
+}
+
+/* Main container styling */
+.admin-panel-container {
+    font-family: var(--font-family-main);
+    padding: 20px;
+    background-color: #fff;
+    margin: 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow-md);
+}
+
+.admin-panel-title {
+    color: var(--text-color-dark);
+    margin-bottom: 25px;
+    font-size: 24px;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+}
+
+/* Loader styling */
+.admin-panel-loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: var(--text-color-dark);
+}
+
+.admin-panel-loader {
+    border: 5px solid var(--bg-color-light);
+    border-top: 5px solid var(--primary-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Table container styling */
+.admin-panel-table-container {
+    overflow-x: auto;
+    /* To add horizontal scrollbar when needed on small screens */
+}
+
+/* Table styling */
+.admin-panel-users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.admin-panel-users-table th,
+.admin-panel-users-table td {
+    padding: 12px 15px;
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Table header */
+.admin-panel-table-header th {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-dark);
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* Table rows */
+#admin-panel-users-tbody tr:active {
+    background-color: #f1f3f5;
+}
+
+#admin-panel-users-tbody td {
+    font-size: 14px;
+    color: #495057;
+}
+
+/* Selected row styling */
+#admin-panel-users-tbody tr.selected-row {
+    background-color: #ffe8cc !important;
+    /* Distinct light orange color */
+    border: 2px solid #fd7e14;
+    transition: background-color 0.2s;
+}
+
+#admin-panel-users-tbody tr.selected-row td {
+    font-weight: bold;
+    color: #000;
+}
+
+/* Special styling for "Has Token" column */
+#admin-panel-users-tbody .has-token-true {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+#admin-panel-users-tbody .has-token-false {
+    color: var(--danger-color);
+}
+
+/* Icons to indicate token status */
+#admin-panel-users-tbody .has-token-true::before {
+    content: '✓ ';
+    /* Check mark */
+}
+
+#admin-panel-users-tbody .has-token-false::before {
+    content: '✗ ';
+    /* Cross mark */
+}
+
+/* Delivery status buttons styling */
+.btn-delivery-status {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-family: var(--font-family-main);
+}
+
+.btn-delivery-status:active {
+    opacity: 0.9;
+    filter: brightness(0.95);
+}
+
+/* Seller - Blue */
+.btn-role-seller {
+    background-color: var(--primary-color);
+}
+
+/* Delivery Service - Green */
+.btn-role-delivery {
+    background-color: var(--success-color);
+}
+
+/* Both - Orange/Gold for flexibility */
+.btn-role-both {
+    background-color: #fd7e14;
+}
+
+/* Broadcast Section Styling */
+.admin-panel-broadcast-container {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--bg-color-light);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.admin-panel-sub-title {
+    color: var(--text-color-dark);
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.broadcast-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.broadcast-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-family: var(--font-family-main);
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.broadcast-textarea:focus {
+    border-color: var(--primary-color);
+}
+
+.btn-broadcast-send {
+    background-color: var(--primary-color);
+    width: fit-content;
+    min-width: 180px;
+    padding: 10px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    align-self: flex-start;
+}
+
+.btn-broadcast-send:active {
+    filter: brightness(0.9);
+}
+
+.btn-broadcast-send i {
+    margin-left: 8px;
+}
+
+/* Buttons content */
+.btn-role-seller::before {
+    content: '📦 ';
+}
+
+.btn-role-delivery::before {
+    content: '🚚 ';
+}
+
+.btn-role-both::before {
+    content: '🏢 ';
+}

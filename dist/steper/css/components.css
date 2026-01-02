@@ -1,0 +1,336 @@
+/* ============================================
+   Alerts & User Info
+   ============================================ */
+.alert-message {
+    color: var(--color-rejected);
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    text-align: right;
+    margin-top: 0.5rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(-10px);
+    opacity: 0;
+    display: none;
+    /* Hidden by default */
+}
+
+.alert-message.show {
+    display: block;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.current-user-info {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 1rem;
+    background-color: rgba(102, 126, 234, 0.1);
+    border: 1px solid rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    color: var(--color-primary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+/* ============================================
+   Popups - Modern & Responsive
+   ============================================ */
+div:where(.swal2-container) .fullscreen-swal {
+    width: 90% !important;
+    max-width: 600px !important;
+    /* Responsive width */
+    height: auto !important;
+    max-height: 85vh !important;
+    /* Prevent overflowing screen vertically */
+    padding: 0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3) !important;
+    overflow: hidden !important;
+    /* Ensure content stays inside */
+    background: #fff !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* Modern Title */
+div:where(.swal2-container) .fullscreen-swal .swal2-title {
+    background-color: #f8f9fa;
+    color: var(--color-primary);
+    padding: 1rem 1.5rem !important;
+    margin: 0 !important;
+    font-size: 1.25rem !important;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: right !important;
+}
+
+/* Scrollable Content Area */
+.fullscreen-swal .swal2-html-container {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    overflow-y: auto !important;
+    /* Internal scroll */
+    overflow-x: hidden !important;
+    text-align: right !important;
+    /* Arabic alignment */
+    flex-grow: 1;
+    width: 100% !important;
+    box-sizing: border-box;
+}
+
+/* Actions (Buttons) */
+.fullscreen-swal .swal2-actions {
+    padding: 1rem !important;
+    margin: 0 !important;
+    border-top: 1px solid #eee;
+    background-color: #f8f9fa;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: flex-start !important;
+    /* Align buttons to start (RTL) or center */
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* Button Styling (Modern) */
+.fullscreen-swal .swal2-confirm,
+.fullscreen-swal .swal2-deny,
+.fullscreen-swal .swal2-cancel {
+    border-radius: 8px !important;
+    padding: 0.6em 1.5em !important;
+    font-weight: 600 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: none !important;
+}
+
+.fullscreen-swal .swal2-confirm {
+    background-color: var(--color-primary) !important;
+}
+
+.fullscreen-swal .swal2-deny {
+    background-color: var(--color-rejected) !important;
+}
+
+/* ============================================
+   Internal Element Fixes
+   ============================================ */
+
+/* Ensure tables don't break layout */
+.fullscreen-swal table {
+    width: 100% !important;
+    margin-bottom: 1rem;
+}
+
+/* Fix Flex items in RTL */
+.fullscreen-swal .checkbox-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+
+.fullscreen-swal .checkbox-item:hover {
+    background-color: #f8f9fa;
+}
+
+/* Map Containers */
+.fullscreen-swal iframe {
+    max-width: 100%;
+    border-radius: 8px;
+}
+
+/* ============================================
+   New Components (Extracted from inline styles)
+   ============================================ */
+
+/* Order Service Footer - Modern & Responsive */
+.order-service-footer {
+    margin: 2rem auto;
+    background: #ffffff;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    display: none;
+    /* Managed by JS */
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    width: 95%;
+    max-width: 450px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.order-service-footer .order-photo-link-container {
+    margin-bottom: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.order-photo-link {
+    color: #4a5568;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.2s;
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.order-photo-link:active {
+    background: #edf2f7;
+    transform: scale(0.98);
+}
+
+.order-photo-link i {
+    color: var(--color-primary);
+}
+
+.order-value-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.order-value-input-container label {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #718096;
+}
+
+.input-with-button {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.order-value-input {
+    flex: 1;
+    min-width: 0;
+    /* Important for flexbox overflow */
+    padding: 8px 14px;
+    border: 2px solid #edf2f7;
+    border-radius: 10px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    outline: none;
+    text-align: center;
+    background: #fdfdfd;
+    box-sizing: border-box;
+    color: var(--color-primary);
+    transition: all 0.2s;
+}
+
+.order-save-btn {
+    width: 42px;
+    height: 42px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.order-save-btn:active {
+    transform: scale(0.92);
+    filter: brightness(0.9);
+}
+
+.order-save-btn:disabled {
+    background: #cbd5e0;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.order-value-input:focus {
+    border-color: var(--color-primary);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+}
+
+/* Order Photo Link Container - Hidden by default */
+.order-photo-link-container {
+    text-align: center;
+    margin-bottom: 15px;
+    display: none;
+}
+
+/* Primary Step Description */
+.step-description.primary-description {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+    font-size: 0.9rem;
+}
+
+/* Secondary Stepper Container */
+.stepper-container.secondary-container {
+    margin-top: 2.5rem;
+}
+
+.stepper-wrapper.secondary-wrapper {
+    justify-content: center;
+    gap: 0rem;
+}
+
+/* Secondary Step Description */
+.step-description.secondary-description {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-weight: bold;
+    color: red;
+    font-size: 0.9rem;
+}
+
+/* Tel Links in Popups */
+.fullscreen-swal a[href^="tel:"] {
+    color: #007bff !important;
+    text-decoration: none !important;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.fullscreen-swal a[href^="tel:"] i {
+    font-size: 0.8em;
+}

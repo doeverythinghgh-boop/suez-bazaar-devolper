@@ -1,0 +1,216 @@
+<style>
+
+
+    .orderPh_gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        max-width: 1000px;
+        align-items: center;
+    }
+
+    .orderPh_gallery-item {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+        max-width: 1000px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .orderPh_gallery-item img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        max-height: 800px;
+    }
+
+    .orderPh_gallery-item:hover img {
+        cursor: default;
+    }
+
+    .orderPh_loader {
+        font-size: 1.2rem;
+        color: #666;
+        margin-top: 50px;
+    }
+
+    .orderPh_error-msg {
+        color: var(--danger-color, red);
+        font-weight: bold;
+        margin-top: 20px;
+        text-align: center;
+    }
+</style>
+
+
+<body>
+
+
+
+    <h2 style="color: #333; margin-bottom: 30px; border-bottom: 2px solid #007bff; padding-bottom: 10px;">صور الطلب
+        الخاص</h2>
+
+    <div class="orderPh_gallery" id="orderPh_gallery">
+        <!-- Images will be injected here -->
+    </div>
+
+    <div id="orderPh_status" class="orderPh_loader"><i class="fas fa-spinner fa-spin"></i> <span>جاري البحث عن الصور
+            وتحميلها...</span>
+    </div>
+
+    <script>
+        /**
+         * @file orderPhoto.html
+         * @description صفحة عرض صور الطلب الخاص من R2 Bucket
+         */
+
+        // R2 Bucket Public URL
+        // const orderPh_R2_BASE_URL = 'https://pub-e828389e2f1e484c89d8fb652c540c12.r2.dev';
+
+        /**
+         * @function orderPh_main
+         * @description الدالة الرئيسية لتحميل وعرض صور الطلب
+         * @async
+         * @returns {Promise<void>}
+         */
+        async function orderPh_main() {
+            try {
+                // Extract parameters from the script's own URL (the one passed to mainLoader)
+                // When loaded via mainLoader, the URL with parameters is in the script tag src or in a data attribute
+                // We'll use a different approach: get params from the current page URL
+                const orderPh_currentScript = document.currentScript || document.querySelector('script[src*="orderPhoto"]');
+                let orderPh_params = new URLSearchParams(window.location.search);
+
+                // If no params in window.location, try to extract from the page URL that was loaded
+                // The mainLoader passes the full URL, so we need to parse it from the fetch request
+                // Since we can't access that directly, we'll use a global variable approach
+
+                // Get keys from URL
+                let orderPh_u = orderPh_params.get('u'); // User Key
+                let orderPh_s = orderPh_params.get('s'); // Seller Key
+                let orderPh_p = orderPh_params.get('p'); // Product Key
+                let orderPh_o = orderPh_params.get('o'); // Order Key
+
+                // If params not in window.location.search, check if they were passed via a global variable
+                if (!orderPh_u && window.orderPhotoParams) {
+                    orderPh_u = window.orderPhotoParams.u;
+                    orderPh_s = window.orderPhotoParams.s;
+                    orderPh_p = window.orderPhotoParams.p;
+                    orderPh_o = window.orderPhotoParams.o;
+                }
+
+                const orderPh_gallery = document.getElementById('orderPh_gallery');
+                const orderPh_status = document.getElementById('orderPh_status');
+
+                console.log('[OrderPhoto] Parameters:', { u: orderPh_u, s: orderPh_s, p: orderPh_p, o: orderPh_o });
+
+                if (!orderPh_u || !orderPh_s || !orderPh_p || !orderPh_o) {
+                    orderPh_status.innerHTML = '<div class="orderPh_error-msg">بيانات الطلب غير مكتملة (المفاتيح ناقصة). لا يمكن عرض الصور.</div>';
+                    return;
+                }
+
+                console.log(`[OrderPhoto] البحث عن الصور بالنمط: ${orderPh_u}_${orderPh_s}_${orderPh_p}_${orderPh_o}_{index}`);
+
+                const orderPh_indices = [1, 2, 3, 4];
+                const orderPh_promises = [];
+
+                // Try to find images for each index
+                for (const orderPh_i of orderPh_indices) {
+                    orderPh_promises.push(orderPh_findImage(orderPh_u, orderPh_s, orderPh_p, orderPh_o, orderPh_i));
+                }
+
+                try {
+                    const orderPh_results = await Promise.all(orderPh_promises);
+                    orderPh_gallery.innerHTML = '';
+
+                    let orderPh_foundAny = false;
+                    orderPh_results.forEach(orderPh_imgUrl => {
+                        if (orderPh_imgUrl) {
+                            orderPh_foundAny = true;
+                            const orderPh_div = document.createElement('div');
+                            orderPh_div.className = 'orderPh_gallery-item';
+                            // On click, open image in new tab for full view
+                            orderPh_div.innerHTML = `<img src="${orderPh_imgUrl}" loading="lazy">`;
+                            orderPh_gallery.appendChild(orderPh_div);
+                        }
+                    });
+
+                    if (!orderPh_foundAny) {
+                        orderPh_status.innerHTML = '<div class="orderPh_error-msg" style="color:#777;">لا توجد صور محفوظة لهذا الطلب.</div>';
+                    } else {
+                        orderPh_status.style.display = 'none';
+                    }
+
+                } catch (orderPh_e) {
+                    console.error('[OrderPhoto] خطأ في تحميل الصور:', orderPh_e);
+                    orderPh_status.innerHTML = '<div class="orderPh_error-msg">حدث خطأ أثناء تحميل الصور.</div>';
+                }
+            } catch (orderPh_error) {
+                console.error('[OrderPhoto] خطأ في الدالة الرئيسية:', orderPh_error);
+                const orderPh_status = document.getElementById('orderPh_status');
+                if (orderPh_status) {
+                    orderPh_status.innerHTML = '<div class="orderPh_error-msg">حدث خطأ غير متوقع.</div>';
+                }
+            }
+        }
+
+        /**
+         * @function orderPh_findImage
+         * @description Function to probe for image existence using Image object (bypasses CORS for checking)
+         * @param {string} orderPh_u - User Key
+         * @param {string} orderPh_s - Seller Key
+         * @param {string} orderPh_p - Product Key
+         * @param {string} orderPh_o - Order Key
+         * @param {number} orderPh_index - Image index
+         * @returns {Promise<string|null>} - Promise resolving to image URL or null
+         */
+        function orderPh_findImage(orderPh_u, orderPh_s, orderPh_p, orderPh_o, orderPh_index) {
+            return new Promise((resolve) => {
+                try {
+                    const orderPh_baseName = `${orderPh_u}_${orderPh_s}_${orderPh_p}_${orderPh_o}_${orderPh_index}`;
+                    // Common extensions to check (case-sensitive on R2)
+                    const orderPh_extensions = ['jpg', 'jpeg', 'png', 'webp', 'gif', 'bmp', 'JPG', 'JPEG', 'PNG', 'WEBP', 'GIF', 'BMP'];
+
+                    let orderPh_checkedCount = 0;
+                    let orderPh_foundUrl = null;
+
+                    // We try all extensions. The first one that loads wins.
+                    // If multiple exist (unlikely), we just take the first one that triggers onload.
+                    orderPh_extensions.forEach(orderPh_ext => {
+                        const orderPh_url = getPublicR2FileUrl(`${orderPh_baseName}.${orderPh_ext}`);
+                        const orderPh_img = new Image();
+                        orderPh_img.onload = () => {
+                            if (!orderPh_foundUrl) {
+                                orderPh_foundUrl = orderPh_url;
+                                resolve(orderPh_url);
+                            }
+                        };
+                        orderPh_img.onerror = () => {
+                            orderPh_checkedCount++;
+                            if (orderPh_checkedCount === orderPh_extensions.length && !orderPh_foundUrl) {
+                                resolve(null); // All failed
+                            }
+                        };
+                        orderPh_img.src = orderPh_url;
+                    });
+                } catch (orderPh_error) {
+                    console.error('[OrderPhoto] خطأ في البحث عن الصورة:', orderPh_error);
+                    resolve(null);
+                }
+            });
+        }
+
+        // main function 
+        try {
+            orderPh_main();
+        } catch (orderPh_error) {
+            console.error('[OrderPhoto] خطأ في تشغيل الدالة الرئيسية:', orderPh_error);
+        }
+    </script>
+</body>
