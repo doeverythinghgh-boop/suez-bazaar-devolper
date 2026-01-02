@@ -1,7 +1,7 @@
 /**
  * @file build.js
- * @description نظام بناء لإنشاء نسخة مستقلة (Standalone) ومحميّة بالكامل.
- * يقوم بتشفير كل ملف JavaScript على حدة والحفاظ على هيكل المجلدات في مجلد dist.
+ * @description Build system for creating a standalone and fully protected version.
+ * Obfuscates each JavaScript file individually while preserving the folder structure in the dist directory.
  */
 
 const fs = require('fs');
@@ -11,13 +11,13 @@ const { obfuscate } = require('javascript-obfuscator');
 const PROJECT_ROOT = __dirname;
 const OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
 
-// 1. الإعدادات
+// 1. Configuration
 const EXCLUDED_DIRS = ['api', 'note', 'node_modules', 'dist', '.git', '.gemini', 'docs'];
 const EXCLUDED_FILES = ['build.js', 'package.json', 'package-lock.json', 'version-watcher.js'];
 const ASSETS_TO_COPY = ['assets', 'notification', 'shared', 'style', 'location', 'images', 'favicon.ico', 'manifest.json', 'js', 'pages', 'steper'];
 
 /**
- * دالة لنسخ الملفات والمجلدات
+ * Function to copy files and folders recursively
  */
 function copyRecursiveSync(src, dest) {
     if (!fs.existsSync(src)) return;
@@ -33,7 +33,7 @@ function copyRecursiveSync(src, dest) {
 }
 
 /**
- * دالة للبحث عن كافة ملفات JS
+ * Function to find all JS files
  */
 function getAllJSFiles(dirPath, arrayOfFiles = []) {
     const files = fs.readdirSync(dirPath);
@@ -45,7 +45,7 @@ function getAllJSFiles(dirPath, arrayOfFiles = []) {
                 getAllJSFiles(fullPath, arrayOfFiles);
             }
         } else {
-            // تشفير الملفات التي ليست مكتبات خارجية وليست مصغرة بالفعل
+            // Obfuscate files that are not external libraries and not already minified
             if (file.endsWith('.js') && !EXCLUDED_FILES.includes(file) && !file.endsWith('.min.js')) {
                 arrayOfFiles.push(relativePath.replace(/\\/g, '/'));
             }
@@ -55,7 +55,7 @@ function getAllJSFiles(dirPath, arrayOfFiles = []) {
 }
 
 /**
- * دالة لمعالجة ملفات HTML (نسخها فقط في هذا النظام)
+ * Function to process HTML files (copy only in this system)
  */
 function processAllHTMLFiles(dirPath) {
     const files = fs.readdirSync(dirPath);
@@ -68,7 +68,7 @@ function processAllHTMLFiles(dirPath) {
                 processAllHTMLFiles(fullPath);
             }
         } else if (file.endsWith('.html')) {
-            console.log(`📄 نسخ ملف HTML: ${relativePath}...`);
+            console.log(`📄 Copying HTML file: ${relativePath}...`);
             const targetPath = path.join(OUTPUT_DIR, relativePath);
             const targetDir = path.dirname(targetPath);
             if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
@@ -78,7 +78,7 @@ function processAllHTMLFiles(dirPath) {
 }
 
 /**
- * إعدادات التشفير لكل ملف
+ * Obfuscation settings for each file
  */
 const obfuscationOptions = {
     compact: true,
@@ -90,7 +90,7 @@ const obfuscationOptions = {
     debugProtectionInterval: 4000,
     disableConsoleOutput: false,
     identifierNamesGenerator: 'hexadecimal',
-    renameGlobals: false, // تعطيل لضمان الوصول للمتغيرات العالمية بين الملفات
+    renameGlobals: false, // Disabled to ensure access to global variables between files
     rotateStringArray: true,
     selfDefending: true,
     shuffleStringArray: true,
@@ -103,30 +103,30 @@ const obfuscationOptions = {
 };
 
 /**
- * العملية الرئيسية
+ * Main build process
  */
 async function build() {
-    console.log('🏗️ بدء بناء المشروع بالتشفير الفردي (Individual Obfuscation)...');
+    console.log('🏗️ Starting project build with individual obfuscation...');
 
     try {
         if (fs.existsSync(OUTPUT_DIR)) {
-            console.log('🧹 تنظيف مجلد dist القديم...');
+            console.log('🧹 Cleaning old dist folder...');
             fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
         }
         fs.mkdirSync(OUTPUT_DIR);
 
-        // 1. نسخ الأصول (Folders) عدا الـ JS التي سيتم تشفيرها
-        console.log('🚚 نسخ المجلدات والأصول...');
+        // 1. Copy assets (Folders) except JS files which will be obfuscated
+        console.log('🚚 Copying folders and assets...');
         ASSETS_TO_COPY.forEach(asset => {
             copyRecursiveSync(path.join(PROJECT_ROOT, asset), path.join(OUTPUT_DIR, asset));
         });
 
-        // 2. معالجة وتشفير كافة ملفات JavaScript
-        console.log('🔐 تشفير ملفات الـ JS بشكل منفصل...');
+        // 2. Process and obfuscate all JavaScript files
+        console.log('🔐 Obfuscating JS files individually...');
         const allJSFiles = getAllJSFiles(PROJECT_ROOT);
 
         allJSFiles.forEach(file => {
-            console.log(`   - تشفير: ${file}`);
+            console.log(`   - Obfuscating: ${file}`);
             const fullPath = path.join(PROJECT_ROOT, file);
             const content = fs.readFileSync(fullPath, 'utf8');
 
@@ -138,21 +138,21 @@ async function build() {
                 if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
                 fs.writeFileSync(targetPath, obfuscatedResult.getObfuscatedCode());
             } catch (obErr) {
-                console.error(`❌ فشل تشفير الملف ${file}:`, obErr);
+                console.error(`❌ Failed to obfuscate file ${file}:`, obErr);
             }
         });
 
-        // 3. نسخ ملفات HTML
-        console.log('📂 معالجة ونقل ملفات HTML...');
+        // 3. Copy HTML files
+        console.log('📂 Processing and copying HTML files...');
         processAllHTMLFiles(PROJECT_ROOT);
 
-        // 4. نسخ الملفات الفردية في الجذر
+        // 4. Copy individual root files
         const rootFiles = ['favicon.ico', 'manifest.json', 'sw.js', 'firebase-messaging-sw.js', 'version.json'];
         rootFiles.forEach(file => {
             const fullPath = path.join(PROJECT_ROOT, file);
             if (fs.existsSync(fullPath)) {
                 if (file.endsWith('.js')) {
-                    console.log(`🔐 تشفير ملف جذري: ${file}`);
+                    console.log(`🔐 Obfuscating root file: ${file}`);
                     const content = fs.readFileSync(fullPath, 'utf8');
                     const obfuscatedResult = obfuscate(content, obfuscationOptions);
                     fs.writeFileSync(path.join(OUTPUT_DIR, file), obfuscatedResult.getObfuscatedCode());
@@ -162,11 +162,11 @@ async function build() {
             }
         });
 
-        console.log(`\n✅ تم الانتهاء بنجاح!`);
-        console.log(`🚀 مجلد 'dist' الآن يحتوي على نسخة مشفرة لكل ملف على حدة.`);
+        console.log(`\n✅ Build completed successfully!`);
+        console.log(`🚀 The 'dist' folder now contains an obfuscated version of each file individually.`);
 
     } catch (error) {
-        console.error('❌ فشلت عملية البناء:', error);
+        console.error('❌ Build process failed:', error);
         process.exit(1);
     }
 }

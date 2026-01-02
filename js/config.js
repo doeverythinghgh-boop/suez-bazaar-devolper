@@ -10,7 +10,7 @@
  * @type {string}
  * @const
  */
-const VERCEL_URL = "https://bazaar-neon-three.vercel.app";
+const VERCEL_URL = "https://suez-bazaar.vercel.app";
 
 /**
  * @description List of domain names allowed to use the Vercel URL.
@@ -23,7 +23,7 @@ const allowedHosts = [
   "bazaar-bk1.pages.dev",
   "appassets.androidplatform.net",
   "doeverythinghgh-boop.github.io",
-  "bazaar-neon-three.vercel.app",
+  "suez-bazaar.vercel.app",
 ];
 
 // ✅ Improvement: Simplify baseURL determination logic using an array.
