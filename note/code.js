@@ -4,6 +4,7 @@
 \.gemini\GEMINI.md هل تحترمة
  MEMORY[user_global] 
  npm run auto-version
+ node build.js
  * 
 يضمن حساب الهوامش الداخلية ضمن العرض الكلي للعنصر
  * 
