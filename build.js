@@ -7,6 +7,7 @@
 const fs = require('fs');
 const path = require('path');
 const { obfuscate } = require('javascript-obfuscator');
+const { exec } = require('child_process');
 
 const PROJECT_ROOT = __dirname;
 const OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
@@ -110,10 +111,19 @@ async function build() {
 
     try {
         if (fs.existsSync(OUTPUT_DIR)) {
-            console.log('🧹 Cleaning old dist folder...');
-            fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
+            console.log('🧹 Cleaning old dist folder (preserving .git)...');
+            // Read all files/dirs in dist
+            const files = fs.readdirSync(OUTPUT_DIR);
+            for (const file of files) {
+                // Skip .git folder
+                if (file === '.git') continue;
+
+                const curPath = path.join(OUTPUT_DIR, file);
+                fs.rmSync(curPath, { recursive: true, force: true });
+            }
+        } else {
+            fs.mkdirSync(OUTPUT_DIR);
         }
-        fs.mkdirSync(OUTPUT_DIR);
 
         // 1. Copy assets (Folders) except JS files which will be obfuscated
         console.log('🚚 Copying folders and assets...');
@@ -165,10 +175,67 @@ async function build() {
         console.log(`\n✅ Build completed successfully!`);
         console.log(`🚀 The 'dist' folder now contains an obfuscated version of each file individually.`);
 
+        // 5. Auto deploy to GitHub
+        await deployToGit();
+
     } catch (error) {
         console.error('❌ Build process failed:', error);
         process.exit(1);
     }
+}
+
+/**
+ * Function to auto push changes to GitHub
+ */
+function deployToGit() {
+    return new Promise((resolve, reject) => {
+        console.log('\n📦 Checking for changes to push to GitHub...');
+
+        const gitCommands = [
+            'git add .',
+            `git commit -m "Auto-build update: ${new Date().toISOString()}"`,
+            'git push -f origin main'
+        ];
+
+        // Execute commands sequentially in dist directory
+        const executeCommands = async () => {
+            for (const cmd of gitCommands) {
+                try {
+                    await new Promise((res, rej) => {
+                        exec(cmd, { cwd: OUTPUT_DIR }, (error, stdout, stderr) => {
+                            if (error) {
+                                // Ignore empty commit error
+                                if (cmd.includes('commit') && (stdout.includes('nothing to commit') || stderr.includes('nothing to commit'))) {
+                                    console.log('   ⚠️ No changes detected to commit.');
+                                    return res();
+                                }
+                                return rej(error);
+                            }
+                            res();
+                        });
+                    });
+                } catch (err) {
+                    if (cmd.includes('commit')) {
+                        console.log('   ⚠️ Probably no changes to commit.');
+                    } else {
+                        console.error(`   ❌ Error executing: ${cmd}`, err);
+                        throw err;
+                    }
+                }
+            }
+        };
+
+        executeCommands()
+            .then(() => {
+                console.log('✅ Successfully pushed updates to GitHub!');
+                resolve();
+            })
+            .catch((err) => {
+                console.error('❌ Failed to push to GitHub:', err);
+                // Don't fail the build if git push fails, just log it
+                resolve();
+            });
+    });
 }
 
 build();

@@ -10,14 +10,19 @@
  * @type {string}
  * @const
  */
-const VERCEL_URL = "https://suez-bazaar.vercel.app";
+/**
+ * @description Defines the base API URL based on the runtime environment (Local, Cloudflare Pages, or Android App).
+ * @type {string}
+ * @var
+ */
+var VERCEL_URL = "https://suez-bazaar.vercel.app";
 
 /**
  * @description List of domain names allowed to use the Vercel URL.
  * @type {string[]}
- * @const
+ * @var
  */
-const allowedHosts = [
+var allowedHosts = [
   "127.0.0.1",
   "localhost",
   "bazaar-bk1.pages.dev",
@@ -30,9 +35,9 @@ const allowedHosts = [
 /**
  * @description Base API URL. Dynamically determined based on the runtime environment.
  * @type {string}
- * @const
+ * @var
  */
-const baseURL = allowedHosts.includes(location.hostname) ? VERCEL_URL : "";
+var baseURL = allowedHosts.includes(location.hostname) ? VERCEL_URL : "";
 
 /**
  * @description List of user IDs with administrative privileges.
