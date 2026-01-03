@@ -15,7 +15,7 @@
  * @type {string}
  * @var
  */
-window.VERCEL_URL = "https://suez-bazaar.vercel.app";
+window.VERCEL_URL = "https://bazaar-suez.vercel.app";
 
 /**
  * @description List of domain names allowed to use the Vercel URL.
@@ -28,7 +28,7 @@ window.allowedHosts = [
   "suez-bazaar.pages.dev",
   "appassets.androidplatform.net",
   "doeverythinghgh-boop.github.io",
-  "suez-bazaar.vercel.app",
+  "bazaar-suez.vercel.app",
 ];
 
 // ✅ Improvement: Simplify baseURL determination logic using an array.
