@@ -218,6 +218,8 @@ function generateFileHashes() {
             if (fs.statSync(fullPathInDist).isDirectory()) {
                 scanDir(fullPathInDist);
             } else {
+                // IMPORTANT: Process ALL file types (encrypted/obfuscated or not).
+                // This ensures version.json is a comprehensive manifest of the release.
                 const relativePath = path.relative(OUTPUT_DIR, fullPathInDist).replace(/\\/g, '/');
 
                 // Calculate hash of the ORIGINAL file in PROJECT_ROOT
