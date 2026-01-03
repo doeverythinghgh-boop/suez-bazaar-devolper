@@ -270,10 +270,12 @@ function generateFileHashes() {
                 }
 
                 const hex = hashSum.digest('hex');
+                const stats = fs.statSync(fullPathInDist);
 
                 fileList.push({
                     path: baseUrl + relativePath.split('/').map(encodeURIComponent).join('/'),
-                    hash: hex
+                    hash: hex,
+                    size: stats.size
                 });
             }
         });
