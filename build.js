@@ -9,6 +9,10 @@ const path = require('path');
 const { obfuscate } = require('javascript-obfuscator');
 const { exec } = require('child_process');
 const crypto = require('crypto');
+const CleanCSS = require('clean-css');
+const HTMLMinifier = require('html-minifier-terser');
+
+const cleanCSS = new CleanCSS({ level: 1 });
 
 const PROJECT_ROOT = __dirname;
 const OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
@@ -30,6 +34,21 @@ function copyRecursiveSync(src, dest) {
             copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
         });
     } else {
+        const ext = path.extname(src).toLowerCase();
+        // Minify CSS if it's a CSS file and not already minified
+        if (ext === '.css' && !src.endsWith('.min.css')) {
+            try {
+                const content = fs.readFileSync(src, 'utf8');
+                const minified = cleanCSS.minify(content);
+                if (minified.styles) {
+                    fs.writeFileSync(dest, minified.styles);
+                    return;
+                }
+            } catch (err) {
+                console.error(`❌ Failed to minify CSS ${src}:`, err);
+            }
+        }
+        // Default: just copy the file
         fs.copyFileSync(src, dest);
     }
 }
@@ -57,26 +76,40 @@ function getAllJSFiles(dirPath, arrayOfFiles = []) {
 }
 
 /**
- * Function to process HTML files (copy only in this system)
+ * Function to process HTML files with minification
  */
-function processAllHTMLFiles(dirPath) {
+async function processAllHTMLFiles(dirPath) {
     const files = fs.readdirSync(dirPath);
-    files.forEach(file => {
+    for (const file of files) {
         const fullPath = path.join(dirPath, file);
         const relativePath = path.relative(PROJECT_ROOT, fullPath);
 
         if (fs.statSync(fullPath).isDirectory()) {
             if (!EXCLUDED_DIRS.includes(path.basename(fullPath))) {
-                processAllHTMLFiles(fullPath);
+                await processAllHTMLFiles(fullPath);
             }
         } else if (file.endsWith('.html')) {
-            console.log(`📄 Copying HTML file: ${relativePath}...`);
+            console.log(`📄 Minifying HTML file: ${relativePath}...`);
             const targetPath = path.join(OUTPUT_DIR, relativePath);
             const targetDir = path.dirname(targetPath);
             if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
-            fs.copyFileSync(fullPath, targetPath);
+
+            try {
+                const content = fs.readFileSync(fullPath, 'utf8');
+                const minified = await HTMLMinifier.minify(content, {
+                    removeAttributeQuotes: false,
+                    collapseWhitespace: true,
+                    removeComments: true,
+                    minifyCSS: true,
+                    minifyJS: false // JS is handled separately by obfuscator
+                });
+                fs.writeFileSync(targetPath, minified);
+            } catch (err) {
+                console.warn(`⚠️ Failed to minify HTML ${relativePath}, copying instead.`, err);
+                fs.copyFileSync(fullPath, targetPath);
+            }
         }
-    });
+    }
 }
 
 /**
@@ -154,8 +187,8 @@ async function build() {
         });
 
         // 3. Copy HTML files
-        console.log('📂 Processing and copying HTML files...');
-        processAllHTMLFiles(PROJECT_ROOT);
+        console.log('📂 Processing and minifying HTML files...');
+        await processAllHTMLFiles(PROJECT_ROOT);
 
         // 4. Copy individual root files
         const rootFiles = ['favicon.ico', 'manifest.json', 'sw.js', 'firebase-messaging-sw.js', 'version.json'];
