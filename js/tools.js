@@ -337,37 +337,50 @@ let suzeAudioContext = null;
  * @throws {Error} - If the Web Audio API encounters an error during sound playback.
  */
 function playNotificationSound() {
-  try {
-    // Create AudioContext only when needed
-    if (!suzeAudioContext) {
-      suzeAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const sampleRate = 44100;
+    const beepDurationMs = 140;
+    const silenceMs = 70;
+    const pulsesCount = 3;
+    const frequency = 900;
+    const volume = 0.75;
+
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)({
+        sampleRate: sampleRate
+    });
+
+    const beepSamples = Math.floor(beepDurationMs * sampleRate / 1000);
+    const silenceSamples = Math.floor(silenceMs * sampleRate / 1000);
+    const totalSamples = pulsesCount * (beepSamples + silenceSamples);
+
+    const buffer = audioContext.createBuffer(1, totalSamples, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    let index = 0;
+
+    for (let pulse = 0; pulse < pulsesCount; pulse++) {
+
+        // Beep
+        for (let i = 0; i < beepSamples; i++) {
+            data[index++] =
+                Math.sin(2 * Math.PI * frequency * i / sampleRate) * volume;
+        }
+
+        // Silence
+        for (let i = 0; i < silenceSamples; i++) {
+            data[index++] = 0;
+        }
     }
 
-    // Fix if browser suspended AudioContext
-    if (suzeAudioContext.state === "suspended") {
-      suzeAudioContext.resume();
-    }
+    const source = audioContext.createBufferSource();
+    source.buffer = buffer;
+    source.connect(audioContext.destination);
+    source.start();
 
-    const oscillator = suzeAudioContext.createOscillator();
-    const gainNode = suzeAudioContext.createGain();
-
-    oscillator.connect(gainNode);
-    gainNode.connect(suzeAudioContext.destination);
-
-    oscillator.type = "sine";
-    oscillator.frequency.value = 600;
-
-    const now = suzeAudioContext.currentTime;
-    gainNode.gain.setValueAtTime(0.3, now);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
-
-    oscillator.start(now);
-    oscillator.stop(now + 0.25);
-
-  } catch (error) {
-    console.warn("[Sound] فشل تشغيل صوت التنبيه:", error);
-  }
+    source.onended = () => {
+        audioContext.close();
+    };
 }
+
 
 
 const pageSnapshots = {};

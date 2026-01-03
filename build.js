@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const { obfuscate } = require('javascript-obfuscator');
 const { exec } = require('child_process');
+const crypto = require('crypto');
 
 const PROJECT_ROOT = __dirname;
 const OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
@@ -175,13 +176,84 @@ async function build() {
         console.log(`\n✅ Build completed successfully!`);
         console.log(`🚀 The 'dist' folder now contains an obfuscated version of each file individually.`);
 
-        // 5. Auto deploy to GitHub
+        // 5. Generate File Hashes and Update version.json
+        console.log('📝 Generating file hashes and updating version.json...');
+        generateFileHashes();
+
+        // 6. Auto deploy to GitHub
         await deployToGit();
 
     } catch (error) {
         console.error('❌ Build process failed:', error);
         process.exit(1);
     }
+}
+
+/**
+ * Function to generate SHA-256 hashes for all files in dist and update version.json
+ */
+function generateFileHashes() {
+    const versionFilePath = path.join(OUTPUT_DIR, 'version.json');
+    let versionData = {};
+    const baseUrl = 'https://raw.githubusercontent.com/doeverythinghgh-boop/_bazaar/main/';
+
+    if (fs.existsSync(versionFilePath)) {
+        try {
+            versionData = JSON.parse(fs.readFileSync(versionFilePath, 'utf8'));
+        } catch (e) {
+            console.warn('⚠️ Could not parse existing version.json, creating new one.');
+        }
+    }
+
+    const fileList = [];
+
+    function scanDir(dir) {
+        const files = fs.readdirSync(dir);
+        files.forEach(file => {
+            if (file === '.git' || file === 'version.json') return; // Skip .git and version.json itself
+            const fullPath = path.join(dir, file);
+            // Handle files in dist
+            const fullPathInDist = fullPath;
+
+            if (fs.statSync(fullPathInDist).isDirectory()) {
+                scanDir(fullPathInDist);
+            } else {
+                const relativePath = path.relative(OUTPUT_DIR, fullPathInDist).replace(/\\/g, '/');
+
+                // Calculate hash of the ORIGINAL file in PROJECT_ROOT
+                const fullPathInSource = path.join(PROJECT_ROOT, relativePath);
+                let hashSum = crypto.createHash('sha256');
+
+                if (fs.existsSync(fullPathInSource) && fs.statSync(fullPathInSource).isFile()) {
+                    const fileBuffer = fs.readFileSync(fullPathInSource);
+                    hashSum.update(fileBuffer);
+                } else {
+                    // Fallback to dist file if original not found (should not happen usually)
+                    console.warn(`⚠️ Original file not found for ${relativePath}, hashing dist file instead.`);
+                    const fileBuffer = fs.readFileSync(fullPathInDist);
+                    hashSum.update(fileBuffer);
+                }
+
+                const hex = hashSum.digest('hex');
+
+                fileList.push({
+                    path: baseUrl + relativePath.split('/').map(encodeURIComponent).join('/'),
+                    hash: hex
+                });
+            }
+        });
+    }
+
+    scanDir(OUTPUT_DIR);
+
+    versionData.files = fileList;
+
+    // Ensure lastUpdated is set
+    // Update timestamp to ensure freshness
+    versionData.lastUpdated = new Date().toISOString();
+
+    fs.writeFileSync(versionFilePath, JSON.stringify(versionData, null, 2));
+    console.log(`✅ Updated version.json with ${fileList.length} file hashes (Original Content).`);
 }
 
 /**
