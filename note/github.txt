@@ -3,15 +3,15 @@
 git checkout 7df52c3
 
 لتثبيت هذه الحالة كالإصدار الحالي للمشروع
-
+git push origin main --force
 إذا كنت متأكد أنك تريد تجاهل كل ما بعده نهائيًا وجعل هذا الإصدار هو الرئيسي، نفّذ الأوامر التالية بالترتيب:
 
-git checkout -B main 757c22b
+git checkout -B main point
 git push origin main --force
 
 //////////////////////////////////////////////////////////////////////////////////
 تجاهل التعديلات الحالية وجعل الملفات متطابقة مع نقطة علي جت هب
 git fetch origin
-git reset --hard 8eb8545
+git reset --hard point
 git clean -fd
 
