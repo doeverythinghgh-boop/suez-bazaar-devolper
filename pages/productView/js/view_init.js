@@ -28,6 +28,17 @@ function productView_viewDetails(productData, options = {}) {
 
         const showAddToCart = options.showAddToCart !== false; // Default is true
 
+        // Configure Back Button
+        if (dom.backBtn) {
+            dom.backBtn.onclick = () => {
+                if (typeof containerGoBack === 'function') {
+                    containerGoBack();
+                } else {
+                    console.warn("[productView_] دالة containerGoBack غير معرفة.");
+                }
+            };
+        }
+
         // Populate basic data
         if (name) name.textContent = productData.productName || "غير متوفر";
         if (description) description.textContent = productData.description || "لا يوجد وصف متاح.";

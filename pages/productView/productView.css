@@ -10,8 +10,38 @@
     .productView_modal_content {
         padding: 20px;
         max-width: 700px;
-
         animation: productView_fadeInScaleUp 0.4s ease-out forwards;
+    }
+
+    /* Top Actions Container */
+    .productView_top_actions {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+        animation: productView_slideInFromTop 0.5s ease-out forwards;
+    }
+
+    /* Back Button Style - Pill shaped */
+    .productView_btn_back {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        background-color: #f1f3f5;
+        color: #495057;
+        border: none;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        font-family: 'Tajawal', sans-serif;
+    }
+
+    .productView_btn_back:active {
+        transform: scale(0.96);
+        background-color: #e9ecef;
     }
 
     #productView_image {

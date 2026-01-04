@@ -36,6 +36,7 @@ function productView_getDomElements() {
         adminSubCategory: document.getElementById("productView_admin_sub_category"),
         heavyLoadContainer: document.getElementById("productView_heavy_load_container"),
         heavyLoadValue: document.getElementById("productView_heavy_load_value"),
+        backBtn: document.getElementById("productView_btn_back"),
     };
 }
 
