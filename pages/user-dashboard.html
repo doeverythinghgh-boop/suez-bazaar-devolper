@@ -59,6 +59,38 @@
     #dash-logout-btn-alt i {
         color: var(--danger-color, #dc3545);
     }
+
+    /* Floating Contact Button - Specific for Dashboard */
+    #index-contact-btn {
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        width: 42px;
+        height: 42px;
+        background-color: var(--primary-color, #007bff);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        cursor: pointer;
+        z-index: 999;
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        padding: 0;
+    }
+
+    #index-contact-btn i {
+        font-size: 18px;
+        color: white;
+        margin: 0;
+    }
+
+    #index-contact-btn:active {
+        transform: scale(0.9);
+        background-color: var(--dark-blue, #03478f);
+    }
 </style>
 
 <!-- Container to dynamically display header -->
@@ -99,16 +131,16 @@
         <i class="fas fa-user-shield"></i> لوحة المسؤول
     </button>
 
-    <!-- Support buttons -->
-    <button id="index-contact-btn" class="dash-button">
-        <i class="fas fa-phone"></i> تواصل معنا
-    </button>
-
     <!-- Logout button -->
     <button id="dash-logout-btn-alt" class="dash-button">
         <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
     </button>
 </div>
+
+<!-- Support button moved to absolute bottom right -->
+<button id="index-contact-btn" title="تواصل معنا">
+    <i class="fas fa-phone"></i>
+</button>
 
 <!-- ✅ NEW: Link page-specific JavaScript file -->
 <script src="js/user-dashboard.js"></script>

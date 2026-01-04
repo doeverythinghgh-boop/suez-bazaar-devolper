@@ -650,10 +650,48 @@
       font-size: 1rem;
     }
   }
+
+  /* Top Actions Container */
+  .contact_top_actions {
+    display: flex;
+    justify-content: flex-start;
+    padding: 10px 20px;
+    margin-bottom: 5px;
+  }
+
+  /* Back Button Style */
+  .contact_btn_back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: #f1f3f5;
+    color: #495057;
+    border: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    font-family: 'Tajawal', sans-serif;
+  }
+
+  .contact_btn_back:active {
+    transform: scale(0.96);
+    background-color: #e9ecef;
+  }
 </style>
 
 <body id="contact_body" style="background-color: var(--bg-color-light);">
   <div id="header-container101" style="height: 70px; margin-left: 20px; margin-right: 20px"></div>
+
+  <!-- Top Actions Container -->
+  <div class="contact_top_actions" id="contact_top_actions">
+    <button class="contact_btn_back" id="contact_btn_back">
+      <i class="fas fa-arrow-right"></i> رجوع
+    </button>
+  </div>
 
   <!-- Contact Section -->
   <div class="contact_container" id="contact_main_container">
@@ -1141,5 +1179,18 @@
 
       insertUniqueSnapshot("pages/header.html", "header-container101", 100);
 
+      // Back Button Handler
+      try {
+        const contact_backBtn = document.getElementById("contact_btn_back");
+        if (contact_backBtn) {
+          contact_backBtn.addEventListener("click", () => {
+            if (typeof containerGoBack === "function") {
+              containerGoBack();
+            }
+          });
+        }
+      } catch (error) {
+        console.error("خطأ في تهيئة زر الرجوع:", error);
+      }
     </script>
 </body>
