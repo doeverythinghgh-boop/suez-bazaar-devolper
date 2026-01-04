@@ -324,6 +324,20 @@ if (add2_btnDiscard) {
     });
 }
 
+// Back Button Logic
+var add2_btnBack = document.getElementById('add2_btn_back');
+if (add2_btnBack) {
+    add2_btnBack.addEventListener('click', () => {
+        try {
+            if (window.containerGoBack) {
+                containerGoBack();
+            }
+        } catch (error) {
+            console.error('[Add2] Error in back button logic:', error);
+        }
+    });
+}
+
 /**
  * @function add2_renderCategories
  * @description Fetches and displays selected category names as badges.

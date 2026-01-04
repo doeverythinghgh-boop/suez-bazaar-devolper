@@ -7,6 +7,14 @@
 
 <div class="add2_product_modal" role="dialog" aria-modal="true" aria-labelledby="add2_product_title"
     id="add2_product_modal_container">
+    <div class="add2_top_actions">
+        <button type="button" class="add2_btn_back" id="add2_btn_back" title="رجوع">
+            <i class="fas fa-arrow-right"></i> رجوع
+        </button>
+        <button type="button" class="add2_btn_discard_top" id="add2_btn_discard" title="تجاهل التعديلات">
+            <i class="fas fa-times"></i> تجاهل
+        </button>
+    </div>
     <h2 class="add2_product_modal__title" id="add2_product_title"><i class="fas fa-concierge-bell"
             id="add2_icon_title"></i>
         إضافة خدمة جديدة</h2>
@@ -90,10 +98,8 @@
 
 
         <!-- Submit Button -->
-        <div class="add2_product_modal__submit_container" id="add2_submit_container"
-            style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+        <div class="add2_product_modal__submit_container" id="add2_submit_container">
             <button type="submit" class="add2_btn add2_btn_primary" id="add2_btn_submit">اضف الخدمة الآن</button>
-            <button type="button" class="add2_btn add2_btn_ghost" id="add2_btn_discard">تجاهل التعديلات</button>
         </div>
     </form>
 </div>

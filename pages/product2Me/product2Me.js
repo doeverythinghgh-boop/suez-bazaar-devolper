@@ -369,6 +369,20 @@
     };
   }
 
+  // Back Button Logic
+  var p2m_btnBack = document.getElementById('p2m-btn-back');
+  if (p2m_btnBack) {
+    p2m_btnBack.onclick = function () {
+      try {
+        if (window.containerGoBack) {
+          containerGoBack();
+        }
+      } catch (error) {
+        console.error('[P2M] Error in back button logic:', error);
+      }
+    };
+  }
+
   // Search Event - only load products when search button is clicked
   var searchBtn = document.getElementById("search-btn");
   if (searchBtn) {
