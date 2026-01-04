@@ -131,8 +131,8 @@ function productView_viewDetails(productData, options = {}) {
  */
 async function productView_getCategoryNames(mainId, subId) {
     try {
-        const response = await fetch("shared/list.json");
-        const data = await response.json();
+        const data = window.appCategoriesList || await fetchAppCategories();
+        if (!data) throw new Error("فشل تحميل قائمة الفئات");
         const mainCat = data.categories.find(c => String(c.id) === String(mainId));
         if (!mainCat) return { main: "غير معروفة", sub: "-" };
 

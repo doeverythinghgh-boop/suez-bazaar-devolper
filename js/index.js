@@ -35,6 +35,9 @@ function showHomeIcon() {
  * @async
  */
 document.addEventListener("DOMContentLoaded", async () => {
+  // [Step -1.2] Fetch global categories list
+  await fetchAppCategories();
+
   // [Step -1] Check for new version and clear data if needed
   await checkAppVersionAndClearData();
 

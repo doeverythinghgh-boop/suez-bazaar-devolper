@@ -54,14 +54,11 @@ async function categories_loadCategoriesAsTable() {
  */
 async function categories_fetchCategories(url) {
     try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`فشل تحميل الفئات. الحالة: ${response.status}`);
-        }
-        const data = await response.json();
-        // Check for 'categories' key
+        // Use global categories list if available, otherwise fetch
+        const data = window.appCategoriesList || await fetchAppCategories();
+        
         if (!data || !data.categories || !Array.isArray(data.categories)) {
-            throw new Error("تنسيق ملف الفئات غير صحيح.");
+            throw new Error("تنسيق ملف الفئات غير صحيح أو تعذر التحميل.");
         }
 
         return data.categories;

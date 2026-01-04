@@ -207,9 +207,9 @@ async function initSearchModal(containerId) {
       "[SearchModal] بدء تحميل فلاتر التصنيفات من 'list.json'."
     );
     try {
-      const response = await fetch("shared/list.json");
-      if (!response.ok) throw new Error("فشل تحميل فلاتر التصنيفات");
-      const data = await response.json();
+      // Use global categories list if available, otherwise fetch
+      const data = window.appCategoriesList || await fetchAppCategories();
+      if (!data) throw new Error("فشل تحميل فلاتر التصنيفات");
       const categories = data.categories;
 
       // Developer message: list.json loaded successfully

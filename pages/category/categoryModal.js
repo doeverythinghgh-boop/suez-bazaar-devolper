@@ -254,13 +254,13 @@ window.CategoryModal = (function () {
 
         try {
             console.log('[CategoryModal] جلب بيانات الفئات...');
-            const response = await fetch(CATEGORIES_URL);
+            // Use global categories list if available, otherwise fetch
+            const data = window.appCategoriesList || await fetchAppCategories();
 
-            if (!response.ok) {
-                throw new Error(`فشل تحميل الملف: ${response.status} ${response.statusText}`);
+            if (!data) {
+                throw new Error(`فشل تحميل بيانات الفئات`);
             }
 
-            const data = await response.json();
             categoriesData = data.categories || [];
 
             console.log('[CategoryModal] تم جلب', categoriesData.length, 'فئة');

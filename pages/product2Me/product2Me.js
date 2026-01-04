@@ -269,12 +269,10 @@
    * @throws {Error} - If loading categories fails.
    */
   async function loadCategoryFilters() {
-    console.log("[Products] بدء تحميل فلاتر الفئات من 'list.json'.");
+    console.log("[Products] بدء تحميل فلاتر الفئات من المتغير العام.");
     try {
-      // Changed path from "../shared/list.json" to "shared/list.json" for SPA compatibility
-      const response = await fetch("shared/list.json");
-      if (!response.ok) throw new Error("Failed to load category filters");
-      const data = await response.json();
+      const data = window.appCategoriesList || await fetchAppCategories();
+      if (!data) throw new Error("Failed to load global category list");
       const categories = data.categories;
 
       console.log("[Products] تم تحميل وتحليل 'list.json' بنجاح.", categories);

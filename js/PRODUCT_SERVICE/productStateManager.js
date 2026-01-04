@@ -97,9 +97,9 @@ const ProductStateManager = {
         if (!selected || !selected.mainId || !selected.subId) return { main: '', sub: '' };
 
         try {
-            const response = await fetch('./shared/list.json');
-            if (!response.ok) throw new Error('Failed to load categories');
-            const data = await response.json();
+            // Use global categories list if available, otherwise fetch
+            const data = window.appCategoriesList || await fetchAppCategories();
+            if (!data) throw new Error('Failed to load categories');
             const categories = data.categories || [];
 
             const mainCat = categories.find(c => String(c.id) === String(selected.mainId));
