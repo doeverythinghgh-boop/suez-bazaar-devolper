@@ -1,0 +1,74 @@
+{
+  "dash_welcome": {
+    "ar": "أهلاً بك، {name}",
+    "en": "Welcome, {name}"
+  },
+  "dash_edit_profile": {
+    "ar": "تعديل البيانات",
+    "en": "Edit Profile"
+  },
+  "dash_gifts": {
+    "ar": "هدايا",
+    "en": "Gifts"
+  },
+  "dash_add_product": {
+    "ar": "إضافة منتج",
+    "en": "Add Product"
+  },
+  "dash_my_products": {
+    "ar": "منتجاتي",
+    "en": "My Products"
+  },
+  "dash_admin_panel": {
+    "ar": "لوحة المسؤول",
+    "en": "Admin Panel"
+  },
+  "dash_logout": {
+    "ar": "تسجيل الخروج",
+    "en": "Logout"
+  },
+  "dash_settings_title": {
+    "ar": "الإعدادات",
+    "en": "Settings"
+  },
+  "dash_choose_destination": {
+    "ar": "اختر وجهتك",
+    "en": "Choose Destination"
+  },
+  "dash_btn_users": {
+    "ar": "مستخدمين",
+    "en": "Users"
+  },
+  "dash_btn_advert": {
+    "ar": "الاعلان",
+    "en": "Ads"
+  },
+  "dash_btn_notifications": {
+    "ar": "اشعارات",
+    "en": "Notifications"
+  },
+  "dash_btn_pending_products": {
+    "ar": "المنتجات المعلقة",
+    "en": "Pending Products"
+  },
+  "dash_notifications_tab": {
+    "ar": "الإشعارات",
+    "en": "Notifications"
+  },
+  "dash_profile_tab": {
+    "ar": "الملف الشخصي",
+    "en": "Profile"
+  },
+  "dash_theme_day": {
+    "ar": "الوضع النهاري",
+    "en": "Day Mode"
+  },
+  "dash_theme_night": {
+    "ar": "الوضع الليلي",
+    "en": "Night Mode"
+  },
+  "dash_support": {
+    "ar": "الدعم والمساعدة",
+    "en": "Support & Help"
+  }
+}

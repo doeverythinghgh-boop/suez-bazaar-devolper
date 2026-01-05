@@ -65,6 +65,12 @@ window.applyAppTranslations = function () {
     el.textContent = window.langu(key);
   });
 
+  // Translate DOM Titles
+  document.querySelectorAll('[data-lkey-title]').forEach(el => {
+    const key = el.getAttribute('data-lkey-title');
+    el.setAttribute('title', window.langu(key));
+  });
+
   // Translate Page Title
   document.title = window.langu('page_title');
 
@@ -87,10 +93,13 @@ async function loadIndexTranslations() {
     const loginRes = await fetch('lang/login.json');
     const loginData = loginRes.ok ? await loginRes.json() : {};
 
-    // 3. Merge them
-    window.appTranslations = { ...generalData, ...indexData, ...loginData };
+    const dashboardRes = await fetch('lang/user-dashboard.json');
+    const dashboardData = dashboardRes.ok ? await dashboardRes.json() : {};
 
-    console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحتي البداية والدخول.');
+    // 3. Merge them
+    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData };
+
+    console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحات البداية، الدخول، ولوحة التحكم.');
     if (window.applyAppTranslations) window.applyAppTranslations();
 
   } catch (e) {

@@ -12,24 +12,24 @@ function handleAdminPanelClick() {
   try {
     // [Step 1] Log message to console to track event.
     console.log(
-      "[Dashboard] تم النقر على زر لوحة تحكم المسؤول. جاري تحميل الصفحة..."
+      `[Dashboard] ${window.langu("dash_choose_destination")}. جاري تحميل الصفحة...`
     );
     // [Step 2] Use `mainLoader` to load admin panel page into designated container.
 
     Swal.fire({
-      title: "اختر وجهتك",
+      title: window.langu("dash_choose_destination"),
       html: `
                 <div class="swal-custom-actions" style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 20px;">
-                    <button id="swal-users-btn" class="swal2-confirm swal2-styled" style="font-size: 0.85em; padding: 0.5em 1.2em;">مستخدمين</button>
-                    <button id="swal-advert-btn" class="swal2-deny swal2-styled" style="font-size: 0.85em; padding: 0.5em 1.2em;">الاعلان</button>
-                    <button id="swal-notifications-btn" class="swal2-styled" style="background-color: #808080; font-size: 0.85em; padding: 0.5em 1.2em;">اشعارات</button>
-                    <button id="swal-pending-products-btn" class="swal2-styled" style="background-color: #fd7e14; font-size: 0.85em; padding: 0.5em 1.2em; color: white;">المنتجات المعلقة</button>
+                    <button id="swal-users-btn" class="swal2-confirm swal2-styled" style="font-size: 0.85em; padding: 0.5em 1.2em;">${window.langu("dash_btn_users")}</button>
+                    <button id="swal-advert-btn" class="swal2-deny swal2-styled" style="font-size: 0.85em; padding: 0.5em 1.2em;">${window.langu("dash_btn_advert")}</button>
+                    <button id="swal-notifications-btn" class="swal2-styled" style="background-color: #808080; font-size: 0.85em; padding: 0.5em 1.2em;">${window.langu("dash_btn_notifications")}</button>
+                    <button id="swal-pending-products-btn" class="swal2-styled" style="background-color: #fd7e14; font-size: 0.85em; padding: 0.5em 1.2em; color: white;">${window.langu("dash_btn_pending_products")}</button>
                 </div>
             `,
       showConfirmButton: false,
       showDenyButton: false,
       showCancelButton: true,
-      cancelButtonText: "إلغاء",
+      cancelButtonText: window.langu("alert_cancel_btn"),
       icon: "question",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -134,7 +134,9 @@ function updateViewForLoggedInUser() {
 
   // [Step 2] Update welcome message
   const welcomeMsg = document.getElementById("dash-welcome-message");
-  if (welcomeMsg) welcomeMsg.textContent = `أهلاً بك، ${user.username}`;
+  if (welcomeMsg) {
+    welcomeMsg.textContent = window.langu("dash_welcome").replace("{name}", user.username);
+  }
 
   // [Step 3] Guest Check
   if (SessionManager.isGuest()) {
@@ -240,29 +242,29 @@ function updateViewForLoggedInUser() {
 
       const isDark = document.body.classList.contains('dark-theme');
       const themeIcon = isDark ? 'fa-sun' : 'fa-moon';
-      const themeText = isDark ? 'الوضع النهاري' : 'الوضع الليلي';
+      const themeText = isDark ? window.langu("dash_theme_day") : window.langu("dash_theme_night");
       const themeColor = isDark ? '#f39c12' : '#555'; // Sun orange or Moon grey
 
       Swal.fire({
-        title: '<span style="color: var(--dark-blue, #03478f); font-weight: bold;">الإعدادات</span>',
+        title: `<span style="color: var(--dark-blue, #03478f); font-weight: bold;">${window.langu("dash_settings_title")}</span>`,
         html: `
-          <div class="settings-modal-content" style="text-align: right; direction: rtl;">
+          <div class="settings-modal-content" style="text-align: inherit; direction: inherit;">
             
             <!-- Quick Actions Grid -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
               
-              <!-- Notification Settings -->
+               <!-- Notification Settings -->
               <div onclick="mainLoader('notification/page/notifications.html', 'index-notifications-container', 0, undefined, 'showHomeIcon', true); Swal.close();" 
                    class="settings-action-item">
                 <i class="fas fa-bell" style="color: #ffc107;"></i>
-                <span>الإشعارات</span>
+                <span>${window.langu("dash_notifications_tab")}</span>
               </div>
 
               <!-- Profile Settings -->
               <div onclick="document.getElementById('dash-edit-profile-btn') && document.getElementById('dash-edit-profile-btn').click(); Swal.close();" 
                    class="settings-action-item">
                 <i class="fas fa-user-cog" style="color: var(--primary-color);"></i>
-                <span>الملف الشخصي</span>
+                <span>${window.langu("dash_profile_tab")}</span>
               </div>
 
             </div>
@@ -280,21 +282,21 @@ function updateViewForLoggedInUser() {
                   </div>
                </div>
 
-               <!-- Language Toggle -->
+                <!-- Language Toggle -->
                <div onclick="window.toggleAppLanguage();"
                     class="settings-list-item">
                   <span>
                      <i class="fas fa-language" style="color: var(--primary-color); width: 20px;"></i> ${localStorage.getItem('app_language') === 'en' ? 'English' : 'اللغة العربية'}
                   </span>
                   <div style="width: 36px; height: 20px; background: ${localStorage.getItem('app_language') === 'en' ? '#e5e5ea' : '#4cd964'}; border-radius: 20px; position: relative;">
-                    <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${localStorage.getItem('app_language') === 'en' ? 'right' : 'left'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+                    <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${localStorage.getItem('app_language') === 'en' ? 'inset-inline-end' : 'inset-inline-start'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
                   </div>
                </div>
                
                <div onclick="mainLoader('pages/contact.html', 'index-contact-container', 0, undefined, 'showHomeIcon', true); Swal.close();"
                     class="settings-list-item">
                   <span>
-                     <i class="fas fa-headset"></i> الدعم والمساعدة
+                     <i class="fas fa-headset"></i> ${window.langu("dash_support")}
                   </span>
                   <i class="fas fa-chevron-left chevron"></i>
                </div>
