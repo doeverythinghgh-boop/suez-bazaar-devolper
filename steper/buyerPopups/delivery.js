@@ -44,7 +44,7 @@ export async function handleDeliverySave(data, ordersData) {
         htmlContent += '<h3 style="color: var(--color-delivered); margin-bottom: 10px; font-size: 1.1em;">✅ المنتجات المستلمة (' + deliveredProducts.length + '):</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         deliveredProducts.forEach(name => {
-            htmlContent += '<li class="stepper-list-item-success">• ' + name + '</li>';
+            htmlContent += '<li style="padding: 5px; background: var(--bg-success); margin: 3px 0; border-radius: 3px; color: var(--text-success);">• ' + name + '</li>';
         });
         htmlContent += '</ul></div>';
     }
@@ -55,15 +55,15 @@ export async function handleDeliverySave(data, ordersData) {
         htmlContent += '<h3 style="color: var(--text-secondary); margin-bottom: 10px; font-size: 1.1em;">⏳ المنتجات غير المستلمة (' + notDeliveredProducts.length + '):</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         notDeliveredProducts.forEach(name => {
-            htmlContent += '<li class="stepper-list-item-neutral">• ' + name + '</li>';
+            htmlContent += '<li style="padding: 5px; background: var(--bg-neutral); margin: 3px 0; border-radius: 3px; color: var(--text-neutral);">• ' + name + '</li>';
         });
         htmlContent += '</ul></div>';
     }
 
     // Warning message
-    htmlContent += '<div class="stepper-alert-warning">';
-    htmlContent += '<p style="margin: 0; font-weight: bold;">⚠️ تحذير هام:</p>';
-    htmlContent += '<p style="margin: 5px 0 0 0;">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
+    htmlContent += '<div style="background: var(--bg-warning); border: 2px solid var(--border-warning); padding: 15px; border-radius: 5px; margin-top: 15px;">';
+    htmlContent += '<p style="margin: 0; font-weight: bold; color: var(--text-warning);">⚠️ تحذير هام:</p>';
+    htmlContent += '<p style="margin: 5px 0 0 0; color: var(--text-warning);">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
     htmlContent += '</div>';
 
     htmlContent += '</div>';

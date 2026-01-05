@@ -33,7 +33,7 @@ export function generateCheckboxCell(productKey, productName, isChecked, isDisab
                 <label for="seller-confirmation-checkbox-${productKey}">${productName}</label>
             </div>
             <button type="button" class="btn-show-key" data-key="${productKey}" 
-                    style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">
+                    style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; color: var(--text-primary);">
                 <i class="fas fa-eye"></i>
             </button>
         </div>
@@ -62,17 +62,17 @@ export function generateConfirmationTableHtml(products, ordersData) {
         // Use pre-extracted name or fallback
         const productName = product.product_name || getProductName(product.product_key, ordersData);
         // Safely map delivery info even if empty
-        const agentNames = product.delivery_info ? product.delivery_info.map(d => `<strong style="color: #03478f;">${d.name}</strong>`).join("<br>") : '-';
-        const agentPhones = product.delivery_info ? product.delivery_info.map(d => `<a href="tel:${d.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${d.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>`).join("<br>") : '-';
+        const agentNames = product.delivery_info ? product.delivery_info.map(d => `<strong style="color: var(--color-primary);">${d.name}</strong>`).join("<br>") : '-';
+        const agentPhones = product.delivery_info ? product.delivery_info.map(d => `<a href="tel:${d.phone}" style="color: var(--color-shipped); text-decoration: none; font-weight: bold;">${d.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>`).join("<br>") : '-';
 
         return `
             <tr id="seller-confirmation-item-${product.product_key}">
-                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">
+                <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">
                      ${generateCheckboxCell(product.product_key, productName, isChecked, isDisabled, 'sellerProductKeys')}
                 </td>
-                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${product.note || '-'}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${agentNames || '-'}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${agentPhones || '-'}</td>
+                <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${product.note || '-'}</td>
+                <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${agentNames || '-'}</td>
+                <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${agentPhones || '-'}</td>
             </tr>
         `;
     }).join("");
@@ -81,11 +81,11 @@ export function generateConfirmationTableHtml(products, ordersData) {
         <div style="width: 100%; overflow-x: auto;">
             <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em;">
                 <thead>
-                    <tr style="background-color: #f2f2f2;">
-                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">المنتج (حدد للتأكيد)</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">ملاحظات</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">مندوب التوصيل</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">رقم الهاتف</th>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">المنتج (حدد للتأكيد)</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">ملاحظات</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">مندوب التوصيل</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">رقم الهاتف</th>
                     </tr>
                 </thead>
                 <tbody>${tableRows}</tbody>
@@ -109,7 +109,7 @@ export function generateRejectedListHtml(products) {
         <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
             <span>${item.product_name}</span>
             <button type="button" class="btn-show-key" data-key="${item.product_key}" 
-                    style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;">
+                    style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; color: var(--text-primary);">
                 <i class="fas fa-eye"></i>
             </button>
         </li>
@@ -131,8 +131,8 @@ export function generateShippingTableHtml(products) {
         const isDisabled = status === ITEM_STATUS.DELIVERED;
 
         // Extract delivery info for display
-        const names = item.delivery_info ? item.delivery_info.map(d => `<strong style="color: #03478f;">${d.name}</strong>`).join(", ") : '-';
-        const phones = item.delivery_info ? item.delivery_info.map(d => `<a href="tel:${d.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${d.phone}</a>`).join(", ") : '-';
+        const names = item.delivery_info ? item.delivery_info.map(d => `<strong style="color: var(--color-primary);">${d.name}</strong>`).join(", ") : '-';
+        const phones = item.delivery_info ? item.delivery_info.map(d => `<a href="tel:${d.phone}" style="color: var(--color-shipped); text-decoration: none; font-weight: bold;">${d.phone}</a>`).join(", ") : '-';
 
         return `
             <tr>
@@ -147,12 +147,12 @@ export function generateShippingTableHtml(products) {
                         ${item.product_name}
                     </label> 
                     <button type="button" class="btn-show-key" data-key="${item.product_key}" 
-                            style="float:left; padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; margin-right: 5px;">
+                            style="float:left; padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; margin-right: 5px; color: var(--text-primary);">
                         <i class="fas fa-eye"></i>
                     </button>
                 </td>
-                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${names || '-'}</td>
-                <td style="padding: 8px; border: 1px solid #ddd; white-space: nowrap;">${phones || '-'}</td>
+                <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${names || '-'}</td>
+                <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${phones || '-'}</td>
             </tr>
         `;
     }).join("");
@@ -162,10 +162,10 @@ export function generateShippingTableHtml(products) {
             <p>حدد المنتجات لتغيير حالتها إلى "مشحون":</p>
             <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em; margin-top: 10px;">
                 <thead>
-                    <tr style="background-color: #f2f2f2;">
-                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">المنتج</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">موصل</th>
-                        <th style="padding: 8px; border: 1px solid #ddd; color: #03478f;">هاتف</th>
+                    <tr style="background-color: var(--bg-secondary);">
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">المنتج</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">موصل</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">هاتف</th>
                     </tr>
                 </thead>
                 <tbody>${tableRows}</tbody>

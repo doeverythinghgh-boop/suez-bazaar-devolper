@@ -19,7 +19,7 @@ import { getProductName, translateStatus } from "./commonUtils.js";
  */
 export function generateReviewListHtml(productKeys, ordersData, isOverallLocked) {
     if (!productKeys || productKeys.length === 0) {
-        return '<div style="text-align: center; padding: 20px; color: #666;">لا توجد منتجات للمراجعة حالياً.</div>';
+        return '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">لا توجد منتجات للمراجعة حالياً.</div>';
     }
 
     return productKeys.map((productKey) => {
@@ -41,7 +41,7 @@ export function generateReviewListHtml(productKeys, ordersData, isOverallLocked)
                         ${isItemLocked ? "disabled" : ""}>
                     <label for="review-checkbox-${productKey}" style="margin-right: 8px;">${productName} <small>(${translateStatus(status)})</small></label>
                 </div>
-                <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;"><i class="fas fa-eye"></i></button>
+                <button type="button" class="btn-show-key" data-key="${productKey}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; color: var(--text-primary);"><i class="fas fa-eye"></i></button>
             </div>
         `;
     }).join("");
@@ -63,7 +63,7 @@ export function generateCancelledListHtml(cancelledKeys, ordersData) {
         return `
             <li id="cancelled-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <span>${productName}</span>
-                <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;"><i class="fas fa-eye"></i></button>
+                <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; color: var(--text-primary);"><i class="fas fa-eye"></i></button>
             </li>
         `;
     }).join("");
@@ -78,12 +78,12 @@ export function generateCancelledListHtml(cancelledKeys, ordersData) {
  */
 export function generateDeliveryUserInfoHtml(userDetails) {
     return userDetails.map(user => `
-         <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px; width: 100%; text-align: right; direction: rtl;">
-            <p style="margin: 5px 0;"><strong style="color: #03478f;">الاسم:</strong> <span style="color: #4a5568;">${user.name}</span></p>
-            <p style="margin: 5px 0;"><strong style="color: #03478f;">الهاتف:</strong> <a href="tel:${user.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${user.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a></p>
+         <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 5px; width: 100%; text-align: right; direction: rtl;">
+            <p style="margin: 5px 0;"><strong style="color: var(--color-primary);">الاسم:</strong> <span style="color: var(--text-secondary);">${user.name}</span></p>
+            <p style="margin: 5px 0;"><strong style="color: var(--color-primary);">الهاتف:</strong> <a href="tel:${user.phone}" style="color: var(--color-shipped); text-decoration: none; font-weight: bold;">${user.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a></p>
             <p style="margin: 5px 0;">
-                <strong style="color: #03478f;">العنوان:</strong> 
-                <span style="color: #4a5568;">${user.address}</span>
+                <strong style="color: var(--color-primary);">العنوان:</strong> 
+                <span style="color: var(--text-secondary);">${user.address}</span>
                 ${(user.location && user.location.trim() !== "") ? `
                     <button class="btn-view-buyer-map" 
                             data-lat="${user.location.split(',')[0].trim()}" 
@@ -117,7 +117,7 @@ export function generateDeliveryItemsHtml(products) {
                         style="margin-right: 8px;">
                       <label for="delivery-checkbox-${item.product_key}">${item.product_name}</label>
                   </div>
-                  <button type="button" class="btn-show-key" data-key="${item.product_key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;"><i class="fas fa-eye"></i></button>
+                  <button type="button" class="btn-show-key" data-key="${item.product_key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; color: var(--text-primary);"><i class="fas fa-eye"></i></button>
             </div>
         `;
     }).join("");
@@ -139,7 +139,7 @@ export function generateReturnedListHtml(returnedKeys, ordersData) {
         return `
             <li id="returned-item-${key}" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
                 <span>${productName}</span>
-                <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px;"><i class="fas fa-eye"></i></button>
+                <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; color: var(--text-primary);"><i class="fas fa-eye"></i></button>
             </li>
         `;
     }).join("");
@@ -181,20 +181,20 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
                 }
 
                 if (name) {
-                    deliveryInfo = `<br><small style="color: #4a5568;">المندوب: <strong style="color: #03478f;">${name}</strong> ${phone ? `<a href="tel:${phone}" style="color: #007bff; text-decoration: none; margin-right: 5px;">(${phone}) <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>` : ''}</small>`;
+                    deliveryInfo = `<br><small style="color: var(--text-secondary);">المندوب: <strong style="color: var(--color-primary);">${name}</strong> ${phone ? `<a href="tel:${phone}" style="color: var(--color-shipped); text-decoration: none; margin-right: 5px;">(${phone}) <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>` : ''}</small>`;
                 }
             }
         }
 
         return `
-            <li id="confirmed-item-${key}" style="border-bottom: 1px solid #eee; padding: 8px 0;">
+            <li id="confirmed-item-${key}" style="border-bottom: 1px solid var(--border-light); padding: 8px 0;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                     <div style="flex-grow: 1;">
                         <span style="font-weight: bold;">${productName}</span>
                         ${deliveryInfo}
                         
                     </div>
-                    <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid #ccc; background: #f0f0f0; border-radius: 4px; margin-right: 5px;"><i class="fas fa-eye"></i></button>
+                    <button type="button" class="btn-show-key" data-key="${key}" style="padding: 2px 6px; font-size: 0.8em; cursor: pointer; border: 1px solid var(--border-light); background: var(--bg-neutral); border-radius: 4px; margin-right: 5px; color: var(--text-primary);"><i class="fas fa-eye"></i></button>
                 </div>
             </li>
         `;
@@ -212,10 +212,10 @@ export function generateSellerGroupedHtml(groupedData) {
     if (!groupedData || groupedData.length === 0) return "<p class='text-center'>لا توجد منتجات.</p>";
 
     const groupsHtml = groupedData.map(group => `
-        <div class="seller-group-container" style="margin-bottom: 20px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
-            <div class="seller-header" style="background-color: #f8f9fa; padding: 10px; border-bottom: 1px solid #ddd; text-align: right; direction: rtl;">
-                <h5 style="margin: 0; color: #03478f; font-size: 1.1em; font-weight: bold;">البائع: ${group.seller.name}</h5>
-                <div style="font-size: 0.9em; color: #4a5568; margin-top: 5px;">
+        <div class="seller-group-container" style="margin-bottom: 20px; border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden;">
+            <div class="seller-header" style="background-color: var(--bg-secondary); padding: 10px; border-bottom: 1px solid var(--border-light); text-align: right; direction: rtl;">
+                <h5 style="margin: 0; color: var(--color-primary); font-size: 1.1em; font-weight: bold;">البائع: ${group.seller.name}</h5>
+                <div style="font-size: 0.9em; color: var(--text-secondary); margin-top: 5px;">
                     <span><i class="fas fa-phone"></i> <a href="tel:${group.seller.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${group.seller.phone}</a></span> | 
                     <span>
                         <i class="fas fa-map-marker-alt"></i> ${group.seller.address}
@@ -235,7 +235,7 @@ export function generateSellerGroupedHtml(groupedData) {
             <div class="seller-products" style="padding: 10px; overflow-x: auto;">
                 <table style="width: 100%; min-width: 600px; text-align: right; direction: rtl; border-collapse: collapse;">
                     <thead>
-                        <tr style="border-bottom: 2px solid #eee;">
+                        <tr style="border-bottom: 2px solid var(--border-light);">
                             <th style="padding: 5px;">المنتج</th>
                             <th style="padding: 5px;">سعر القطعة</th>
                             <th style="padding: 5px;">سعر التطبيق</th>
@@ -245,7 +245,7 @@ export function generateSellerGroupedHtml(groupedData) {
                     </thead>
                     <tbody>
                         ${group.products.map(p => `
-                            <tr style="border-bottom: 1px solid #eee;">
+                            <tr style="border-bottom: 1px solid var(--border-light);">
                                 <td style="padding: 8px; white-space: nowrap;">${p.name}</td>
                                 <td style="padding: 8px; white-space: nowrap;">${p.price.toFixed(2)}</td>
                                 <td style="padding: 8px; color: #d97706; font-weight: bold; white-space: nowrap;">${p.realPrice.toFixed(2)}</td>
@@ -254,7 +254,7 @@ export function generateSellerGroupedHtml(groupedData) {
                             </tr>
                         `).join('')}
                     </tbody>
-                    <tfoot style="background: #f1f1f1; font-weight: bold;">
+                    <tfoot style="background: var(--bg-secondary); font-weight: bold;">
                         <tr>
                             <td colspan="4" style="padding: 8px; text-align: right;">إجمالي الحساب للبائع (سعر البيع):</td>
                             <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)} جنيه</td>

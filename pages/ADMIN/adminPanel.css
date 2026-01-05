@@ -30,14 +30,44 @@
 }
 
 /* ... */
+/* Table styling */
+.admin-panel-users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: var(--bg-color-white);
+    border: 1px solid var(--border-color);
+}
+
+.admin-panel-table-header th {
+    background-color: var(--bg-color-light);
+    color: var(--text-color-dark);
+    padding: 12px;
+    text-align: right;
+    border-bottom: 2px solid var(--primary-color);
+    font-weight: bold;
+    white-space: nowrap;
+}
+
 /* Table rows */
-#admin-panel-users-tbody tr:active {
+#admin-panel-users-tbody tr {
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+}
+
+#admin-panel-users-tbody tr:hover {
     background-color: var(--bg-color-light);
 }
 
 #admin-panel-users-tbody td {
+    padding: 10px;
     font-size: 14px;
     color: var(--text-color-medium);
+    border-left: 1px solid var(--border-color-soft);
+}
+
+#admin-panel-users-tbody td:last-child {
+    border-left: none;
 }
 
 /* Selected row styling */

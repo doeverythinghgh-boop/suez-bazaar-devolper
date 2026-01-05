@@ -220,3 +220,30 @@
     width: 100%;
     line-height: 1.4;
 }
+
+/* ============================================
+   Dark Mode Overrides
+   ============================================ */
+body.dark-theme .step-circle {
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: var(--text-primary);
+}
+
+body.dark-theme .step-item.active .step-circle {
+    /* Keep vibrant colors but maybe adjust shadow or border if needed */
+    color: #ffffff;
+    /* Active text usually stays white on colored bg */
+}
+
+body.dark-theme .step-item.completed .step-circle {
+    color: #ffffff;
+}
+
+body.dark-theme .step-label {
+    color: var(--text-primary);
+}
+
+body.dark-theme .step-description {
+    color: var(--text-secondary);
+}

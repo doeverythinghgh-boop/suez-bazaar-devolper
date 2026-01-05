@@ -33,6 +33,23 @@
 
     /* تأثيرات الانتقال */
     --transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* تنبيهات ورسائل (Light Mode Defaults) */
+    --bg-warning: #fff3cd;
+    --text-warning: #856404;
+    --border-warning: #ffc107;
+
+    --bg-success: #d4edda;
+    --text-success: #155724;
+
+    --bg-info: #d1f2ff;
+    --text-info: #0c5460;
+
+    --bg-neutral: #f0f0f0;
+    --text-neutral: #495057;
+
+    --bg-danger: #f8d7da;
+    --text-danger: #721c24;
 }
 
 body.dark-theme {
@@ -47,4 +64,21 @@ body.dark-theme {
     --color-review: #ffccbc;
     --color-shipped: #4fc3f7;
     --color-cancelled: #ef9a9a;
+
+    /* تنبيهات ورسائل (Dark Mode) */
+    --bg-warning: #4a3e12;
+    --text-warning: #ffd54f;
+    --border-warning: #ffc107;
+
+    --bg-success: #1b4d3e;
+    --text-success: #d4edda;
+
+    --bg-info: #103f54;
+    --text-info: #d1f2ff;
+
+    --bg-neutral: #3e3e3e;
+    --text-neutral: #e0e0e0;
+
+    --bg-danger: #5a1e1e;
+    --text-danger: #f8d7da;
 }
