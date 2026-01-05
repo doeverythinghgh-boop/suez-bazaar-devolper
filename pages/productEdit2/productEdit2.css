@@ -3,9 +3,9 @@
 }
 
 .edit-product-modal {
-    background: white;
+    background: var(--bg-color-white);
     border-radius: 15px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--shadow-soft);
     width: 100%;
     max-width: 800px;
     /* Center on larger screens */
@@ -15,49 +15,15 @@
 }
 
 .edit-product-modal__title {
-    color: #2c3e50;
+    color: var(--text-color-dark);
     text-align: center;
     margin-bottom: 30px;
     font-size: 28px;
-    border-bottom: 2px solid #f8f9fa;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 15px;
 }
 
-.edit2_category_badges {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: -15px;
-    margin-bottom: 25px;
-    flex-wrap: wrap;
-}
-
-.edit2_category_badge {
-    background-color: #3498db;
-    color: white;
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-}
-
-.edit2_category_badge_sub {
-    background-color: #e67e22;
-}
-
-.edit2_category_badge i {
-    font-size: 11px;
-    opacity: 0.9;
-}
-
-.edit-product-modal__title i {
-    color: #e67e22;
-    margin-left: 10px;
-}
+/* ... existing badges ... */
 
 .edit-product-modal__form {
     display: flex;
@@ -73,26 +39,22 @@
 .edit-product-modal__label {
     font-weight: 600;
     margin-bottom: 8px;
-    color: #34495e;
+    color: var(--text-color-dark);
     font-size: 16px;
 }
 
-.edit-product-modal__label i {
-    color: #e67e22;
-    margin-left: 8px;
-    width: 20px;
-    text-align: center;
-}
+/* ... icons ... */
 
 .edit-product-modal__input,
 .edit-product-modal__textarea,
 .edit-product-modal__select {
     padding: 12px 15px;
-    border: 2px solid #e9ecef;
+    border: 2px solid var(--border-color-input);
     border-radius: 8px;
     font-size: 16px;
     transition: all 0.3s ease;
-    background-color: #f8f9fa;
+    background-color: var(--bg-color-light);
+    color: var(--text-color-dark);
     font-family: inherit;
     /* Ensure minimum height for touch targets */
     min-height: 44px;
@@ -103,7 +65,7 @@
 .edit-product-modal__select:focus {
     outline: none;
     border-color: #e67e22;
-    background-color: white;
+    background-color: var(--bg-color-white);
     box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
 }
 

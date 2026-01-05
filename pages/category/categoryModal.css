@@ -21,7 +21,7 @@
 }
 
 .category-modal-content {
-    background-color: white;
+    background-color: var(--bg-color-white);
     padding: 30px;
     border-radius: 12px;
     width: 95%;
@@ -36,7 +36,7 @@
 }
 
 .category-modal-title {
-    color: #03478f;
+    color: var(--dark-blue);
     font-size: 1.5rem;
     font-weight: 700;
     margin-bottom: 20px;
@@ -59,19 +59,19 @@
     font-weight: 600;
     margin-bottom: 8px;
     display: block;
-    color: #333;
+    color: var(--text-color-dark);
 }
 
 .category-modal-select {
     width: 100%;
     padding: 12px 15px;
     border-radius: 8px;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color-input);
     box-sizing: border-box;
     transition: all 0.3s ease;
     font-size: 16px;
-    background-color: #fff;
-    color: #333;
+    background-color: var(--bg-color-white);
+    color: var(--text-color-dark);
 }
 
 .category-modal-select:focus {
@@ -139,12 +139,12 @@
         margin: 15px;
         width: calc(100% - 30px);
     }
-    
+
     .category-modal-actions {
         flex-direction: column-reverse;
         gap: 10px;
     }
-    
+
     .category-modal-btn {
         width: 100%;
         min-width: unset;
@@ -155,7 +155,7 @@
     .category-modal-content {
         padding: 15px;
     }
-    
+
     .category-modal-title {
         font-size: 1.3rem;
     }

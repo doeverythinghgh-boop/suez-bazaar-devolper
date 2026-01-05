@@ -1,10 +1,11 @@
 .salesMovement_container {
-    background: white;
+    background: var(--bg-color-white);
     border-radius: 15px;
     padding: 30px;
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    box-shadow: var(--shadow-soft);
 }
 
 .salesMovement_filterContainer {
@@ -28,7 +29,7 @@
     justify-content: center;
     gap: 4px;
     background: transparent;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 3px 8px;
     min-height: auto;
@@ -61,7 +62,7 @@
     background: transparent;
     border: none;
     border-radius: 0;
-    color: #333;
+    color: var(--text-color-dark);
     font-weight: 500;
     font-size: 14px;
     min-height: auto;
@@ -72,7 +73,7 @@
 
 .salesMovement_radioLabel i {
     font-size: 18px;
-    color: #333;
+    color: var(--text-color-dark);
 }
 
 .salesMovement_radioLabel:has(input[type="radio"]:checked) i {
@@ -127,15 +128,15 @@
 }
 
 .salesMovement_orderCard {
-    background: white;
+    background: var(--bg-color-white);
     border-radius: 16px;
     padding: 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-interactive);
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
     overflow: hidden;
-    border: 1px solid #eee;
+    border: 1px solid var(--border-color);
 }
 
 .salesMovement_orderCard::before {
