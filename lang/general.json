@@ -71,10 +71,6 @@
     "ar": "يرجى تسجيل الدخول أولاً للتمكن من استخدام هذه الميزة.",
     "en": "Please login first to use this feature."
   },
-  "alert_cancel_btn": {
-    "ar": "إلغاء",
-    "en": "Cancel"
-  },
   "unknown_status": {
     "ar": "غير معروف",
     "en": "Unknown"
