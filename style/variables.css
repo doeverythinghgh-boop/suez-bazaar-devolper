@@ -39,3 +39,28 @@
   --shadow-interactive: 0 4px 12px rgba(0, 0, 0, 0.1); /* ظل تفاعلي للأزرار */
   --shadow-focus: 0 0 0 3px rgba(164, 193, 240, 0.25);
 }
+
+/* Dark Theme Overrides */
+body.dark-theme {
+  --primary-color: #3b82f6; /* Lighter Blue */
+  --primary-color-light: #1e293b; /* Dark Blue BG */
+  --dark-blue: #60a5fa; /* Light Blue Text */
+  
+  --bg-color-light: #121212;
+  --bg-color-white: #1e1e1e;
+  --bg-color-glass: rgba(30, 30, 30, 0.9);
+  
+  --text-color-dark: #e2e8f0;
+  --text-color-medium: #cbd5e1;
+  --text-color-light: #94a3b8;
+  --icon-color: #94a3b8;
+
+  --border-color: #2d2d2d;
+  --border-color-input: #4b5563;
+  --border-color-active: #3b82f6;
+  --border-color-soft: #2d2d2d;
+  --border-color-strong: #4b5563;
+
+  --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-interactive: 0 4px 12px rgba(0, 0, 0, 0.5);
+}

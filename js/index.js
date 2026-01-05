@@ -38,6 +38,24 @@ document.addEventListener("DOMContentLoaded", async () => {
   // [Step -1.2] Fetch global categories list
   await fetchAppCategories();
 
+  // [Step -1.1] Initialize Theme
+  if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-theme');
+  }
+
+  // Define Global Toggle Function
+  window.toggleAppTheme = function () {
+    const isDark = document.body.classList.toggle('dark-theme');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+    // Update Swal if open
+    if (Swal.isVisible()) {
+      Swal.close();
+      // Ideally we would update the content dynamically, but closing/reopening or just closing is safer for now.
+      // Or we can rely on variable overrides if Swal uses them (which custom swal might not, but let's test).
+    }
+  };
+
   // [Step -1] Check for new version and clear data if needed
   await checkAppVersionAndClearData();
 

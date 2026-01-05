@@ -247,6 +247,12 @@ function updateViewForLoggedInUser() {
   const settingsBtn = document.getElementById("index-settings-btn");
   if (settingsBtn) {
     settingsBtn.addEventListener("click", () => {
+
+      const isDark = document.body.classList.contains('dark-theme');
+      const themeIcon = isDark ? 'fa-sun' : 'fa-moon';
+      const themeText = isDark ? 'الوضع النهاري' : 'الوضع الليلي';
+      const themeColor = isDark ? '#f39c12' : '#555'; // Sun orange or Moon grey
+
       Swal.fire({
         title: '<span style="color: var(--dark-blue, #03478f); font-weight: bold;">الإعدادات</span>',
         html: `
@@ -273,11 +279,15 @@ function updateViewForLoggedInUser() {
 
              <!-- Additional Options List -->
             <div style="display: flex; flex-direction: column; gap: 8px;">
-               <div style="padding: 12px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee;">
+               <!-- Theme Toggle -->
+               <div onclick="window.toggleAppTheme();"
+                    style="padding: 12px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee; cursor: pointer;">
                   <span style="display: flex; align-items: center; gap: 10px; color: #555;">
-                     <i class="fas fa-moon"></i> الوضع الليلي
+                     <i class="fas ${themeIcon}" style="color: ${themeColor}; width: 20px;"></i> ${themeText}
                   </span>
-                  <span style="font-size: 12px; color: #999;">(قريباً)</span>
+                  <div style="width: 36px; height: 20px; background: ${isDark ? '#4cd964' : '#e5e5ea'}; border-radius: 20px; position: relative;">
+                    <div style="width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; ${isDark ? 'left' : 'right'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+                  </div>
                </div>
                
                <div onclick="mainLoader('pages/contact.html', 'index-contact-container', 0, undefined, 'showHomeIcon', true); Swal.close();"
@@ -296,7 +306,8 @@ function updateViewForLoggedInUser() {
         customClass: {
           popup: 'animated fadeInDown faster'
         },
-        background: '#fff',
+        background: isDark ? '#1e1e1e' : '#fff', // Dynamic background
+        color: isDark ? '#fff' : '#000',
         width: '350px',
         padding: '20px'
       });
