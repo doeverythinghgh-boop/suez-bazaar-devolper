@@ -89,50 +89,51 @@ window.applyAppTranslations = function () {
 async function loadIndexTranslations() {
   try {
     // 1. Load General Translations
-    const generalRes = await fetch('lang/general.json');
+    const timestamp = Date.now();
+    const generalRes = await fetch(`lang/general.json?t=${timestamp}`);
     const generalData = generalRes.ok ? await generalRes.json() : {};
 
     // 2. Load Page-specific Translations (Index & Login)
-    const indexRes = await fetch('lang/index.json');
+    const indexRes = await fetch(`lang/index.json?t=${timestamp}`);
     const indexData = indexRes.ok ? await indexRes.json() : {};
     
-    const loginRes = await fetch('lang/login.json');
+    const loginRes = await fetch(`lang/login.json?t=${timestamp}`);
     const loginData = loginRes.ok ? await loginRes.json() : {};
 
-    const dashboardRes = await fetch('lang/user-dashboard.json');
+    const dashboardRes = await fetch(`lang/user-dashboard.json?t=${timestamp}`);
     const dashboardData = dashboardRes.ok ? await dashboardRes.json() : {};
 
-    const profileRes = await fetch('lang/profile-modal.json');
+    const profileRes = await fetch(`lang/profile-modal.json?t=${timestamp}`);
     const profileData = profileRes.ok ? await profileRes.json() : {};
 
-    const notificationsRes = await fetch('lang/notifications.json');
+    const notificationsRes = await fetch(`lang/notifications.json?t=${timestamp}`);
     const notificationsData = notificationsRes.ok ? await notificationsRes.json() : {};
 
-    const cartRes = await fetch('lang/cart.json');
+    const cartRes = await fetch(`lang/cart.json?t=${timestamp}`);
     const cartData = cartRes.ok ? await cartRes.json() : {};
 
-    const salesMovementRes = await fetch('lang/sales-movement.json');
+    const salesMovementRes = await fetch(`lang/sales-movement.json?t=${timestamp}`);
     const salesMovementData = salesMovementRes.ok ? await salesMovementRes.json() : {};
 
-    const productViewRes = await fetch('lang/product-view.json');
+    const productViewRes = await fetch(`lang/product-view.json?t=${timestamp}`);
     const productViewData = productViewRes.ok ? await productViewRes.json() : {};
 
-    const searchRes = await fetch('lang/search.json');
+    const searchRes = await fetch(`lang/search.json?t=${timestamp}`);
     const searchData = searchRes.ok ? await searchRes.json() : {};
 
-    const productAddRes = await fetch('lang/productAdd.json');
+    const productAddRes = await fetch(`lang/productAdd.json?t=${timestamp}`);
     const productAddData = productAddRes.ok ? await productAddRes.json() : {};
 
-    const productEditRes = await fetch('lang/productEdit.json');
+    const productEditRes = await fetch(`lang/productEdit.json?t=${timestamp}`);
     const productEditData = productEditRes.ok ? await productEditRes.json() : {};
 
-    const productAdd2Res = await fetch('lang/productAdd2.json');
+    const productAdd2Res = await fetch(`lang/productAdd2.json?t=${timestamp}`);
     const productAdd2Data = productAdd2Res.ok ? await productAdd2Res.json() : {};
 
-    const productEdit2Res = await fetch('lang/productEdit2.json');
+    const productEdit2Res = await fetch(`lang/productEdit2.json?t=${timestamp}`);
     const productEdit2Data = productEdit2Res.ok ? await productEdit2Res.json() : {};
 
-    const productView2Res = await fetch('lang/productView2.json');
+    const productView2Res = await fetch(`lang/productView2.json?t=${timestamp}`);
     const productView2Data = productView2Res.ok ? await productView2Res.json() : {};
 
     // 3. Merge them

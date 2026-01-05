@@ -85,6 +85,5 @@
     "add2_swal_error_text": {
         "ar": "حدث خطأ أثناء إضافة الخدمة. يرجى المحاولة مرة أخرى.",
         "en": "An error occurred while adding the service. Please try again."
-    },
-
+    }
 }
