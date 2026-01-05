@@ -26,7 +26,8 @@ async function cartPage_loadCart() {
             try {
                 config = await loadDeliveryConfig();
                 if (config && config.defaults) {
-                    currency = config.defaults.currency_symbol || currency;
+                    // Use translation system first, fallback to config only if translation fails
+                    currency = window.langu('cart_currency') || config.defaults.currency_symbol || currency;
                     placeholderImg = config.defaults.placeholder_image || placeholderImg;
                 }
             } catch (e) { console.warn("Failed to load config in loadCart", e); }
@@ -148,7 +149,8 @@ async function cartPage_updateCartSummary() {
             try {
                 const config = await loadDeliveryConfig();
                 if (config && config.defaults) {
-                    currency = config.defaults.currency_symbol || currency;
+                    // Use translation system first, fallback to config only if translation fails
+                    currency = window.langu('cart_currency') || config.defaults.currency_symbol || currency;
                     if (config.defaults.office_location) {
                         officeCoords = config.defaults.office_location;
                         console.log("%c🏢 [Config] تم تحميل موقع المكتب من الإعدادات.", "color: #27ae60;");
@@ -336,7 +338,8 @@ function showDeliveryDetails(deliveryResult) {
 
     const discount = breakdown.orderValue < defaults.discount_threshold ? defaults.discount_value : 0;
 
-    const currency = defaults.currency_symbol || window.langu('cart_currency');
+    // Use translation system first, fallback to config only if translation fails
+    const currency = window.langu('cart_currency') || defaults.currency_symbol || 'EGP';
 
     // ... HTML construction ... (Updated to use currency variable)
     // Note: Since showDeliveryDetails is a massive template literal block, best to replace 'ج.م' with '${currency}'
