@@ -48,6 +48,61 @@ document.addEventListener("DOMContentLoaded", async () => {
     localStorage.setItem('app_language', 'ar'); // Default to Arabic
   }
 
+  // [Step -1.1.2] Load Translations for Index Page
+  window.indexPageTranslations = {};
+  async function loadIndexTranslations() {
+    try {
+      const response = await fetch('/lang/index.json');
+      if (response.ok) {
+        window.indexPageTranslations = await response.json();
+        console.log('✅ تم تحميل ترجمات الصفحة الرئيسية بنجاح.');
+        applyAppTranslations();
+      }
+    } catch (e) {
+      console.error('❌ خطأ في تحميل ملف الترجمة:', e);
+    }
+  }
+
+  /**
+   * @description Returns the translated text for a given key based on the current app language.
+   * @function langu
+   * @param {string} key - The translation key.
+   * @returns {string} - The translated text or the key itself if not found.
+   */
+  window.langu = function (key) {
+    const lang = localStorage.getItem('app_language') || 'ar';
+    if (window.indexPageTranslations && window.indexPageTranslations[key]) {
+      return window.indexPageTranslations[key][lang] || key;
+    }
+    return key;
+  };
+
+  /**
+   * @description Applies translations to all elements with data-lkey attribute and sets page direction.
+   * @function applyAppTranslations
+   */
+  function applyAppTranslations() {
+    const lang = localStorage.getItem('app_language') || 'ar';
+    
+    // Set HTML dir and lang attributes
+    const htmlRoot = document.getElementById('index-html-root');
+    if (htmlRoot) {
+      htmlRoot.setAttribute('lang', lang);
+      htmlRoot.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+    }
+
+    // Translate DOM elements
+    document.querySelectorAll('[data-lkey]').forEach(el => {
+      const key = el.getAttribute('data-lkey');
+      el.textContent = window.langu(key);
+    });
+
+    // Translate Page Title
+    document.title = window.langu('page_title');
+  }
+
+  await loadIndexTranslations();
+
   // Define Global Toggle Functions
   window.toggleAppTheme = function () {
     const isDark = document.body.classList.toggle('dark-theme');
@@ -66,11 +121,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     console.log(`[اللغة] تم تغيير اللغة إلى: ${newLang === 'ar' ? 'العربية' : 'الإنجليزية'}`);
 
-    const alertTitle = newLang === 'ar' ? 'تغيير اللغة' : 'Language Change';
-    const alertText = newLang === 'ar' 
-      ? 'سيتم إعادة تحميل الصفحة لتطبيق تغيير اللغة.' 
-      : 'The page will be reloaded to apply the language change.';
-    const confirmButtonText = newLang === 'ar' ? 'موافق' : 'OK';
+    const alertTitle = window.langu('alert_lang_change_title');
+    const alertText = window.langu('alert_lang_change_text');
+    const confirmButtonText = window.langu('alert_confirm_btn');
 
     // Show SweetAlert2 with manual confirmation button
     Swal.fire({

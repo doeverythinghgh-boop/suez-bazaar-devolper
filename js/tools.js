@@ -21,7 +21,7 @@ function checkImpersonationMode() {
       watermark.className = "admin-watermark";
       watermark.innerHTML = `
             <i class="fas fa-user-shield"></i>
-            <span>وضع المسؤول: تتصفح بصلاحيات المستخدم</span>
+            <span>${langu('admin_mode_watermark')}</span>
             `;
       document.body.appendChild(watermark);
     }
@@ -124,8 +124,8 @@ function parseOrderStatus(statusValue) {
 function processOrderStatus(order) {
   const { statusId, timestamp } = parseOrderStatus(order.order_status);
   const statusInfo = ORDER_STATUSES.find((s) => s.id === statusId) || {
-    state: "غير معروف",
-    description: "حالة الطلب غير معروفة.",
+    state: langu("unknown_status"),
+    description: langu("unknown_status_desc"),
   };
   return {
     ...order,
@@ -184,7 +184,7 @@ function setUserNameInIndexBar() {
       loginTextElement.textContent = displayName;
     }
   } else {
-    loginTextElement.textContent = "تسجيل الدخول";
+    loginTextElement.textContent = langu("login_text");
 
   }
 }
@@ -584,11 +584,11 @@ function showLoginAlert() {
   if (!userSession || userSession.user_key == "guest_user") {
     Swal.fire({
       icon: "info",
-      title: "تنبيه",
-      text: "يرجى تسجيل الدخول أولاً للتمكن من استخدام هذه الميزة.",
+      title: langu("alert_title_info"),
+      text: langu("alert_login_required"),
       showCancelButton: true,
-      confirmButtonText: "تسجيل الدخول",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: langu("login_text"),
+      cancelButtonText: langu("alert_cancel_btn"),
       customClass: { popup: 'fullscreen-swal' }, // Apply custom style
     }).then((result) => {
       if (result.isConfirmed) {
