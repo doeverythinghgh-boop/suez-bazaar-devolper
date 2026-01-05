@@ -6,10 +6,14 @@
 @import url('fonts.css');
 
 :root {
-  --primary-color: #007bff; /* Main blue color */
-  --primary-color-light: #e6f2ff; /* Lighter version for glows and effects */
-  --dark-blue: #03478f; /* Darker shade of blue for headings and important text */
-  --accent-color: #ade9bb; /* لون مميز جديد (أخضر فاتح) */
+  --primary-color: #007bff;
+  /* Main blue color */
+  --primary-color-light: #e6f2ff;
+  /* Lighter version for glows and effects */
+  --dark-blue: #03478f;
+  /* Darker shade of blue for headings and important text */
+  --accent-color: #ade9bb;
+  /* لون مميز جديد (أخضر فاتح) */
   --success-color: #28a745;
   --danger-color: #dc3545;
   --danger-color-dark: #ef4444;
@@ -22,34 +26,44 @@
   --text-color-dark: #222222;
   --text-color-medium: #4a5568;
   --text-color-light: #7f8c8d;
-  --icon-color: #9ca3af; /* لون الأيقونات داخل حقول الإدخال */
+  --icon-color: #9ca3af;
+  /* لون الأيقونات داخل حقول الإدخال */
 
   --bg-color-light: #f9f9f9;
   --bg-color-white: #ffffff;
-  --bg-color-glass: rgba(255, 255, 255, 0.85); /* خلفية زجاجية شفافة */
+  --bg-color-glass: rgba(255, 255, 255, 0.85);
+  /* خلفية زجاجية شفافة */
   --border-color: #e9ecef;
-  --border-color-input: #d1d5db; /* لون حدود حقول الإدخال */
-  --border-color-active: #9bc1eb; /* لون الإطار للعناصر النشطة (أزرق فاتح) */
-  --border-color-soft: #eef2f7; /* لون إطار ناعم جدًا (للخلفيات البيضاء) */
-  --border-color-strong: #b0b7bc; /* لون إطار أقوى قليلاً للتمييز */
+  --border-color-input: #d1d5db;
+  /* لون حدود حقول الإدخال */
+  --border-color-active: #9bc1eb;
+  /* لون الإطار للعناصر النشطة (أزرق فاتح) */
+  --border-color-soft: #eef2f7;
+  /* لون إطار ناعم جدًا (للخلفيات البيضاء) */
+  --border-color-strong: #b0b7bc;
+  /* لون إطار أقوى قليلاً للتمييز */
 
   --font-primary: "Tajawal", sans-serif;
 
   --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
-  --shadow-interactive: 0 4px 12px rgba(0, 0, 0, 0.1); /* ظل تفاعلي للأزرار */
+  --shadow-interactive: 0 4px 12px rgba(0, 0, 0, 0.1);
+  /* ظل تفاعلي للأزرار */
   --shadow-focus: 0 0 0 3px rgba(164, 193, 240, 0.25);
 }
 
 /* Dark Theme Overrides */
 body.dark-theme {
-  --primary-color: #3b82f6; /* Lighter Blue */
-  --primary-color-light: #1e293b; /* Dark Blue BG */
-  --dark-blue: #60a5fa; /* Light Blue Text */
-  
+  --primary-color: #3b82f6;
+  /* Lighter Blue */
+  --primary-color-light: #1e293b;
+  /* Dark Blue BG */
+  --dark-blue: #60a5fa;
+  /* Light Blue Text */
+
   --bg-color-light: #121212;
   --bg-color-white: #1e1e1e;
   --bg-color-glass: rgba(30, 30, 30, 0.9);
-  
+
   --text-color-dark: #e2e8f0;
   --text-color-medium: #cbd5e1;
   --text-color-light: #94a3b8;
@@ -63,4 +77,15 @@ body.dark-theme {
 
   --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.3);
   --shadow-interactive: 0 4px 12px rgba(0, 0, 0, 0.5);
+
+  --modal-bg: #1e1e1e;
+  --modal-item-bg: #2d2d2d;
+  --modal-item-border: #444;
+}
+
+/* Light Theme Variables (Default) - Implicit but explicit for clarity if needed later */
+:root {
+  --modal-bg: #ffffff;
+  --modal-item-bg: #f8f9fa;
+  --modal-item-border: #eeeeee;
 }

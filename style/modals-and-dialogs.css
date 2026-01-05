@@ -6,10 +6,35 @@
   - ... وغيرها
 */
 
+/* === 0. Global SweetAlert2 Dark Mode === */
+body.dark-theme .swal2-popup {
+  background: var(--modal-bg) !important;
+  color: var(--text-color-dark) !important;
+}
+
+body.dark-theme .swal2-title {
+  color: var(--text-color-dark) !important;
+}
+
+body.dark-theme .swal2-content,
+body.dark-theme .swal2-html-container {
+  color: var(--text-color-medium) !important;
+}
+
+body.dark-theme .swal2-close {
+  color: var(--text-color-medium) !important;
+}
+
+/* Fix specific Install Prompt Elements if they use hardcoded dark colors looking weird on dark bg, or invert them */
+body.dark-theme .install-modal-container .install-btn {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* === 1. نافذة سلة المشتريات === */
 #cart-modal-container .modal-content {
   max-width: 800px;
 }
+
 .cart-item {
   display: flex;
   align-items: center;
@@ -17,15 +42,18 @@
   padding: 10px 0;
   border-bottom: 1px solid #eee;
 }
+
 .cart-item img {
   width: 80px;
   height: 80px;
   object-fit: cover;
   border-radius: 8px;
 }
+
 .cart-item-details {
   flex-grow: 1;
 }
+
 .cart-total {
   text-align: left;
   font-size: 1.2rem;
@@ -193,7 +221,7 @@
   padding-bottom: 0;
 }
 
-.user-card-field > label {
+.user-card-field>label {
   font-weight: 600;
   color: var(--text-color-medium);
   font-size: 0.9rem;
@@ -262,13 +290,13 @@
   transition: opacity 0.3s;
 }
 
-.user-role-filter-container input[type="radio"]:checked + label {
+.user-role-filter-container input[type="radio"]:checked+label {
   background-color: var(--bg-color-white);
   color: var(--primary-color);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.user-role-filter-container input[type="radio"]:checked + label::before {
+.user-role-filter-container input[type="radio"]:checked+label::before {
   opacity: 1;
 }
 

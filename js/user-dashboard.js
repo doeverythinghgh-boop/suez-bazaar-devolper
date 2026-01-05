@@ -263,16 +263,16 @@ function updateViewForLoggedInUser() {
               
               <!-- Notification Settings -->
               <div onclick="mainLoader('notification/page/notifications.html', 'index-notifications-container', 0, undefined, 'showHomeIcon', true); Swal.close();" 
-                   style="background: #f8f9fa; padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; border: 1px solid #eee;">
-                <i class="fas fa-bell" style="font-size: 24px; color: #ffc107; margin-bottom: 8px; display: block;"></i>
-                <span style="font-size: 14px; font-weight: 600; color: #333;">الإشعارات</span>
+                   class="settings-action-item">
+                <i class="fas fa-bell" style="color: #ffc107;"></i>
+                <span>الإشعارات</span>
               </div>
 
-              <!-- Profile Settings (Logged in only check handled by route or ui) -->
+              <!-- Profile Settings -->
               <div onclick="document.getElementById('dash-edit-profile-btn') && document.getElementById('dash-edit-profile-btn').click(); Swal.close();" 
-                   style="background: #f8f9fa; padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; border: 1px solid #eee;">
-                <i class="fas fa-user-cog" style="font-size: 24px; color: var(--primary-color, #007bff); margin-bottom: 8px; display: block;"></i>
-                <span style="font-size: 14px; font-weight: 600; color: #333;">الملف الشخصي</span>
+                   class="settings-action-item">
+                <i class="fas fa-user-cog" style="color: var(--primary-color);"></i>
+                <span>الملف الشخصي</span>
               </div>
 
             </div>
@@ -281,8 +281,8 @@ function updateViewForLoggedInUser() {
             <div style="display: flex; flex-direction: column; gap: 8px;">
                <!-- Theme Toggle -->
                <div onclick="window.toggleAppTheme();"
-                    style="padding: 12px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee; cursor: pointer;">
-                  <span style="display: flex; align-items: center; gap: 10px; color: #555;">
+                    class="settings-list-item">
+                  <span>
                      <i class="fas ${themeIcon}" style="color: ${themeColor}; width: 20px;"></i> ${themeText}
                   </span>
                   <div style="width: 36px; height: 20px; background: ${isDark ? '#4cd964' : '#e5e5ea'}; border-radius: 20px; position: relative;">
@@ -291,11 +291,11 @@ function updateViewForLoggedInUser() {
                </div>
                
                <div onclick="mainLoader('pages/contact.html', 'index-contact-container', 0, undefined, 'showHomeIcon', true); Swal.close();"
-                    style="padding: 12px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee; cursor: pointer;">
-                  <span style="display: flex; align-items: center; gap: 10px; color: #555;">
+                    class="settings-list-item">
+                  <span>
                      <i class="fas fa-headset"></i> الدعم والمساعدة
                   </span>
-                  <i class="fas fa-chevron-left" style="color: #ccc; font-size: 12px;"></i>
+                  <i class="fas fa-chevron-left chevron"></i>
                </div>
             </div>
 
@@ -304,10 +304,15 @@ function updateViewForLoggedInUser() {
         showConfirmButton: false,
         showCloseButton: true,
         customClass: {
-          popup: 'animated fadeInDown faster'
+          popup: 'animated fadeInDown faster',
+          container: 'settings-swal-container'
         },
-        background: isDark ? '#1e1e1e' : '#fff', // Dynamic background
-        color: isDark ? '#fff' : '#000',
+        background: isDark ? 'var(--modal-bg)' : '#fff', // Use var for background too if possible, or just keep dynamic hex that matches var
+        // Actually, since we are in JS, we can just use the variable string if Swal supports it or rely on isDark logic to match the var value.
+        // Let's stick to isDark logic but make sure it matches the var values: #1e1e1e for dark.
+        // Better: Use `background: 'var(--modal-bg)'` - Swal applies this to style attribute, so var works!
+        background: 'var(--modal-bg)',
+        color: 'var(--text-color-dark)',
         width: '350px',
         padding: '20px'
       });

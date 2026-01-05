@@ -74,3 +74,63 @@
 #dash-admin-panel-btn i {
   color: #28a745;
 }
+
+/* Settings Modal Styles */
+.settings-action-item {
+  background: var(--modal-item-bg);
+  border: 1px solid var(--modal-item-border);
+  padding: 15px;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: center;
+  transition: 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-action-item:active {
+  transform: scale(0.98);
+  opacity: 0.8;
+}
+
+.settings-action-item i {
+  font-size: 24px;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.settings-action-item span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color-dark);
+}
+
+.settings-list-item {
+  padding: 12px;
+  background: var(--bg-color-white);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.settings-list-item:active {
+  background-color: var(--primary-color-light);
+}
+
+.settings-list-item span {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-color-medium);
+  font-weight: 500;
+}
+
+.settings-list-item i.chevron {
+  color: var(--icon-color);
+  font-size: 12px;
+}
