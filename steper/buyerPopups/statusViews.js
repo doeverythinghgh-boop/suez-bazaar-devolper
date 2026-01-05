@@ -26,9 +26,9 @@ export function showBuyerRejectedProductsAlert(data, ordersData) {
         const htmlContent = generateRejectedListHtml(rejectedProducts);
 
         Swal.fire({
-            title: "المنتجات المرفوضة",
+            title: window.langu('stepper_rejected_products_title'),
             html: `<div id="buyer-rejected-container">${htmlContent}</div>`,
-            confirmButtonText: "إغلاق",
+            confirmButtonText: window.langu('alert_close_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -54,9 +54,9 @@ export function showUnselectedProductsAlert(data, ordersData) {
         const htmlContent = generateCancelledListHtml(cancelledKeys, ordersData);
 
         Swal.fire({
-            title: "المنتجات الملغاة",
+            title: window.langu('buyer_cancelled_products'),
             html: `<div id="cancelled-products-container">${htmlContent}</div>`,
-            confirmButtonText: "حسنًا",
+            confirmButtonText: window.langu('alert_confirm_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -82,9 +82,9 @@ export function showReturnedProductsAlert(data, ordersData) {
         const htmlContent = generateReturnedListHtml(returnedKeys, ordersData);
 
         Swal.fire({
-            title: "المنتجات المرتجعة",
+            title: window.langu('buyer_returned_products'),
             html: `<div id="buyer-returned-container">${htmlContent}</div>`,
-            confirmButtonText: "حسنًا",
+            confirmButtonText: window.langu('alert_confirm_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -110,9 +110,9 @@ export function showBuyerConfirmedProductsAlert(data, ordersData) {
         const htmlContent = generateConfirmedListHtml(confirmedKeys, ordersData);
 
         Swal.fire({
-            title: "المنتجات المؤكدة",
+            title: window.langu('buyer_confirmed_products'),
             html: `<div id="buyer-confirmed-container">${htmlContent}</div>`,
-            confirmButtonText: "حسنًا",
+            confirmButtonText: window.langu('alert_confirm_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -138,9 +138,9 @@ export function showBuyerShippingInfoAlert(data, ordersData) {
         const htmlContent = generateShippingTableHtml(shippableProducts);
 
         Swal.fire({
-            title: "منتجات قيد الشحن",
+            title: window.langu('buyer_shipping_products'),
             html: `<div id="buyer-shipping-container">${htmlContent}</div>`,
-            confirmButtonText: "إغلاق",
+            confirmButtonText: window.langu('alert_close_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -171,10 +171,10 @@ export async function showCourierConfirmedProductsAlert(data, ordersData) {
 
         if (confirmedKeys.length === 0) {
             Swal.fire({
-                title: "المنتجات المؤكدة",
-                text: "لا توجد منتجات مؤكدة حالياً.",
+                title: window.langu('buyer_confirmed_products'),
+                text: window.langu('courier_no_confirmed_products'),
                 icon: "info",
-                confirmButtonText: "حسنًا",
+                confirmButtonText: window.langu('alert_confirm_btn'),
                 customClass: { popup: "fullscreen-swal" },
             });
             return;
@@ -215,9 +215,9 @@ export async function showCourierConfirmedProductsAlert(data, ordersData) {
         const htmlContent = generateSellerGroupedHtml(groupedData);
 
         Swal.fire({
-            title: "المنتجات المطلوب توصيلها",
+            title: window.langu('courier_products_to_deliver'),
             html: `<div id="courier-confirmed-container">${htmlContent}</div>`,
-            confirmButtonText: "إغلاق",
+            confirmButtonText: window.langu('alert_close_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();

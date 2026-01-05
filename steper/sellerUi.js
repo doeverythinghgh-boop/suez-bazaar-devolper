@@ -49,7 +49,7 @@ export function generateCheckboxCell(productKey, productName, isChecked, isDisab
  */
 export function generateConfirmationTableHtml(products, ordersData) {
     if (products.length === 0) {
-        return "<p>لا توجد منتجات لعرضها.</p>";
+        return `<p>${window.langu('ui_no_products_to_show')}</p>`;
     }
 
     const tableRows = products.map(product => {
@@ -82,10 +82,10 @@ export function generateConfirmationTableHtml(products, ordersData) {
             <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em;">
                 <thead>
                     <tr style="background-color: var(--bg-secondary);">
-                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">المنتج (حدد للتأكيد)</th>
-                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">ملاحظات</th>
-                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">مندوب التوصيل</th>
-                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">رقم الهاتف</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_product_confirm')}</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_notes')}</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_delivery_agent')}</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_phone_number')}</th>
                     </tr>
                 </thead>
                 <tbody>${tableRows}</tbody>
@@ -102,7 +102,7 @@ export function generateConfirmationTableHtml(products, ordersData) {
  */
 export function generateRejectedListHtml(products) {
     if (products.length === 0) {
-        return '<p>لا توجد منتجات مرفوضة.</p>';
+        return `<p>${window.langu('ui_no_rejected_products')}</p>`;
     }
 
     const itemsHtml = products.map(item => `
@@ -115,7 +115,7 @@ export function generateRejectedListHtml(products) {
         </li>
     `).join("");
 
-    return `<p>المنتجات المرفوضة:</p><ul style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul>`;
+    return `<p>${window.langu('ui_rejected_products_title')}</p><ul style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul>`;
 }
 
 /**
@@ -159,13 +159,13 @@ export function generateShippingTableHtml(products) {
 
     return `
         <div style="width: 100%; overflow-x: auto;">
-            <p>حدد المنتجات لتغيير حالتها إلى "مشحون":</p>
+            <p>${window.langu('ui_shipping_instruction')}</p>
             <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em; margin-top: 10px;">
                 <thead>
                     <tr style="background-color: var(--bg-secondary);">
-                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">المنتج</th>
-                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">موصل</th>
-                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">هاتف</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_product')}</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_courier')}</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_phone')}</th>
                     </tr>
                 </thead>
                 <tbody>${tableRows}</tbody>

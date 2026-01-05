@@ -21,9 +21,9 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
         const htmlContent = generateRejectedListHtml(rejectedProducts);
 
         Swal.fire({
-            title: "المنتجات المرفوضة",
+            title: window.langu('stepper_rejected_products_title'),
             html: `<div id="seller-rejected-container">${htmlContent}</div>`,
-            confirmButtonText: "حسنًا",
+            confirmButtonText: window.langu('alert_confirm_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => attachLogButtonListeners()
         });
@@ -48,9 +48,9 @@ export function showSellerDeliveryConfirmationAlert(data, ordersData) {
 
         if (productsToDeliver.length === 0) {
             Swal.fire({
-                title: "لا توجد منتجات تم توصيلها/شحنها",
-                text: "لا توجد منتجات في مرحلة التوصيل.",
-                confirmButtonText: "إغلاق",
+                title: window.langu('stepper_no_delivered_products'),
+                text: window.langu('stepper_no_delivered_desc'),
+                confirmButtonText: window.langu('alert_close_btn'),
                 customClass: { popup: "fullscreen-swal" },
             });
             return;
@@ -64,12 +64,12 @@ export function showSellerDeliveryConfirmationAlert(data, ordersData) {
         const checkboxesHtml = generateDeliveryItemsHtml(productsToDeliver);
 
         Swal.fire({
-            title: "تأكيد استلام المنتجات (قراءة فقط)",
+            title: window.langu('stepper_delivery_confirm_title'),
             html: `<div id="seller-delivery-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">
                     ${userInfoHtml}
                     ${checkboxesHtml}
                    </div>`,
-            confirmButtonText: "إغلاق",
+            confirmButtonText: window.langu('alert_close_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();
@@ -99,9 +99,9 @@ export function showSellerReturnedProductsAlert(data, ordersData) {
         const htmlContent = generateReturnedListHtml(returnedKeys, ordersData);
 
         Swal.fire({
-            title: "المنتجات المرتجعة (قراءة فقط)",
+            title: window.langu('stepper_returned_products_title'),
             html: `<div id="seller-returned-container">${htmlContent}</div>`,
-            confirmButtonText: "إغلاق",
+            confirmButtonText: window.langu('alert_close_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();

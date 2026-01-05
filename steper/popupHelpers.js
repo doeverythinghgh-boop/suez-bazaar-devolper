@@ -71,10 +71,10 @@ function handleStepActivationAttempt(checkboxElement, controlData, ordersData) {
 
         if (!validation.isValid) {
             Swal.fire({
-                title: "تنبيه",
+                title: window.langu('alert_title_info'),
                 text: validation.errorMessage,
 
-                confirmButtonText: "حسنًا",
+                confirmButtonText: window.langu('alert_confirm_btn'),
                 customClass: { popup: "fullscreen-swal" },
             });
             checkboxElement.checked = false;
@@ -84,14 +84,14 @@ function handleStepActivationAttempt(checkboxElement, controlData, ordersData) {
 
     // Confirmation Logic
     Swal.fire({
-        title: "تأكيد تفعيل المرحلة",
-        text: "بمجرد تفعيل هذه المرحلة، لا يمكنك التراجع. هل أنت متأكد؟",
+        title: window.langu('stepper_activation_confirm_title'),
+        text: window.langu('stepper_activation_confirm_text'),
 
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "نعم، قم بالتفعيل",
-        cancelButtonText: "إلغاء",
+        confirmButtonText: window.langu('stepper_activation_confirm_btn'),
+        cancelButtonText: window.langu('alert_cancel_btn'),
         customClass: { popup: "fullscreen-swal" },
     }).then((result) => {
         if (result.isConfirmed) {

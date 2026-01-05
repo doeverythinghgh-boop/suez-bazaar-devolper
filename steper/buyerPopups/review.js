@@ -37,8 +37,8 @@ export async function handleReviewSave(data, ordersData) {
     if (updates.length > 0) {
         // Show loading state
         Swal.fire({
-            title: 'جاري الحفظ...',
-            text: 'برجاء الانتظار بينما يتم حفظ التغييرات.',
+            title: window.langu('shipping_saving_title'),
+            text: window.langu('review_saving_text'),
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
@@ -50,8 +50,8 @@ export async function handleReviewSave(data, ordersData) {
             await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
 
             Swal.fire({
-                title: 'تم التحديث',
-                text: 'تم تحديث اختيار المنتجات بنجاح.',
+                title: window.langu('review_update_success_title'),
+                text: window.langu('review_update_success_text'),
                 timer: 1500,
                 showConfirmButton: false
             }).then(() => {
@@ -68,7 +68,7 @@ export async function handleReviewSave(data, ordersData) {
                         const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                         window.notifyOnStepActivation({
                             stepId: 'step-cancelled',
-                            stepName: 'منتجات ملغاة',
+                            stepName: window.langu('review_notify_cancelled'),
                             ...metadata,
                             sellerKeys: relevantSellers
                         });
@@ -77,9 +77,9 @@ export async function handleReviewSave(data, ordersData) {
             });
         } catch (error) {
             Swal.fire({
-                title: 'فشل الحفظ',
-                text: 'حدث خطأ أثناء حفظ البيانات. برجاء المحاولة مرة أخرى.',
-                confirmButtonText: 'حسنًا'
+                title: window.langu('stepper_save_fail_title'),
+                text: window.langu('review_save_fail_text'),
+                confirmButtonText: window.langu('alert_confirm_btn')
             });
         }
     } else {
@@ -110,12 +110,12 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
         const htmlContent = generateReviewListHtml(productKeys, ordersData, isOverallLocked);
 
         Swal.fire({
-            title: isOverallLocked ? "عرض المنتجات" : "اختر المنتجات:",
+            title: isOverallLocked ? window.langu('review_modal_view_title') : window.langu('review_modal_select_title'),
             html: `<div id="buyer-review-products-container" style="display: flex; flex-direction: column; align-items: start; width: 100%;">${htmlContent}</div>`,
             footer: isOverallLocked
-                ? "للمشاهدة فقط - التعديلات مقيدة."
-                : '<button id="btn-save-review" class="swal2-confirm swal2-styled" style="background-color: #28a745;">حفظ الاختيارات</button>',
-            cancelButtonText: "إغلاق",
+                ? window.langu('review_readonly_info')
+                : `<button id="btn-save-review" class="swal2-confirm swal2-styled" style="background-color: #28a745;">${window.langu('review_save_btn')}</button>`,
+            cancelButtonText: window.langu('alert_close_btn'),
             focusConfirm: false,
             allowOutsideClick: !isOverallLocked,
             showConfirmButton: false,

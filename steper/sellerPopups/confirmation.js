@@ -41,7 +41,7 @@ export function handleConfirmationSave(data, ordersData) {
     // Accepted products section
     if (acceptedProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: var(--color-confirmed); margin-bottom: 10px; font-size: 1.1em;">✅ المنتجات المقبولة (' + acceptedProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: var(--color-confirmed); margin-bottom: 10px; font-size: 1.1em;">' + window.langu('conf_accepted_products').replace('{count}', acceptedProducts.length) + '</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         acceptedProducts.forEach(name => {
             htmlContent += '<li style="padding: 5px; background: var(--bg-success); margin: 3px 0; border-radius: 3px; color: var(--text-success);">• ' + name + '</li>';
@@ -52,7 +52,7 @@ export function handleConfirmationSave(data, ordersData) {
     // Rejected products section
     if (rejectedProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: var(--color-rejected); margin-bottom: 10px; font-size: 1.1em;">❌ المنتجات المرفوضة (' + rejectedProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: var(--color-rejected); margin-bottom: 10px; font-size: 1.1em;">' + window.langu('conf_rejected_products').replace('{count}', rejectedProducts.length) + '</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         rejectedProducts.forEach(name => {
             htmlContent += '<li style="padding: 5px; background: var(--bg-danger); margin: 3px 0; border-radius: 3px; color: var(--text-danger);">• ' + name + '</li>';
@@ -62,19 +62,19 @@ export function handleConfirmationSave(data, ordersData) {
 
     // Warning message
     htmlContent += '<div style="background: var(--bg-warning); border: 2px solid var(--border-warning); padding: 15px; border-radius: 5px; margin-top: 15px;">';
-    htmlContent += '<p style="margin: 0; font-weight: bold; color: var(--text-warning);">⚠️ تحذير هام:</p>';
-    htmlContent += '<p style="margin: 5px 0 0 0; color: var(--text-warning);">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
+    htmlContent += '<p style="margin: 0; font-weight: bold; color: var(--text-warning);">' + window.langu('shipping_warning_title') + '</p>';
+    htmlContent += '<p style="margin: 5px 0 0 0; color: var(--text-warning);">' + window.langu('shipping_warning_text') + '</p>';
     htmlContent += '</div>';
 
     htmlContent += '</div>';
 
     // Show confirmation dialog
     Swal.fire({
-        title: 'تأكيد الحفظ النهائي',
+        title: window.langu('shipping_confirm_save_title'),
         html: htmlContent,
         showCancelButton: true,
-        confirmButtonText: 'تأكيد الحفظ',
-        cancelButtonText: 'إلغاء',
+        confirmButtonText: window.langu('shipping_confirm_save_btn'),
+        cancelButtonText: window.langu('alert_cancel_btn'),
         confirmButtonColor: '#28a745',
         cancelButtonColor: '#6c757d',
         customClass: { popup: 'fullscreen-swal' },
@@ -97,8 +97,8 @@ export function handleConfirmationSave(data, ordersData) {
             if (updates.length > 0) {
                 // Show loading
                 Swal.fire({
-                    title: 'جاري الحفظ...',
-                    text: 'يتم حفظ التأكيد والقفل...',
+                    title: window.langu('shipping_saving_title'),
+                    text: window.langu('conf_saving_text'),
                     allowOutsideClick: false,
                     didOpen: () => Swal.showLoading()
                 });
@@ -116,8 +116,8 @@ export function handleConfirmationSave(data, ordersData) {
                     }
 
                     Swal.fire({
-                        title: 'تم الحفظ بنجاح',
-                        text: 'تم حفظ التأكيد بشكل نهائي.',
+                        title: window.langu('shipping_save_success_title'),
+                        text: window.langu('conf_save_success_text'),
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
@@ -145,7 +145,7 @@ export function handleConfirmationSave(data, ordersData) {
 
                             window.notifyOnStepActivation({
                                 stepId: 'step-confirmed',
-                                stepName: 'تأكيد الطلب',
+                                stepName: window.langu('conf_notify_confirmed'),
                                 ...metadata,
                                 sellerKeys: typeof relevantSellers !== 'undefined' ? relevantSellers : [],
                                 deliveryKeys: typeof relevantDelivery !== 'undefined' ? relevantDelivery : []
@@ -155,7 +155,7 @@ export function handleConfirmationSave(data, ordersData) {
                             if (hasRejected) {
                                 window.notifyOnStepActivation({
                                     stepId: 'step-rejected',
-                                    stepName: 'منتجات مرفوضة',
+                                    stepName: window.langu('conf_notify_rejected'),
                                     ...metadata,
                                     sellerKeys: typeof relevantSellers !== 'undefined' ? relevantSellers : [],
                                     deliveryKeys: typeof relevantDelivery !== 'undefined' ? relevantDelivery : []
@@ -166,9 +166,9 @@ export function handleConfirmationSave(data, ordersData) {
                 } catch (error) {
                     console.error("Save failed", error);
                     Swal.fire({
-                        title: 'فشل الحفظ',
-                        text: 'حدث خطأ أثناء الاتصال بالسيرفر.',
-                        confirmButtonText: 'حسنًا'
+                        title: window.langu('stepper_save_fail_title'),
+                        text: window.langu('shipping_save_fail_text'),
+                        confirmButtonText: window.langu('alert_confirm_btn')
                     });
                 }
             } else {
@@ -204,14 +204,14 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
         console.log(`[SellerPopups] Opening confirmation | User: ${userType} | Locked: ${isLocked} | CanEdit: ${canEdit}`);
 
         Swal.fire({
-            title: canEdit ? "تأكيد المنتجات" : "تأكيد المنتجات (قراءة فقط)",
+            title: canEdit ? window.langu('conf_modal_title') : window.langu('conf_modal_readonly_title'),
             html: `<div id="seller-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%; max-height: 300px; overflow: auto;">
                     ${htmlContent}
                    </div>`,
             footer: canEdit
-                ? '<button id="btn-save-confirmation" class="swal2-confirm swal2-styled" style="background-color: #28a745;">حفظ التغييرات</button>'
-                : '<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">🔒 تم قفل التأكيد بشكل دائم - لا يمكن التعديل</p>',
-            cancelButtonText: "إغلاق",
+                ? `<button id="btn-save-confirmation" class="swal2-confirm swal2-styled" style="background-color: #28a745;">${window.langu('conf_save_btn')}</button>`
+                : `<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">${window.langu('conf_locked_info')}</p>`,
+            cancelButtonText: window.langu('alert_close_btn'),
             showConfirmButton: false,
             showCancelButton: true,
             focusConfirm: false,

@@ -76,7 +76,7 @@ function salesMovement_displayOrders(salesMovement_data) {
             salesMovement_container.innerHTML = `
                 <div class="salesMovement_emptyState">
                     <div class="salesMovement_emptyIcon"><i class="fas fa-box-open"></i></div>
-                    <div class="salesMovement_emptyText">لا توجد طلبات حالياً</div>
+                    <div class="salesMovement_emptyText">${window.langu('sales_no_orders')}</div>
                 </div>
             `;
             return;
@@ -100,15 +100,15 @@ function salesMovement_displayOrders(salesMovement_data) {
                 <div class="salesMovement_orderCard" data-order-index="${salesMovement_index}">
                     <div class="salesMovement_cardHeader">
                         <span class="salesMovement_cardIcon"><i class="fas fa-clipboard-list"></i></span>
-                        <span class="salesMovement_cardTitle">طلب #${salesMovement_order.order_key}</span>
+                        <span class="salesMovement_cardTitle">${window.langu('sales_order_id').replace('{id}', salesMovement_order.order_key)}</span>
                     </div>
                     <div class="salesMovement_cardBody">
                         <div class="salesMovement_cardInfo">
-                            <span><i class="fas fa-calendar-alt"></i> التاريخ:</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${window.langu('sales_date')}</span>
                             <span>${salesMovement_formattedDate}</span>
                         </div>
                         <div class="salesMovement_cardInfo">
-                            <span><i class="fas fa-boxes"></i> عدد المنتجات:</span>
+                            <span><i class="fas fa-boxes"></i> ${window.langu('sales_items_count')}</span>
                             <span>${salesMovement_productCount}</span>
                         </div>
                     </div>
@@ -190,7 +190,7 @@ function salesMovement_displayOrders(salesMovement_data) {
         salesMovement_container.innerHTML = `
             <div class="salesMovement_emptyState">
                 <div class="salesMovement_emptyIcon"><i class="fas fa-exclamation-triangle"></i></div>
-                <div class="salesMovement_emptyText">حدث خطأ في عرض الطلبات</div>
+                <div class="salesMovement_emptyText">${window.langu('sales_error')}</div>
             </div>
         `;
     }
@@ -440,7 +440,7 @@ function salesMovement_showLoading() {
         const salesMovement_container = document.getElementById('salesMovement_ordersContainer');
         salesMovement_container.innerHTML = `
             <div class="salesMovement_loading">
-                <i class="fas fa-hourglass-half"></i> جاري تحميل الطلبات...
+                <i class="fas fa-hourglass-half"></i> ${window.langu('sales_loading')}
             </div>
         `;
     } catch (salesMovement_error) {

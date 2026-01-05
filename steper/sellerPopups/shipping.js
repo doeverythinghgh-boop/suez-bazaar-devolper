@@ -41,7 +41,7 @@ export async function handleShippingSave(data, ordersData) {
     // Shipped products section
     if (shippedProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: var(--color-shipped); margin-bottom: 10px; font-size: 1.1em;">📦 المنتجات المشحونة (' + shippedProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: var(--color-shipped); margin-bottom: 10px; font-size: 1.1em;">' + window.langu('shipping_shipped_products').replace('{count}', shippedProducts.length) + '</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         shippedProducts.forEach(name => {
             htmlContent += '<li style="padding: 5px; background: var(--bg-info); margin: 3px 0; border-radius: 3px; color: var(--text-info);">• ' + name + '</li>';
@@ -52,7 +52,7 @@ export async function handleShippingSave(data, ordersData) {
     // Not shipped products section
     if (notShippedProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: var(--text-secondary); margin-bottom: 10px; font-size: 1.1em;">⏸️ المنتجات غير المشحونة (' + notShippedProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: var(--text-secondary); margin-bottom: 10px; font-size: 1.1em;">' + window.langu('shipping_not_shipped_products').replace('{count}', notShippedProducts.length) + '</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         notShippedProducts.forEach(name => {
             htmlContent += '<li style="padding: 5px; background: var(--bg-neutral); margin: 3px 0; border-radius: 3px; color: var(--text-neutral);">• ' + name + '</li>';
@@ -62,19 +62,19 @@ export async function handleShippingSave(data, ordersData) {
 
     // Warning message
     htmlContent += '<div style="background: var(--bg-warning); border: 2px solid var(--border-warning); padding: 15px; border-radius: 5px; margin-top: 15px;">';
-    htmlContent += '<p style="margin: 0; font-weight: bold; color: var(--text-warning);">⚠️ تحذير هام:</p>';
-    htmlContent += '<p style="margin: 5px 0 0 0; color: var(--text-warning);">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
+    htmlContent += '<p style="margin: 0; font-weight: bold; color: var(--text-warning);">' + window.langu('shipping_warning_title') + '</p>';
+    htmlContent += '<p style="margin: 5px 0 0 0; color: var(--text-warning);">' + window.langu('shipping_warning_text') + '</p>';
     htmlContent += '</div>';
 
     htmlContent += '</div>';
 
     // Show confirmation dialog
     Swal.fire({
-        title: 'تأكيد الحفظ النهائي',
+        title: window.langu('shipping_confirm_save_title'),
         html: htmlContent,
         showCancelButton: true,
-        confirmButtonText: 'تأكيد الحفظ',
-        cancelButtonText: 'إلغاء',
+        confirmButtonText: window.langu('shipping_confirm_save_btn'),
+        cancelButtonText: window.langu('alert_cancel_btn'),
         confirmButtonColor: '#00d4ff',
         cancelButtonColor: '#6c757d',
         customClass: { popup: 'fullscreen-swal' },
@@ -100,8 +100,8 @@ export async function handleShippingSave(data, ordersData) {
             if (updates.length > 0) {
                 // Show loading
                 Swal.fire({
-                    title: 'جاري الحفظ...',
-                    text: 'يتم حفظ الشحن والقفل...',
+                    title: window.langu('shipping_saving_title'),
+                    text: window.langu('shipping_saving_text'),
                     allowOutsideClick: false,
                     didOpen: () => Swal.showLoading()
                 });
@@ -119,8 +119,8 @@ export async function handleShippingSave(data, ordersData) {
                     }
 
                     Swal.fire({
-                        title: 'تم الحفظ بنجاح',
-                        text: 'تم حفظ الشحن بشكل نهائي.',
+                        title: window.langu('shipping_save_success_title'),
+                        text: window.langu('shipping_save_success_text'),
                         timer: 1500,
                         showConfirmButton: false
                     }).then(async () => {
@@ -143,7 +143,7 @@ export async function handleShippingSave(data, ordersData) {
                                 notificationPromises.push(window.notifyBuyerOnStepChange(
                                     metadata.buyerKey,
                                     'step-shipped',
-                                    'شحن الطلب',
+                                    window.langu('shipping_notify_buyer'),
                                     metadata.orderId
                                 ));
                             }
@@ -153,7 +153,7 @@ export async function handleShippingSave(data, ordersData) {
                         if (deliveryToNotify.length > 0 && typeof window.notifyOnStepActivation === 'function') {
                             notificationPromises.push(window.notifyOnStepActivation({
                                 stepId: 'step-shipped',
-                                stepName: 'شحن الطلب',
+                                stepName: window.langu('shipping_notify_buyer'),
                                 ...metadata,
                                 sellerKeys: [], // No need to notify other sellers of shipping normally
                                 deliveryKeys: deliveryToNotify
@@ -165,9 +165,9 @@ export async function handleShippingSave(data, ordersData) {
                 } catch (error) {
                     console.error("Save failed", error);
                     Swal.fire({
-                        title: 'فشل الحفظ',
-                        text: 'حدث خطأ أثناء الاتصال بالسيرفر.',
-                        confirmButtonText: 'حسنًا'
+                        title: window.langu('stepper_save_fail_title'),
+                        text: window.langu('shipping_save_fail_text'),
+                        confirmButtonText: window.langu('alert_confirm_btn')
                     });
                 }
             } else {
@@ -190,9 +190,9 @@ export function showShippingInfoAlert(data, ordersData) {
 
         if (shippableProducts.length === 0) {
             Swal.fire({
-                title: "لا توجد منتجات للشحن",
-                text: "يجب تأكيد المنتجات أولاً.",
-                confirmButtonText: "حسنًا",
+                title: window.langu('shipping_no_products_title'),
+                text: window.langu('shipping_no_products_desc'),
+                confirmButtonText: window.langu('alert_confirm_btn'),
                 customClass: { popup: "fullscreen-swal" },
             });
             return;
@@ -215,15 +215,15 @@ export function showShippingInfoAlert(data, ordersData) {
         const htmlContent = generateShippingTableHtml(shippableProducts);
 
         Swal.fire({
-            title: canEdit ? "شحن المنتجات" : "شحن المنتجات (قراءة فقط)",
+            title: canEdit ? window.langu('shipping_modal_title') : window.langu('shipping_modal_readonly_title'),
             html: `<div id="seller-shipping-container">${htmlContent}</div>`,
             footer: canEdit
-                ? '<button id="btn-save-shipping" class="swal2-confirm swal2-styled" style="background-color: #007bff;">تحديث حالة الشحن</button>'
-                : '<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">🔒 تم قفل الشحن بشكل دائم - لا يمكن التعديل</p>',
-            confirmButtonText: "إغلاق",
+                ? `<button id="btn-save-shipping" class="swal2-confirm swal2-styled" style="background-color: #007bff;">${window.langu('shipping_update_btn')}</button>`
+                : `<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">${window.langu('shipping_locked_info')}</p>`,
+            confirmButtonText: window.langu('alert_close_btn'),
             showConfirmButton: false,
             showCancelButton: true,
-            cancelButtonText: "إغلاق",
+            cancelButtonText: window.langu('alert_close_btn'),
             customClass: { popup: "fullscreen-swal" },
             didOpen: () => {
                 attachLogButtonListeners();

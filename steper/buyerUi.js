@@ -19,7 +19,7 @@ import { getProductName, translateStatus } from "./commonUtils.js";
  */
 export function generateReviewListHtml(productKeys, ordersData, isOverallLocked) {
     if (!productKeys || productKeys.length === 0) {
-        return '<div style="text-align: center; padding: 20px; color: var(--text-secondary);">لا توجد منتجات للمراجعة حالياً.</div>';
+        return `<div style="text-align: center; padding: 20px; color: var(--text-secondary);">${window.langu('ui_no_review_products')}</div>`;
     }
 
     return productKeys.map((productKey) => {
@@ -56,7 +56,7 @@ export function generateReviewListHtml(productKeys, ordersData, isOverallLocked)
  */
 export function generateCancelledListHtml(cancelledKeys, ordersData) {
     if (cancelledKeys.length === 0) {
-        return '<p id="no-cancelled-items-message">لا توجد منتجات تم إلغاؤها حالياً</p>';
+        return `<p id="no-cancelled-items-message">${window.langu('ui_no_cancelled_products')}</p>`;
     }
     const itemsHtml = cancelledKeys.map((key) => {
         const productName = getProductName(key, ordersData);
@@ -79,17 +79,17 @@ export function generateCancelledListHtml(cancelledKeys, ordersData) {
 export function generateDeliveryUserInfoHtml(userDetails) {
     return userDetails.map(user => `
          <div class="user-details-container" style="margin-bottom: 15px; padding: 10px; background: var(--bg-secondary); border: 1px solid var(--border-light); border-radius: 5px; width: 100%; text-align: right; direction: rtl;">
-            <p style="margin: 5px 0;"><strong style="color: var(--color-primary);">الاسم:</strong> <span style="color: var(--text-secondary);">${user.name}</span></p>
-            <p style="margin: 5px 0;"><strong style="color: var(--color-primary);">الهاتف:</strong> <a href="tel:${user.phone}" style="color: var(--color-shipped); text-decoration: none; font-weight: bold;">${user.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a></p>
+            <p style="margin: 5px 0;"><strong style="color: var(--color-primary);">${window.langu('ui_label_name')}</strong> <span style="color: var(--text-secondary);">${user.name}</span></p>
+            <p style="margin: 5px 0;"><strong style="color: var(--color-primary);">${window.langu('ui_label_phone')}</strong> <a href="tel:${user.phone}" style="color: var(--color-shipped); text-decoration: none; font-weight: bold;">${user.phone} <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a></p>
             <p style="margin: 5px 0;">
-                <strong style="color: var(--color-primary);">العنوان:</strong> 
+                <strong style="color: var(--color-primary);">${window.langu('ui_label_address')}</strong> 
                 <span style="color: var(--text-secondary);">${user.address}</span>
                 ${(user.location && user.location.trim() !== "") ? `
                     <button class="btn-view-buyer-map" 
                             data-lat="${user.location.split(',')[0].trim()}" 
                             data-lng="${user.location.split(',')[1].trim()}"
                             data-name="${user.name}"
-                            title="عرض على الخريطة"
+                            title="${window.langu('ui_view_on_map')}"
                             style="margin-right: 5px; cursor: pointer; border: none; background: none; color: #007bff; font-size: 1.1em; padding: 0;">
                         <i class="fas fa-map-marked-alt"></i>
                     </button>
@@ -132,7 +132,7 @@ export function generateDeliveryItemsHtml(products) {
  */
 export function generateReturnedListHtml(returnedKeys, ordersData) {
     if (returnedKeys.length === 0) {
-        return '<p id="no-returned-items-message">لا توجد منتجات تم إرجاعها حالياً</p>';
+        return `<p id="no-returned-items-message">${window.langu('ui_no_returned_products')}</p>`;
     }
     const itemsHtml = returnedKeys.map((key) => {
         const productName = getProductName(key, ordersData);
@@ -143,7 +143,7 @@ export function generateReturnedListHtml(returnedKeys, ordersData) {
             </li>
         `;
     }).join("");
-    return `<div id="returned-products-container"><p>المنتجات المرجعة:</p><ul id="returned-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
+    return `<div id="returned-products-container"><p>${window.langu('ui_returned_products_title')}</p><ul id="returned-products-list" style="text-align: right; margin-top: 1rem; padding-right: 2rem; width: 100%;">${itemsHtml}</ul></div>`;
 }
 
 /**
@@ -155,7 +155,7 @@ export function generateReturnedListHtml(returnedKeys, ordersData) {
  */
 export function generateConfirmedListHtml(confirmedKeys, ordersData) {
     if (confirmedKeys.length === 0) {
-        return '<p id="no-confirmed-items-message">لا توجد منتجات مؤكدة بعد.</p>';
+        return `<p id="no-confirmed-items-message">${window.langu('ui_no_confirmed_products')}</p>`;
     }
     const itemsHtml = confirmedKeys.map((key) => {
         const productName = getProductName(key, ordersData);
@@ -181,7 +181,7 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
                 }
 
                 if (name) {
-                    deliveryInfo = `<br><small style="color: var(--text-secondary);">المندوب: <strong style="color: var(--color-primary);">${name}</strong> ${phone ? `<a href="tel:${phone}" style="color: var(--color-shipped); text-decoration: none; margin-right: 5px;">(${phone}) <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>` : ''}</small>`;
+                    deliveryInfo = `<br><small style="color: var(--text-secondary);">${window.langu('ui_label_delivery_agent')} <strong style="color: var(--color-primary);">${name}</strong> ${phone ? `<a href="tel:${phone}" style="color: var(--color-shipped); text-decoration: none; margin-right: 5px;">(${phone}) <i class="fas fa-phone-alt" style="font-size: 0.8em;"></i></a>` : ''}</small>`;
                 }
             }
         }
@@ -199,7 +199,7 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
             </li>
         `;
     }).join("");
-    return `<div id="confirmed-products-container"><p>المنتجات التي تم تأكيدها بواسطة البائع:</p><ul id="confirmed-products-list" style="list-style: none; padding: 0; margin-top: 10px;">${itemsHtml}</ul></div>`;
+    return `<div id="confirmed-products-container"><p>${window.langu('ui_confirmed_by_seller_title')}</p><ul id="confirmed-products-list" style="list-style: none; padding: 0; margin-top: 10px;">${itemsHtml}</ul></div>`;
 }
 
 /**
@@ -209,12 +209,12 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
  * @returns {string} HTML string.
  */
 export function generateSellerGroupedHtml(groupedData) {
-    if (!groupedData || groupedData.length === 0) return "<p class='text-center'>لا توجد منتجات.</p>";
+    if (!groupedData || groupedData.length === 0) return `<p class='text-center'>${window.langu('ui_no_products')}</p>`;
 
     const groupsHtml = groupedData.map(group => `
         <div class="seller-group-container" style="margin-bottom: 20px; border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden;">
             <div class="seller-header" style="background-color: var(--bg-secondary); padding: 10px; border-bottom: 1px solid var(--border-light); text-align: right; direction: rtl;">
-                <h5 style="margin: 0; color: var(--color-primary); font-size: 1.1em; font-weight: bold;">البائع: ${group.seller.name}</h5>
+                <h5 style="margin: 0; color: var(--color-primary); font-size: 1.1em; font-weight: bold;">${window.langu('ui_label_seller')} ${group.seller.name}</h5>
                 <div style="font-size: 0.9em; color: var(--text-secondary); margin-top: 5px;">
                     <span><i class="fas fa-phone"></i> <a href="tel:${group.seller.phone}" style="color: #007bff; text-decoration: none; font-weight: bold;">${group.seller.phone}</a></span> | 
                     <span>
@@ -224,7 +224,7 @@ export function generateSellerGroupedHtml(groupedData) {
                                     data-lat="${group.seller.location.split(',')[0].trim()}" 
                                     data-lng="${group.seller.location.split(',')[1].trim()}"
                                     data-name="${group.seller.name}"
-                                    title="عرض على الخريطة"
+                                    title="${window.langu('ui_view_on_map')}"
                                     style="margin-right: 5px; cursor: pointer; border: none; background: none; color: #007bff; font-size: 1.1em; padding: 0;">
                                 <i class="fas fa-map-marked-alt"></i>
                             </button>
@@ -236,11 +236,11 @@ export function generateSellerGroupedHtml(groupedData) {
                 <table style="width: 100%; min-width: 600px; text-align: right; direction: rtl; border-collapse: collapse;">
                     <thead>
                         <tr style="border-bottom: 2px solid var(--border-light);">
-                            <th style="padding: 5px;">المنتج</th>
-                            <th style="padding: 5px;">سعر القطعة</th>
-                            <th style="padding: 5px;">سعر التطبيق</th>
-                            <th style="padding: 5px;">الكمية</th>
-                            <th style="padding: 5px;">إجمالي</th>
+                            <th style="padding: 5px;">${window.langu('ui_col_product')}</th>
+                            <th style="padding: 5px;">${window.langu('ui_col_unit_price')}</th>
+                            <th style="padding: 5px;">${window.langu('ui_col_app_price')}</th>
+                            <th style="padding: 5px;">${window.langu('ui_col_quantity')}</th>
+                            <th style="padding: 5px;">${window.langu('ui_col_total')}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -256,12 +256,12 @@ export function generateSellerGroupedHtml(groupedData) {
                     </tbody>
                     <tfoot style="background: var(--bg-secondary); font-weight: bold;">
                         <tr>
-                            <td colspan="4" style="padding: 8px; text-align: right;">إجمالي الحساب للبائع (سعر البيع):</td>
-                            <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)} جنيه</td>
+                            <td colspan="4" style="padding: 8px; text-align: right;">${window.langu('ui_total_seller_account')}</td>
+                            <td style="padding: 8px;">${group.products.reduce((sum, p) => sum + (p.price * p.quantity), 0).toFixed(2)} ${window.langu('ui_currency_egp')}</td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="padding: 8px; text-align: right; color: #d97706;">إجمالي سعر التطبيق:</td>
-                            <td style="padding: 8px; color: #d97706;">${group.products.reduce((sum, p) => sum + (p.realPrice * p.quantity), 0).toFixed(2)} جنيه</td>
+                            <td colspan="4" style="padding: 8px; text-align: right; color: #d97706;">${window.langu('ui_total_app_price')}</td>
+                            <td style="padding: 8px; color: #d97706;">${group.products.reduce((sum, p) => sum + (p.realPrice * p.quantity), 0).toFixed(2)} ${window.langu('ui_currency_egp')}</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -279,8 +279,8 @@ export function generateSellerGroupedHtml(groupedData) {
 
     return groupsHtml + `
         <div class="grand-total-container" style="margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 8px; text-align: center; border: 2px solid #dee2e6;">
-            <h4 style="margin: 0; font-weight: bold; color: var(--text-primary);">إجمالي (سعر البيع): ${grandTotal.toFixed(2)} جنيه</h4>
-            <h4 style="margin: 10px 0 0 0; color: #d97706; font-weight: bold;">إجمالي (سعر التطبيق): ${grandTotalReal.toFixed(2)} جنيه</h4>
+            <h4 style="margin: 0; font-weight: bold; color: var(--text-primary);">${window.langu('ui_total_sales_price')} ${grandTotal.toFixed(2)} ${window.langu('ui_currency_egp')}</h4>
+            <h4 style="margin: 10px 0 0 0; color: #d97706; font-weight: bold;">${window.langu('ui_total_app_price_summary')} ${grandTotalReal.toFixed(2)} ${window.langu('ui_currency_egp')}</h4>
         </div>
     `;
 }

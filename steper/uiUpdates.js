@@ -30,7 +30,7 @@ function formatDate(dateInput) {
     let hours = date.getHours();
     const minutes = pad(date.getMinutes());
     const seconds = pad(date.getSeconds());
-    const ampm = hours >= 12 ? 'م' : 'ص';
+    const ampm = hours >= 12 ? window.langu('time_pm') : window.langu('time_am');
 
     hours = hours % 12;
     hours = hours ? hours : 12;
@@ -47,7 +47,7 @@ export function showUnauthorizedAlert() {
 
     if (messageTimeout) clearTimeout(messageTimeout);
 
-    messageElement.textContent = "ليس لديك الصلاحية لهذه المرحلة";
+    messageElement.textContent = window.langu('stepper_unauthorized_alert');
     messageElement.classList.add("show");
 
     messageTimeout = setTimeout(() => {
@@ -202,7 +202,7 @@ export function createStepStatusFooter(stepId, currentStep) {
     return `
         <div id="modal-step-status-container" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
             <input type="checkbox" id="modal-step-status-checkbox" ${state} data-step-id="${stepId}">
-            <label for="modal-step-status-checkbox" style="font-weight: bold; cursor: pointer;">تفعيل المرحله</label>
+            <label for="modal-step-status-checkbox" style="font-weight: bold; cursor: pointer;">${window.langu('stepper_activate_step')}</label>
         </div>
     `;
 }

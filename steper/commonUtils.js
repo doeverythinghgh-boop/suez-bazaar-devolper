@@ -13,6 +13,9 @@ import { ITEM_STATUS_ARABIC } from "./config.js";
  * @returns {string} The Arabic translation or the original string if not found.
  */
 export function translateStatus(status) {
+    if (typeof window.langu === 'function') {
+        return window.langu(`status_${status}`) || status;
+    }
     return ITEM_STATUS_ARABIC[status] || status;
 }
 
