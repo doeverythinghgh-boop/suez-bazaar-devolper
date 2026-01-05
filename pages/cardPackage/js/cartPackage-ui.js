@@ -19,7 +19,7 @@ async function cartPage_loadCart() {
 
         // Load Global Config
         let config = {};
-        let currency = 'ج.م';
+        let currency = window.langu('cart_currency');
         let placeholderImg = 'https://via.placeholder.com/120x120?text=No+Image';
 
         if (typeof loadDeliveryConfig === 'function') {
@@ -141,7 +141,7 @@ async function cartPage_updateCartSummary() {
         const cartPage_savings = getCartTotalSavings();
 
         // 1. Load Config & Currency FIRST
-        let currency = 'ج.م';
+        let currency = window.langu('cart_currency');
         let officeCoords = { lat: 29.968897130919654, lng: 32.53395080566407 }; // Fallback
 
         if (typeof loadDeliveryConfig === 'function') {
@@ -236,7 +236,7 @@ async function cartPage_updateCartSummary() {
 
                 if (deliveryResult && !deliveryResult.error) {
                     const smartFee = deliveryResult.totalCost;
-                    smartDeliveryElement.textContent = smartFee.toFixed(2) + ' ج.م';
+                    smartDeliveryElement.textContent = smartFee.toFixed(2) + ' ' + window.langu('cart_currency');
 
                     // Store delivery details globally for the details button
                     window.lastDeliveryCalculation = deliveryResult;
@@ -336,7 +336,7 @@ function showDeliveryDetails(deliveryResult) {
 
     const discount = breakdown.orderValue < defaults.discount_threshold ? defaults.discount_value : 0;
 
-    const currency = defaults.currency_symbol || 'ج.م';
+    const currency = defaults.currency_symbol || window.langu('cart_currency');
 
     // ... HTML construction ... (Updated to use currency variable)
     // Note: Since showDeliveryDetails is a massive template literal block, best to replace 'ج.م' with '${currency}'

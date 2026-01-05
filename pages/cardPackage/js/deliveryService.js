@@ -110,7 +110,7 @@ async function calculateCartDeliveryCost(officeLocation, customerLocation, optio
         sellerLocations.forEach((s, index) => {
             console.log(`%c   - بائع ${index + 1}: ${s.name} | الموقع: (${s.lat}, ${s.lng})`, "color: #9b59b6;");
         });
-        const currency = (deliveryConfig.defaults && deliveryConfig.defaults.currency_symbol) || 'ج.م';
+        const currency = (deliveryConfig.defaults && deliveryConfig.defaults.currency_symbol) || window.langu('cart_currency');
         console.log(`%c💰 [OrderValue] إجمالي قيمة المشتريات: ${totalOrderValue.toFixed(2)} ${currency}`, "color: #9b59b6;");
         if (requiresHeavyLoad) console.log("%c⚠️ [HeavyLoad] تنبيه: تم اكتشاف حمولة ثقيلة، سيتم استخدام شاحنة.", "color: #e74c3c; font-weight: bold;");
 
