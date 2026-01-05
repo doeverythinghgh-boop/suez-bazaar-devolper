@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
 
-  // document.getElementById("index-contact-btn").addEventListener("click", handleContactButtonClick);
+
 
 
   // [Step 5.5] Bind "Cart" button.

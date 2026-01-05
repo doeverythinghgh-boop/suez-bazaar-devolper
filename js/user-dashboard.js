@@ -160,12 +160,7 @@ function updateViewForLoggedInUser() {
       });
     }
 
-    const contactBtn = document.getElementById("index-contact-btn");
-    if (contactBtn) {
-      contactBtn.addEventListener("click", () => {
-        mainLoader("pages/contact.html", "index-contact-container", 0, undefined, "showHomeIcon", true);
-      });
-    }
+
 
     // [Step 3.3] Bind Logout
     const logoutBtn = document.getElementById("dash-logout-btn-alt");
@@ -199,12 +194,7 @@ function updateViewForLoggedInUser() {
       });
     }
 
-    const contactBtn = document.getElementById("index-contact-btn");
-    if (contactBtn) {
-      contactBtn.addEventListener("click", () => {
-        mainLoader("pages/contact.html", "index-contact-container", 0, undefined, "showHomeIcon", true);
-      });
-    }
+
 
     // [Step 4.2] Admin Panel Button
     const adminBtn = document.getElementById("dash-admin-panel-btn");
@@ -297,6 +287,8 @@ function updateViewForLoggedInUser() {
                   </span>
                   <i class="fas fa-chevron-left chevron"></i>
                </div>
+               
+
             </div>
 
           </div>
