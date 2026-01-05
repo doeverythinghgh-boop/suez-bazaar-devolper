@@ -4,12 +4,12 @@
     <!-- Top Actions (Back Button) -->
     <div class="productView_top_actions" id="productView_top_actions">
         <button class="productView_btn_back" id="productView_btn_back">
-            <i class="fas fa-arrow-right"></i> رجوع
+            <i class="fas fa-arrow-right"></i> <span data-lkey="pv_back">رجوع</span>
         </button>
     </div>
 
     <div class="productView_image_container" id="productView_image_container">
-        <img id="productView_image" src="" alt="صورة المنتج" />
+        <img id="productView_image" src="" alt="صورة المنتج" data-lkey="pv_product_image_alt" data-lattr="alt" />
         <div class="productView_thumbnails_container" id="productView_thumbnails_container">
         </div>
     </div>
@@ -19,70 +19,70 @@
 
         <p id="productView_quantity_container">
             <i class="fas fa-archive" id="productView_quantity_icon"></i>
-            الكمية المتاحة:
+            <span data-lkey="pv_available_quantity">الكمية المتاحة:</span>
             <span id="productView_quantity_value"></span>
         </p>
         <p id="productView_original_price_container" style="display: none">
-            <i class="fas fa-tags"></i> السعر قبل الخصم:
+            <i class="fas fa-tags"></i> <span data-lkey="pv_original_price">السعر قبل الخصم:</span>
             <span id="productView_original_price"></span>
         </p>
         <p id="productView_price_container">
-            <i class="fas fa-tag" id="productView_price_icon"></i> سعر القطعة:
+            <i class="fas fa-tag" id="productView_price_icon"></i> <span data-lkey="pv_unit_price">سعر القطعة:</span>
             <span id="productView_price"></span>
         </p>
         <div class="productView_description_box" id="productView_description_container">
             <h4 id="productView_description_header">
-                <i class="fas fa-file-alt"></i> وصف المنتج
+                <i class="fas fa-file-alt"></i> <span data-lkey="pv_description_header">وصف المنتج</span>
             </h4>
             <p id="productView_description_text"></p>
         </div>
 
         <div id="productView_admin_seller_info"
             style="display: none; background: #eee; padding: 10px; border-radius: 8px; margin-top: 10px; font-size: 0.9em; border: 1px dashed #999;">
-            <p style="margin: 0; color: #d32f2f;"><i class="fas fa-user-shield"></i> بيانات تظهر للإدارة والبائع فقط:
+            <p style="margin: 0; color: #d32f2f;"><i class="fas fa-user-shield"></i> <span data-lkey="pv_admin_seller_title">بيانات تظهر للإدارة والبائع فقط:</span>
             </p>
-            <p style="margin: 5px 0 0 0;"><strong>الاسم:</strong> <span id="productView_admin_seller_name"></span></p>
-            <p style="margin: 5px 0 0 0;"><strong>الكي (Key):</strong> <span id="productView_admin_seller_key"></span>
+            <p style="margin: 5px 0 0 0;"><strong data-lkey="pv_label_name">الاسم:</strong> <span id="productView_admin_seller_name"></span></p>
+            <p style="margin: 5px 0 0 0;"><strong data-lkey="pv_label_key">الكي (Key):</strong> <span id="productView_admin_seller_key"></span>
             </p>
-            <p style="margin: 5px 0 0 0;"><strong>الفئة الرئيسية:</strong> <span
+            <p style="margin: 5px 0 0 0;"><strong data-lkey="pv_label_main_category">الفئة الرئيسية:</strong> <span
                     id="productView_admin_main_category"></span></p>
-            <p style="margin: 5px 0 0 0;"><strong>الفئة الفرعية:</strong> <span
+            <p style="margin: 5px 0 0 0;"><strong data-lkey="pv_label_sub_category">الفئة الفرعية:</strong> <span
                     id="productView_admin_sub_category"></span></p>
             <p id="productView_real_price_container" style="margin: 5px 0 0 0; color: #d97706; font-weight: bold;">
-                <strong>سعر التطبيق:</strong> <span id="productView_real_price"></span>
+                <strong data-lkey="pv_label_real_price">سعر التطبيق:</strong> <span id="productView_real_price"></span>
             </p>
             <p id="productView_heavy_load_container" style="margin: 5px 0 0 0; color: #1e40af;">
-                <strong>يحتاج سيارة:</strong> <span id="productView_heavy_load_value"></span>
+                <strong data-lkey="pv_label_heavy_load">يحتاج سيارة:</strong> <span id="productView_heavy_load_value"></span>
             </p>
         </div>
 
         <div class="productView_seller_message_box" id="productView_seller_message_container">
             <h4 id="productView_seller_message_header">
                 <i class="fas fa-comment-dots" id="productView_seller_message_icon"></i>
-                رسالة من البائع
+                <span data-lkey="pv_seller_message_header">رسالة من البائع</span>
             </h4>
             <p id="productView_seller_message_text"></p>
         </div>
 
         <div class="productView_cart_actions_container" id="productView_cart_actions">
             <div class="productView_quantity_selector" id="productView_quantity_selector">
-                <button class="productView_quantity_btn" id="productView_decrease_quantity_btn" title="إنقاص الكمية">
+                <button class="productView_quantity_btn" id="productView_decrease_quantity_btn" title="إنقاص الكمية" data-lkey="pv_decrease_quantity" data-lattr="title">
                     -
                 </button>
                 <input type="number" id="productView_selected_quantity_input" value="1" min="1"
-                    aria-label="الكمية المختارة" />
-                <button class="productView_quantity_btn" id="productView_increase_quantity_btn" title="زيادة الكمية">
+                    aria-label="الكمية المختارة" data-lkey="pv_selected_quantity_label" data-lattr="aria-label" />
+                <button class="productView_quantity_btn" id="productView_increase_quantity_btn" title="زيادة الكمية" data-lkey="pv_increase_quantity" data-lattr="title">
                     +
                 </button>
             </div>
 
             <div class="productView_total_price_container" id="productView_total_price_container">
-                <strong id="productView_total_price_label">الإجمالي:</strong>
+                <strong id="productView_total_price_label" data-lkey="pv_total_price_label">الإجمالي:</strong>
                 <span id="productView_total_price"></span>
             </div>
             <button class="productView_add_to_cart_btn" id="productView_add_to_cart_btn">
                 <i class="fas fa-cart-plus" id="productView_add_to_cart_icon"></i>
-                إضافة إلى السلة
+                <span data-lkey="pv_add_to_cart">إضافة إلى السلة</span>
             </button>
         </div>
     </div>

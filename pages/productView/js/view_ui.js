@@ -61,10 +61,10 @@ function productView_populateThumbnails(imageSrcArray, mainImageEl, thumbnailsCo
             };
 
             thumb.onerror = () => {
-                console.warn("[productView_] فشل تحميل الصورة المصغرة:", src);
+                console.warn("[productView_] " + window.langu("pv_thumbnail_error"), src);
                 const placeholder = document.createElement("div");
                 placeholder.className = "image-load-error-placeholder";
-                placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>فشل التحميل</span>`;
+                placeholder.innerHTML = `<i class="fas fa-exclamation-triangle"></i><span>${window.langu("pv_load_failed")}</span>`;
                 thumb.replaceWith(placeholder);
             };
             thumbnailsContainerEl.appendChild(thumb);
@@ -114,7 +114,11 @@ function productView_setupQuantityControls(productData, dom) {
                 selectedQuantityInput.value = currentVal + 1;
                 productView_updateTotalPrice(pricePerItem, dom);
             } else {
-                Swal.fire({ icon: 'warning', text: 'تم الوصول للحد الأقصى للكمية المتاحة.', confirmButtonText: 'موافق' });
+                Swal.fire({ 
+                    icon: 'warning', 
+                    text: window.langu("pv_max_quantity_reached"), 
+                    confirmButtonText: window.langu("alert_confirm_btn") 
+                });
             }
         };
 

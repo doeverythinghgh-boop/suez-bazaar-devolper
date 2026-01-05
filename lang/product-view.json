@@ -1,0 +1,118 @@
+{
+  "pv_back": {
+    "ar": "رجوع",
+    "en": "Back"
+  },
+  "pv_product_image_alt": {
+    "ar": "صورة المنتج",
+    "en": "Product Image"
+  },
+  "pv_available_quantity": {
+    "ar": "الكمية المتاحة:",
+    "en": "Available Quantity:"
+  },
+  "pv_original_price": {
+    "ar": "السعر قبل الخصم:",
+    "en": "Price before discount:"
+  },
+  "pv_unit_price": {
+    "ar": "سعر القطعة:",
+    "en": "Price per piece:"
+  },
+  "pv_description_header": {
+    "ar": "وصف المنتج",
+    "en": "Product Description"
+  },
+  "pv_admin_seller_title": {
+    "ar": "بيانات تظهر للإدارة والبائع فقط:",
+    "en": "Information visible to Admin and Seller only:"
+  },
+  "pv_label_name": {
+    "ar": "الاسم:",
+    "en": "Name:"
+  },
+  "pv_label_key": {
+    "ar": "الكي (Key):",
+    "en": "Key:"
+  },
+  "pv_label_main_category": {
+    "ar": "الفئة الرئيسية:",
+    "en": "Main Category:"
+  },
+  "pv_label_sub_category": {
+    "ar": "الفئة الفرعية:",
+    "en": "Sub Category:"
+  },
+  "pv_label_real_price": {
+    "ar": "سعر التطبيق:",
+    "en": "App Price:"
+  },
+  "pv_label_heavy_load": {
+    "ar": "يحتاج سيارة:",
+    "en": "Needs a car:"
+  },
+  "pv_seller_message_header": {
+    "ar": "رسالة من البائع",
+    "en": "Message from Seller"
+  },
+  "pv_decrease_quantity": {
+    "ar": "إنقاص الكمية",
+    "en": "Decrease Quantity"
+  },
+  "pv_increase_quantity": {
+    "ar": "زيادة الكمية",
+    "en": "Increase Quantity"
+  },
+  "pv_selected_quantity_label": {
+    "ar": "الكمية المختارة",
+    "en": "Selected Quantity"
+  },
+  "pv_total_price_label": {
+    "ar": "الإجمالي:",
+    "en": "Total:"
+  },
+  "pv_add_to_cart": {
+    "ar": "إضافة إلى السلة",
+    "en": "Add to Cart"
+  },
+  "pv_no_description": {
+    "ar": "لا يوجد وصف متاح.",
+    "en": "No description available."
+  },
+  "pv_no_seller_message": {
+    "ar": "لا توجد رسالة من البائع.",
+    "en": "No message from seller."
+  },
+  "pv_not_available": {
+    "ar": "غير متوفر",
+    "en": "Not available"
+  },
+  "pv_currency_egp": {
+    "ar": "جنيه",
+    "en": "EGP"
+  },
+  "pv_max_quantity_reached": {
+    "ar": "تم الوصول للحد الأقصى للكمية المتاحة.",
+    "en": "Maximum available quantity reached."
+  },
+  "pv_thumbnail_error": {
+    "ar": "فشل تحميل الصورة المصغرة:",
+    "en": "Failed to load thumbnail:"
+  },
+  "pv_load_failed": {
+    "ar": "فشل التحميل",
+    "en": "Load failed"
+  },
+  "pv_error_init": {
+    "ar": "خطأ في تهيئة نافذة عرض المنتج:",
+    "en": "Error initializing product view window:"
+  },
+  "pv_no_product_data": {
+    "ar": "لا توجد بيانات منتج في مدير الحالة",
+    "en": "No product data in state manager"
+  },
+  "pv_error_fetching_categories": {
+    "ar": "فشل تحميل قائمة الفئات",
+    "en": "Failed to load categories list"
+  }
+}

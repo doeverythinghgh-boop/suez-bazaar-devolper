@@ -40,15 +40,15 @@ function productView_viewDetails(productData, options = {}) {
         }
 
         // Populate basic data
-        if (name) name.textContent = productData.productName || "غير متوفر";
-        if (description) description.textContent = productData.description || "لا يوجد وصف متاح.";
-        if (sellerMessage) sellerMessage.textContent = productData.sellerMessage || "لا توجد رسالة من البائع.";
+        if (name) name.textContent = productData.productName || window.langu("pv_not_available");
+        if (description) description.textContent = productData.description || window.langu("pv_no_description");
+        if (sellerMessage) sellerMessage.textContent = productData.sellerMessage || window.langu("pv_no_seller_message");
 
         // Configure display
         if (quantityContainer) quantityContainer.style.display = "flex";
         if (priceContainer) priceContainer.style.display = "flex";
         if (quantityValue) quantityValue.textContent = productData.availableQuantity || "0";
-        if (price) price.textContent = `${productData.pricePerItem || 0} جنيه`;
+        if (price) price.textContent = `${productData.pricePerItem || 0} ${window.langu("pv_currency_egp")}`;
 
         if (showAddToCart) {
             if (cartActionsContainer) cartActionsContainer.style.display = "block";
@@ -70,7 +70,7 @@ function productView_viewDetails(productData, options = {}) {
         const currentPriceVal = productData.pricePerItem ? parseFloat(productData.pricePerItem) : 0;
 
         if (originalPriceVal > 0 && originalPriceVal > currentPriceVal) {
-            if (originalPrice) originalPrice.textContent = `${originalPriceVal.toFixed(2)} جنيه`;
+            if (originalPrice) originalPrice.textContent = `${originalPriceVal.toFixed(2)} ${window.langu("pv_currency_egp")}`;
             if (originalPriceContainer) originalPriceContainer.style.display = "flex";
         } else {
             if (originalPrice) originalPrice.textContent = "";
@@ -87,18 +87,18 @@ function productView_viewDetails(productData, options = {}) {
             if (isAdmin || isImpersonating || isSeller) {
                 if (adminSellerInfo) {
                     // Fill data
-                    if (adminSellerName) adminSellerName.textContent = productData.sellerName || "غير متوفر";
-                    if (adminSellerKey) adminSellerKey.textContent = productData.user_key || "غير متوفر";
+                if (adminSellerName) adminSellerName.textContent = productData.sellerName || window.langu("pv_not_available");
+                if (adminSellerKey) adminSellerKey.textContent = productData.user_key || window.langu("pv_not_available");
 
                     if (realPrice) {
-                        realPrice.textContent = `${productData.realPrice || 0} جنيه`;
+                        realPrice.textContent = `${productData.realPrice || 0} ${window.langu("pv_currency_egp")}`;
                     }
                     if (realPriceContainer) {
                         realPriceContainer.style.display = "block";
                     }
 
                     if (dom.heavyLoadValue) {
-                        dom.heavyLoadValue.textContent = productData.heavyLoad == 1 ? "نعم" : "لا";
+                        dom.heavyLoadValue.textContent = productData.heavyLoad == 1 ? window.langu("alert_confirm_yes") : window.langu("alert_confirm_no");
                     }
                     if (dom.heavyLoadContainer) {
                         dom.heavyLoadContainer.style.display = "block";
@@ -143,9 +143,9 @@ function productView_viewDetails(productData, options = {}) {
 async function productView_getCategoryNames(mainId, subId) {
     try {
         const data = window.appCategoriesList || await fetchAppCategories();
-        if (!data) throw new Error("فشل تحميل قائمة الفئات");
+        if (!data) throw new Error(window.langu("pv_error_fetching_categories"));
         const mainCat = data.categories.find(c => String(c.id) === String(mainId));
-        if (!mainCat) return { main: "غير معروفة", sub: "-" };
+        if (!mainCat) return { main: window.langu("unknown_status"), sub: "-" };
 
         let subName = "-";
         if (subId && mainCat.subcategories) {
@@ -164,7 +164,7 @@ async function productView_getCategoryNames(mainId, subId) {
         return { main: mainName, sub: subName };
     } catch (e) {
         console.error("Error fetching category names:", e);
-        return { main: "خطأ في التحميل", sub: "خطأ في التحميل" };
+        return { main: window.langu("pv_load_failed"), sub: window.langu("pv_load_failed") };
     }
 }
 
@@ -177,9 +177,9 @@ async function productView_getCategoryNames(mainId, subId) {
         if (productData) {
             productView_viewDetails(productData, viewOptions);
         } else {
-            console.warn("[ProductView] لا توجد بيانات منتج في مدير الحالة");
+            console.warn("[ProductView] " + window.langu("pv_no_product_data"));
         }
     } catch (error) {
-        console.error("خطأ في تهيئة نافذة عرض المنتج:", error);
+        console.error(window.langu("pv_error_init"), error);
     }
 })();

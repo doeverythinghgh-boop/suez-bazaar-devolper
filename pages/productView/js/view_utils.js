@@ -15,9 +15,9 @@ function productView_updateTotalPrice(pricePerItem, dom) {
         const quantity = parseInt(dom.selectedQuantityInput.value, 10) || 1;
         const total = price * quantity;
         if (dom.totalPriceEl) {
-            dom.totalPriceEl.textContent = `${total.toFixed(2)} جنيه`;
+            dom.totalPriceEl.textContent = `${total.toFixed(2)} ${window.langu("pv_currency_egp")}`;
         }
     } catch (error) {
-        console.error("productView_updateTotalPrice - خطأ في تحديث السعر الإجمالي:", error);
+        console.error("productView_updateTotalPrice - Error:", error);
     }
 }
