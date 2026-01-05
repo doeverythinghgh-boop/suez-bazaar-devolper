@@ -240,9 +240,10 @@
     border-radius: 20px !important;
     padding: 1.5rem !important;
     font-family: 'Tajawal', sans-serif !important;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: var(--shadow-interactive) !important;
     max-width: 450px !important;
     width: 90% !important;
+    background: var(--modal-bg) !important;
   }
 
   .modern-swal-confirm {
@@ -251,12 +252,13 @@
     padding: 12px 30px !important;
     font-weight: 600 !important;
     order: 1 !important;
+    color: #fff !important;
   }
 
   .modern-swal-cancel {
     background-color: transparent !important;
-    color: #64748b !important;
-    border: 1px solid #e2e8f0 !important;
+    color: var(--text-color-medium) !important;
+    border: 1px solid var(--border-color) !important;
     border-radius: 10px !important;
     padding: 12px 30px !important;
     order: 2 !important;

@@ -312,3 +312,52 @@ body.dark-theme .install-modal-container .install-btn {
     left: 1rem;
   }
 }
+
+/* Profile Modal Dark Mode Refactor */
+.swal-profile-container {
+  text-align: right;
+  direction: rtl;
+  font-family: 'Tajawal', sans-serif;
+}
+
+.swal-profile-section {
+  background: var(--modal-item-bg, #f8fafc);
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border: 1px solid var(--modal-item-border, #e2e8f0);
+}
+
+.swal-profile-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-weight: 700;
+  color: var(--text-color-dark);
+  font-size: 1rem;
+}
+
+.swal-profile-label-sub {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-color-medium);
+  font-size: 0.9rem;
+}
+
+.swal-profile-input {
+  width: 100% !important;
+  margin: 0 !important;
+  height: 50px !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--border-color-input) !important;
+  background: var(--bg-color-white) !important;
+  font-family: 'Tajawal', sans-serif !important;
+  color: var(--text-color-dark) !important;
+}
+
+.swal-profile-input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}

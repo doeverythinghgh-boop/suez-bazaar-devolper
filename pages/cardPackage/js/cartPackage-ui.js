@@ -352,7 +352,7 @@ function showDeliveryDetails(deliveryResult) {
         if (segments.length === 1) {
             // Direct route: Office to Customer
             segmentHTML += `
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <div class="delivery-row" style="margin-bottom: 8px;">
                     <span style="flex: 1;">🏢 المكتب ← 🏠 العميل</span>
                     <span style="font-weight: bold; color: var(--primary-color);">${segments[0].toFixed(2)} كم</span>
                 </div>
@@ -360,7 +360,7 @@ function showDeliveryDetails(deliveryResult) {
         } else {
             // Multi-stop route
             segmentHTML += `
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <div class="delivery-row" style="margin-bottom: 8px;">
                     <span style="flex: 1;">🏢 المكتب ← 📦 البائع الأول</span>
                     <span style="font-weight: bold; color: var(--primary-color);">${segments[0].toFixed(2)} كم</span>
                 </div>
@@ -369,7 +369,7 @@ function showDeliveryDetails(deliveryResult) {
             // Between sellers
             for (let i = 1; i < segments.length - 1; i++) {
                 segmentHTML += `
-                    <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                    <div class="delivery-row" style="margin-bottom: 8px;">
                         <span style="flex: 1;">📦 البائع ${i} ← 📦 البائع ${i + 1}</span>
                         <span style="font-weight: bold; color: var(--primary-color);">${segments[i].toFixed(2)} كم</span>
                     </div>
@@ -378,7 +378,7 @@ function showDeliveryDetails(deliveryResult) {
 
             // Last seller to customer
             segmentHTML += `
-                <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                <div class="delivery-row" style="margin-bottom: 8px;">
                     <span style="flex: 1;">📦 البائع الأخير ← 🏠 العميل</span>
                     <span style="font-weight: bold; color: var(--primary-color);">${segments[segments.length - 1].toFixed(2)} كم</span>
                 </div>
@@ -391,133 +391,133 @@ function showDeliveryDetails(deliveryResult) {
 
     // Build detailed HTML content
     let detailsHTML = `
-        <div style="text-align: right; direction: rtl; font-size: 0.95rem;">
-            <h3 style="color: var(--primary-color); margin-bottom: 15px;">📊 تفاصيل حساب خدمة التوصيل</h3>
+        <div class="container-fluid">
+            <h3 class="delivery-details-header">📊 تفاصيل حساب خدمة التوصيل</h3>
             
-            <div style="max-height: 300px; overflow-y: auto; padding-right: 5px;">
-                <div style="background: #f8f9fa; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
+            <div style="max-height: 50vh; overflow-y: auto; padding-right: 5px;">
+                <div class="delivery-section delivery-section-stages">
                     <strong style="display: block; margin-bottom: 10px;">📏 مراحل التوصيل:</strong>
                     ${distanceBreakdown}
                     <hr style="margin: 10px 0; border: none; border-top: 1px dashed #ccc;">
-                    <div style="display: flex; align-items: center; margin-top: 10px;">
+                    <div class="delivery-row" style="margin-top: 10px;">
                         <span style="flex: 1; font-weight: bold;">المسافة الكلية:</span>
                         <span style="font-weight: bold; color: #2196F3; font-size: 1.1rem;">${totalDistance.toFixed(2)} كم</span>
                     </div>
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e0e0e0;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة المسافة (${totalDistance.toFixed(2)} × ${defaults.price_per_km}):</span>
-                        <span style="font-weight: bold; color: #4caf50;">+${distanceCost.toFixed(2)} ${currency}</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">تكلفة المسافة (${totalDistance.toFixed(2)} × ${defaults.price_per_km}):</span>
+                        <span class="delivery-cost-minus">+${distanceCost.toFixed(2)} ${currency}</span>
                     </div>
                 </div>
 
-                <div style="background: #e3f2fd; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="delivery-section delivery-section-vehicle">
+                    <div class="delivery-row">
                         <strong>🚗 نوع المركبة:</strong>
                         <span>${breakdown.vehicleType === 'truck' ? '🚛 شاحنة' :
             breakdown.vehicleType === 'car' ? '🚗 سيارة' : '🏍️ دراجة نارية'}</span>
                     </div>
                     ${vehicleCost > 0 ? `
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #bbdefb;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(vehicleFactor * 100).toFixed(0)}%):</span>
-                        <span style="font-weight: bold; color: #f44336;">+${vehicleCost.toFixed(2)} ${currency}</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">تكلفة إضافية (${(vehicleFactor * 100).toFixed(0)}%):</span>
+                        <span class="delivery-cost-plus">+${vehicleCost.toFixed(2)} ${currency}</span>
                     </div>
                     ` : ''}
                 </div>
 
-                <div style="background: #fff3e0; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="delivery-section delivery-section-value">
+                    <div class="delivery-row">
                         <strong>💰 قيمة الطلب:</strong>
                         <span>${breakdown.orderValue.toFixed(2)} ${currency}</span>
                     </div>
                     ${orderValueFee > 0 ? `
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffe0b2;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">رسوم طلب كبير (أكبر من أو يساوي ${defaults.high_order_value_threshold}):</span>
-                        <span style="font-weight: bold; color: #f44336;">+${orderValueFee.toFixed(2)} ${currency}</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">رسوم طلب كبير (أكبر من أو يساوي ${defaults.high_order_value_threshold}):</span>
+                        <span class="delivery-cost-plus">+${orderValueFee.toFixed(2)} ${currency}</span>
                     </div>
                     ` : `
-                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffe0b2; color: #4caf50; font-size: 0.9rem;">
+                    <div class="delivery-row-detail" style="color: #4caf50;">
                         ✓ لا توجد رسوم إضافية (الطلب أقل من ${defaults.high_order_value_threshold} ${currency})
                     </div>
                     `}
                 </div>
 
-                <div style="background: #f3e5f5; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="delivery-section delivery-section-weather">
+                    <div class="delivery-row">
                         <strong>🌦️ حالة الطقس:</strong>
                         <span>${breakdown.weather === 'heavy_rain' ? '🌧️ أمطار غزيرة' :
             breakdown.weather === 'light_rain' ? '🌦️ أمطار خفيفة' : '☀️ طقس عادي'}</span>
                     </div>
                     ${weatherCost > 0 ? `
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #e1bee7;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(weatherFactor * 100).toFixed(0)}%):</span>
-                        <span style="font-weight: bold; color: #f44336;">+${weatherCost.toFixed(2)} ${currency}</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">تكلفة إضافية (${(weatherFactor * 100).toFixed(0)}%):</span>
+                        <span class="delivery-cost-plus">+${weatherCost.toFixed(2)} ${currency}</span>
                     </div>
                     ` : ''}
                 </div>
 
-                <div style="background: #e8f5e9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="delivery-section delivery-section-location">
+                    <div class="delivery-row">
                         <strong>📍 المنطقة:</strong>
                         <span>${breakdown.location === 'outside_city' ? '🏞️ خارج المدينة' :
             breakdown.location === 'suburbs' ? '🏘️ الضواحي' : '🏙️ داخل المدينة'}</span>
                     </div>
                     ${locationCost > 0 ? `
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #c8e6c9;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(locationFactor * 100).toFixed(0)}%):</span>
-                        <span style="font-weight: bold; color: #f44336;">+${locationCost.toFixed(2)} ${currency}</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">تكلفة إضافية (${(locationFactor * 100).toFixed(0)}%):</span>
+                        <span class="delivery-cost-plus">+${locationCost.toFixed(2)} ${currency}</span>
                     </div>
                     ` : ''}
                 </div>
 
-                <div style="background: #fce4ec; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="delivery-section delivery-section-eta">
+                    <div class="delivery-row">
                         <strong>⚡ سرعة التوصيل:</strong>
                         <span>${breakdown.etaType === 'instant' ? '🚀 فوري' :
             breakdown.etaType === 'fast' ? '⚡ سريع' : '🕐 عادي'}</span>
                     </div>
                     ${etaCost > 0 ? `
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f8bbd0;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(etaFactor * 100).toFixed(0)}%):</span>
-                        <span style="font-weight: bold; color: #f44336;">+${etaCost.toFixed(2)} ${currency}</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">تكلفة إضافية (${(etaFactor * 100).toFixed(0)}%):</span>
+                        <span class="delivery-cost-plus">+${etaCost.toFixed(2)} ${currency}</span>
                     </div>
                     ` : ''}
                 </div>
 
                 ${breakdown.specialVehicle ? `
-                <div style="background: #ffebee; padding: 12px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #f44336;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="delivery-section delivery-section-special">
+                    <div class="delivery-row">
                         <strong>⚠️ مركبة خاصة:</strong>
                         <span>نعم (حمولة ثقيلة)</span>
                     </div>
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #ffcdd2;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">تكلفة إضافية (${(defaults.special_vehicle_factor * 100).toFixed(0)}%):</span>
-                        <span style="font-weight: bold; color: #f44336;">+${specialVehicleCost.toFixed(2)} ${currency}</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">تكلفة إضافية (${(defaults.special_vehicle_factor * 100).toFixed(0)}%):</span>
+                        <span class="delivery-cost-plus">+${specialVehicleCost.toFixed(2)} ${currency}</span>
                     </div>
                 </div>
                 ` : ''}
 
-                <div style="background: #c8e6c9; padding: 12px; border-radius: 8px; margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="delivery-section delivery-section-rating">
+                    <div class="delivery-row">
                         <strong>⭐ تقييم السائق:</strong>
                         <span>${breakdown.driverRating.toFixed(1)} نجوم</span>
                     </div>
                     ${ratingCost !== 0 ? `
-                    <div style="display: flex; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px solid #a5d6a7;">
-                        <span style="flex: 1; color: #666; font-size: 0.9rem;">${ratingCost > 0 ? 'رسوم إضافية' : 'خصم'} (${(driverRatingFactor * 100).toFixed(0)}%):</span>
+                    <div class="delivery-row-detail">
+                        <span class="delivery-label">${ratingCost > 0 ? 'رسوم إضافية' : 'خصم'} (${(driverRatingFactor * 100).toFixed(0)}%):</span>
                         <span style="font-weight: bold; color: ${ratingCost > 0 ? '#f44336' : '#4caf50'};">${ratingCost > 0 ? '+' : ''}${ratingCost.toFixed(2)} ${currency}</span>
                     </div>
                     ` : ''}
                 </div>
 
-                <div style="background: #fff9c4; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 2px solid #fbc02d;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <div class="delivery-section delivery-section-base">
+                    <div class="delivery-row">
                         <strong style="color: #f57c00;">💳 الرسوم الأساسية:</strong>
                         <span style="font-weight: bold;">+${defaults.base_fee.toFixed(2)} ${currency}</span>
                     </div>
                 </div>
                     ${discount > 0 ? `
-                    <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 8px; border-top: 1px solid #fff59d;">
+                    <div class="delivery-row" style="padding-top: 8px; border-top: 1px solid #fff59d;">
                         <strong style="color: #388e3c;">🎁 الخصم (للطلبات < ${defaults.discount_threshold} ${currency}):</strong>
-                        <span style="font-weight: bold; color: #388e3c;">-${discount.toFixed(2)} ${currency}</span>
+                        <span class="delivery-cost-minus">-${discount.toFixed(2)} ${currency}</span>
                     </div>
                     ` : `
                     <div style="padding-top: 8px; border-top: 1px solid #fff59d; color: #666; font-size: 0.9rem;">
@@ -528,8 +528,8 @@ function showDeliveryDetails(deliveryResult) {
 
                 <hr style="margin: 20px 0; border: none; border-top: 2px solid #e0e0e0;">
 
-                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; text-align: center;">
-                    <strong style="font-size: 1.1rem;">💵 التكلفة النهائية: ${totalCost.toFixed(2)} ${currency}</strong>
+                <div class="delivery-section-total">
+                    <strong>💵 التكلفة النهائية: ${totalCost.toFixed(2)} ${currency}</strong>
                 </div>
             </div>
         </div>

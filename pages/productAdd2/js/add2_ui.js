@@ -298,7 +298,7 @@ if (add2_btnDiscard) {
                 cancelButtonColor: '#bdc3c7',
                 confirmButtonText: '<i class="fas fa-trash-alt"></i> نعم، تجاهل',
                 cancelButtonText: 'تراجع',
-                background: '#ffffff',
+                // background: '#ffffff', // REMOVED for Dark Mode
                 customClass: {
                     title: 'swal-modern-title',
                     popup: 'swal-modern-popup'

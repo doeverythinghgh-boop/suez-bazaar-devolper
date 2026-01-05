@@ -22,9 +22,9 @@ function bootLocationApp() {
         const location_loadingOverlay = document.getElementById('location_loadingOverlay');
         if (location_loadingOverlay) {
             location_loadingOverlay.innerHTML = `
-                <div id="location_errorContainer" style="text-align: center; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <h3 id="location_errorTitle" style="color: #dc2626; margin-bottom: 10px;">خطأ في التحميل</h3>
-                    <p id="location_errorText" style="color: #4b5563; margin-bottom: 20px;">حدث خطأ أثناء تشغيل التطبيق. يرجى المحاولة مرة أخرى.</p>
+                <div id="location_errorContainer" style="text-align: center; padding: 20px; background: var(--bg-color-white); border-radius: 12px; box-shadow: var(--shadow-soft);">
+                    <h3 id="location_errorTitle" style="color: var(--danger-color); margin-bottom: 10px;">خطأ في التحميل</h3>
+                    <p id="location_errorText" style="color: var(--text-color-medium); margin-bottom: 20px;">حدث خطأ أثناء تشغيل التطبيق. يرجى المحاولة مرة أخرى.</p>
                     <button id="location_reloadBtn" onclick="window.location.reload()" 
                             style="padding: 10px 24px; 
                                    background: #2563eb; 

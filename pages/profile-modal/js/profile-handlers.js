@@ -76,27 +76,27 @@ async function profileHandleSellerOptions() {
         const { value: formValues } = await Swal.fire({
             title: "إعدادات البائع",
             html: `
-                <div style="text-align: right; direction: rtl; font-family: 'Tajawal', sans-serif;">
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-                        <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; color: #1e293b; font-size: 1rem;">
+                <div class="swal-profile-container">
+                    <div class="swal-profile-section">
+                        <label class="swal-profile-label">
                             <i class="fas fa-truck-moving" style="color: #10b981;"></i> هل لديك خدمة توصيل خاصة بك؟
                         </label>
-                        <select id="swal-profile_is-delevred" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;">
+                        <select id="swal-profile_is-delevred" class="swal2-input swal-profile-input">
                             <option value="0" ${currentIsDelevred == "0" ? "selected" : ""}>لا (الاعتماد على مناديب التطبيق)</option>
                             <option value="1" ${currentIsDelevred == "1" ? "selected" : ""}>نعم (أقوم بالتوصيل بنفسي)</option>
                         </select>
                     </div>
-                    <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 0px; border: 1px solid #e2e8f0;">
-                        <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; color: #1e293b; font-size: 1rem;">
+                    <div class="swal-profile-section">
+                        <label class="swal-profile-label">
                             <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> هل تضع حداً أدنى لطلبات الشراء؟
                         </label>
-                        <select id="swal-profile_has-limit" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;">
+                        <select id="swal-profile_has-limit" class="swal2-input swal-profile-input">
                             <option value="no" ${currentLimitPackage == "0" ? "selected" : ""}>لا يوجد حد أدنى</option>
                             <option value="yes" ${currentLimitPackage != "0" ? "selected" : ""}>نعم، يوجد حد أدنى للطلب</option>
                         </select>
                         <div id="swal-profile_limit-container" style="margin-top: 15px; display: ${currentLimitPackage != "0" ? "block" : "none"};">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #64748b; font-size: 0.9rem;">الحد الأدنى للطلب (ج.م):</label>
-                            <input type="number" id="swal-profile_limit-value" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;" value="${currentLimitPackage}" placeholder="مثلاً: 100">
+                            <label class="swal-profile-label-sub">الحد الأدنى للطلب (ج.م):</label>
+                            <input type="number" id="swal-profile_limit-value" class="swal2-input swal-profile-input" value="${currentLimitPackage}" placeholder="مثلاً: 100">
                         </div>
                     </div>
                 </div>
@@ -142,6 +142,7 @@ async function profileHandleSellerOptions() {
             const isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
             els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${isSet ? "(تم الضبط ✅)" : ""}`;
             els.sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
+            els.sellerOptionsBtn.style.color = isSet ? "#065f46" : "#166534"; // Ensure text readability
         }
     } catch (error) {
         console.error("Error in profileHandleSellerOptions:", error);
