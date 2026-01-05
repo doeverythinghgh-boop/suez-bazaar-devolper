@@ -1170,8 +1170,10 @@
                 // Create mailto link
                 const mailtoLink = `mailto:suezbazaar@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
-                // Open user's email client directly
-                window.location.href = mailtoLink;
+                // Open user's email client using best practices for compatibility (Hidden Link Click)
+                var contact_link = document.createElement('a');
+                contact_link.href = mailtoLink;
+                contact_link.click();
 
                 // Reset form after a short delay to allow mailto to open
                 setTimeout(() => {

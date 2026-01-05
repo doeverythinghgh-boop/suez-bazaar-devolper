@@ -20,7 +20,7 @@ const OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
 // 1. Configuration
 const EXCLUDED_DIRS = ['api', 'note', 'node_modules', 'dist', '.git', '.gemini', 'docs', 'function'];
 const EXCLUDED_FILES = ['build.js', 'package.json', 'package-lock.json', 'version-watcher.js'];
-const ASSETS_TO_COPY = ['assets', 'notification', 'shared', 'style', 'location', 'images', 'favicon.ico', 'manifest.json', 'js', 'pages', 'steper'];
+const ASSETS_TO_COPY = ['assets', 'notification', 'shared', 'style', 'location', 'images', 'favicon.ico', 'manifest.json', 'js', 'pages', 'steper', 'lang'];
 
 /**
  * Function to copy files and folders recursively
@@ -191,7 +191,7 @@ async function build() {
         await processAllHTMLFiles(PROJECT_ROOT);
 
         // 4. Copy individual root files
-        const rootFiles = ['favicon.ico', 'manifest.json', 'sw.js', 'firebase-messaging-sw.js', 'version.json'];
+        const rootFiles = ['favicon.ico', 'manifest.json', 'sw.js', 'firebase-messaging-sw.js', 'version.json', 'offline.html', 'privacy.html', 'delete-account.html'];
         rootFiles.forEach(file => {
             const fullPath = path.join(PROJECT_ROOT, file);
             if (fs.existsSync(fullPath)) {
