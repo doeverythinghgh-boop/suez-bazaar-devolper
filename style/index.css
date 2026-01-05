@@ -13,6 +13,9 @@
     display: flex;
     flex-direction: column;
     /* لجعل المحتوى الرئيسي والتذييل يترتبان عموديًا */
+    background-color: var(--bg-color-light);
+    color: var(--text-color-dark);
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 
   .add-product-modal__hidden-file {
@@ -231,53 +234,54 @@
     padding: 0 !important;
     border-radius: 15px !important;
   }
-/* Modern Seller Options Swal Styling */
-.modern-swal-popup {
-  border-radius: 20px !important;
-  padding: 1.5rem !important;
-  font-family: 'Tajawal', sans-serif !important;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-  max-width: 450px !important;
-  width: 90% !important;
-}
 
-.modern-swal-confirm {
-  background-color: var(--primary-color) !important;
-  border-radius: 10px !important;
-  padding: 12px 30px !important;
-  font-weight: 600 !important;
-  order: 1 !important;
-}
-
-.modern-swal-cancel {
-  background-color: transparent !important;
-  color: #64748b !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 10px !important;
-  padding: 12px 30px !important;
-  order: 2 !important;
-}
-
-.modern-swal-popup .swal2-title {
-  color: var(--dark-blue) !important;
-  font-weight: 800 !important;
-  margin-bottom: 20px !important;
-}
-
-@media screen and (max-width: 480px) {
+  /* Modern Seller Options Swal Styling */
   .modern-swal-popup {
-    padding: 1rem !important;
-    width: 95% !important;
+    border-radius: 20px !important;
+    padding: 1.5rem !important;
+    font-family: 'Tajawal', sans-serif !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    max-width: 450px !important;
+    width: 90% !important;
   }
 
-  .modern-swal-confirm,
+  .modern-swal-confirm {
+    background-color: var(--primary-color) !important;
+    border-radius: 10px !important;
+    padding: 12px 30px !important;
+    font-weight: 600 !important;
+    order: 1 !important;
+  }
+
   .modern-swal-cancel {
-    width: 100% !important;
-    margin: 5px 0 !important;
+    background-color: transparent !important;
+    color: #64748b !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 12px 30px !important;
+    order: 2 !important;
   }
 
-  .swal2-actions {
-    flex-direction: column !important;
-    width: 100% !important;
+  .modern-swal-popup .swal2-title {
+    color: var(--dark-blue) !important;
+    font-weight: 800 !important;
+    margin-bottom: 20px !important;
   }
-}
+
+  @media screen and (max-width: 480px) {
+    .modern-swal-popup {
+      padding: 1rem !important;
+      width: 95% !important;
+    }
+
+    .modern-swal-confirm,
+    .modern-swal-cancel {
+      width: 100% !important;
+      margin: 5px 0 !important;
+    }
+
+    .swal2-actions {
+      flex-direction: column !important;
+      width: 100% !important;
+    }
+  }
