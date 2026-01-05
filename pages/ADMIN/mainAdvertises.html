@@ -1,8 +1,8 @@
 <style>
     /* Scoped styles for the Advertisement Manager fragment */
     #mainAdver_wrapper {
-        background-color: #f8f9fa;
-        color: #333;
+        background-color: var(--bg-color-light);
+        color: var(--text-color-dark);
         line-height: 1.5;
         padding: 20px;
         width: 100%;
@@ -14,8 +14,8 @@
 
     /* Header */
     #mainAdver_wrapper .mainAdver_header {
-        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-        color: white;
+        background: var(--primary-color);
+        color: #fff;
         padding: 25px 30px;
         text-align: center;
         border-radius: 8px;
@@ -47,9 +47,9 @@
 
     /* Image Uploader Area */
     #mainAdver_wrapper .mainAdver_imageUploader {
-        background-color: #fff;
+        background-color: var(--bg-color-white);
         /* Changed to white for contrast */
-        border: 2px dashed #dee2e6;
+        border: 2px dashed var(--border-color);
         border-radius: 12px;
         padding: 2rem;
         text-align: center;
@@ -59,14 +59,14 @@
     }
 
     #mainAdver_wrapper .mainAdver_dropzoneText {
-        color: #495057;
+        color: var(--text-color-dark);
         font-weight: 600;
         margin-bottom: 0.5rem;
         font-size: 1.2rem;
     }
 
     #mainAdver_wrapper .mainAdver_hint {
-        color: #6c757d;
+        color: var(--text-color-medium);
         font-size: 0.95rem;
         margin-top: 10px;
     }
@@ -74,7 +74,7 @@
     /* Uploader Actions */
     #mainAdver_wrapper .mainAdver_uploaderActions {
         margin-top: 1rem;
-        border-top: 1px solid #e9ecef;
+        border-top: 1px solid var(--border-color-soft);
         padding-top: 1rem;
         display: flex;
         justify-content: center;
@@ -93,8 +93,8 @@
         /* Fixed min-height */
         max-height: 400px;
         overflow-y: auto;
-        background-color: #f0f2f5;
-        border: 1px solid #dee2e6;
+        background-color: var(--bg-color-light);
+        border: 1px solid var(--border-color);
         border-radius: 8px;
     }
 
@@ -106,8 +106,8 @@
         border-radius: 8px;
         overflow: hidden;
         transition: transform 0.2s ease, opacity 0.2s ease;
-        background-color: #fff;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        background-color: var(--bg-color-white);
+        box-shadow: var(--shadow-sm);
         display: flex;
         flex-direction: column;
     }
@@ -206,8 +206,8 @@
 
     .mainAdver_btnGhost {
         background: transparent;
-        color: #495057;
-        border: 1px solid #dee2e6;
+        color: var(--text-color-dark);
+        border: 1px solid var(--border-color);
     }
 
     .mainAdver_btnIcon {
@@ -222,22 +222,22 @@
         margin-top: 30px;
         text-align: center;
         padding: 20px;
-        border-top: 1px solid #eee;
+        border-top: 1px solid var(--border-color-soft);
     }
 
     /* Info Box */
     #mainAdver_wrapper .mainAdver_infoBox {
-        background-color: #e9f7fe;
+        background-color: var(--bg-color-alt-1);
         border-radius: 8px;
         padding: 15px;
         margin-top: 20px;
-        border-left: 4px solid #3498db;
+        border-left: 4px solid var(--primary-color);
         border-right: none;
         margin-bottom: 2rem;
     }
 
     #mainAdver_wrapper .mainAdver_infoBox h3 {
-        color: #2c3e50;
+        color: var(--text-color-dark);
         margin-bottom: 10px;
         display: flex;
         align-items: center;
@@ -279,7 +279,7 @@
     }
 
     #mainAdver_cameraModalContainer .mainAdver_cameraModalContent {
-        background-color: white;
+        background-color: var(--bg-color-white);
         border-radius: 15px;
         width: 90%;
         max-width: 700px;
@@ -330,7 +330,7 @@
 
                     <div class="mainAdver_previews" id="mainAdver_previews">
                         <div id="mainAdver_imagesLoader"
-                            style="text-align:center; padding: 20px; display: none; color: #666;">
+                            style="text-align:center; padding: 20px; display: none; color: var(--text-color-medium);">
                             <i class="fas fa-spinner fa-spin fa-2x"></i><br>جاري التحميل...
                         </div>
                     </div>
@@ -473,7 +473,7 @@
                 const ctx = canvas.getContext('2d');
 
                 // White background for JPEG images (to avoid black backgrounds for transparent images)
-                ctx.fillStyle = '#FFFFFF';
+                ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-color-white') || '#FFFFFF';
                 ctx.fillRect(0, 0, w, h);
                 ctx.drawImage(bitmap, 0, 0, w, h);
 
@@ -549,7 +549,7 @@
             queryInput.type = 'text';
             queryInput.className = 'swal2-input mainAdver_query-input';
             queryInput.placeholder = 'كلمة البحث (اختياري)';
-            queryInput.style.cssText = 'width: 100%; margin: 5px 0; height: 35px; font-size: 0.85rem; padding: 5px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ddd;';
+            queryInput.style.cssText = 'width: 100%; margin: 5px 0; height: 35px; font-size: 0.85rem; padding: 5px; box-sizing: border-box; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color-white); color: var(--text-color-dark);';
             queryInput.value = state.query || '';
             queryInput.onchange = (e) => state.query = e.target.value;
 
@@ -803,8 +803,8 @@
          */
         async function openDesktopCamera() {
             const html = `
-                <div class="mainAdver_cameraModalContent">
-                    <button id="camClose" style="position:absolute;top:10px;right:10px;border:none;background:none;font-size:20px;">&times;</button>
+                <div class="mainAdver_cameraModalContent" style="background-color: var(--bg-color-white); color: var(--text-color-dark);">
+                    <button id="camClose" style="position:absolute;top:10px;right:10px;border:none;background:none;font-size:20px; color: var(--text-color-dark);">&times;</button>
                     <video id="camVideo" autoplay playsinline style="width:100%;border-radius:10px;background:#000;"></video>
                     <div style="text-align:center;margin-top:10px;">
                         <button id="camSnap" class="mainAdver_btn mainAdver_btnPrimary">Caputre</button>
