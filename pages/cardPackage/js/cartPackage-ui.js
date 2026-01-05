@@ -85,7 +85,7 @@ async function cartPage_loadCart() {
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2" id="cartPage_cartItemNoteContainer-${cartPage_item.product_key}">
+                            <td colspan="2" id="cartPage_cartItemNoteContainer-${cartPage_item.product_key}" class="cartPage_note-cell">
                                 <div class="cartPage_cart-item-note">
                                     <div class="cartPage_note-label" id="cartPage_noteLabel-${cartPage_item.product_key}">
                                         <i class="fas fa-sticky-note"></i>

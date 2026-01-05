@@ -166,6 +166,11 @@
 
 
 /* Product Notes */
+.cartPage_note-cell {
+    text-align: start;
+    direction: inherit;
+}
+
 .cartPage_cart-item-note {
     margin-top: 5px;
     padding-top: 5px;
