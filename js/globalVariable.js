@@ -188,7 +188,7 @@ async function showAddProductModal() {
       return;
     }
 
-    const result = await CategoryModal.show();
+    const result = await window.CategoryModal.show();
     if (result.status === 'success') {
       console.log('[AddProduct] تم اختيار الفئات:', result.mainId, result.subId);
 
