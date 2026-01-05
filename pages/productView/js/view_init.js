@@ -150,10 +150,18 @@ async function productView_getCategoryNames(mainId, subId) {
         let subName = "-";
         if (subId && mainCat.subcategories) {
             const subCat = mainCat.subcategories.find(s => String(s.id) === String(subId));
-            if (subCat) subName = subCat.title;
+            if (subCat) {
+                const subTitleObj = subCat.title;
+                subName = typeof subTitleObj === 'object' ? 
+                    (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+            }
         }
 
-        return { main: mainCat.title, sub: subName };
+        const mainTitleObj = mainCat.title;
+        const mainName = typeof mainTitleObj === 'object' ? 
+            (mainTitleObj[window.app_language] || mainTitleObj['ar']) : mainTitleObj;
+
+        return { main: mainName, sub: subName };
     } catch (e) {
         console.error("Error fetching category names:", e);
         return { main: "خطأ في التحميل", sub: "خطأ في التحميل" };

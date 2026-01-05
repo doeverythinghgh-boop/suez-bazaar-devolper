@@ -38,7 +38,7 @@ window.appTranslations = {};
  * @returns {string} - The translated text or the key itself if not found.
  */
 window.langu = function (key) {
-  const lang = localStorage.getItem('app_language') || 'ar';
+  const lang = window.app_language || 'ar';
   if (window.appTranslations && window.appTranslations[key]) {
     return window.appTranslations[key][lang] || key;
   }
@@ -50,7 +50,7 @@ window.langu = function (key) {
  * @function applyAppTranslations
  */
 window.applyAppTranslations = function () {
-  const lang = localStorage.getItem('app_language') || 'ar';
+  const lang = window.app_language || 'ar';
   
   // Set HTML dir and lang attributes
   const htmlRoot = document.getElementById('index-html-root');
@@ -69,6 +69,12 @@ window.applyAppTranslations = function () {
   document.querySelectorAll('[data-lkey-title]').forEach(el => {
     const key = el.getAttribute('data-lkey-title');
     el.setAttribute('title', window.langu(key));
+  });
+
+  // Translate Placeholders
+  document.querySelectorAll('[data-lkey-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-lkey-placeholder');
+    el.setAttribute('placeholder', window.langu(key));
   });
 
   // Translate Page Title
@@ -96,8 +102,11 @@ async function loadIndexTranslations() {
     const dashboardRes = await fetch('lang/user-dashboard.json');
     const dashboardData = dashboardRes.ok ? await dashboardRes.json() : {};
 
+    const profileRes = await fetch('lang/profile-modal.json');
+    const profileData = profileRes.ok ? await profileRes.json() : {};
+
     // 3. Merge them
-    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData };
+    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData, ...profileData };
 
     console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحات البداية، الدخول، ولوحة التحكم.');
     if (window.applyAppTranslations) window.applyAppTranslations();
@@ -146,6 +155,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const currentLang = localStorage.getItem('app_language') || 'ar';
     const newLang = currentLang === 'ar' ? 'en' : 'ar';
     localStorage.setItem('app_language', newLang);
+    window.app_language = newLang; // Sync global variable
 
     console.log(`[اللغة] تم تغيير اللغة إلى: ${newLang === 'ar' ? 'العربية' : 'الإنجليزية'}`);
 

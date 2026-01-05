@@ -285,7 +285,10 @@
         categories.forEach((category) => {
           const option = document.createElement("option");
           option.value = category.id;
-          option.textContent = category.title;
+          const titleObj = category.title;
+          const displayTitle = typeof titleObj === 'object' ? 
+              (titleObj[window.app_language] || titleObj['ar']) : titleObj;
+          option.textContent = displayTitle;
           // Store subcategories in dataset
           option.dataset.subcategories = JSON.stringify(category.subcategories || []);
           mainCategoryFilter.appendChild(option);
@@ -307,7 +310,10 @@
                 subcategories.forEach((sub) => {
                   const subOption = document.createElement("option");
                   subOption.value = sub.id;
-                  subOption.textContent = sub.title;
+                  const subTitleObj = sub.title;
+                  const subDisplayTitle = typeof subTitleObj === 'object' ? 
+                      (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+                  subOption.textContent = subDisplayTitle;
                   subCategoryFilter.appendChild(subOption);
                 });
                 subCategoryFilter.disabled = false; // Enable sub category filter

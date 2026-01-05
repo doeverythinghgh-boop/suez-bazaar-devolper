@@ -26,12 +26,12 @@ async function profileHandleChangePasswordCheck() {
 
             // Verify current identity
             const passwordEntered = await AuthUI.confirmPassword(
-                "تأكيد الهوية",
-                "يرجى إدخال كلمة المرور الحالية لتغييرها."
+                window.langu("profile_confirm_identity_title"),
+                window.langu("profile_confirm_identity_text")
             );
 
             if (passwordEntered) {
-                AuthUI.showLoading("جاري التحقق...");
+                AuthUI.showLoading(window.langu("profile_verifying"));
                 const result = await verifyUserPassword(user.phone, passwordEntered);
                 AuthUI.close();
 
@@ -42,7 +42,7 @@ async function profileHandleChangePasswordCheck() {
                     profileIsPasswordVerified = true;
                 } else {
                     els.changePasswordCheckbox.checked = false;
-                    AuthUI.showError("خطأ", "كلمة المرور غير صحيحة.");
+                    AuthUI.showError(window.langu("alert_title_info"), window.langu("profile_invalid_password"));
                 }
             } else {
                 els.changePasswordCheckbox.checked = false;
@@ -74,37 +74,37 @@ async function profileHandleSellerOptions() {
         const currentLimitPackage = els.limitPackageInput.value;
 
         const { value: formValues } = await Swal.fire({
-            title: "إعدادات البائع",
+            title: window.langu("profile_seller_settings_title"),
             html: `
                 <div class="swal-profile-container">
                     <div class="swal-profile-section">
                         <label class="swal-profile-label">
-                            <i class="fas fa-truck-moving" style="color: #10b981;"></i> هل لديك خدمة توصيل خاصة بك؟
+                            <i class="fas fa-truck-moving" style="color: #10b981;"></i> ${window.langu("profile_delivery_question")}
                         </label>
                         <select id="swal-profile_is-delevred" class="swal2-input swal-profile-input">
-                            <option value="0" ${currentIsDelevred == "0" ? "selected" : ""}>لا (الاعتماد على مناديب التطبيق)</option>
-                            <option value="1" ${currentIsDelevred == "1" ? "selected" : ""}>نعم (أقوم بالتوصيل بنفسي)</option>
+                            <option value="0" ${currentIsDelevred == "0" ? "selected" : ""}>${window.langu("profile_delivery_no")}</option>
+                            <option value="1" ${currentIsDelevred == "1" ? "selected" : ""}>${window.langu("profile_delivery_yes")}</option>
                         </select>
                     </div>
                     <div class="swal-profile-section">
                         <label class="swal-profile-label">
-                            <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> هل تضع حداً أدنى لطلبات الشراء؟
+                            <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> ${window.langu("profile_min_order_question")}
                         </label>
                         <select id="swal-profile_has-limit" class="swal2-input swal-profile-input">
-                            <option value="no" ${currentLimitPackage == "0" ? "selected" : ""}>لا يوجد حد أدنى</option>
-                            <option value="yes" ${currentLimitPackage != "0" ? "selected" : ""}>نعم، يوجد حد أدنى للطلب</option>
+                            <option value="no" ${currentLimitPackage == "0" ? "selected" : ""}>${window.langu("profile_min_order_no")}</option>
+                            <option value="yes" ${currentLimitPackage != "0" ? "selected" : ""}>${window.langu("profile_min_order_yes")}</option>
                         </select>
                         <div id="swal-profile_limit-container" style="margin-top: 15px; display: ${currentLimitPackage != "0" ? "block" : "none"};">
-                            <label class="swal-profile-label-sub">الحد الأدنى للطلب (ج.م):</label>
-                            <input type="number" id="swal-profile_limit-value" class="swal2-input swal-profile-input" value="${currentLimitPackage}" placeholder="مثلاً: 100">
+                            <label class="swal-profile-label-sub">${window.langu("profile_min_order_value_label")}</label>
+                            <input type="number" id="swal-profile_limit-value" class="swal2-input swal-profile-input" value="${currentLimitPackage}" placeholder="${window.langu("profile_min_order_placeholder")}">
                         </div>
                     </div>
                 </div>
             `,
             focusConfirm: false,
             showCancelButton: true,
-            confirmButtonText: "حفظ الإعدادات",
-            cancelButtonText: "إلغاء",
+            confirmButtonText: window.langu("profile_save_settings_btn"),
+            cancelButtonText: window.langu("alert_cancel_btn"),
             customClass: {
                 popup: 'modern-swal-popup',
                 confirmButton: 'modern-swal-confirm',
@@ -123,7 +123,7 @@ async function profileHandleSellerOptions() {
                 const limitValue = document.getElementById("swal-profile_limit-value").value;
 
                 if (hasLimit === "yes" && (!limitValue || limitValue <= 0)) {
-                    Swal.showValidationMessage("يرجى إدخال قيمة صحيحة للحد الأدنى");
+                    Swal.showValidationMessage(window.langu("profile_invalid_min_order"));
                     return false;
                 }
 
@@ -140,7 +140,7 @@ async function profileHandleSellerOptions() {
 
             // Update UI feedback on the button
             const isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
-            els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${isSet ? "(تم الضبط ✅)" : ""}`;
+            els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> ${window.langu("profile_seller_options_btn")} ${isSet ? window.langu("profile_seller_options_set") : ""}`;
             els.sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
             els.sellerOptionsBtn.style.color = isSet ? "#065f46" : "#166534"; // Ensure text readability
         }
@@ -180,7 +180,7 @@ async function profileHandleSaveChanges() {
     const mapError = document.getElementById("profile-map-error");
     if (!newCoords) {
         if (mapError) {
-            mapError.textContent = "يرجى تحديد موقعك على الخريطة أولاً لضمان سرعة التوصيل.";
+            mapError.textContent = window.langu("profile_map_mandatory_error");
             mapError.style.display = "block";
             mapError.style.color = "#dc2626";
             mapError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -211,39 +211,39 @@ async function profileHandleSaveChanges() {
 
     // Check if any actual changes were made
     if (Object.keys(updatedData).length === 1) {
-        await AuthUI.showSuccess("لم يتغير شيء", "لم تقم بإجراء أي تغييرات.");
+        await AuthUI.showSuccess(window.langu("profile_no_changes_title"), window.langu("profile_no_changes_text"));
         return;
     }
 
     // Verify identity before critical update if not already verified
     if (user.Password && !profileIsPasswordVerified) {
         const passwordEntered = await AuthUI.confirmPassword(
-            "تأكيد الهوية",
-            "أدخل كلمة المرور الحالية لحفظ التغييرات."
+            window.langu("profile_confirm_identity_title"),
+            window.langu("profile_save_confirm_text")
         );
         if (!passwordEntered) return;
 
-        AuthUI.showLoading("جاري التحقق...");
+        AuthUI.showLoading(window.langu("profile_verifying"));
         const verification = await verifyUserPassword(user.phone, passwordEntered);
         AuthUI.close();
 
         if (!verification || verification.error) {
-            AuthUI.showError("خطأ", "كلمة المرور غير صحيحة.");
+            AuthUI.showError(window.langu("alert_title_info"), window.langu("profile_invalid_password"));
             return;
         }
     }
 
     // Execute update
-    AuthUI.showLoading("جاري الحفظ...");
+    AuthUI.showLoading(window.langu("profile_saving"));
     const result = await updateUser(updatedData);
     AuthUI.close();
 
     if (result && !result.error) {
         profileUpdateSession(updatedData);
-        await AuthUI.showSuccess("تم التحديث بنجاح!", result.message);
+        await AuthUI.showSuccess(window.langu("profile_update_success_title"), result.message);
         mainLoader("pages/user-dashboard.html", "index-user-container", 0, undefined, "showHomeIcon", true);
     } else {
-        AuthUI.showError("خطأ", result?.error || "فشل التحديث.");
+        AuthUI.showError(window.langu("alert_title_info"), result?.error || window.langu("profile_update_fail"));
     }
 }
 
@@ -261,12 +261,12 @@ function profileUpdateSession(updatedData) {
  */
 async function profileHandleAccountDeletion() {
     const confirmation = await Swal.fire({
-        title: "هل أنت متأكد تمامًا؟",
-        text: "سيتم حذف حسابك نهائياً.",
+        title: window.langu("profile_delete_confirm_title"),
+        text: window.langu("profile_delete_confirm_text"),
         icon: "warning",
         showCancelButton: true,
-        confirmButtonText: "نعم، حذف",
-        cancelButtonText: "إلغاء",
+        confirmButtonText: window.langu("profile_delete_yes"),
+        cancelButtonText: window.langu("alert_cancel_btn"),
         confirmButtonColor: "#d33"
     });
 
@@ -275,29 +275,29 @@ async function profileHandleAccountDeletion() {
     const user = window.userSession;
     if (user.Password) {
         const password = await AuthUI.confirmPassword(
-            "تأكيد الحذف",
-            "أدخل كلمة المرور لتأكيد الحذف."
+            window.langu("profile_delete_verify_title"),
+            window.langu("profile_delete_verify_text")
         );
         if (!password) return;
 
-        AuthUI.showLoading("جاري التحقق...");
+        AuthUI.showLoading(window.langu("profile_verifying"));
         const verification = await verifyUserPassword(user.phone, password);
         AuthUI.close();
 
         if (!verification || verification.error) {
-            AuthUI.showError("خطأ", "كلمة المرور غير صحيحة.");
+            AuthUI.showError(window.langu("alert_title_info"), window.langu("profile_invalid_password"));
             return;
         }
     }
 
-    AuthUI.showLoading("جاري الحذف...");
+    AuthUI.showLoading(window.langu("profile_deleting"));
     const result = await deleteUser(user.user_key);
     AuthUI.close();
 
     if (result && !result.error) {
         await SessionManager.logout();
-        await Swal.fire("تم الحذف", "تم حذف الحساب بنجاح.", "success");
+        await Swal.fire(window.langu("profile_delete_success_title"), window.langu("profile_delete_success_text"), "success");
     } else {
-        AuthUI.showError("خطأ", result?.error || "حدث خطأ أثناء الحذف.");
+        AuthUI.showError(window.langu("alert_title_info"), result?.error || window.langu("profile_delete_fail"));
     }
 }

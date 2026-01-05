@@ -13,6 +13,13 @@
 window.appCategoriesList = null;
 
 /**
+ * @description Current application language (ar, en).
+ * @type {string}
+ * @global
+ */
+window.app_language = localStorage.getItem('app_language') || 'ar';
+
+/**
  * @description Fetches the application categories list from shared/list.json.
  * Stores the result in window.appCategoriesList for global access.
  * @function fetchAppCategories

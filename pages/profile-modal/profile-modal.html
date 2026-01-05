@@ -5,28 +5,28 @@
     </div>
 
     <div id="profile-content-container" class="profile-content">
-        <h3 id="profile-title">تعديل بياناتك الشخصية</h3>
+        <h3 id="profile-title" data-lkey="profile_title">تعديل بياناتك الشخصية</h3>
 
         <div id="profile-username-group" class="profile-form-group">
-            <label id="profile-username-label" for="profile-username">الاسم</label>
+            <label id="profile-username-label" for="profile-username" data-lkey="profile_username_label">الاسم</label>
             <div id="profile-username-input-wrapper" class="profile-input-wrapper">
                 <i id="profile-username-icon" class="fas fa-user profile-input-icon"></i>
-                <input id="profile-username" class="profile-form-control" placeholder="الاسم" />
+                <input id="profile-username" class="profile-form-control" placeholder="الاسم" data-lkey-placeholder="profile_username_placeholder" />
             </div>
             <div id="profile-username-error" class="profile-error-message"></div>
         </div>
 
         <div id="profile-phone-group" class="profile-form-group">
-            <label id="profile-phone-label" for="profile-phone">رقم الهاتف</label>
+            <label id="profile-phone-label" for="profile-phone" data-lkey="profile_phone_label">رقم الهاتف</label>
             <div id="profile-phone-input-wrapper" class="profile-input-wrapper">
                 <i id="profile-phone-icon" class="fas fa-phone profile-input-icon"></i>
-                <input id="profile-phone" class="profile-form-control" placeholder="رقم الهاتف" />
+                <input id="profile-phone" class="profile-form-control" placeholder="رقم الهاتف" data-lkey-placeholder="profile_phone_placeholder" />
             </div>
             <div id="profile-phone-error" class="profile-error-message"></div>
         </div>
 
         <div id="profile-location-section" class="profile-form-group profile-map-section">
-            <label id="profile-location-title">الموقع</label>
+            <label id="profile-location-title" data-lkey="profile_location_title">الموقع</label>
             <div id="profile-map-container" class="profile-map-container">
                 <iframe id="profile-location-iframe" src="location/LOCATION.html?embedded=true&hideSave=true&v=initial"
                     class="profile-map-iframe"></iframe>
@@ -36,43 +36,43 @@
         </div>
 
         <div id="profile-address-group" class="profile-form-group">
-            <label id="profile-address-label" for="profile-address">تفاصيل العنوان (مثل: الدور، علامة مميزة)</label>
+            <label id="profile-address-label" for="profile-address" data-lkey="profile_address_label">تفاصيل العنوان (مثل: الدور، علامة مميزة)</label>
             <div id="profile-address-input-wrapper" class="profile-input-wrapper">
                 <i id="profile-address-icon" class="fas fa-map-marker-alt profile-input-icon"></i>
                 <input id="profile-address" class="profile-form-control"
-                    placeholder="مثلاً: شارع السلام، الدور الثالث، بجوار مسجد القدس" />
+                    placeholder="مثلاً: شارع السلام، الدور الثالث، بجوار مسجد القدس" data-lkey-placeholder="profile_address_placeholder" />
             </div>
             <div id="profile-address-error" class="profile-error-message"></div>
         </div>
 
         <div id="profile-change-password-group" class="profile-form-group profile-form-group-checkbox">
             <input type="checkbox" id="profile-change-password-checkbox" />
-            <label id="profile-change-password-label" for="profile-change-password-checkbox">تغيير كلمة المرور</label>
+            <label id="profile-change-password-label" for="profile-change-password-checkbox" data-lkey="profile_change_password_label">تغيير كلمة المرور</label>
         </div>
 
         <div id="profile-password-fields-container" style="display: none;">
             <div id="profile-password-separator" class="profile-separator"></div>
 
             <div id="profile-new-password-group" class="profile-form-group profile-password-container">
-                <label id="profile-new-password-label" for="profile-new-password">
+                <label id="profile-new-password-label" for="profile-new-password" data-lkey="profile_new_password_label">
                     كلمة المرور الجديدة
                 </label>
                 <div id="profile-new-password-wrapper" class="profile-input-wrapper">
                     <i id="profile-new-password-icon" class="fas fa-lock profile-input-icon"></i>
                     <input type="password" id="profile-new-password" class="profile-form-control"
-                        placeholder="كلمة المرور الجديدة" />
+                        placeholder="كلمة المرور الجديدة" data-lkey-placeholder="profile_new_password_placeholder" />
                     <i id="profile-toggle-new-password" class="fas fa-eye profile-toggle-password-icon"></i>
                 </div>
             </div>
 
             <div id="profile-confirm-password-group" class="profile-form-group profile-password-container">
-                <label id="profile-confirm-password-label" for="profile-confirm-password">
+                <label id="profile-confirm-password-label" for="profile-confirm-password" data-lkey="profile_confirm_password_label">
                     تأكيد كلمة المرور
                 </label>
                 <div id="profile-confirm-password-wrapper" class="profile-input-wrapper">
                     <i id="profile-confirm-password-icon" class="fas fa-lock profile-input-icon"></i>
                     <input type="password" id="profile-confirm-password" class="profile-form-control"
-                        placeholder="تأكيد كلمة المرور الجديدة" />
+                        placeholder="تأكيد كلمة المرور الجديدة" data-lkey-placeholder="profile_confirm_password_placeholder" />
                     <i id="profile-toggle-confirm-password-icon" class="fas fa-eye profile-toggle-password-icon"></i>
                 </div>
                 <div id="profile-password-error" class="profile-error-message"></div>
@@ -82,7 +82,7 @@
         <div id="profile-seller-section" class="profile-form-group" style="margin-top: 15px;">
             <button id="profile-seller-options-btn" class="profile-button"
                 style="width: 100%; border: 1px dashed #10b981; color: #10b981; background: #f0fdf4;">
-                <i class="fas fa-store"></i> خيارات البائع (التوصيل والحد الأدنى)
+                <i class="fas fa-store"></i> <span data-lkey="profile_seller_options_btn">خيارات البائع (التوصيل والحد الأدنى)</span>
             </button>
             <input type="hidden" id="profile-is-delevred" />
             <input type="hidden" id="profile-limit-package" />
@@ -90,10 +90,10 @@
 
         <div id="profile-footer" class="profile-modal-footer">
             <button id="profile-save-button" class="profile-button profile-save-btn">
-                <i id="profile-save-icon" class="fas fa-save"></i>حفظ التغييرات
+                <i id="profile-save-icon" class="fas fa-save"></i><span data-lkey="profile_save_button">حفظ التغييرات</span>
             </button>
             <button id="profile-delete-account-button" class="profile-button profile-delete-btn-small">
-                <i id="profile-delete-icon" class="fas fa-trash-alt"></i>حذف الحساب
+                <i id="profile-delete-icon" class="fas fa-trash-alt"></i><span data-lkey="profile_delete_account_button">حذف الحساب</span>
             </button>
         </div>
     </div>

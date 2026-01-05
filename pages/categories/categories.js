@@ -39,7 +39,7 @@ async function categories_loadCategoriesAsTable() {
         const tbody = document.getElementById("categories_tbody");
         if (tbody) {
             // Show error message to user
-            tbody.innerHTML = `<tr><td colspan="4">حدث خطأ أثناء تحميل الفئات.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="4">${window.langu('cat_empty_list_error')}</td></tr>`;
         }
     }
 }
@@ -125,10 +125,14 @@ function categories_createCategoryCell(category, mainRow, allCategories) {
         const iconClass = category.icon || "fas fa-store";
         const iconHtml = `<i class="categories_cell_content__icon ${iconClass}"></i>`;
 
+        const titleObj = category.title;
+        const displayTitle = typeof titleObj === 'object' ? 
+            (titleObj[window.app_language] || titleObj['ar']) : titleObj;
+
         cell.innerHTML = `
             <div class="categories_cell_content">
                 ${iconHtml}
-                <span class="categories_cell_content__text">${category.title}</span>
+                <span class="categories_cell_content__text">${displayTitle}</span>
             </div>`;
 
         if (category.subcategories && category.subcategories.length > 0) {
@@ -279,7 +283,11 @@ function categories_createSubcategoryItem(sub, subRow, mainCatId) {
         const iconHtml = sub.icon
             ? `<i class="categories_subcategory_item__icon ${sub.icon}"></i>`
             : '<i class="categories_subcategory_item__icon fas fa-tag"></i>';
-        subItem.innerHTML = `${iconHtml} ${sub.title}`.trim();
+        const subTitleObj = sub.title;
+        const subDisplayTitle = typeof subTitleObj === 'object' ? 
+            (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+
+        subItem.innerHTML = `${iconHtml} ${subDisplayTitle}`.trim();
 
         subItem.addEventListener("click", (e) => {
             try {
@@ -374,7 +382,7 @@ async function categories_showProductGallery(subRow, mainCatId, subCatId) {
             await categories_renderProductGallery(galleryCell, products);
         } else {
             console.log("[Products] لا توجد منتجات في هذه الفئة.");
-            galleryCell.innerHTML = `<p class="no-products-message">لا توجد منتجات في هذه الفئة حالياً.</p>`;
+            galleryCell.innerHTML = `<p class="no-products-message">${window.langu('cat_no_products_message')}</p>`;
         }
     } catch (error) {
         console.error(
@@ -386,7 +394,7 @@ async function categories_showProductGallery(subRow, mainCatId, subCatId) {
             ? subRow.nextElementSibling.querySelector("td")
             : null;
         if (galleryCell) {
-            galleryCell.innerHTML = `<p class="error-message">حدث خطأ أثناء تحميل المنتجات. الرجاء المحاولة لاحقاً.</p>`;
+            galleryCell.innerHTML = `<p class="error-message">${window.langu('cat_fetch_products_error')}</p>`;
         }
     }
 }
@@ -440,7 +448,7 @@ async function categories_renderProductGallery(galleryCell, products) {
         const toggleBtn = document.createElement("button");
         toggleBtn.className = "categories_view_toggle";
         toggleBtn.type = "button";
-        toggleBtn.title = "تبديل العرض (شبكة / قائمة)";
+        toggleBtn.title = window.langu('cat_view_toggle_title');
         toggleBtn.innerHTML = '<i class="fas fa-th"></i>'; // Default to Grid icon
 
         controlsHeader.appendChild(toggleBtn);

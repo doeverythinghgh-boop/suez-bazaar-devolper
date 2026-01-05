@@ -50,7 +50,7 @@ function profileSetupListeners() {
 
                 if (mapStatus) {
                     mapStatus.style.color = "#10b981";
-                    mapStatus.innerHTML = '<i class="fas fa-check-circle"></i> تم ربط الموقع بنجاح! شكراً لك.';
+                    mapStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${window.langu("profile_map_linked_success")}`;
                 }
 
                 // Clear validation error if present

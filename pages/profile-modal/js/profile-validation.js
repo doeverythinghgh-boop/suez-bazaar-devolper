@@ -54,7 +54,7 @@ function profileValidateInputs() {
             result.isValid = false;
         }
         if (password !== confirmPassword) {
-            AuthUI.showFieldValidationMsg(els.confirmPasswordInput, "كلمتا المرور غير متطابقتين.");
+            AuthUI.showFieldValidationMsg(els.confirmPasswordInput, window.langu("profile_passwords_mismatch"));
             result.isValid = false;
         }
     }

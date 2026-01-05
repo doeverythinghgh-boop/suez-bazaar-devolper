@@ -30,7 +30,7 @@ function profileInitializeData() {
 
         if (els.sellerOptionsBtn) {
             const isSet = (user.isDelevred == 1 || user.limitPackage > 0);
-            els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${isSet ? "(تم الضبط ✅)" : ""}`;
+            els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> ${window.langu("profile_seller_options_btn")} ${isSet ? window.langu("profile_seller_options_set") : ""}`;
             if (isSet) els.sellerOptionsBtn.style.background = "#d1fae5";
         }
 

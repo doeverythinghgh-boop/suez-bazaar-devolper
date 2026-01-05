@@ -178,5 +178,29 @@
   "logo_short": {
     "ar": "بـزار",
     "en": "SB"
+  },
+  "cat_select_main_placeholder": {
+    "ar": "اختر السوق الرئيسي...",
+    "en": "Select Main Category..."
+  },
+  "cat_select_sub_placeholder": {
+    "ar": "اختر السوق الفرعي...",
+    "en": "Select Sub-category..."
+  },
+  "cat_empty_list_error": {
+    "ar": "حدث خطأ أثناء تحميل الفئات.",
+    "en": "An error occurred while loading categories."
+  },
+  "cat_view_toggle_title": {
+    "ar": "تبديل العرض (شبكة / قائمة)",
+    "en": "Toggle View (Grid / List)"
+  },
+  "cat_no_products_message": {
+    "ar": "لا توجد منتجات في هذه الفئة حالياً.",
+    "en": "No products found in this category currently."
+  },
+  "cat_fetch_products_error": {
+    "ar": "حدث خطأ أثناء تحميل المنتجات. الرجاء المحاولة لاحقاً.",
+    "en": "An error occurred while loading products. Please try again later."
   }
 }

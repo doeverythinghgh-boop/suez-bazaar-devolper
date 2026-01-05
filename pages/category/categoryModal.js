@@ -448,7 +448,7 @@ window.CategoryModal = (function () {
                 }
 
                 // 6. Populate Main List
-                mainSelect.innerHTML = '<option value="" disabled selected>اختر السوق الرئيسي...</option>';
+                mainSelect.innerHTML = `<option value="" disabled selected>${window.langu('cat_select_main_placeholder')}</option>`;
                 categories.forEach(category => {
                     const option = document.createElement('option');
                     option.value = category.id;
@@ -472,7 +472,7 @@ window.CategoryModal = (function () {
                     const selectedId = mainSelect.value;
                     const selectedCategory = categories.find(cat => String(cat.id) === selectedId);
 
-                    subSelect.innerHTML = '<option value="" disabled selected>اختر السوق الفرعي...</option>';
+                    subSelect.innerHTML = `<option value="" disabled selected>${window.langu('cat_select_sub_placeholder')}</option>`;
 
                     if (validationMsg) {
                         validationMsg.textContent = '';

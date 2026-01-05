@@ -1,0 +1,202 @@
+{
+  "profile_title": {
+    "ar": "تعديل بياناتك الشخصية",
+    "en": "Edit Personal Profile"
+  },
+  "profile_username_label": {
+    "ar": "الاسم",
+    "en": "Name"
+  },
+  "profile_username_placeholder": {
+    "ar": "الاسم",
+    "en": "Your Name"
+  },
+  "profile_phone_label": {
+    "ar": "رقم الهاتف",
+    "en": "Phone Number"
+  },
+  "profile_phone_placeholder": {
+    "ar": "رقم الهاتف",
+    "en": "Phone Number"
+  },
+  "profile_location_title": {
+    "ar": "الموقع",
+    "en": "Location"
+  },
+  "profile_address_label": {
+    "ar": "تفاصيل العنوان (مثل: الدور، علامة مميزة)",
+    "en": "Address Details (e.g., floor, landmark)"
+  },
+  "profile_address_placeholder": {
+    "ar": "مثلاً: شارع السلام، الدور الثالث، بجوار مسجد القدس",
+    "en": "e.g., El-Salam St, 3rd Floor, near Al-Quds Mosque"
+  },
+  "profile_change_password_label": {
+    "ar": "تغيير كلمة المرور",
+    "en": "Change Password"
+  },
+  "profile_new_password_label": {
+    "ar": "كلمة المرور الجديدة",
+    "en": "New Password"
+  },
+  "profile_new_password_placeholder": {
+    "ar": "كلمة المرور الجديدة",
+    "en": "New Password"
+  },
+  "profile_confirm_password_label": {
+    "ar": "تأكيد كلمة المرور",
+    "en": "Confirm Password"
+  },
+  "profile_confirm_password_placeholder": {
+    "ar": "تأكيد كلمة المرور الجديدة",
+    "en": "Confirm New Password"
+  },
+  "profile_seller_options_btn": {
+    "ar": "خيارات البائع (التوصيل والحد الأدنى)",
+    "en": "Seller Options (Delivery & Minimum Order)"
+  },
+  "profile_save_button": {
+    "ar": "حفظ التغييرات",
+    "en": "Save Changes"
+  },
+  "profile_delete_account_button": {
+    "ar": "حذف الحساب",
+    "en": "Delete Account"
+  },
+  "profile_confirm_identity_title": {
+    "ar": "تأكيد الهوية",
+    "en": "Verify Identity"
+  },
+  "profile_confirm_identity_text": {
+    "ar": "يرجى إدخال كلمة المرور الحالية لتغييرها.",
+    "en": "Please enter your current password to change it."
+  },
+  "profile_verifying": {
+    "ar": "جاري التحقق...",
+    "en": "Verifying..."
+  },
+  "profile_invalid_password": {
+    "ar": "كلمة المرور غير صحيحة.",
+    "en": "Incorrect password."
+  },
+  "profile_seller_settings_title": {
+    "ar": "إعدادات البائع",
+    "en": "Seller Settings"
+  },
+  "profile_delivery_question": {
+    "ar": "هل لديك خدمة توصيل خاصة بك؟",
+    "en": "Do you have your own delivery service?"
+  },
+  "profile_delivery_no": {
+    "ar": "لا (الاعتماد على مناديب التطبيق)",
+    "en": "No (Depend on app couriers)"
+  },
+  "profile_delivery_yes": {
+    "ar": "نعم (أقوم بالتوصيل بنفسي)",
+    "en": "Yes (I deliver myself)"
+  },
+  "profile_min_order_question": {
+    "ar": "هل تضع حداً أدنى لطلبات الشراء؟",
+    "en": "Do you set a minimum order limit?"
+  },
+  "profile_min_order_no": {
+    "ar": "لا يوجد حد أدنى",
+    "en": "No minimum limit"
+  },
+  "profile_min_order_yes": {
+    "ar": "نعم، يوجد حد أدنى للطلب",
+    "en": "Yes, there is a minimum order limit"
+  },
+  "profile_min_order_value_label": {
+    "ar": "الحد الأدنى للطلب (ج.م):",
+    "en": "Minimum Order (EGP):"
+  },
+  "profile_min_order_placeholder": {
+    "ar": "مثلاً: 100",
+    "en": "e.g., 100"
+  },
+  "profile_save_settings_btn": {
+    "ar": "حفظ الإعدادات",
+    "en": "Save Settings"
+  },
+  "profile_invalid_min_order": {
+    "ar": "يرجى إدخال قيمة صحيحة للحد الأدنى",
+    "en": "Please enter a valid minimum value"
+  },
+  "profile_seller_options_set": {
+    "ar": "(تم الضبط ✅)",
+    "en": "(Configured ✅)"
+  },
+  "profile_map_mandatory_error": {
+    "ar": "يرجى تحديد موقعك على الخريطة أولاً لضمان سرعة التوصيل.",
+    "en": "Please locate your position on the map first to ensure delivery speed."
+  },
+  "profile_no_changes_title": {
+    "ar": "لم يتغير شيء",
+    "en": "No changes"
+  },
+  "profile_no_changes_text": {
+    "ar": "لم تقم بإجراء أي تغييرات.",
+    "en": "You haven't made any changes."
+  },
+  "profile_save_confirm_text": {
+    "ar": "أدخل كلمة المرور الحالية لحفظ التغييرات.",
+    "en": "Enter current password to save changes."
+  },
+  "profile_saving": {
+    "ar": "جاري الحفظ...",
+    "en": "Saving..."
+  },
+  "profile_update_success_title": {
+    "ar": "تم التحديث بنجاح!",
+    "en": "Update Successful!"
+  },
+  "profile_update_fail": {
+    "ar": "فشل التحديث.",
+    "en": "Update failed."
+  },
+  "profile_delete_confirm_title": {
+    "ar": "هل أنت متأكد تمامًا؟",
+    "en": "Are you absolutely sure?"
+  },
+  "profile_delete_confirm_text": {
+    "ar": "سيتم حذف حسابك نهائياً.",
+    "en": "Your account will be permanently deleted."
+  },
+  "profile_delete_yes": {
+    "ar": "نعم، حذف",
+    "en": "Yes, Delete"
+  },
+  "profile_delete_verify_title": {
+    "ar": "تأكيد الحذف",
+    "en": "Confirm Deletion"
+  },
+  "profile_delete_verify_text": {
+    "ar": "أدخل كلمة المرور لتأكيد الحذف.",
+    "en": "Enter password to confirm deletion."
+  },
+  "profile_deleting": {
+    "ar": "جاري الحذف...",
+    "en": "Deleting..."
+  },
+  "profile_delete_success_title": {
+    "ar": "تم الحذف",
+    "en": "Deleted"
+  },
+  "profile_delete_success_text": {
+    "ar": "تم حذف الحساب بنجاح.",
+    "en": "Account deleted successfully."
+  },
+  "profile_delete_fail": {
+    "ar": "حدث خطأ أثناء الحذف.",
+    "en": "An error occurred during deletion."
+  },
+  "profile_map_linked_success": {
+    "ar": "تم ربط الموقع بنجاح! شكراً لك.",
+    "en": "Location linked successfully! Thank you."
+  },
+  "profile_passwords_mismatch": {
+    "ar": "كلمتا المرور غير متطابقتين.",
+    "en": "Passwords do not match."
+  }
+}
