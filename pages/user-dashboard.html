@@ -60,11 +60,11 @@
         color: var(--danger-color, #dc3545);
     }
 
-    /* Floating Contact Button - Specific for Dashboard */
-    #index-contact-btn {
+    /* Floating Contact & Settings Buttons */
+    #index-contact-btn,
+    #index-settings-btn {
         position: fixed;
         bottom: 25px;
-        right: 25px;
         width: 42px;
         height: 42px;
         background-color: var(--primary-color, #007bff);
@@ -81,13 +81,23 @@
         padding: 0;
     }
 
-    #index-contact-btn i {
+    #index-contact-btn {
+        right: 25px;
+    }
+
+    #index-settings-btn {
+        right: 80px;
+    }
+
+    #index-contact-btn i,
+    #index-settings-btn i {
         font-size: 18px;
         color: white;
         margin: 0;
     }
 
-    #index-contact-btn:active {
+    #index-contact-btn:active,
+    #index-settings-btn:active {
         transform: scale(0.9);
         background-color: var(--dark-blue, #03478f);
     }
@@ -106,7 +116,7 @@
 
 
 <h2 id="dash-welcome-message"></h2>
-<!-- Main container for buttons split into groups -->
+<!-- Main container for buttons split into buttons groups -->
 <!-- ✅ EDIT: Grid container for all buttons -->
 <div id="dash-action-buttons" class="dash-action-buttons">
     <!-- General User buttons -->
@@ -136,6 +146,11 @@
         <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
     </button>
 </div>
+
+<!-- Settings button -->
+<button id="index-settings-btn" title="الإعدادات">
+    <i class="fas fa-cog"></i>
+</button>
 
 <!-- Support button moved to absolute bottom right -->
 <button id="index-contact-btn" title="تواصل معنا">

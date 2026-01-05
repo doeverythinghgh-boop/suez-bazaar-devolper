@@ -242,6 +242,66 @@ function updateViewForLoggedInUser() {
       );
     }
   }
+
+  // [Step 6] Bind Settings Button (Available for all)
+  const settingsBtn = document.getElementById("index-settings-btn");
+  if (settingsBtn) {
+    settingsBtn.addEventListener("click", () => {
+      Swal.fire({
+        title: '<span style="color: var(--dark-blue, #03478f); font-weight: bold;">الإعدادات</span>',
+        html: `
+          <div class="settings-modal-content" style="text-align: right; direction: rtl;">
+            
+            <!-- Quick Actions Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+              
+              <!-- Notification Settings -->
+              <div onclick="mainLoader('notification/page/notifications.html', 'index-notifications-container', 0, undefined, 'showHomeIcon', true); Swal.close();" 
+                   style="background: #f8f9fa; padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; border: 1px solid #eee;">
+                <i class="fas fa-bell" style="font-size: 24px; color: #ffc107; margin-bottom: 8px; display: block;"></i>
+                <span style="font-size: 14px; font-weight: 600; color: #333;">الإشعارات</span>
+              </div>
+
+              <!-- Profile Settings (Logged in only check handled by route or ui) -->
+              <div onclick="document.getElementById('dash-edit-profile-btn') && document.getElementById('dash-edit-profile-btn').click(); Swal.close();" 
+                   style="background: #f8f9fa; padding: 15px; border-radius: 12px; cursor: pointer; text-align: center; transition: 0.2s; border: 1px solid #eee;">
+                <i class="fas fa-user-cog" style="font-size: 24px; color: var(--primary-color, #007bff); margin-bottom: 8px; display: block;"></i>
+                <span style="font-size: 14px; font-weight: 600; color: #333;">الملف الشخصي</span>
+              </div>
+
+            </div>
+
+             <!-- Additional Options List -->
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+               <div style="padding: 12px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee;">
+                  <span style="display: flex; align-items: center; gap: 10px; color: #555;">
+                     <i class="fas fa-moon"></i> الوضع الليلي
+                  </span>
+                  <span style="font-size: 12px; color: #999;">(قريباً)</span>
+               </div>
+               
+               <div onclick="mainLoader('pages/contact.html', 'index-contact-container', 0, undefined, 'showHomeIcon', true); Swal.close();"
+                    style="padding: 12px; background: white; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border: 1px solid #eee; cursor: pointer;">
+                  <span style="display: flex; align-items: center; gap: 10px; color: #555;">
+                     <i class="fas fa-headset"></i> الدعم والمساعدة
+                  </span>
+                  <i class="fas fa-chevron-left" style="color: #ccc; font-size: 12px;"></i>
+               </div>
+            </div>
+
+          </div>
+        `,
+        showConfirmButton: false,
+        showCloseButton: true,
+        customClass: {
+          popup: 'animated fadeInDown faster'
+        },
+        background: '#fff',
+        width: '350px',
+        padding: '20px'
+      });
+    });
+  }
 }
 
 // [Final Step] Initialize
