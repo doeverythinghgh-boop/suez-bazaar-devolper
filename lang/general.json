@@ -150,5 +150,33 @@
   "unexpected_error": {
     "ar": "حدث خطأ غير متوقع.",
     "en": "An unexpected error occurred."
+  },
+  "tagline_1": {
+    "ar": "بازار السويس... فرصة واحدة تجمع كل الفرص",
+    "en": "Suez Bazaar... One opportunity for all opportunities"
+  },
+  "tagline_2": {
+    "ar": "اكتشف آلاف المنتجات من موردين موثوقين في السويس",
+    "en": "Discover thousands of products from trusted suppliers in Suez"
+  },
+  "tagline_3": {
+    "ar": "تابع طلبك حتى باب منزلك",
+    "en": "Track your order to your doorstep"
+  },
+  "tagline_4": {
+    "ar": "عروض وخصومات حصرية من الموردين",
+    "en": "Exclusive offers and discounts from suppliers"
+  },
+  "tagline_5": {
+    "ar": "جودة مضمونة وتقييم شفاف من المشترين",
+    "en": "Guaranteed quality and transparent buyer reviews"
+  },
+  "tagline_6": {
+    "ar": "من المورد للمستهلك مباشرة جودة وسعر أفضل",
+    "en": "Directly from supplier to consumer - better quality and price"
+  },
+  "logo_short": {
+    "ar": "بـزار",
+    "en": "SB"
   }
 }

@@ -207,8 +207,8 @@
   const taglineElement = document.getElementById("tagline");
 
   // --- Animation Configuration ---
-  const fullText = "Suez Bazaar";
-  const shortText = "SB";
+  const fullText = window.langu("page_title");
+  const shortText = window.langu("logo_short");
   const letterAppearDelay = 100; // Delay between each letter appearing
   let isAnimationRunning = false; // Variable to track animation state
 
@@ -281,14 +281,19 @@
  */
   async function startTaglineCarousel() {
     return new Promise(async (resolve) => {
-      const sentences = [
-        "بازار السويس... فرصة واحدة تجمع كل الفرص",
-        "اكتشف آلاف المنتجات من موردين موثوقين في السويس",
-        "تابع طلبك حتى باب منزلك",
-        "عروض وخصومات حصرية من الموردين",
-        "جودة مضمونة وتقييم شفاف من المشترين",
-        "من المورد للمستهلك مباشرة جودة وسعر أفضل",
-      ];
+      // Fetch translated taglines from the translation system
+      const sentences = [];
+      for (let i = 1; i <= 6; i++) {
+        const line = window.langu(`tagline_${i}`);
+        if (line && line !== `tagline_${i}`) {
+          sentences.push(line);
+        }
+      }
+
+      // Fallback if no taglines are found
+      if (sentences.length === 0) {
+        sentences.push(window.langu('page_title'));
+      }
 
       // ✅ FIX: Re-show element before starting sentence display
       taglineElement.style.display = 'block'; // Or 'inline' depending on design

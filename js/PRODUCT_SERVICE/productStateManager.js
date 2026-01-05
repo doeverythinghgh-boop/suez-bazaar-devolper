@@ -103,14 +103,26 @@ const ProductStateManager = {
             const categories = data.categories || [];
 
             const mainCat = categories.find(c => String(c.id) === String(selected.mainId));
+            let mainTitle = '';
             let subTitle = '';
-            if (mainCat && mainCat.subcategories) {
-                const subCat = mainCat.subcategories.find(s => String(s.id) === String(selected.subId));
-                if (subCat) subTitle = subCat.title;
+
+            if (mainCat) {
+                const titleObj = mainCat.title;
+                mainTitle = typeof titleObj === 'object' ? 
+                    (titleObj[window.app_language] || titleObj['ar']) : titleObj;
+
+                if (mainCat.subcategories) {
+                    const subCat = mainCat.subcategories.find(s => String(s.id) === String(selected.subId));
+                    if (subCat) {
+                        const subTitleObj = subCat.title;
+                        subTitle = typeof subTitleObj === 'object' ? 
+                            (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+                    }
+                }
             }
 
             return {
-                main: mainCat ? mainCat.title : '',
+                main: mainTitle,
                 sub: subTitle
             };
         } catch (error) {

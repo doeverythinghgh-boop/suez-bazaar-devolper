@@ -17,7 +17,7 @@ window.CategoryModal = (function () {
      * @constant
      * @type {string}
      */
-    const DEFAULT_TITLE = '📋 تحديد فئة المنتج الجديد';
+    const DEFAULT_TITLE = '📋 ' + window.langu('dash_choose_destination');
     /**
      * @constant
      * @type {string}
@@ -452,7 +452,11 @@ window.CategoryModal = (function () {
                 categories.forEach(category => {
                     const option = document.createElement('option');
                     option.value = category.id;
-                    option.textContent = category.title;
+                    // Handle title as object or string
+                    const titleObj = category.title;
+                    const displayTitle = typeof titleObj === 'object' ? 
+                        (titleObj[window.app_language] || titleObj['ar']) : titleObj;
+                    option.textContent = displayTitle;
                     mainSelect.appendChild(option);
                 });
 
@@ -478,7 +482,11 @@ window.CategoryModal = (function () {
                         selectedCategory.subcategories.forEach(sub => {
                             const option = document.createElement('option');
                             option.value = sub.id;
-                            option.textContent = sub.title;
+                            // Handle title as object or string
+                            const subTitleObj = sub.title;
+                            const subDisplayTitle = typeof subTitleObj === 'object' ? 
+                                (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+                            option.textContent = subDisplayTitle;
                             subSelect.appendChild(option);
                         });
                         subSelect.disabled = false;
@@ -533,7 +541,7 @@ window.CategoryModal = (function () {
 
                     if (!mainId || !subId) {
                         if (validationMsg) {
-                            validationMsg.textContent = '⚠️ يجب اختيار الفئة الرئيسية والفرعية للمتابعة';
+                            validationMsg.textContent = '⚠️ ' + window.langu('api_connection_failed').replace(':', '') + ' (Main/Sub)';
                         }
                         return;
                     }
