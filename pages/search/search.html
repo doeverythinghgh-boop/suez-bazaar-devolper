@@ -12,8 +12,8 @@
         <td id="search-main-category-cell">
           <div id="search-main-category-filter-group" class="search-filter-group">
             <i id="search-main-category-filter-icon" class="fas fa-layer-group search-filter-icon"></i>
-            <select id="search-main-category-filter" class="search-category-filter" aria-label="الفئة الرئيسية">
-              <option id="search-main-category-default-option" value="">
+            <select id="search-main-category-filter" class="search-category-filter" data-lkey-title="search_modal_main_category_label" aria-label="الفئة الرئيسية">
+              <option id="search-main-category-default-option" value="" data-lkey="search_modal_main_category_default">
                 كل الاسواق الرئيسية
               </option>
             </select>
@@ -22,8 +22,8 @@
         <td id="search-sub-category-cell">
           <div class="search-filter-group" id="search-sub-category-filter-group">
             <i id="search-sub-category-filter-icon" class="fas fa-tags search-filter-icon"></i>
-            <select id="search-sub-category-filter" class="search-category-filter" disabled aria-label="الفئة الفرعية">
-              <option id="search-sub-category-default-option" value="">
+            <select id="search-sub-category-filter" class="search-category-filter" disabled data-lkey-title="search_modal_sub_category_label" aria-label="الفئة الفرعية">
+              <option id="search-sub-category-default-option" value="" data-lkey="search_modal_sub_category_default">
                 كل الاسواق الفرعية
               </option>
             </select>
@@ -35,7 +35,7 @@
         <td id="search-input-cell" colspan="2">
           <div id="search-modal-input-container" class="search-modal-input-container" style="padding-right: 0px">
             <i class="fas fa-search search-modal-input-icon" id="search-input-icon" aria-hidden="true"></i>
-            <input type="search" id="search-modal-input" placeholder="اكتب اسم المنتج الذي تبحث عنه..."
+            <input type="search" id="search-modal-input" data-lkey-placeholder="search_modal_input_placeholder" placeholder="اكتب اسم المنتج الذي تبحث عنه..."
               autocomplete="off" />
           </div>
         </td>
@@ -45,21 +45,21 @@
         <td id="search-sort-cell">
           <div id="search-sort-filter-group" class="search-filter-group">
             <i id="search-sort-filter-icon" class="fas fa-sort-amount-down search-filter-icon"></i>
-            <select id="search-sort-filter" class="search-category-filter" aria-label="ترتيب حسب">
-              <option id="search-sort-default" value="default">
+            <select id="search-sort-filter" class="search-category-filter" data-lkey-title="search_modal_sort_label" aria-label="ترتيب حسب">
+              <option id="search-sort-default" value="default" data-lkey="search_modal_sort_default">
                 الترتيب الافتراضي
               </option>
-              <option id="search-sort-price-asc" value="price-asc">
+              <option id="search-sort-price-asc" value="price-asc" data-lkey="search_modal_sort_price_asc">
                 الأقل سعراً
               </option>
-              <option id="search-sort-price-desc" value="price-desc">
+              <option id="search-sort-price-desc" value="price-desc" data-lkey="search_modal_sort_price_desc">
                 الأعلى سعراً
               </option>
             </select>
           </div>
         </td>
         <td id="search-button-cell">
-          <button id="search-perform-search-btn" class="search-button" aria-label="بحث"
+          <button id="search-perform-search-btn" class="search-button" data-lkey-title="search_modal_search_btn_aria" aria-label="بحث"
             style="width: 100%; height: 50px; border-radius: 50px">
             <i id="search-button-icon" class="fas fa-search"></i>
           </button>

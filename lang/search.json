@@ -1,0 +1,58 @@
+{
+  "search_modal_main_category_label": {
+    "ar": "الفئة الرئيسية",
+    "en": "Main Category"
+  },
+  "search_modal_main_category_default": {
+    "ar": "كل الاسواق الرئيسية",
+    "en": "All Main Categories"
+  },
+  "search_modal_sub_category_label": {
+    "ar": "الفئة الفرعية",
+    "en": "Sub Category"
+  },
+  "search_modal_sub_category_default": {
+    "ar": "كل الاسواق الفرعية",
+    "en": "All Sub Categories"
+  },
+  "search_modal_input_placeholder": {
+    "ar": "اكتب اسم المنتج الذي تبحث عنه...",
+    "en": "Type the product name you are looking for..."
+  },
+  "search_modal_sort_label": {
+    "ar": "ترتيب حسب",
+    "en": "Sort By"
+  },
+  "search_modal_sort_default": {
+    "ar": "الترتيب الافتراضي",
+    "en": "Default Sorting"
+  },
+  "search_modal_sort_price_asc": {
+    "ar": "الأقل سعراً",
+    "en": "Price: Low to High"
+  },
+  "search_modal_sort_price_desc": {
+    "ar": "الأعلى سعراً",
+    "en": "Price: High to Low"
+  },
+  "search_modal_search_btn_aria": {
+    "ar": "بحث",
+    "en": "Search"
+  },
+  "search_modal_no_results": {
+    "ar": "لم يتم العثور على منتجات مطابقة لبحثك.",
+    "en": "No products found matching your search."
+  },
+  "search_modal_error_generic": {
+    "ar": "حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.",
+    "en": "An error occurred while searching. Please try again."
+  },
+  "search_modal_init_log": {
+    "ar": "بدء تهيئة نافذة البحث",
+    "en": "Initializing search modal"
+  },
+  "currency_egp": {
+    "ar": "جنيه",
+    "en": "EGP"
+  }
+}

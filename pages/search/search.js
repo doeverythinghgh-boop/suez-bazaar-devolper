@@ -94,7 +94,7 @@ async function initSearchModal(containerId) {
 
     try {
       const response = await fetch(searchURL);
-      if (!response.ok) throw new Error("فشل جلب نتائج البحث");
+      if (!response.ok) throw new Error(window.langu('search_modal_error_generic'));
       const results = await response.json();
       currentResults = results; // Store original results
       console.log(
@@ -105,7 +105,7 @@ async function initSearchModal(containerId) {
     } catch (error) {
       console.error("%c[SearchModal] خطأ في البحث:", "color: red;", error);
       searchResultsContainer.innerHTML = // NOSONAR
-        '<p class="search-error-message">حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.</p>'; // NOSONAR
+        `<p class="search-error-message">${window.langu('search_modal_error_generic')}</p>`; // NOSONAR
     }
     // Notify developer search is complete
     console.log(
@@ -147,7 +147,7 @@ async function initSearchModal(containerId) {
 
     if (sortedResults.length === 0) {
       searchResultsContainer.innerHTML = // NOSONAR
-        '<p class="search-no-results-message">لم يتم العثور على منتجات مطابقة لبحثك.</p>';
+        `<p class="search-no-results-message">${window.langu('search_modal_no_results')}</p>`;
       return;
     }
 
@@ -241,7 +241,7 @@ async function initSearchModal(containerId) {
       mainCategoryFilter.addEventListener("change", () => {
         // Reset Sub Categories
         subCategoryFilter.innerHTML = // NOSONAR
-          '<option value="">كل الاسواق الفرعية</option>';
+          `<option value="" data-lkey="search_modal_sub_category_default">${window.langu('search_modal_sub_category_default')}</option>`;
         const selectedOption =
           mainCategoryFilter.options[mainCategoryFilter.selectedIndex];
 
@@ -266,7 +266,7 @@ async function initSearchModal(containerId) {
           }
         } else {
           subCategoryFilter.innerHTML = // NOSONAR
-            '<option value="">كل الاسواق الفرعية</option>'; // Reset
+            `<option value="" data-lkey="search_modal_sub_category_default">${window.langu('search_modal_sub_category_default')}</option>`; // Reset
           subCategoryFilter.disabled = true; // Disable
         }
         // Developer message: Sub updated
@@ -331,6 +331,11 @@ async function initSearchModal(containerId) {
     "%c[SearchModal] اكتملت التهيئة. نافذة البحث جاهزة.",
     "color: green; font-weight: bold;"
   );
+
+  // Force re-apply translations to ensure everything is localized
+  if (window.applyAppTranslations) {
+    window.applyAppTranslations();
+  }
 }
 
 function generateSearchResultHTML(product) {
@@ -355,7 +360,7 @@ function generateSearchResultHTML(product) {
     <div class="search-result-details">
       <h4 class="search-result-title">${product.productName}</h4>
       ${!isService
-      ? `<p class="search-result-price">${price.toFixed(2)} جنيه</p>`
+      ? `<p class="search-result-price">${price.toFixed(2)} ${window.langu('currency_egp')}</p>`
       : ""
     }
     </div>

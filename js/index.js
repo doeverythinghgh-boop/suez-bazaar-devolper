@@ -117,8 +117,11 @@ async function loadIndexTranslations() {
     const productViewRes = await fetch('lang/product-view.json');
     const productViewData = productViewRes.ok ? await productViewRes.json() : {};
 
+    const searchRes = await fetch('lang/search.json');
+    const searchData = searchRes.ok ? await searchRes.json() : {};
+
     // 3. Merge them
-    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData, ...profileData, ...notificationsData, ...cartData, ...salesMovementData, ...productViewData };
+    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData, ...profileData, ...notificationsData, ...cartData, ...salesMovementData, ...productViewData, ...searchData };
 
     console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحات البداية، الدخول، السلة، ولوحة التحكم.');
     if (window.applyAppTranslations) window.applyAppTranslations();
