@@ -120,6 +120,5 @@
     "add1_swal_error_text": {
         "ar": "حدث خطأ أثناء إضافة المنتج. يرجى المحاولة مرة أخرى.",
         "en": "An error occurred while adding the product. Please try again."
-    },
-
+    }
 }

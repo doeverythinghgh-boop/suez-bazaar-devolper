@@ -133,6 +133,5 @@
     "edit_err_price_required": {
         "ar": "يرجى إدخال سعر منتج صالح.",
         "en": "Please enter a valid product price."
-    },
-
+    }
 }
