@@ -189,6 +189,8 @@
     display: flex;
     align-items: center;
     position: relative;
+    text-align: inherit;
+    direction: inherit;
 }
 
 .cartPage_note-text.empty {
@@ -198,7 +200,7 @@
 
 .cartPage_edit-note-btn {
     position: absolute;
-    left: 10px;
+    inset-inline-start: 10px;
     top: 10px;
     background: var(--primary-color);
     color: var(--bg-color-white);
