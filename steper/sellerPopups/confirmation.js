@@ -41,10 +41,10 @@ export function handleConfirmationSave(data, ordersData) {
     // Accepted products section
     if (acceptedProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: #28a745; margin-bottom: 10px; font-size: 1.1em;">✅ المنتجات المقبولة (' + acceptedProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: var(--color-confirmed); margin-bottom: 10px; font-size: 1.1em;">✅ المنتجات المقبولة (' + acceptedProducts.length + '):</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         acceptedProducts.forEach(name => {
-            htmlContent += '<li style="padding: 5px; background: #d4edda; margin: 3px 0; border-radius: 3px; color: #222222;">• ' + name + '</li>';
+            htmlContent += '<li class="stepper-list-item-success">• ' + name + '</li>';
         });
         htmlContent += '</ul></div>';
     }
@@ -52,18 +52,18 @@ export function handleConfirmationSave(data, ordersData) {
     // Rejected products section
     if (rejectedProducts.length > 0) {
         htmlContent += '<div style="margin-bottom: 20px;">';
-        htmlContent += '<h3 style="color: #dc3545; margin-bottom: 10px; font-size: 1.1em;">❌ المنتجات المرفوضة (' + rejectedProducts.length + '):</h3>';
+        htmlContent += '<h3 style="color: var(--color-rejected); margin-bottom: 10px; font-size: 1.1em;">❌ المنتجات المرفوضة (' + rejectedProducts.length + '):</h3>';
         htmlContent += '<ul style="list-style: none; padding: 0;">';
         rejectedProducts.forEach(name => {
-            htmlContent += '<li style="padding: 5px; background: #f8d7da; margin: 3px 0; border-radius: 3px; color: #222222;">• ' + name + '</li>';
+            htmlContent += '<li class="stepper-list-item-danger">• ' + name + '</li>';
         });
         htmlContent += '</ul></div>';
     }
 
     // Warning message
-    htmlContent += '<div style="background: #fff3cd; border: 2px solid #ffc107; padding: 15px; border-radius: 5px; margin-top: 15px;">';
-    htmlContent += '<p style="margin: 0; font-weight: bold; color: #856404;">⚠️ تحذير هام:</p>';
-    htmlContent += '<p style="margin: 5px 0 0 0; color: #856404;">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
+    htmlContent += '<div class="stepper-alert-warning">';
+    htmlContent += '<p style="margin: 0; font-weight: bold;">⚠️ تحذير هام:</p>';
+    htmlContent += '<p style="margin: 5px 0 0 0;">بعد الضغط على "تأكيد الحفظ"، لن تتمكن من التعديل مرة أخرى. هذا الإجراء نهائي ولا يمكن التراجع عنه.</p>';
     htmlContent += '</div>';
 
     htmlContent += '</div>';

@@ -54,7 +54,7 @@ div:where(.swal2-container) .fullscreen-swal {
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3) !important;
     overflow: hidden !important;
     /* Ensure content stays inside */
-    background: #fff !important;
+    background: var(--bg-primary) !important;
     display: flex !important;
     flex-direction: column !important;
 }
@@ -161,7 +161,7 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
 /* Order Service Footer - Modern & Responsive */
 .order-service-footer {
     margin: 2rem auto;
-    background: #ffffff;
+    background: var(--bg-primary);
     padding: 1.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     display: none;
@@ -278,7 +278,7 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
 
 .order-value-input:focus {
     border-color: var(--color-primary);
-    background: #fff;
+    background: var(--bg-primary);
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
@@ -398,4 +398,84 @@ body.dark-theme .order-value-input {
 body.dark-theme .order-value-input:focus {
     background: #333 !important;
     border-color: #667eea;
+}
+
+/* ============================================
+   Dynamic Content Classes (Replaces Inline Styles)
+   ============================================ */
+
+.stepper-alert-warning {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    color: #856404;
+}
+
+.stepper-alert-warning p {
+    color: #856404;
+}
+
+.stepper-list-item-success {
+    padding: 5px;
+    background: #d4edda;
+    margin: 3px 0;
+    border-radius: 3px;
+    color: #155724;
+}
+
+.stepper-list-item-info {
+    padding: 5px;
+    background: #d1f2ff;
+    margin: 3px 0;
+    border-radius: 3px;
+    color: #0c5460;
+}
+
+.stepper-list-item-neutral {
+    padding: 5px;
+    background: #f0f0f0;
+    margin: 3px 0;
+    border-radius: 3px;
+    color: #495057;
+}
+
+.stepper-list-item-danger {
+    padding: 5px;
+    background: #f8d7da;
+    margin: 3px 0;
+    border-radius: 3px;
+    color: #721c24;
+}
+
+/* Dark Mode Overrides for New Classes */
+body.dark-theme .stepper-alert-warning {
+    background: #4a3e12;
+    border-color: #ffc107;
+    color: #ffd54f;
+}
+
+body.dark-theme .stepper-alert-warning p {
+    color: #ffd54f;
+}
+
+body.dark-theme .stepper-list-item-success {
+    background: #1b4d3e;
+    color: #d4edda;
+}
+
+body.dark-theme .stepper-list-item-info {
+    background: #103f54;
+    color: #d1f2ff;
+}
+
+body.dark-theme .stepper-list-item-neutral {
+    background: #3e3e3e;
+    color: #e0e0e0;
+}
+
+body.dark-theme .stepper-list-item-danger {
+    background: #5a1e1e;
+    color: #f8d7da;
 }

@@ -279,7 +279,7 @@ export function generateSellerGroupedHtml(groupedData) {
 
     return groupsHtml + `
         <div class="grand-total-container" style="margin-top: 20px; padding: 15px; background-color: #e9ecef; border-radius: 8px; text-align: center; border: 2px solid #dee2e6;">
-            <h4 style="margin: 0; color: #000; font-weight: bold;">إجمالي (سعر البيع): ${grandTotal.toFixed(2)} جنيه</h4>
+            <h4 style="margin: 0; font-weight: bold; color: var(--text-primary);">إجمالي (سعر البيع): ${grandTotal.toFixed(2)} جنيه</h4>
             <h4 style="margin: 10px 0 0 0; color: #d97706; font-weight: bold;">إجمالي (سعر التطبيق): ${grandTotalReal.toFixed(2)} جنيه</h4>
         </div>
     `;

@@ -4,26 +4,47 @@
 :root {
     /* الألوان الأساسية لكل حالة */
     --color-primary: #667eea;
-    --color-review: #ff9a76;      /* لون خطوة المراجعة */
-    --color-confirmed: #4caf50;   /* لون خطوة التأكيد */
-    --color-shipped: #00d4ff;     /* لون خطوة الشحن */
-    --color-delivered: #1abc9c;   /* لون خطوة التسليم */
-    --color-cancelled: #ff6b6b;   /* لون حالة الإلغاء */
-    --color-rejected: #e74c3c;    /* لون حالة الرفض */
-    --color-returned: #9b59b6;    /* لون حالة الإرجاع */
-    
+    --color-review: #ff9a76;
+    /* لون خطوة المراجعة */
+    --color-confirmed: #4caf50;
+    /* لون خطوة التأكيد */
+    --color-shipped: #00d4ff;
+    /* لون خطوة الشحن */
+    --color-delivered: #1abc9c;
+    /* لون خطوة التسليم */
+    --color-cancelled: #ff6b6b;
+    /* لون حالة الإلغاء */
+    --color-rejected: #e74c3c;
+    /* لون حالة الرفض */
+    --color-returned: #9b59b6;
+    /* لون حالة الإرجاع */
+
     /* ألوان الحالة العامة */
     --color-full: #4caf50;
     --color-partial: #ffa500;
     --color-fail: #f44336;
-    
+
     /* ألوان الخلفية والنصوص */
     --bg-primary: #ffffff;
     --bg-secondary: #f5f5f5;
     --text-primary: #2d3436;
     --text-secondary: #636e72;
     --border-light: #e0e6f2;
-    
+
     /* تأثيرات الانتقال */
     --transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body.dark-theme {
+    /* ألوان الخلفية والنصوص (الوضع الليلي) */
+    --bg-primary: #1e1e1e;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-light: #444444;
+
+    /* تعديل طفيف للألوان الأساسية لتناسب الخلفية الداكنة */
+    --color-review: #ffccbc;
+    --color-shipped: #4fc3f7;
+    --color-cancelled: #ef9a9a;
 }

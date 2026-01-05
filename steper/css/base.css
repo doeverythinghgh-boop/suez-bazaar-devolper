@@ -12,12 +12,17 @@ html {
 }
 
 body {
-    font-family: 'Tajawal', sans-serif; /* استخدام خط Tajawal لدعم العربية بشكل جميل */
-    /*background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); /* خلفية متدرجة */
+    font-family: 'Tajawal', sans-serif;
+    /* استخدام خط Tajawal لدعم العربية بشكل جميل */
+    background-color: var(--bg-primary);
+    /* استخدام المتغير للخلفية */
+    color: var(--text-primary);
+    /* استخدام المتغير للنص */
     max-height: fit-content;
     /*padding: 2rem 1rem;*/
     position: relative;
     overflow-x: hidden;
+    transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
 /* إضافة تأثير خلفية زخرفية */
