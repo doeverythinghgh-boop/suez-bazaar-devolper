@@ -6,7 +6,7 @@
 -->
 
 <div class="edit-product-modal" role="dialog" aria-modal="true" aria-labelledby="editProductTitle">
-    <h2 class="edit-product-modal__title" id="editProductTitle"><i class="fas fa-edit"></i> تعديل الخدمة</h2>
+    <h2 class="edit-product-modal__title" id="editProductTitle"><i class="fas fa-edit"></i> <span data-lkey="edit2_page_title">تعديل الخدمة</span></h2>
 
     <!-- Selected Category Badges -->
     <div id="edit2_category_display" class="edit2_category_badges">
@@ -16,8 +16,8 @@
     <form class="edit-product-modal__form" id="edit-product-form" novalidate>
         <!-- Image Upload Module -->
         <section class="edit-product-modal__form-group" aria-labelledby="imagesHeading">
-            <label id="imagesHeading" class="edit-product-modal__label"><i class="fas fa-images"></i> صور
-                الخدمة</label>
+            <label id="imagesHeading" class="edit-product-modal__label"><i class="fas fa-images"></i> <span data-lkey="edit2_images_heading">صور
+                الخدمة</span></label>
 
             <div class="edit-product-modal__image-uploader" id="image-uploader" tabindex="0" role="group"
                 aria-label="منطقة رفع الصور">
@@ -26,19 +26,19 @@
                     <input class="edit-product-modal__hidden-file" id="file-input" type="file" accept="image/*" multiple
                         aria-hidden="true">
 
-                    <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا"><i
+                    <button type="button" class="btn btn-ghost btn-icon" id="pick-files-btn" title="اختر صورًا" data-lkey-title="gen_btn_pick_images"><i
                             class="fas fa-folder-open"></i></button>
                     <button type="button" class="btn btn-ghost btn-icon" id="take-photo-btn"
-                        title="التقاط من الكاميرا"><i class="fas fa-camera"></i></button>
+                        title="التقاط من الكاميرا" data-lkey-title="gen_btn_take_photo"><i class="fas fa-camera"></i></button>
 
                 </div>
 
-                <div class="edit-product-modal__hint">المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp. </div>
+                <div class="edit-product-modal__hint" data-lkey="edit2_image_hint">المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp. </div>
 
                 <div class="edit-product-modal__previews" id="previews" aria-live="polite" aria-atomic="false">
                     <div class="edit-product-modal__loading" id="images-loading">
                         <i class="fas fa-spinner fa-spin"></i>
-                        <div>جاري تحميل الصور...</div>
+                        <div data-lkey="gen_lbl_loading_images">جاري تحميل الصور...</div>
                     </div>
                 </div>
             </div>
@@ -46,45 +46,45 @@
 
         <!-- Service Name Field -->
         <div class="edit-product-modal__form-group">
-            <label for="product-name" class="edit-product-modal__label"><i class="fas fa-signature"></i> اسم
-                الخدمة</label>
+            <label for="product-name" class="edit-product-modal__label"><i class="fas fa-signature"></i> <span data-lkey="edit2_label_product_name">اسم
+                الخدمة</span></label>
             <input type="text" id="product-name" name="product-name" class="edit-product-modal__input" maxlength="100"
-                placeholder="اكتب اسمًا واضحًا للخدمة..." required>
+                placeholder="اكتب اسمًا واضحًا للخدمة..." data-lkey-placeholder="edit2_placeholder_product_name" required>
             <div id="product-name-char-counter" class="edit-product-modal__char-counter">0 / 100</div>
         </div>
 
         <!-- Service Description Field -->
         <div class="edit-product-modal__form-group">
             <label for="product-description" class="edit-product-modal__label"><i class="fas fa-file-alt"></i>
-                وصف الخدمة</label>
+                <span data-lkey="edit2_label_description">وصف الخدمة</span></label>
             <textarea id="product-description" name="product-description" class="edit-product-modal__textarea" rows="4"
-                maxlength="400" placeholder="اكتب وصفًا جذابًا ..."></textarea>
+                maxlength="400" placeholder="اكتب وصفًا جذابًا ..." data-lkey-placeholder="edit2_placeholder_description"></textarea>
             <div id="description-char-counter" class="edit-product-modal__char-counter">0 / 400</div>
         </div>
 
         <!-- Seller Message Field -->
         <div class="edit-product-modal__form-group">
-            <label for="seller-message" class="edit-product-modal__label"><i class="fas fa-comment-dots"></i> رسالة
-                من مقدم الخدمة</label>
+            <label for="seller-message" class="edit-product-modal__label"><i class="fas fa-comment-dots"></i> <span data-lkey="edit2_label_seller_message">رسالة
+                من مقدم الخدمة</span></label>
             <input type="text" id="seller-message" name="seller-message" class="edit-product-modal__input"
-                maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للعميل...">
+                maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للعميل..." data-lkey-placeholder="edit2_placeholder_seller_message">
             <div id="seller-message-char-counter" class="edit-product-modal__char-counter">0 / 100</div>
         </div>
 
         <!-- Notes Field -->
         <div class="edit-product-modal__form-group">
             <label for="product-notes" class="edit-product-modal__label"><i class="fas fa-sticky-note"></i>
-                ملاحظات</label>
+                <span data-lkey="edit2_label_notes">ملاحظات</span></label>
             <input type="text" id="product-notes" name="product-notes" class="edit-product-modal__input" maxlength="100"
-                placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
+                placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت" data-lkey-placeholder="edit2_placeholder_notes">
             <div id="notes-char-counter" class="edit-product-modal__char-counter">0 / 100</div>
         </div>
 
         <!-- Submit Button -->
         <div class="edit-product-modal__submit-container"
             style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-            <button type="submit" class="btn btn-warning">حفظ التعديلات</button>
-            <button type="button" class="btn btn-ghost" id="edit2_btn_discard">تجاهل التعديلات</button>
+            <button type="submit" class="btn btn-warning"><span data-lkey="edit2_btn_save">حفظ التعديلات</span></button>
+            <button type="button" class="btn btn-ghost" id="edit2_btn_discard"><span data-lkey="gen_btn_discard">تجاهل التعديلات</span></button>
         </div>
     </form>
 </div>

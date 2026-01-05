@@ -3,26 +3,12 @@
         "ar": "إضافة منتج جديد",
         "en": "Add New Product"
     },
-    "add1_btn_back": {
-        "ar": "رجوع",
-        "en": "Back"
-    },
-    "add1_btn_discard": {
-        "ar": "تجاهل",
-        "en": "Discard"
-    },
+
     "add1_images_heading": {
         "ar": "صور المنتج",
         "en": "Product Images"
     },
-    "add1_pick_files_btn": {
-        "ar": "اختر صورًا",
-        "en": "Pick Images"
-    },
-    "add1_take_photo_btn": {
-        "ar": "التقاط من الكاميرا",
-        "en": "Take Photo"
-    },
+
     "add1_image_hint": {
         "ar": "المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp.",
         "en": "Required: At least one image. Supported: jpg, png, webp."
@@ -95,34 +81,7 @@
         "ar": "حفظ ونشر المنتج الآن",
         "en": "Save and Publish Product Now"
     },
-    "add1_swal_remove_title": {
-        "ar": "هل أنت متأكد؟",
-        "en": "Are you sure?"
-    },
-    "add1_swal_remove_text": {
-        "ar": "هل تريد حقاً حذف هذه الصورة؟",
-        "en": "Do you really want to delete this image?"
-    },
-    "add1_swal_yes_delete": {
-        "ar": "نعم، احذفها!",
-        "en": "Yes, delete it!"
-    },
-    "add1_swal_discard_title": {
-        "ar": "تجاهل التعديلات؟",
-        "en": "Discard changes?"
-    },
-    "add1_swal_discard_text": {
-        "ar": "سيتم مسح كافة البيانات والعودة للوحة التحكم.",
-        "en": "All data will be cleared and you will return to dashboard."
-    },
-    "add1_swal_yes_discard": {
-        "ar": "نعم، تجاهل",
-        "en": "Yes, Discard"
-    },
-    "add1_swal_cancel_discard": {
-        "ar": "تراجع",
-        "en": "Go Back"
-    },
+
     "add1_err_img_required": {
         "ar": "مطلوب صورة واحدة للمنتج على الأقل.",
         "en": "At least one product image is required."
@@ -147,18 +106,8 @@
         "ar": "يرجى إدخال سعر منتج صالح.",
         "en": "Please enter a valid product price."
     },
-    "add1_err_max_files": {
-        "ar": "لا يمكن إضافة أكثر من {n} صور",
-        "en": "Cannot add more than {n} images"
-    },
-    "add1_processing": {
-        "ar": "جاري المعالجة...",
-        "en": "Processing..."
-    },
-    "add1_current_img": {
-        "ar": "الصورة الحالية",
-        "en": "Current Image"
-    },
+
+
     "add1_swal_adding_title": {
         "ar": "جاري إضافة المنتج...",
         "en": "Adding Product..."
@@ -167,28 +116,10 @@
         "ar": "يرجى الانتظار بينما يتم رفع الصور.",
         "en": "Please wait while images are uploading."
     },
-    "add1_swal_success_title": {
-        "ar": "تم بنجاح!",
-        "en": "Success!"
-    },
-    "add1_swal_success_text": {
-        "ar": "تم حفظ المنتج وإرساله للإدارة بنجاح لمراجعته ونشره.",
-        "en": "Product saved and sent to admin for review/publish."
-    },
-    "add1_swal_error_title": {
-        "ar": "خطأ!",
-        "en": "Error!"
-    },
+
     "add1_swal_error_text": {
         "ar": "حدث خطأ أثناء إضافة المنتج. يرجى المحاولة مرة أخرى.",
         "en": "An error occurred while adding the product. Please try again."
     },
-    "add1_err_compression": {
-        "ar": "خطأ في الضغط",
-        "en": "Compression Error"
-    },
-    "add1_unit_bytes": {
-        "ar": "بايت",
-        "en": "Bytes"
-    }
+
 }

@@ -100,7 +100,7 @@ async function EDIT2_loadExistingImages() {
             console.error(`فشل تحميل الصورة: ${name}`);
             state.status = 'error';
             EDIT2_createPreviewItem(state, '');
-            if (state._metaEl) state._metaEl.textContent = 'فشل التحميل';
+            if (state._metaEl) state._metaEl.textContent = window.langu('gen_err_upload_failed');
             if (i === imageNames.length - 1 && imagesLoadingEl) {
                 imagesLoadingEl.style.display = 'none';
             }
@@ -147,7 +147,7 @@ async function EDIT2_handleNewFiles(fileList) {
             console.error('%c[ImageUploader] خطأ في ضغط الصورة:', 'color: red;', err);
             state.status = 'error';
             if (state._metaEl) {
-                state._metaEl.textContent = 'خطأ';
+                state._metaEl.textContent = window.langu('gen_err_compression');
             }
         }
     }

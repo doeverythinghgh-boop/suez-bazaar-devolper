@@ -125,7 +125,7 @@ add1_form.addEventListener('submit', async (e) => {
         }
 
         console.log('%c[Add1] تم حفظ المنتج بنجاح.', 'color: green; font-weight: bold;');
-        Swal.fire(window.langu('add1_swal_success_title'), window.langu('add1_swal_success_text'), 'success').then(() => {
+        Swal.fire(window.langu('gen_swal_success_title'), window.langu('add1_swal_success_text'), 'success').then(() => {
             add1_setSubmitLoading(false);
             add1_form.reset();
             add1_previewsEl.innerHTML = '';
@@ -145,6 +145,6 @@ add1_form.addEventListener('submit', async (e) => {
     } catch (error) {
         add1_setSubmitLoading(false);
         console.error('[Add1] Submission failed:', error);
-        Swal.fire(window.langu('add1_swal_error_title'), window.langu('add1_swal_error_text'), 'error');
+        Swal.fire(window.langu('gen_swal_error_title'), window.langu('gen_swal_error_title'), 'error');
     }
 });

@@ -122,7 +122,7 @@ async function add2_handleNewFiles(fileList) {
         // Check max limit
         const availableSlots = add2_MAX_FILES - add2_images.length;
         if (availableSlots <= 0) {
-            Swal.fire('تحذير', `لا يمكن إضافة أكثر من ${add2_MAX_FILES} صور`, 'warning');
+            Swal.fire(window.langu('alert_title_info'), window.langu('gen_err_max_files').replace('{n}', add2_MAX_FILES), 'warning');
             window.isProcessingFilesAdd2 = false;
             return;
         }
@@ -165,7 +165,7 @@ async function add2_handleNewFiles(fileList) {
                 console.error('[Add2] خطأ في الضغط:', err);
                 state.status = 'error';
                 if (state._metaEl) {
-                    state._metaEl.textContent = 'خطأ في الضغط';
+                    state._metaEl.textContent = window.langu('gen_err_compression');
                 }
             }
         }

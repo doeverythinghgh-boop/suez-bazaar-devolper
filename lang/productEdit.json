@@ -1,0 +1,138 @@
+{
+    "edit_page_title": {
+        "ar": "تعديل المنتج",
+        "en": "Edit Product"
+    },
+    "edit_images_heading": {
+        "ar": "صور المنتج",
+        "en": "Product Images"
+    },
+
+    "edit_image_hint": {
+        "ar": "المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp.",
+        "en": "Required: At least one image. Supported: jpg, png, webp."
+    },
+
+    "edit_label_product_name": {
+        "ar": "اسم المنتج",
+        "en": "Product Name"
+    },
+    "edit_placeholder_product_name": {
+        "ar": "اكتب اسمًا واضحًا للمنتج...",
+        "en": "Enter a clear product name..."
+    },
+    "edit_label_description": {
+        "ar": "الوصف",
+        "en": "Description"
+    },
+    "edit_placeholder_description": {
+        "ar": "اكتب وصفًا جذابًا ...",
+        "en": "Write a catchy description..."
+    },
+    "edit_label_seller_message": {
+        "ar": "رسالة من البائع",
+        "en": "Message from Seller"
+    },
+    "edit_placeholder_seller_message": {
+        "ar": "اكتب رسالة قصيرة ومميزة تظهر للمشتري...",
+        "en": "Write a short distinctive message for the buyer..."
+    },
+    "edit_label_notes": {
+        "ar": "ملاحظات",
+        "en": "Notes"
+    },
+    "edit_placeholder_notes": {
+        "ar": "النص هنا لا يظهر للمشتري هو خاص بك انت",
+        "en": "This text is private and not visible to the buyer"
+    },
+    "edit_label_quantity": {
+        "ar": "الكمية المتاحة",
+        "en": "Available Quantity"
+    },
+    "edit_placeholder_quantity": {
+        "ar": "مثال: 50",
+        "en": "Ex: 50"
+    },
+    "edit_label_price": {
+        "ar": "سعر القطعة",
+        "en": "Unit Price"
+    },
+    "edit_placeholder_price": {
+        "ar": "بالجنيه",
+        "en": "In Currency"
+    },
+    "edit_label_original_price": {
+        "ar": "السعر قبل الخصم",
+        "en": "Price Before Discount"
+    },
+    "edit_placeholder_number": {
+        "ar": "ادخل رقم",
+        "en": "Enter Number"
+    },
+    "edit_label_real_price": {
+        "ar": "سعر التطبيق",
+        "en": "App Price"
+    },
+    "edit_checkbox_heavy_load": {
+        "ar": "يحتاج إلى سيارة في التوصيل",
+        "en": "Requires vehicle for delivery"
+    },
+    "edit_btn_save": {
+        "ar": "حفظ التعديلات",
+        "en": "Save Changes"
+    },
+
+
+
+    "edit_swal_updating_title": {
+        "ar": "جاري تحديث المنتج...",
+        "en": "Updating Product..."
+    },
+    "edit_swal_updating_text": {
+        "ar": "يرجى الانتظار بينما يتم حفظ التغييرات.",
+        "en": "Please wait while changes are being saved."
+    },
+    "edit_swal_no_changes_title": {
+        "ar": "تنبيه",
+        "en": "Notice"
+    },
+    "edit_swal_no_changes_text": {
+        "ar": "لم يتم إجراء أي تعديلات على بيانات المنتج.",
+        "en": "No changes were made to the product data."
+    },
+
+    "edit_swal_success_text": {
+        "ar": "تم تحديث المنتج بنجاح.",
+        "en": "Product updated successfully."
+    },
+    "edit_swal_update_failed_text": {
+        "ar": "فشل تحديث المنتج:",
+        "en": "Failed to update product:"
+    },
+
+    "edit_err_img_required": {
+        "ar": "مطلوب صورة واحدة للمنتج على الأقل.",
+        "en": "At least one product image is required."
+    },
+    "edit_err_name_required": {
+        "ar": "اسم المنتج مطلوب.",
+        "en": "Product name is required."
+    },
+    "edit_err_desc_required": {
+        "ar": "وصف المنتج مطلوب (على الأقل 10 أحرف).",
+        "en": "Product description is required (at least 10 chars)."
+    },
+    "edit_err_msg_required": {
+        "ar": "رسالة البائع مطلوبة (على الأقل 10 أحرف).",
+        "en": "Seller message is required (at least 10 chars)."
+    },
+    "edit_err_qty_required": {
+        "ar": "يرجى إدخال كمية متاحة صالحة (على الأقل 1).",
+        "en": "Please enter a valid quantity (at least 1)."
+    },
+    "edit_err_price_required": {
+        "ar": "يرجى إدخال سعر منتج صالح.",
+        "en": "Please enter a valid product price."
+    },
+
+}

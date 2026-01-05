@@ -14,28 +14,28 @@ add2_form.addEventListener('submit', async (e) => {
         // 1. Check for at least one image
         add2_clearError(add2_uploaderEl);
         if (add2_images.length === 0) {
-            add2_showError(add2_uploaderEl, 'مطلوب صورة واحدة للخدمة على الأقل.');
+            add2_showError(add2_uploaderEl, window.langu('add2_err_img_required'));
             isValid = false;
         }
 
         // 2. Check Product Name
         add2_clearError(add2_productNameInput);
         if (!add2_productNameInput.value.trim()) {
-            add2_showError(add2_productNameInput, 'اسم الخدمة مطلوب.');
+            add2_showError(add2_productNameInput, window.langu('add2_err_name_required'));
             isValid = false;
         }
 
         // 3. Check Description
         add2_clearError(add2_descriptionTextarea);
         if (!add2_descriptionTextarea.value.trim() || add2_descriptionTextarea.value.trim().length < 10) {
-            add2_showError(add2_descriptionTextarea, 'وصف الخدمة مطلوب (على الأقل 10 أحرف).');
+            add2_showError(add2_descriptionTextarea, window.langu('add2_err_desc_required'));
             isValid = false;
         }
 
         // 4. Check Seller Message
         add2_clearError(add2_sellerMessageTextarea);
         if (!add2_sellerMessageTextarea.value.trim() || add2_sellerMessageTextarea.value.trim().length < 10) {
-            add2_showError(add2_sellerMessageTextarea, 'رسالة مقدم الخدمة مطلوبة (على الأقل 10 أحرف).');
+            add2_showError(add2_sellerMessageTextarea, window.langu('add2_err_msg_required'));
             isValid = false;
         }
 
@@ -46,8 +46,8 @@ add2_form.addEventListener('submit', async (e) => {
 
         console.log('%c[Add2] التحقق نجح. بدء عملية الإرسال.', 'color: green;');
         Swal.fire({
-            title: 'جاري إضافة الخدمة...',
-            text: 'يرجى الانتظار بينما يتم رفع الصور.',
+            title: window.langu('add2_swal_adding_title'),
+            text: window.langu('add2_swal_uploading_text'),
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
@@ -102,7 +102,7 @@ add2_form.addEventListener('submit', async (e) => {
         }
 
         console.log('%c[Add2] تم حفظ الخدمة بنجاح.', 'color: green; font-weight: bold;');
-        Swal.fire('تم بنجاح!', 'تم حفظ الخدمة وإرسالها للإدارة بنجاح لمراجعتها ونشرها.', 'success').then(() => {
+        Swal.fire(window.langu('gen_swal_success_title'), window.langu('add2_swal_success_text'), 'success').then(() => {
             add2_form.reset();
             add2_previewsEl.innerHTML = '';
             add2_images.length = 0;
@@ -121,6 +121,6 @@ add2_form.addEventListener('submit', async (e) => {
 
     } catch (error) {
         console.error('%c[Add2] Submission failed with critical error:', 'color: red; font-weight: bold;', error);
-        Swal.fire('خطأ!', 'حدث خطأ أثناء إضافة الخدمة. يرجى المحاولة مرة أخرى.', 'error');
+        Swal.fire(window.langu('gen_swal_error_title'), window.langu('add2_swal_error_text'), 'error');
     }
 });

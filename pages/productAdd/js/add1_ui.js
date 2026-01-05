@@ -49,7 +49,7 @@ function add1_createPreviewItem(state, existingImageUrl = null) {
         removeBtn.type = "button";
         removeBtn.id = `add1_preview_remove_${state.id}`;
         removeBtn.className = 'add1_product_modal__preview_remove';
-        removeBtn.setAttribute('title', 'Remove Image');
+        removeBtn.setAttribute('title', window.langu('gen_tooltip_remove_image'));
         removeBtn.innerHTML = `<i class="fas fa-trash-alt" id="add1_icon_trash_${state.id}"></i>`;
         removeBtn.addEventListener('click', () => add1_removeImage(state.id));
 
@@ -59,7 +59,7 @@ function add1_createPreviewItem(state, existingImageUrl = null) {
         const meta = document.createElement('div');
         meta.id = `add1_preview_meta_${state.id}`;
         meta.className = 'add1_product_modal__preview_meta';
-        meta.textContent = window.langu('add1_processing');
+        meta.textContent = window.langu('gen_lbl_processing');
 
         wrapper.appendChild(removeBtn);
         wrapper.appendChild(img);
@@ -67,7 +67,7 @@ function add1_createPreviewItem(state, existingImageUrl = null) {
 
         if (existingImageUrl) {
             img.src = existingImageUrl;
-            meta.textContent = window.langu('add1_current_img');
+            meta.textContent = window.langu('gen_lbl_current_img');
         } else {
             const reader = new FileReader();
             reader.onload = (e) => { img.src = e.target.result; };
@@ -91,14 +91,14 @@ function add1_removeImage(id) {
     try {
         console.log(`[Add1] محاولة حذف الصورة بالمعرف: ${id}`);
         Swal.fire({
-            title: window.langu('add1_swal_remove_title'),
-            text: window.langu('add1_swal_remove_text'),
+            title: window.langu('gen_swal_title_confirm'),
+            text: window.langu('gen_swal_remove_text'),
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
-            confirmButtonText: window.langu('add1_swal_yes_delete'),
-            cancelButtonText: window.langu('cat_cancel_btn')
+            confirmButtonText: window.langu('gen_swal_btn_yes_delete'),
+            cancelButtonText: window.langu('gen_swal_btn_cancel')
         }).then((result) => {
             if (result.isConfirmed) {
                 const idx = add1_images.findIndex(i => i.id === id);
@@ -252,15 +252,15 @@ if (add1_btnDiscard) {
     add1_btnDiscard.addEventListener('click', () => {
         try {
             Swal.fire({
-                title: window.langu('add1_swal_discard_title'),
-                text: window.langu('add1_swal_discard_text'),
+                title: window.langu('gen_swal_discard_title'),
+                text: window.langu('gen_swal_discard_text'),
                 icon: 'warning',
                 iconColor: '#f39c12',
                 showCancelButton: true,
                 confirmButtonColor: '#e74c3c',
                 cancelButtonColor: '#bdc3c7',
-                confirmButtonText: '<i class="fas fa-trash-alt"></i> ' + window.langu('add1_swal_yes_discard'),
-                cancelButtonText: window.langu('add1_swal_cancel_discard'),
+                confirmButtonText: '<i class="fas fa-trash-alt"></i> ' + window.langu('gen_swal_btn_yes_discard'),
+                cancelButtonText: window.langu('gen_btn_back'),
                 background: '#ffffff',
                 customClass: {
                     title: 'swal-modern-title',

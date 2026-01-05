@@ -9,13 +9,13 @@ async function pv2_sendOrder() {
         const note = dom.note.value.trim();
 
         if (pv2_orderImages.length === 0 && !note) {
-            Swal.fire('تنبيه', 'يرجى إضافة ملاحظة أو صورة واحدة على الأقل', 'warning');
+            Swal.fire(window.langu('alert_title_info'), window.langu('view2_warn_no_content'), 'warning');
             return;
         }
 
         const productData = (typeof ProductStateManager !== 'undefined') ? ProductStateManager.getCurrentProduct() : null;
         if (!productData) {
-            Swal.fire('خطأ', 'لم يتم العثور على بيانات المنتج', 'error');
+            Swal.fire(window.langu('gen_swal_error_title'), window.langu('view2_err_no_product'), 'error');
             return;
         }
 
@@ -24,8 +24,8 @@ async function pv2_sendOrder() {
         const user_key = (typeof userSession !== 'undefined') ? userSession.user_key : null;
 
         Swal.fire({
-            title: 'جاري الإرسال...',
-            html: 'يرجى الانتظار بينما نقوم برفع الصور وإنشاء الطلب',
+            title: window.langu('gen_lbl_sending'),
+            html: window.langu('view2_swal_sending_text'),
             allowOutsideClick: false,
             didOpen: () => Swal.showLoading()
         });
@@ -65,7 +65,7 @@ async function pv2_sendOrder() {
                 body: JSON.stringify(orderData)
             });
 
-            if (!res.ok) throw new Error('فشل إنشاء الطلب');
+            if (!res.ok) throw new Error(window.langu('view2_err_create_order'));
 
             localStorage.setItem('showOrderPhotoMessage', 'true');
 
@@ -74,13 +74,13 @@ async function pv2_sendOrder() {
                 handlePurchaseNotifications(finalOrderForNotify).catch(err => console.error('[PV2] Notification error:', err));
             }
 
-            Swal.fire({ icon: 'success', title: 'تم الإرسال بنجاح', confirmButtonText: 'حسناً' }).then(() => {
+            Swal.fire({ icon: 'success', title: window.langu('gen_swal_success_title'), confirmButtonText: window.langu('alert_confirm_btn') }).then(() => {
                 mainLoader("./pages/home.html", "index-home-container", 0, undefined, "hiddenHomeIcon", false);
             });
 
         } catch (error) {
             console.error(error);
-            Swal.fire({ icon: 'error', title: 'خطأ', text: error.message });
+            Swal.fire({ icon: 'error', title: window.langu('gen_swal_error_title'), text: error.message });
         }
     }
 }

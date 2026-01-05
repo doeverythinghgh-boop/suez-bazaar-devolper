@@ -23,7 +23,7 @@ function pv2_buildSlider(images, dom) {
     nextBtn.style.display = 'none';
 
     if (!images || images.length === 0) {
-        sliderTrack.innerHTML = '<p style="text-align:center; color:#666; width:100%;">لا توجد صور للخدمة</p>';
+        sliderTrack.innerHTML = `<p style="text-align:center; color:#666; width:100%;">${window.langu('gen_lbl_no_images')}</p>`;
         return;
     }
 

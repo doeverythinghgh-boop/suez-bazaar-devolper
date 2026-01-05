@@ -51,10 +51,10 @@ function add2_clearError(element) {
  */
 function add2_formatBytes(bytes, decimals = 2) {
     try {
-        if (!+bytes) return '0 Bytes';
+        if (!+bytes) return '0 ' + window.langu('gen_unit_bytes');
         const k = 1024;
         const dm = decimals < 0 ? 0 : decimals;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const sizes = [window.langu('gen_unit_bytes'), 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
     } catch (error) {

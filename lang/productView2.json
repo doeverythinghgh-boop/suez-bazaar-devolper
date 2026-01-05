@@ -1,0 +1,59 @@
+{
+    "view2_desc_header": {
+        "ar": "وصف الخدمة",
+        "en": "Service Description"
+    },
+    "view2_seller_msg_header": {
+        "ar": "رسالة من مقدم الخدمة",
+        "en": "Message from Provider"
+    },
+    "view2_order_box_title": {
+        "ar": "بيانات الارسال ( اضف ملاحظاتك او صور او كلاهما لوصف طلبك بدقة )",
+        "en": "Order Details (Add notes, photos, or both to describe your request accurately)"
+    },
+    "view2_note_placeholder": {
+        "ar": "أضف ملاحظاتك ووصف دقيق لطلبك (بحد أقصى 300 حرف)",
+        "en": "Add your notes and precise description (max 300 chars)"
+    },
+    "view2_upload_hint": {
+        "ar": "(بحد أقصى 4 صور - 5 ميجابايت لكل صورة)",
+        "en": "(Max 4 images - 5MB per image)"
+    },
+
+
+    "view2_warn_no_content": {
+        "ar": "يرجى إضافة ملاحظة أو صورة واحدة على الأقل",
+        "en": "Please add at least a note or one image"
+    },
+    "view2_err_no_product": {
+        "ar": "لم يتم العثور على بيانات المنتج",
+        "en": "Product data not found"
+    },
+
+    "view2_swal_sending_text": {
+        "ar": "يرجى الانتظار بينما نقوم برفع الصور وإنشاء الطلب",
+        "en": "Please wait while we upload images and create the order"
+    },
+    "view2_err_create_order": {
+        "ar": "فشل إنشاء الطلب",
+        "en": "Failed to create order"
+    },
+
+
+    "view2_no_desc": {
+        "ar": "لا يوجد وصف متاح.",
+        "en": "No description available."
+    },
+    "view2_no_seller_msg": {
+        "ar": "لا توجد رسالة من مقدم الخدمة.",
+        "en": "No provider message."
+    },
+    "view2_swal_pc_upload_hint": {
+        "ar": "يرجى استخدام زر اختيار الملفات على الكمبيوتر",
+        "en": "Please use the 'Pick Images' button on PC"
+    },
+    "view2_btn_capture_confirm": {
+        "ar": "التقاط الصورة",
+        "en": "Capture Photo"
+    }
+}

@@ -22,28 +22,28 @@ if (EDIT2_form) {
         // 1. Check for images
         EDIT2_clearError(uploaderEl);
         if (EDIT2_images.length === 0) {
-            EDIT2_showError(uploaderEl, 'مطلوب صورة واحدة للخدمة على الأقل.');
+            EDIT2_showError(uploaderEl, window.langu('edit2_err_img_required'));
             isValid = false;
         }
 
         // 2. Check Service Name
         EDIT2_clearError(productNameInput);
         if (!productNameInput.value.trim()) {
-            EDIT2_showError(productNameInput, 'اسم الخدمة مطلوب.');
+            EDIT2_showError(productNameInput, window.langu('edit2_err_name_required'));
             isValid = false;
         }
 
         // 3. Check Description
         EDIT2_clearError(descriptionTextarea);
         if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
-            EDIT2_showError(descriptionTextarea, 'وصف الخدمة مطلوب (على الأقل 10 أحرف).');
+            EDIT2_showError(descriptionTextarea, window.langu('edit2_err_desc_required'));
             isValid = false;
         }
 
         // 4. Check Seller Message
         EDIT2_clearError(sellerMessageTextarea);
         if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
-            EDIT2_showError(sellerMessageTextarea, 'رسالة مقدم الخدمة مطلوبة (على الأقل 10 أحرف).');
+            EDIT2_showError(sellerMessageTextarea, window.langu('edit2_err_msg_required'));
             isValid = false;
         }
 
@@ -54,8 +54,8 @@ if (EDIT2_form) {
 
         console.log('%c[ProductEdit2] التحقق نجح. بدء عملية التحديث.', 'color: green;');
         Swal.fire({
-            title: 'جاري تحديث الخدمة...',
-            text: 'يرجى الانتظار بينما يتم حفظ التغييرات.',
+            title: window.langu('edit2_swal_updating_title'),
+            text: window.langu('edit2_swal_updating_text'),
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
@@ -127,8 +127,8 @@ if (EDIT2_form) {
 
             if (!hasDataChanged) {
                 Swal.fire({
-                    title: 'تنبيه',
-                    text: 'لم يتم إجراء أي تعديلات على بيانات الخدمة.',
+                    title: window.langu('edit2_swal_no_changes_title'),
+                    text: window.langu('edit2_swal_no_changes_text'),
                     icon: 'info'
                 });
                 return;
@@ -152,8 +152,8 @@ if (EDIT2_form) {
             }
 
             Swal.fire({
-                title: 'تم بنجاح!',
-                text: 'تم تحديث الخدمة بنجاح.',
+                title: window.langu('gen_swal_success_title'),
+                text: window.langu('edit2_swal_success_text'),
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false
@@ -162,8 +162,8 @@ if (EDIT2_form) {
         } catch (error) {
             console.error('[ProductEdit2] Update failed:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: `فشل تحديث الخدمة: ${error.message}`,
+                title: window.langu('gen_swal_error_title'),
+                text: `${window.langu('edit2_swal_update_failed_text')} ${error.message}`,
                 icon: 'error'
             });
         }

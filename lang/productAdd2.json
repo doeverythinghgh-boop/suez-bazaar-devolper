@@ -1,0 +1,90 @@
+{
+    "add2_page_title": {
+        "ar": "إضافة خدمة جديدة",
+        "en": "Add New Service"
+    },
+
+    "add2_images_heading": {
+        "ar": "صور الخدمة",
+        "en": "Service Images"
+    },
+
+    "add2_image_hint": {
+        "ar": "المطلوب: صورة واحدة للخدمة على الأقل. الدعم: jpg, png, webp.",
+        "en": "Required: At least one service image. Supported: jpg, png, webp."
+    },
+    "add2_label_product_name": {
+        "ar": "اسم الخدمة",
+        "en": "Service Name"
+    },
+    "add2_placeholder_product_name": {
+        "ar": "اكتب اسمًا واضحًا للخدمة...",
+        "en": "Enter a clear service name..."
+    },
+    "add2_label_description": {
+        "ar": "وصف الخدمة",
+        "en": "Service Description"
+    },
+    "add2_placeholder_description": {
+        "ar": "اكتب وصفًا جذابًا للخدمة...",
+        "en": "Write a catchy service description..."
+    },
+    "add2_label_seller_message": {
+        "ar": "رسالة من مقدم الخدمة",
+        "en": "Message from Provider"
+    },
+    "add2_placeholder_seller_message": {
+        "ar": "اكتب رسالة قصيرة ومميزة تظهر للعميل...",
+        "en": "Write a short message to the customer..."
+    },
+    "add2_label_notes": {
+        "ar": "ملاحظات",
+        "en": "Notes"
+    },
+    "add2_placeholder_notes": {
+        "ar": "النص هنا لا يظهر للمشتري هو خاص بك انت",
+        "en": "This text is private and not visible to the buyer"
+    },
+    "add2_btn_submit": {
+        "ar": "اضف الخدمة الآن",
+        "en": "Add Service Now"
+    },
+
+
+    "add2_err_img_required": {
+        "ar": "مطلوب صورة واحدة للخدمة على الأقل.",
+        "en": "At least one service image is required."
+    },
+    "add2_err_name_required": {
+        "ar": "اسم الخدمة مطلوب.",
+        "en": "Service name is required."
+    },
+    "add2_err_desc_required": {
+        "ar": "وصف الخدمة مطلوب (على الأقل 10 أحرف).",
+        "en": "Service description is required (at least 10 chars)."
+    },
+    "add2_err_msg_required": {
+        "ar": "رسالة مقدم الخدمة مطلوبة (على الأقل 10 أحرف).",
+        "en": "Provider message is required (at least 10 chars)."
+    },
+
+    "add2_swal_adding_title": {
+        "ar": "جاري إضافة الخدمة...",
+        "en": "Adding Service..."
+    },
+    "add2_swal_uploading_text": {
+        "ar": "يرجى الانتظار بينما يتم رفع الصور.",
+        "en": "Please wait while images are uploading."
+    },
+
+    "add2_swal_success_text": {
+        "ar": "تم حفظ الخدمة وإرسالها للإدارة بنجاح لمراجعتها ونشرها.",
+        "en": "Service saved and sent to admin for review/publish."
+    },
+
+    "add2_swal_error_text": {
+        "ar": "حدث خطأ أثناء إضافة الخدمة. يرجى المحاولة مرة أخرى.",
+        "en": "An error occurred while adding the service. Please try again."
+    },
+
+}

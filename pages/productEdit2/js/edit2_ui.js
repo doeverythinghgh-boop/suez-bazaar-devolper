@@ -33,14 +33,14 @@ function EDIT2_createPreviewItem(state, existingImageUrl = null) {
     const removeBtn = document.createElement('button');
     removeBtn.type = "button";
     removeBtn.className = 'edit-product-modal__preview-remove';
-    removeBtn.setAttribute('title', 'Remove Image');
+    removeBtn.setAttribute('title', window.langu('gen_tooltip_remove_image'));
     removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
     removeBtn.addEventListener('click', () => EDIT2_removeImage(state.id));
 
     const img = document.createElement('img');
     const meta = document.createElement('div');
     meta.className = 'edit-product-modal__preview-meta';
-    meta.textContent = state.status === 'uploaded' ? 'الصورة الحالية' : 'جاري المعالجة...';
+    meta.textContent = state.status === 'uploaded' ? window.langu('gen_lbl_current_img') : window.langu('gen_lbl_processing');
 
     wrapper.appendChild(removeBtn);
     wrapper.appendChild(img);
@@ -67,14 +67,14 @@ function EDIT2_createPreviewItem(state, existingImageUrl = null) {
 function EDIT2_removeImage(id) {
     console.log(`[ImageUploader] محاولة حذف الصورة بالمعرف: ${id}`);
     Swal.fire({
-        title: 'هل أنت متأكد؟',
-        text: "هل تريد حقاً حذف هذه الصورة؟",
+        title: window.langu('gen_swal_title_confirm'),
+        text: window.langu('gen_swal_remove_text'),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'نعم، احذفها!',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: window.langu('gen_swal_btn_yes_delete'),
+        cancelButtonText: window.langu('gen_swal_btn_cancel')
     }).then((result) => {
         if (result.isConfirmed) {
             const idx = EDIT2_images.findIndex(i => i.id === id);
@@ -166,15 +166,15 @@ if (edit2_btnDiscard) {
     edit2_btnDiscard.addEventListener('click', () => {
         try {
             Swal.fire({
-                title: 'تجاهل التعديلات؟',
-                text: "سيتم مسح التغييرات والعودة للوحة التحكم.",
+                title: window.langu('gen_swal_discard_title'),
+                text: window.langu('gen_swal_discard_text'),
                 icon: 'warning',
                 iconColor: '#f39c12',
                 showCancelButton: true,
                 confirmButtonColor: '#e74c3c',
                 cancelButtonColor: '#bdc3c7',
-                confirmButtonText: '<i class="fas fa-trash-alt"></i> نعم، تجاهل',
-                cancelButtonText: 'تراجع',
+                confirmButtonText: `<i class="fas fa-trash-alt"></i> ${window.langu('gen_swal_btn_yes_discard')}`,
+                cancelButtonText: window.langu('gen_swal_btn_back'),
                 // background: '#ffffff', // REMOVED for Dark Mode
                 customClass: {
                     title: 'swal-modern-title',
@@ -218,7 +218,7 @@ async function EDIT2_openDesktopCamera() {
             <video id="camera-preview" autoplay playsinline></video>
             <canvas id="camera-canvas" style="display:none;"></canvas>
             <div class="camera-controls">
-                <button id="capture-photo-btn" class="btn btn-warning"><i class="fas fa-camera"></i> Capture Photo</button>
+                <button id="capture-photo-btn" class="btn btn-warning"><i class="fas fa-camera"></i> ${window.langu('gen_btn_capture_photo')}</button>
             </div>
         </div>
     `;

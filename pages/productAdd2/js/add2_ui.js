@@ -48,7 +48,7 @@ function add2_createPreviewItem(state, existingImageUrl = null) {
         removeBtn.type = "button";
         removeBtn.id = `add2_preview_remove_${state.id}`;
         removeBtn.className = 'add2_product_modal__preview_remove';
-        removeBtn.setAttribute('title', 'Remove Image');
+        removeBtn.setAttribute('title', window.langu('gen_tooltip_remove_image'));
         removeBtn.innerHTML = `<i class="fas fa-trash-alt" id="add2_icon_trash_${state.id}"></i>`;
         removeBtn.addEventListener('click', () => add2_removeImage(state.id));
 
@@ -58,7 +58,7 @@ function add2_createPreviewItem(state, existingImageUrl = null) {
         const meta = document.createElement('div');
         meta.id = `add2_preview_meta_${state.id}`;
         meta.className = 'add2_product_modal__preview_meta';
-        meta.textContent = 'جاري المعالجة...';
+        meta.textContent = window.langu('gen_lbl_processing');
 
         wrapper.appendChild(removeBtn);
         wrapper.appendChild(img);
@@ -66,7 +66,7 @@ function add2_createPreviewItem(state, existingImageUrl = null) {
 
         if (existingImageUrl) {
             img.src = existingImageUrl;
-            meta.textContent = 'Current Image';
+            meta.textContent = window.langu('gen_lbl_current_img');
         } else {
             const reader = new FileReader();
             reader.onload = (e) => { img.src = e.target.result; };
@@ -90,14 +90,14 @@ function add2_removeImage(id) {
     try {
         console.log(`[Add2] محاولة حذف الصورة بالمعرف: ${id}`);
         Swal.fire({
-            title: 'هل أنت متأكد؟',
-            text: "هل تريد حقاً حذف هذه الصورة؟",
+            title: window.langu('gen_swal_title_confirm'),
+            text: window.langu('gen_swal_remove_text'),
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
-            confirmButtonText: 'نعم، احذفها!',
-            cancelButtonText: 'إلغاء'
+            confirmButtonText: window.langu('gen_swal_btn_yes_delete'),
+            cancelButtonText: window.langu('gen_swal_btn_cancel')
         }).then((result) => {
             if (result.isConfirmed) {
                 const idx = add2_images.findIndex(i => i.id === id);
@@ -153,11 +153,11 @@ add2_takePhotoBtn.addEventListener('click', () => {
             }
             Swal.fire({
                 icon: 'warning',
-                title: 'مشكلة في الكاميرا',
-                text: 'حاول فتح الكاميرا بطريقة أخرى',
+                title: window.langu('gen_cam_error_title'),
+                text: window.langu('gen_cam_error_text'),
                 showCancelButton: true,
-                confirmButtonText: 'اختر من المعرض',
-                cancelButtonText: 'إلغاء'
+                confirmButtonText: window.langu('gen_cam_use_gallery'),
+                cancelButtonText: window.langu('add2_swal_cancel_delete')
             }).then((result) => {
                 if (result.isConfirmed) {
                     add2_pickFilesBtn.click();
@@ -289,15 +289,15 @@ if (add2_btnDiscard) {
     add2_btnDiscard.addEventListener('click', () => {
         try {
             Swal.fire({
-                title: 'تجاهل التعديلات؟',
-                text: "سيتم مسح كافة البيانات والعودة للوحة التحكم.",
+                title: window.langu('gen_swal_discard_title'),
+                text: window.langu('gen_swal_discard_text'),
                 icon: 'warning',
                 iconColor: '#f39c12',
                 showCancelButton: true,
                 confirmButtonColor: '#e74c3c',
                 cancelButtonColor: '#bdc3c7',
-                confirmButtonText: '<i class="fas fa-trash-alt"></i> نعم، تجاهل',
-                cancelButtonText: 'تراجع',
+                confirmButtonText: `<i class="fas fa-trash-alt"></i> ${window.langu('gen_swal_btn_yes_discard')}`,
+                cancelButtonText: window.langu('gen_swal_btn_back'),
                 // background: '#ffffff', // REMOVED for Dark Mode
                 customClass: {
                     title: 'swal-modern-title',

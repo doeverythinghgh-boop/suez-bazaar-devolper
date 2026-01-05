@@ -8,16 +8,16 @@
 <div class="add2_product_modal" role="dialog" aria-modal="true" aria-labelledby="add2_product_title"
     id="add2_product_modal_container">
     <div class="add2_top_actions">
-        <button type="button" class="add2_btn_back" id="add2_btn_back" title="رجوع">
-            <i class="fas fa-arrow-right"></i> رجوع
+        <button type="button" class="add2_btn_back" id="add2_btn_back" title="رجوع" data-lkey-title="gen_btn_back">
+            <i class="fas fa-arrow-right"></i> <span data-lkey="gen_btn_back">رجوع</span>
         </button>
-        <button type="button" class="add2_btn_discard_top" id="add2_btn_discard" title="تجاهل التعديلات">
-            <i class="fas fa-times"></i> تجاهل
+        <button type="button" class="add2_btn_discard_top" id="add2_btn_discard" title="تجاهل التعديلات" data-lkey-title="gen_btn_discard">
+            <i class="fas fa-times"></i> <span data-lkey="gen_btn_discard">تجاهل</span>
         </button>
     </div>
     <h2 class="add2_product_modal__title" id="add2_product_title"><i class="fas fa-concierge-bell"
             id="add2_icon_title"></i>
-        إضافة خدمة جديدة</h2>
+        <span data-lkey="add2_page_title">إضافة خدمة جديدة</span></h2>
 
     <!-- Selected Category Badges -->
     <div id="add2_category_display" class="add2_category_badges">
@@ -28,8 +28,8 @@
         <!-- Image Upload Module -->
         <section class="add2_product_modal__form_group" aria-labelledby="add2_images_heading" id="add2_section_images">
             <label id="add2_images_heading" class="add2_product_modal__label"><i class="fas fa-images"
-                    id="add2_icon_images"></i> صور
-                الخدمة</label>
+                    id="add2_icon_images"></i> <span data-lkey="add2_images_heading">صور
+                الخدمة</span></label>
 
             <div class="add2_product_modal__image_uploader" id="add2_image_uploader" tabindex="0" role="group"
                 aria-label="منطقة رفع الصور">
@@ -40,13 +40,13 @@
 
                     <!-- Changed btn-primary to btn-ghost for design consistency -->
                     <button type="button" class="add2_btn add2_btn_ghost add2_btn_icon" id="add2_pick_files_btn"
-                        title="اختر صورًا"><i class="fas fa-folder-open" id="add2_icon_folder"></i></button>
+                        title="اختر صورًا" data-lkey-title="gen_btn_pick_images"><i class="fas fa-folder-open" id="add2_icon_folder"></i></button>
                     <button type="button" class="add2_btn add2_btn_ghost add2_btn_icon" id="add2_take_photo_btn"
-                        title="التقاط من الكاميرا"><i class="fas fa-camera" id="add2_icon_camera"></i></button>
+                        title="التقاط من الكاميرا" data-lkey-title="gen_btn_take_photo"><i class="fas fa-camera" id="add2_icon_camera"></i></button>
 
                 </div>
 
-                <div class="add2_product_modal__hint" id="add2_hint_text">المطلوب: صورة واحدة للخدمة على الأقل.
+                <div class="add2_product_modal__hint" id="add2_hint_text" data-lkey="add2_image_hint">المطلوب: صورة واحدة للخدمة على الأقل.
                     الدعم:
                     jpg, png, webp. </div>
 
@@ -58,10 +58,10 @@
         <!-- NEW: Product Name Field -->
         <div class="add2_product_modal__form_group" id="add2_group_product_name">
             <label for="add2_product_name" class="add2_product_modal__label" id="add2_label_product_name"><i
-                    class="fas fa-signature" id="add2_icon_product_name"></i> اسم
-                الخدمة</label>
+                    class="fas fa-signature" id="add2_icon_product_name"></i> <span data-lkey="add2_label_product_name">اسم
+                الخدمة</span></label>
             <input type="text" id="add2_product_name" name="product-name" class="add2_product_modal__input"
-                maxlength="100" placeholder="اكتب اسمًا واضحًا للخدمة..." required>
+                maxlength="100" placeholder="اكتب اسمًا واضحًا للخدمة..." data-lkey-placeholder="add2_placeholder_product_name" required>
             <div id="add2_product_name_char_counter" class="add2_product_modal__char_counter">0 / 100</div>
         </div>
 
@@ -69,19 +69,19 @@
         <div class="add2_product_modal__form_group" id="add2_group_description">
             <label for="add2_product_description" class="add2_product_modal__label" id="add2_label_description"><i
                     class="fas fa-file-alt" id="add2_icon_description"></i>
-                وصف الخدمة</label>
+                <span data-lkey="add2_label_description">وصف الخدمة</span></label>
             <textarea id="add2_product_description" name="product-description" class="add2_product_modal__textarea"
-                rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا للخدمة..."></textarea>
+                rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا للخدمة..." data-lkey-placeholder="add2_placeholder_description"></textarea>
             <div id="add2_description_char_counter" class="add2_product_modal__char_counter">0 / 400</div>
         </div>
 
         <!-- Seller Message Field -->
         <div class="add2_product_modal__form_group" id="add2_group_seller_message">
             <label for="add2_seller_message" class="add2_product_modal__label" id="add2_label_seller_message"><i
-                    class="fas fa-comment-dots" id="add2_icon_seller_message"></i> رسالة
-                من مقدم الخدمة</label>
+                    class="fas fa-comment-dots" id="add2_icon_seller_message"></i> <span data-lkey="add2_label_seller_message">رسالة
+                من مقدم الخدمة</span></label>
             <input type="text" id="add2_seller_message" name="seller-message" class="add2_product_modal__input"
-                maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للعميل...">
+                maxlength="100" placeholder="اكتب رسالة قصيرة ومميزة تظهر للعميل..." data-lkey-placeholder="add2_placeholder_seller_message">
             <div id="add2_seller_message_char_counter" class="add2_product_modal__char_counter">0 / 100</div>
         </div>
 
@@ -89,9 +89,9 @@
         <div class="add2_product_modal__form_group" id="add2_group_notes">
             <label for="add2_product_notes" class="add2_product_modal__label" id="add2_label_notes"><i
                     class="fas fa-sticky-note" id="add2_icon_notes"></i>
-                ملاحظات</label>
+                <span data-lkey="add2_label_notes">ملاحظات</span></label>
             <input type="text" id="add2_product_notes" name="product-notes" class="add2_product_modal__input"
-                maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت">
+                maxlength="100" placeholder="النص هنا لا يظهر للمشتري هو خاص بك انت" data-lkey-placeholder="add2_placeholder_notes">
             <div id="add2_notes_char_counter" class="add2_product_modal__char_counter">0 / 100</div>
         </div>
 
@@ -99,7 +99,7 @@
 
         <!-- Submit Button -->
         <div class="add2_product_modal__submit_container" id="add2_submit_container">
-            <button type="submit" class="add2_btn add2_btn_primary" id="add2_btn_submit">اضف الخدمة الآن</button>
+            <button type="submit" class="add2_btn add2_btn_primary" id="add2_btn_submit"><span data-lkey="add2_btn_submit">اضف الخدمة الآن</span></button>
         </div>
     </form>
 </div>

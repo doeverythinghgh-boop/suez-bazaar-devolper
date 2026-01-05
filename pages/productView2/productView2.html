@@ -19,7 +19,7 @@
         </h3>
         <div class="pv2_description_box" id="pv2_description_container">
             <h4 id="pv2_description_header">
-                <i class="fas fa-file-alt"></i> وصف الخدمة
+                <i class="fas fa-file-alt"></i> <span data-lkey="view2_desc_header">وصف الخدمة</span>
             </h4>
             <p id="pv2_description_text"></p>
         </div>
@@ -27,34 +27,34 @@
         <div class="pv2_seller_message_box" id="pv2_seller_message_container">
             <h4 id="pv2_seller_message_header">
                 <i class="fas fa-comment-dots" id="pv2_seller_message_icon"></i>
-                رسالة من مقدم الخدمة
+                <span data-lkey="view2_seller_msg_header">رسالة من مقدم الخدمة</span>
             </h4>
             <p id="pv2_seller_message_text"></p>
         </div>
 
         <!-- New: Order Photos and Notes Section -->
         <div class="pv2_order_box" id="pv2_order_box">
-            <h4><i class="fas fa-paper-plane"></i> بيانات الارسال ( اضف ملاحظاتك او صور او كلاهما لوصف طلبك بدقة )</h4>
+            <h4><i class="fas fa-paper-plane"></i> <span data-lkey="view2_order_box_title">بيانات الارسال ( اضف ملاحظاتك او صور او كلاهما لوصف طلبك بدقة )</span></h4>
 
             <textarea id="pv2_note" maxlength="300"
-                placeholder="أضف ملاحظاتك ووصف دقيق لطلبك (بحد أقصى 300 حرف)"></textarea>
+                placeholder="أضف ملاحظاتك ووصف دقيق لطلبك (بحد أقصى 300 حرف)" data-lkey-placeholder="view2_note_placeholder"></textarea>
 
             <div class="pv2_uploader" id="pv2_uploader_area">
-                <div style="font-size:0.8rem; color:#888; margin-top:5px;">(بحد أقصى 4 صور - 5 ميجابايت لكل صورة)</div>
+                <div style="font-size:0.8rem; color:#888; margin-top:5px;" data-lkey="view2_upload_hint">(بحد أقصى 4 صور - 5 ميجابايت لكل صورة)</div>
 
                 <input type="file" id="pv2_fileInput" accept="image/*" multiple style="display:none">
 
                 <div class="pv2_uploader_actions">
-                    <div class="pv2_uploader_btn" id="pv2_pickImgBtn" title="اختر صور"><i
+                    <div class="pv2_uploader_btn" id="pv2_pickImgBtn" title="اختر صور" data-lkey-title="gen_btn_pick_images"><i
                             class="fas fa-folder-open"></i></div>
-                    <div class="pv2_uploader_btn" id="pv2_camBtn" title="الكاميرا"><i class="fas fa-camera"></i></div>
+                    <div class="pv2_uploader_btn" id="pv2_camBtn" title="الكاميرا" data-lkey-title="gen_btn_take_photo"><i class="fas fa-camera"></i></div>
                 </div>
 
                 <div class="pv2_previews" id="pv2_previews"></div>
             </div>
 
             <button id="pv2_sendBtn" class="pv2_send_btn">
-                <i class="fas fa-paper-plane"></i> إرسال الطلب
+                <i class="fas fa-paper-plane"></i> <span data-lkey="gen_btn_send_order">إرسال الطلب</span>
             </button>
         </div>
     </div>

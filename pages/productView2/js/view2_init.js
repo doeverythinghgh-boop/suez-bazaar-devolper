@@ -13,9 +13,9 @@ function pv2_viewDetails(productData, options = {}) {
             dom.orderBox.style.display = "none";
         }
 
-        if (dom.name) dom.name.textContent = productData.productName || "غير متوفر";
-        if (dom.description) dom.description.textContent = productData.description || "لا يوجد وصف متاح.";
-        if (dom.sellerMessage) dom.sellerMessage.textContent = productData.sellerMessage || "لا توجد رسالة من مقدم الخدمة.";
+        if (dom.name) dom.name.textContent = productData.productName || window.langu('gen_lbl_unavailable');
+        if (dom.description) dom.description.textContent = productData.description || window.langu('view2_no_desc');
+        if (dom.sellerMessage) dom.sellerMessage.textContent = productData.sellerMessage || window.langu('view2_no_seller_msg');
 
         const images = productData.imageSrc || [];
         pv2_buildSlider(images, dom);
@@ -44,7 +44,7 @@ function pv2_initOrderLogic() {
                 dom.fileInput.setAttribute('capture', 'environment');
                 dom.fileInput.click();
             } else {
-                Swal.fire('تنبيه', 'يرجى استخدام زر اختيار الملفات على الكمبيوتر', 'info');
+                Swal.fire(window.langu('alert_title_info'), window.langu('view2_swal_pc_upload_hint'), 'info');
             }
         };
     }

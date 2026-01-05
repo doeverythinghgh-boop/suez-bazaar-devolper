@@ -1,0 +1,98 @@
+{
+    "edit2_page_title": {
+        "ar": "تعديل الخدمة",
+        "en": "Edit Service"
+    },
+    "edit2_images_heading": {
+        "ar": "صور الخدمة",
+        "en": "Service Images"
+    },
+
+    "edit2_image_hint": {
+        "ar": "المطلوب: صورة واحدة للخدمة على الأقل. الدعم: jpg, png, webp.",
+        "en": "Required: At least one service image. Supported: jpg, png, webp."
+    },
+
+    "edit2_label_product_name": {
+        "ar": "اسم الخدمة",
+        "en": "Service Name"
+    },
+    "edit2_placeholder_product_name": {
+        "ar": "اكتب اسمًا واضحًا للخدمة...",
+        "en": "Enter a clear service name..."
+    },
+    "edit2_label_description": {
+        "ar": "وصف الخدمة",
+        "en": "Service Description"
+    },
+    "edit2_placeholder_description": {
+        "ar": "اكتب وصفًا جذابًا ...",
+        "en": "Write a catchy description..."
+    },
+    "edit2_label_seller_message": {
+        "ar": "رسالة من مقدم الخدمة",
+        "en": "Message from Provider"
+    },
+    "edit2_placeholder_seller_message": {
+        "ar": "اكتب رسالة قصيرة ومميزة تظهر للعميل...",
+        "en": "Write a short distinguished message..."
+    },
+    "edit2_label_notes": {
+        "ar": "ملاحظات",
+        "en": "Notes"
+    },
+    "edit2_placeholder_notes": {
+        "ar": "النص هنا لا يظهر للمشتري هو خاص بك انت",
+        "en": "Private notes, not visible to buyer"
+    },
+    "edit2_btn_save": {
+        "ar": "حفظ التعديلات",
+        "en": "Save Changes"
+    },
+
+
+    "edit2_err_img_required": {
+        "ar": "مطلوب صورة واحدة للخدمة على الأقل.",
+        "en": "At least one service image is required."
+    },
+    "edit2_err_name_required": {
+        "ar": "اسم الخدمة مطلوب.",
+        "en": "Service name is required."
+    },
+    "edit2_err_desc_required": {
+        "ar": "وصف الخدمة مطلوب (على الأقل 10 أحرف).",
+        "en": "Service description is required (at least 10 chars)."
+    },
+    "edit2_err_msg_required": {
+        "ar": "رسالة مقدم الخدمة مطلوبة (على الأقل 10 أحرف).",
+        "en": "Provider message is required (at least 10 chars)."
+    },
+    "edit2_swal_updating_title": {
+        "ar": "جاري تحديث الخدمة...",
+        "en": "Updating Service..."
+    },
+    "edit2_swal_updating_text": {
+        "ar": "يرجى الانتظار بينما يتم حفظ التغييرات.",
+        "en": "Please wait while changes are being saved."
+    },
+    "edit2_swal_no_changes_title": {
+        "ar": "تنبيه",
+        "en": "Notice"
+    },
+    "edit2_swal_no_changes_text": {
+        "ar": "لم يتم إجراء أي تعديلات على بيانات الخدمة.",
+        "en": "No changes were made to the service data."
+    },
+
+    "edit2_swal_success_text": {
+        "ar": "تم تحديث الخدمة بنجاح.",
+        "en": "Service updated successfully."
+    },
+
+    "edit2_swal_update_failed_text": {
+        "ar": "فشل تحديث الخدمة:",
+        "en": "Failed to update service:"
+    },
+
+
+}

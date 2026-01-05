@@ -123,8 +123,20 @@ async function loadIndexTranslations() {
     const productAddRes = await fetch('lang/productAdd.json');
     const productAddData = productAddRes.ok ? await productAddRes.json() : {};
 
+    const productEditRes = await fetch('lang/productEdit.json');
+    const productEditData = productEditRes.ok ? await productEditRes.json() : {};
+
+    const productAdd2Res = await fetch('lang/productAdd2.json');
+    const productAdd2Data = productAdd2Res.ok ? await productAdd2Res.json() : {};
+
+    const productEdit2Res = await fetch('lang/productEdit2.json');
+    const productEdit2Data = productEdit2Res.ok ? await productEdit2Res.json() : {};
+
+    const productView2Res = await fetch('lang/productView2.json');
+    const productView2Data = productView2Res.ok ? await productView2Res.json() : {};
+
     // 3. Merge them
-    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData, ...profileData, ...notificationsData, ...cartData, ...salesMovementData, ...productViewData, ...searchData, ...productAddData };
+    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData, ...profileData, ...notificationsData, ...cartData, ...salesMovementData, ...productViewData, ...searchData, ...productAddData, ...productEditData, ...productAdd2Data, ...productEdit2Data, ...productView2Data };
 
     console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحات البداية، الدخول، السلة، ولوحة التحكم.');
     if (window.applyAppTranslations) window.applyAppTranslations();

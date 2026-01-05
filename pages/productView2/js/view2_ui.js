@@ -58,12 +58,12 @@ function pv2_createPreview(file, previewsEl) {
  */
 async function pv2_handleFiles(files, dom) {
     if (pv2_orderImages.length + files.length > PV2_MAX_ORDER_IMAGES) {
-        Swal.fire('تنبيه', `الحد الأقصى هو ${PV2_MAX_ORDER_IMAGES} صور`, 'warning');
+        Swal.fire(window.langu('alert_title_info'), window.langu('gen_err_max_files', { n: PV2_MAX_ORDER_IMAGES }), 'warning');
         return;
     }
 
     Swal.fire({
-        title: 'جاري معالجة الصور...',
+        title: window.langu('gen_lbl_processing'),
         didOpen: () => Swal.showLoading(),
         allowOutsideClick: false
     });

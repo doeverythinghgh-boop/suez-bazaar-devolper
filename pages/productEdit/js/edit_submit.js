@@ -35,42 +35,42 @@ function EDIT_initSubmitLogic() {
         // 1. Check for images
         EDIT_clearError(uploaderEl);
         if (EDIT_images.length === 0) {
-            EDIT_showError(uploaderEl, 'مطلوب صورة واحدة للمنتج على الأقل.');
+            EDIT_showError(uploaderEl, window.langu('edit_err_img_required'));
             isValid = false;
         }
 
         // 2. Check Name
         EDIT_clearError(productNameInput);
         if (!productNameInput.value.trim()) {
-            EDIT_showError(productNameInput, 'اسم المنتج مطلوب.');
+            EDIT_showError(productNameInput, window.langu('edit_err_name_required'));
             isValid = false;
         }
 
         // 3. Check Description
         EDIT_clearError(descriptionTextarea);
         if (!descriptionTextarea.value.trim() || descriptionTextarea.value.trim().length < 10) {
-            EDIT_showError(descriptionTextarea, 'وصف المنتج مطلوب (على الأقل 10 أحرف).');
+            EDIT_showError(descriptionTextarea, window.langu('edit_err_desc_required'));
             isValid = false;
         }
 
         // 4. Check Seller Message
         EDIT_clearError(sellerMessageTextarea);
         if (!sellerMessageTextarea.value.trim() || sellerMessageTextarea.value.trim().length < 10) {
-            EDIT_showError(sellerMessageTextarea, 'رسالة البائع مطلوبة (على الأقل 10 أحرف).');
+            EDIT_showError(sellerMessageTextarea, window.langu('edit_err_msg_required'));
             isValid = false;
         }
 
         // 5. Check Quantity
         EDIT_clearError(quantityInput);
         if (!quantityInput.value || parseFloat(quantityInput.value) < 1) {
-            EDIT_showError(quantityInput, 'يرجى إدخال كمية متاحة صالحة (على الأقل 1).');
+            EDIT_showError(quantityInput, window.langu('edit_err_qty_required'));
             isValid = false;
         }
 
         // 6. Check Price
         EDIT_clearError(priceInput);
         if (priceInput.value === '' || parseFloat(priceInput.value) < 0) {
-            EDIT_showError(priceInput, 'يرجى إدخال سعر منتج صالح.');
+            EDIT_showError(priceInput, window.langu('edit_err_price_required'));
             isValid = false;
         }
 
@@ -81,8 +81,8 @@ function EDIT_initSubmitLogic() {
 
         console.log('%c[ProductEdit] التحقق نجح. بدء عملية التحديث.', 'color: green;');
         Swal.fire({
-            title: 'جاري تحديث المنتج...',
-            text: 'يرجى الانتظار بينما يتم حفظ التغييرات.',
+            title: window.langu('edit_swal_updating_title'),
+            text: window.langu('edit_swal_updating_text'),
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
@@ -162,8 +162,8 @@ function EDIT_initSubmitLogic() {
 
             if (!hasDataChanged) {
                 Swal.fire({
-                    title: 'تنبيه',
-                    text: 'لم يتم إجراء أي تعديلات على بيانات المنتج.',
+                    title: window.langu('edit_swal_no_changes_title'),
+                    text: window.langu('edit_swal_no_changes_text'),
                     icon: 'info'
                 });
                 return;
@@ -187,8 +187,8 @@ function EDIT_initSubmitLogic() {
             }
 
             Swal.fire({
-                title: 'تم بنجاح!',
-                text: 'تم تحديث المنتج بنجاح.',
+                title: window.langu('gen_swal_success_title'), // Need to add this key or reuse
+                text: window.langu('edit_swal_success_text'),
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false
@@ -197,8 +197,8 @@ function EDIT_initSubmitLogic() {
         } catch (error) {
             console.error('[ProductEdit] Update failed:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: `فشل تحديث المنتج: ${error.message}`,
+                title: window.langu('gen_swal_error_title'),
+                text: `${window.langu('edit_swal_update_failed_text')} ${error.message}`,
                 icon: 'error'
             });
         }

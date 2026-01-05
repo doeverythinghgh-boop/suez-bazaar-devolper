@@ -294,5 +294,117 @@
   "cat_confirm_btn": {
     "ar": "متابعة",
     "en": "Continue"
+  },
+  "gen_btn_back": {
+    "ar": "رجوع",
+    "en": "Back"
+  },
+  "gen_btn_discard": {
+    "ar": "تجاهل",
+    "en": "Discard"
+  },
+  "gen_btn_save": {
+    "ar": "حفظ",
+    "en": "Save"
+  },
+  "gen_btn_pick_images": {
+    "ar": "اختر صورًا",
+    "en": "Pick Images"
+  },
+  "gen_btn_take_photo": {
+    "ar": "التقاط من الكاميرا",
+    "en": "Take Photo"
+  },
+  "gen_btn_upload": {
+    "ar": "رفع",
+    "en": "Upload"
+  },
+  "gen_lbl_processing": {
+    "ar": "جاري المعالجة...",
+    "en": "Processing..."
+  },
+  "gen_lbl_loading_images": {
+    "ar": "جاري تحميل الصور...",
+    "en": "Loading Images..."
+  },
+  "gen_unit_bytes": {
+    "ar": "بايت",
+    "en": "Bytes"
+  },
+  "gen_err_compression": {
+    "ar": "خطأ في الضغط",
+    "en": "Compression Error"
+  },
+  "gen_err_max_files": {
+    "ar": "لا يمكن إضافة أكثر من {n} صور",
+    "en": "Cannot add more than {n} images"
+  },
+  "gen_err_upload_failed": {
+    "ar": "فشل التحميل",
+    "en": "Upload Failed"
+  },
+  "gen_err_required": {
+    "ar": "هذا الحقل مطلوب",
+    "en": "This field is required"
+  },
+  "gen_swal_title_confirm": {
+    "ar": "هل أنت متأكد؟",
+    "en": "Are you sure?"
+  },
+  "gen_swal_btn_yes_delete": {
+    "ar": "نعم، احذفها!",
+    "en": "Yes, delete it!"
+  },
+  "gen_swal_btn_yes_discard": {
+    "ar": "نعم، تجاهل",
+    "en": "Yes, Discard"
+  },
+  "gen_swal_btn_cancel": {
+    "ar": "إلغاء",
+    "en": "Cancel"
+  },
+  "gen_swal_btn_back": {
+    "ar": "تراجع",
+    "en": "Go Back"
+  },
+  "gen_tooltip_remove_image": {
+    "ar": "حذف الصورة",
+    "en": "Remove Image"
+  },
+  "gen_lbl_current_img": {
+    "ar": "الصورة الحالية",
+    "en": "Current Image"
+  },
+  "gen_swal_discard_title": {
+    "ar": "تجاهل التعديلات؟",
+    "en": "Discard changes?"
+  },
+  "gen_swal_discard_text": {
+    "ar": "سيتم مسح كافة البيانات والعودة للوحة التحكم.",
+    "en": "All data will be cleared and you will return to dashboard."
+  },
+  "gen_swal_remove_text": {
+    "ar": "هل تريد حقاً حذف هذه الصورة؟",
+    "en": "Do you really want to delete this image?"
+  },
+  "gen_swal_success_title": {
+    "ar": "تم بنجاح!",
+    "en": "Success!"
+  },
+  "gen_swal_error_title": {
+    "ar": "خطأ!",
+    "en": "Error!"
+  },
+  "gen_cam_error_title": {
+    "ar": "مشكلة في الكاميرا",
+    "en": "Camera Issue"
+  },
+  "gen_cam_error_text": {
+    "ar": "حاول فتح الكاميرا بطريقة أخرى",
+    "en": "Try opening camera another way"
+  },
+  "gen_cam_use_gallery": {
+    "ar": "اختر من المعرض",
+    "en": "Pick from Gallery"
   }
 }

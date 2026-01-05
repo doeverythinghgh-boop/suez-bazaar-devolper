@@ -51,7 +51,7 @@ function add1_clearError(element) {
  */
 function add1_formatBytes(bytes, decimals = 2) {
     try {
-        if (!+bytes) return '0 ' + window.langu('add1_unit_bytes');
+        if (!+bytes) return '0 ' + window.langu('gen_unit_bytes');
         const k = 1024;
         const dm = decimals < 0 ? 0 : decimals;
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
