@@ -80,14 +80,17 @@ async function loadIndexTranslations() {
     const generalRes = await fetch('lang/general.json');
     const generalData = generalRes.ok ? await generalRes.json() : {};
 
-    // 2. Load Page-specific Translations (Index)
+    // 2. Load Page-specific Translations (Index & Login)
     const indexRes = await fetch('lang/index.json');
     const indexData = indexRes.ok ? await indexRes.json() : {};
+    
+    const loginRes = await fetch('lang/login.json');
+    const loginData = loginRes.ok ? await loginRes.json() : {};
 
     // 3. Merge them
-    window.appTranslations = { ...generalData, ...indexData };
+    window.appTranslations = { ...generalData, ...indexData, ...loginData };
 
-    console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بالصفحة الرئيسية.');
+    console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحتي البداية والدخول.');
     if (window.applyAppTranslations) window.applyAppTranslations();
 
   } catch (e) {

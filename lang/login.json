@@ -1,0 +1,30 @@
+{
+  "label_phone": {
+    "ar": "رقم الهاتف",
+    "en": "Phone Number"
+  },
+  "label_password": {
+    "ar": "كلمة المرور",
+    "en": "Password"
+  },
+  "no_account": {
+    "ar": "ليس لديك حساب؟",
+    "en": "Don't have an account?"
+  },
+  "register_now": {
+    "ar": "سجل الآن",
+    "en": "Register Now"
+  },
+  "or_you_can": {
+    "ar": "أو يمكنك",
+    "en": "Or you can"
+  },
+  "login_as_guest": {
+    "ar": "الدخول كضيف",
+    "en": "Login as Guest"
+  },
+  "to_browse_products": {
+    "ar": "لتصفح المنتجات",
+    "en": "to browse products"
+  }
+}

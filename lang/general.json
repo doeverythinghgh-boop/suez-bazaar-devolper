@@ -1,4 +1,28 @@
 {
+  "login_text": {
+    "ar": "تسجيل الدخول",
+    "en": "Login"
+  },
+  "home_text": {
+    "ar": "الرئيسية",
+    "en": "Home"
+  },
+  "search_text": {
+    "ar": "بحث",
+    "en": "Search"
+  },
+  "notifications_text": {
+    "ar": "إشعارات",
+    "en": "Notifications"
+  },
+  "cart_text": {
+    "ar": "السلة",
+    "en": "Cart"
+  },
+  "sales_text": {
+    "ar": "طلبات",
+    "en": "Orders"
+  },
   "alert_lang_change_title": {
     "ar": "تغيير اللغة",
     "en": "Language Change"
