@@ -66,10 +66,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     console.log(`[اللغة] تم تغيير اللغة إلى: ${newLang === 'ar' ? 'العربية' : 'الإنجليزية'}`);
 
-    // Update Swal if open
-    if (Swal.isVisible()) {
-      Swal.close();
-    }
+    const alertTitle = newLang === 'ar' ? 'تغيير اللغة' : 'Language Change';
+    const alertText = newLang === 'ar' 
+      ? 'سيتم إعادة تحميل الصفحة لتطبيق تغيير اللغة.' 
+      : 'The page will be reloaded to apply the language change.';
+    const confirmButtonText = newLang === 'ar' ? 'موافق' : 'OK';
+
+    // Show SweetAlert2 with manual confirmation button
+    Swal.fire({
+      title: alertTitle,
+      text: alertText,
+      icon: 'info',
+      showConfirmButton: true,
+      confirmButtonText: confirmButtonText,
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.location.href = '/'; // Reload to home page
+      }
+    });
   };
 
   // [Step -1] Check for new version and clear data if needed
