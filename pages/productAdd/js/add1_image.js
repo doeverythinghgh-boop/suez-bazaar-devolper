@@ -107,7 +107,7 @@ async function add1_handleNewFiles(fileList) {
 
         const availableSlots = add1_MAX_FILES - add1_images.length;
         if (availableSlots <= 0) {
-            Swal.fire('تحذير', `لا يمكن إضافة أكثر من ${add1_MAX_FILES} صور`, 'warning');
+            Swal.fire(window.langu('alert_title_info'), window.langu('add1_err_max_files').replace('{n}', add1_MAX_FILES), 'warning');
             window.isProcessingFilesAdd1 = false;
             return;
         }
@@ -149,7 +149,7 @@ async function add1_handleNewFiles(fileList) {
                 console.error('[Add1] خطأ في الضغط:', err);
                 state.status = 'error';
                 if (state._metaEl) {
-                    state._metaEl.textContent = 'خطأ في الضغط';
+                    state._metaEl.textContent = window.langu('add1_err_compression');
                 }
             }
         }

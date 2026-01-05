@@ -14,10 +14,12 @@ window.CategoryModal = (function () {
     // ============================================
     const MODAL_ID = 'category-modal';
     /**
-     * @constant
-     * @type {string}
+     * @function getDefaultTitle
+     * @returns {string} The default modal title.
      */
-    const DEFAULT_TITLE = '📋 ' + window.langu('dash_choose_destination');
+    function getDefaultTitle() {
+        return '📋 ' + (window.langu ? window.langu('dash_choose_destination') : 'Choose Destination');
+    }
     /**
      * @constant
      * @type {string}
@@ -180,6 +182,9 @@ window.CategoryModal = (function () {
                 modalElement.querySelector('.category-modal-content').style.pointerEvents = 'auto';
             }
 
+            // Apply translations and direction to Shadow DOM
+            applyShadowTranslations(shadowRoot);
+
             console.log('[CategoryModal] تم إنشاء النافذة بنجاح مع Shadow DOM');
             return true;
 
@@ -226,6 +231,11 @@ window.CategoryModal = (function () {
                 document.body.appendChild(container.firstElementChild);
 
                 console.log('[CategoryModal] تم إنشاء النافذة بالطريقة الاحتياطية');
+                
+                // For fallback, use global translation function
+                if (window.applyAppTranslations) {
+                    window.applyAppTranslations();
+                }
                 return true;
             }
 
@@ -354,7 +364,7 @@ window.CategoryModal = (function () {
                 // show('1', '33', 'Custom Title') - With two categories and title
                 // show(null, null, 'Title Only') - With title only
 
-                let titleToUse = DEFAULT_TITLE;
+                let titleToUse = getDefaultTitle();
 
                 // Determine if third argument is title
                 if (arguments.length === 3 && customTitle !== null) {
@@ -661,7 +671,7 @@ window.CategoryModal = (function () {
                     document.removeEventListener('keydown', handleEscKey);
 
                     // Reset title to default
-                    updateModalTitle(DEFAULT_TITLE);
+                    updateModalTitle(getDefaultTitle());
                 }
 
                 // 11. Add Event Listeners
@@ -691,7 +701,7 @@ window.CategoryModal = (function () {
                     message: `خطأ غير متوقع: ${error.message}`,
                     mainId: null,
                     subId: null,
-                    title: DEFAULT_TITLE,
+                    title: getDefaultTitle(),
                     action: null
                 });
             }
@@ -716,7 +726,7 @@ window.CategoryModal = (function () {
             console.log('[CategoryModal] تم إغلاق النافذة يدوياً');
 
             // Reset title to default
-            updateModalTitle(DEFAULT_TITLE);
+            updateModalTitle(getDefaultTitle());
         }
     }
 
@@ -761,7 +771,7 @@ window.CategoryModal = (function () {
         if (validationMsg) validationMsg.textContent = '';
 
         // Reset title to default
-        updateModalTitle(DEFAULT_TITLE);
+        updateModalTitle(getDefaultTitle());
     }
 
     // ============================================
@@ -792,7 +802,41 @@ window.CategoryModal = (function () {
     }
 
     // ============================================
-    // 13. Export Public Interface
+    // 13. Internal Translation Helper
+    // ============================================
+    /**
+     * @function applyShadowTranslations
+     * @description Applies translations and direction to elements within the Shadow DOM.
+     * @param {ShadowRoot} root - The shadow root to apply translations to.
+     */
+    function applyShadowTranslations(root) {
+        if (!root || !window.langu) return;
+
+        const lang = window.app_language || 'ar';
+        const dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+        // Set direction on the container inside shadow root
+        const container = root.querySelector('.category-modal-backdrop');
+        if (container) {
+            container.setAttribute('dir', dir);
+            container.setAttribute('lang', lang);
+        }
+
+        // Translate elements with data-lkey
+        root.querySelectorAll('[data-lkey]').forEach(el => {
+            const key = el.getAttribute('data-lkey');
+            el.textContent = window.langu(key);
+        });
+        
+         // Translate Placeholders inside Shadow DOM
+        root.querySelectorAll('[data-lkey-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-lkey-placeholder');
+            el.setAttribute('placeholder', window.langu(key));
+        });
+    }
+
+    // ============================================
+    // 14. Export Public Interface
     // ============================================
     return {
         /**

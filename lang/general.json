@@ -274,5 +274,25 @@
   "cat_fetch_products_error": {
     "ar": "حدث خطأ أثناء تحميل المنتجات. الرجاء المحاولة لاحقاً.",
     "en": "An error occurred while loading products. Please try again later."
+  },
+  "cat_modal_title": {
+    "ar": "📋 تحديد فئة المنتج",
+    "en": "📋 Select Product Category"
+  },
+  "cat_main_label": {
+    "ar": "السوق الرئيسي",
+    "en": "Main Category"
+  },
+  "cat_sub_label": {
+    "ar": "السوق الفرعي",
+    "en": "Sub Category"
+  },
+  "cat_cancel_btn": {
+    "ar": "إلغاء",
+    "en": "Cancel"
+  },
+  "cat_confirm_btn": {
+    "ar": "متابعة",
+    "en": "Continue"
   }
 }

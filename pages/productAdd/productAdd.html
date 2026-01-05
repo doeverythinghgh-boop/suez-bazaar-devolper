@@ -8,15 +8,15 @@
 <div class="add1_product_modal" role="dialog" aria-modal="true" aria-labelledby="add1_product_title"
     id="add1_product_modal_container">
     <div class="add1_top_actions">
-        <button type="button" class="add1_btn_back" id="add1_btn_back" title="رجوع">
-            <i class="fas fa-arrow-right"></i> رجوع
+        <button type="button" class="add1_btn_back" id="add1_btn_back" title="رجوع" data-lkey-title="add1_btn_back">
+            <i class="fas fa-arrow-right"></i> <span data-lkey="add1_btn_back">رجوع</span>
         </button>
-        <button type="button" class="add1_btn_discard_top" id="add1_btn_discard" title="تجاهل التعديلات">
-            <i class="fas fa-times"></i> تجاهل
+        <button type="button" class="add1_btn_discard_top" id="add1_btn_discard" title="تجاهل التعديلات" data-lkey-title="add1_btn_discard">
+            <i class="fas fa-times"></i> <span data-lkey="add1_btn_discard">تجاهل</span>
         </button>
     </div>
     <h2 class="add1_product_modal__title" id="add1_product_title"><i class="fas fa-cart-plus" id="add1_icon_title"></i>
-        إضافة منتج جديد</h2>
+        <span data-lkey="add1_page_title">إضافة منتج جديد</span></h2>
 
     <!-- Selected Category Badges -->
     <div id="add1_category_display" class="add1_category_badges">
@@ -27,7 +27,7 @@
         <!-- Image Upload Module -->
         <section class="add1_product_modal__form_group" aria-labelledby="add1_images_heading" id="add1_section_images">
             <label id="add1_images_heading" class="add1_product_modal__label"><i class="fas fa-images"
-                    id="add1_icon_images"></i> صور المنتج</label>
+                    id="add1_icon_images"></i> <span data-lkey="add1_images_heading">صور المنتج</span></label>
 
             <div class="add1_product_modal__image_uploader" id="add1_image_uploader" tabindex="0" role="group"
                 aria-label="منطقة رفع الصور">
@@ -37,13 +37,13 @@
                         multiple aria-hidden="true">
 
                     <button type="button" class="add1_btn add1_btn_ghost add1_btn_icon" id="add1_pick_files_btn"
-                        title="اختر صورًا"><i class="fas fa-folder-open" id="add1_icon_folder"></i></button>
+                        title="اختر صورًا" data-lkey-title="add1_pick_files_btn"><i class="fas fa-folder-open" id="add1_icon_folder"></i></button>
                     <button type="button" class="add1_btn add1_btn_ghost add1_btn_icon" id="add1_take_photo_btn"
-                        title="التقاط من الكاميرا"><i class="fas fa-camera" id="add1_icon_camera"></i></button>
+                        title="التقاط من الكاميرا" data-lkey-title="add1_take_photo_btn"><i class="fas fa-camera" id="add1_icon_camera"></i></button>
 
                 </div>
 
-                <div class="add1_product_modal__hint" id="add1_hint_text">المطلوب: صورة واحدة على الأقل.
+                <div class="add1_product_modal__hint" id="add1_hint_text" data-lkey="add1_image_hint">المطلوب: صورة واحدة على الأقل.
                     الدعم: jpg, png, webp. </div>
 
                 <div class="add1_product_modal__previews" id="add1_previews" aria-live="polite" aria-atomic="false">
@@ -54,10 +54,9 @@
         <!-- Product Name Field -->
         <div class="add1_product_modal__form_group" id="add1_group_product_name">
             <label for="add1_product_name" class="add1_product_modal__label" id="add1_label_product_name"><i
-                    class="fas fa-signature" id="add1_icon_product_name"></i> اسم المنتج (اكتب اسمًا واضحًا
-                للمنتج)</label>
+                    class="fas fa-signature" id="add1_icon_product_name"></i> <span data-lkey="add1_label_product_name">اسم المنتج</span></label>
             <input type="text" id="add1_product_name" name="product-name" class="add1_product_modal__input"
-                maxlength="100" placeholder="كلمات اسم المنتج هامة لظهور منتجك في البحث." required>
+                maxlength="100" placeholder="كلمات اسم المنتج هامة لظهور منتجك في البحث." data-lkey-placeholder="add1_placeholder_product_name" required>
             <div id="add1_product_name_char_counter" class="add1_product_modal__char_counter">0 / 100</div>
         </div>
 
@@ -65,18 +64,18 @@
         <div class="add1_product_modal__form_group" id="add1_group_description">
             <label for="add1_product_description" class="add1_product_modal__label" id="add1_label_description"><i
                     class="fas fa-file-alt" id="add1_icon_description"></i>
-                وصف المنتج</label>
+                <span data-lkey="add1_label_description">وصف المنتج</span></label>
             <textarea id="add1_product_description" name="product-description" class="add1_product_modal__textarea"
-                rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا للمنتج..."></textarea>
+                rows="4" maxlength="400" placeholder="اكتب وصفًا جذابًا للمنتج..." data-lkey-placeholder="add1_placeholder_description"></textarea>
             <div id="add1_description_char_counter" class="add1_product_modal__char_counter">0 / 400</div>
         </div>
 
         <!-- Seller Message Field -->
         <div class="add1_product_modal__form_group" id="add1_group_seller_message">
             <label for="add1_seller_message" class="add1_product_modal__label" id="add1_label_seller_message"><i
-                    class="fas fa-comment-dots" id="add1_icon_seller_message"></i> رسالة ترحيبية</label>
+                    class="fas fa-comment-dots" id="add1_icon_seller_message"></i> <span data-lkey="add1_label_seller_message">رسالة ترحيبية</span></label>
             <input type="text" id="add1_seller_message" name="seller-message" class="add1_product_modal__input"
-                maxlength="100" placeholder="رسالة قصيرة تظهر للعميل...">
+                maxlength="100" placeholder="رسالة قصيرة تظهر للعميل..." data-lkey-placeholder="add1_placeholder_seller_message">
             <div id="add1_seller_message_char_counter" class="add1_product_modal__char_counter">0 / 100</div>
         </div>
 
@@ -84,9 +83,9 @@
         <div class="add1_product_modal__form_group" id="add1_group_notes">
             <label for="add1_product_notes" class="add1_product_modal__label" id="add1_label_notes"><i
                     class="fas fa-sticky-note" id="add1_icon_notes"></i>
-                ملاحظات</label>
+                <span data-lkey="add1_label_notes">ملاحظات</span></label>
             <input type="text" id="add1_product_notes" name="product-notes" class="add1_product_modal__input"
-                maxlength="100" placeholder="هذا النص لا يظهر للمشتري">
+                maxlength="100" placeholder="هذا النص لا يظهر للمشتري" data-lkey-placeholder="add1_placeholder_notes">
             <div id="add1_notes_char_counter" class="add1_product_modal__char_counter">0 / 100</div>
         </div>
 
@@ -95,7 +94,7 @@
             <!-- Quantity Field -->
             <div class="add1_product_modal__form_group" id="add1_group_quantity">
                 <label for="add1_product_quantity" class="add1_product_modal__label" id="add1_label_quantity">
-                    <i class="fas fa-boxes-stacked" id="add1_icon_quantity"></i> الكمية
+                    <i class="fas fa-boxes-stacked" id="add1_icon_quantity"></i> <span data-lkey="add1_label_quantity">الكمية</span>
                 </label>
                 <input type="number" id="add1_product_quantity" name="product-quantity"
                     class="add1_product_modal__input" placeholder="0" required min="1">
@@ -103,7 +102,7 @@
             <!-- Price Field -->
             <div class="add1_product_modal__form_group" id="add1_group_price">
                 <label for="add1_product_price" class="add1_product_modal__label" id="add1_label_price">
-                    <i class="fas fa-dollar-sign" id="add1_icon_price"></i> السعر الحالي
+                    <i class="fas fa-dollar-sign" id="add1_icon_price"></i> <span data-lkey="add1_label_price">السعر الحالي</span>
                 </label>
                 <input type="text" inputmode="decimal" id="add1_product_price" name="product-price"
                     class="add1_product_modal__input" placeholder="0.00" required>
@@ -111,18 +110,18 @@
             <!-- Original Price Field -->
             <div class="add1_product_modal__form_group" id="add1_group_original_price">
                 <label for="add1_original_price" class="add1_product_modal__label" id="add1_label_original_price">
-                    <i class="fas fa-tag" id="add1_icon_original_price"></i> السعر قبل الخصم
+                    <i class="fas fa-tag" id="add1_icon_original_price"></i> <span data-lkey="add1_label_original_price">السعر قبل الخصم</span>
                 </label>
                 <input type="text" inputmode="decimal" id="add1_original_price" name="original-price"
-                    class="add1_product_modal__input" placeholder="ادخل رقم">
+                    class="add1_product_modal__input" placeholder="ادخل رقم" data-lkey-placeholder="add1_placeholder_number">
             </div>
             <!-- Real Price Field (Application Price) -->
             <div class="add1_product_modal__form_group" id="add1_group_real_price">
                 <label for="add1_real_price" class="add1_product_modal__label" id="add1_label_real_price">
-                    <i class="fas fa-coins" id="add1_icon_real_price"></i> سعر التطبيق
+                    <i class="fas fa-coins" id="add1_icon_real_price"></i> <span data-lkey="add1_label_real_price">سعر التطبيق</span>
                 </label>
                 <input type="text" inputmode="decimal" id="add1_real_price" name="real-price"
-                    class="add1_product_modal__input" placeholder="ادخل رقم">
+                    class="add1_product_modal__input" placeholder="ادخل رقم" data-lkey-placeholder="add1_placeholder_number">
             </div>
         </div>
 
@@ -130,13 +129,13 @@
         <div class="add1_product_modal__form_group add1_product_modal__form_group--checkbox" id="add1_group_heavy_load">
             <label for="add1_heavy_load" class="add1_product_modal__label add1_product_modal__label--checkbox">
                 <input type="checkbox" id="add1_heavy_load" name="heavy-load" class="add1_product_modal__checkbox">
-                <span><i class="fas fa-truck-moving" id="add1_icon_heavy_load"></i> يحتاج إلى سيارة في التوصيل</span>
+                <span><i class="fas fa-truck-moving" id="add1_icon_heavy_load"></i> <span data-lkey="add1_checkbox_heavy_load">يحتاج إلى سيارة في التوصيل</span></span>
             </label>
         </div>
 
         <!-- Submit Button -->
         <div class="add1_product_modal__submit_container" id="add1_submit_container">
-            <button type="submit" class="add1_btn add1_btn_primary" id="add1_btn_submit">اضف المنتج الآن</button>
+            <button type="submit" class="add1_btn add1_btn_primary" id="add1_btn_submit"><span data-lkey="add1_submit_btn_initial">اضف المنتج الآن</span></button>
         </div>
     </form>
 </div>

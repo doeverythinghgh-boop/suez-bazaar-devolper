@@ -15,12 +15,12 @@ function add1_setSubmitLoading(isLoading) {
 
     if (isLoading) {
         add1_btnSubmit.disabled = true;
-        if (submitBtnText) submitBtnText.textContent = "جاري الحفظ والرفع...";
+        if (submitBtnText) submitBtnText.textContent = window.langu('add1_submit_btn_saving');
         if (submitBtnIcon) submitBtnIcon.className = "fas fa-spinner fa-spin";
         add1_btnSubmit.style.opacity = "0.7";
     } else {
         add1_btnSubmit.disabled = false;
-        if (submitBtnText) submitBtnText.textContent = "حفظ ونشر المنتج الآن";
+        if (submitBtnText) submitBtnText.textContent = window.langu('add1_submit_btn_ready');
         if (submitBtnIcon) submitBtnIcon.className = "fas fa-arrow-left";
         add1_btnSubmit.style.opacity = "1";
     }
@@ -36,37 +36,37 @@ add1_form.addEventListener('submit', async (e) => {
 
         add1_clearError(add1_uploaderEl);
         if (add1_images.length === 0) {
-            add1_showError(add1_uploaderEl, 'مطلوب صورة واحدة للمنتج على الأقل.');
+            add1_showError(add1_uploaderEl, window.langu('add1_err_img_required'));
             isValid = false;
         }
 
         add1_clearError(add1_productNameInput);
         if (!add1_productNameInput.value.trim()) {
-            add1_showError(add1_productNameInput, 'اسم المنتج مطلوب.');
+            add1_showError(add1_productNameInput, window.langu('add1_err_name_required'));
             isValid = false;
         }
 
         add1_clearError(add1_descriptionTextarea);
         if (!add1_descriptionTextarea.value.trim() || add1_descriptionTextarea.value.trim().length < 10) {
-            add1_showError(add1_descriptionTextarea, 'وصف المنتج مطلوب (على الأقل 10 أحرف).');
+            add1_showError(add1_descriptionTextarea, window.langu('add1_err_desc_required'));
             isValid = false;
         }
 
         add1_clearError(add1_sellerMessageTextarea);
         if (!add1_sellerMessageTextarea.value.trim() || add1_sellerMessageTextarea.value.trim().length < 10) {
-            add1_showError(add1_sellerMessageTextarea, 'رسالة البائع مطلوبة (على الأقل 10 أحرف).');
+            add1_showError(add1_sellerMessageTextarea, window.langu('add1_err_msg_required'));
             isValid = false;
         }
 
         add1_clearError(add1_quantityInput);
         if (!add1_quantityInput.value || parseFloat(add1_quantityInput.value) < 1) {
-            add1_showError(add1_quantityInput, 'يرجى إدخال كمية متاحة صالحة (على الأقل 1).');
+            add1_showError(add1_quantityInput, window.langu('add1_err_qty_required'));
             isValid = false;
         }
 
         add1_clearError(add1_priceInput);
         if (add1_priceInput.value === '' || parseFloat(add1_priceInput.value) < 0) {
-            add1_showError(add1_priceInput, 'يرجى إدخال سعر منتج صالح.');
+            add1_showError(add1_priceInput, window.langu('add1_err_price_required'));
             isValid = false;
         }
 
@@ -75,8 +75,8 @@ add1_form.addEventListener('submit', async (e) => {
         add1_setSubmitLoading(true);
 
         Swal.fire({
-            title: 'جاري إضافة المنتج...',
-            text: 'يرجى الانتظار بينما يتم رفع الصور.',
+            title: window.langu('add1_swal_adding_title'),
+            text: window.langu('add1_swal_uploading_text'),
             allowOutsideClick: false,
             didOpen: () => { Swal.showLoading(); },
         });
@@ -125,7 +125,7 @@ add1_form.addEventListener('submit', async (e) => {
         }
 
         console.log('%c[Add1] تم حفظ المنتج بنجاح.', 'color: green; font-weight: bold;');
-        Swal.fire('تم بنجاح!', 'تم حفظ المنتج وإرساله للإدارة بنجاح لمراجعته ونشره.', 'success').then(() => {
+        Swal.fire(window.langu('add1_swal_success_title'), window.langu('add1_swal_success_text'), 'success').then(() => {
             add1_setSubmitLoading(false);
             add1_form.reset();
             add1_previewsEl.innerHTML = '';
@@ -145,6 +145,6 @@ add1_form.addEventListener('submit', async (e) => {
     } catch (error) {
         add1_setSubmitLoading(false);
         console.error('[Add1] Submission failed:', error);
-        Swal.fire('خطأ!', 'حدث خطأ أثناء إضافة المنتج. يرجى المحاولة مرة أخرى.', 'error');
+        Swal.fire(window.langu('add1_swal_error_title'), window.langu('add1_swal_error_text'), 'error');
     }
 });

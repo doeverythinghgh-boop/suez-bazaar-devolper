@@ -59,7 +59,7 @@ function add1_createPreviewItem(state, existingImageUrl = null) {
         const meta = document.createElement('div');
         meta.id = `add1_preview_meta_${state.id}`;
         meta.className = 'add1_product_modal__preview_meta';
-        meta.textContent = 'جاري المعالجة...';
+        meta.textContent = window.langu('add1_processing');
 
         wrapper.appendChild(removeBtn);
         wrapper.appendChild(img);
@@ -67,7 +67,7 @@ function add1_createPreviewItem(state, existingImageUrl = null) {
 
         if (existingImageUrl) {
             img.src = existingImageUrl;
-            meta.textContent = 'Current Image';
+            meta.textContent = window.langu('add1_current_img');
         } else {
             const reader = new FileReader();
             reader.onload = (e) => { img.src = e.target.result; };
@@ -91,14 +91,14 @@ function add1_removeImage(id) {
     try {
         console.log(`[Add1] محاولة حذف الصورة بالمعرف: ${id}`);
         Swal.fire({
-            title: 'هل أنت متأكد؟',
-            text: "هل تريد حقاً حذف هذه الصورة؟",
+            title: window.langu('add1_swal_remove_title'),
+            text: window.langu('add1_swal_remove_text'),
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#d33',
             cancelButtonColor: '#3085d6',
-            confirmButtonText: 'نعم، احذفها!',
-            cancelButtonText: 'إلغاء'
+            confirmButtonText: window.langu('add1_swal_yes_delete'),
+            cancelButtonText: window.langu('cat_cancel_btn')
         }).then((result) => {
             if (result.isConfirmed) {
                 const idx = add1_images.findIndex(i => i.id === id);
@@ -252,15 +252,15 @@ if (add1_btnDiscard) {
     add1_btnDiscard.addEventListener('click', () => {
         try {
             Swal.fire({
-                title: 'تجاهل التعديلات؟',
-                text: "سيتم مسح كافة البيانات والعودة للوحة التحكم.",
+                title: window.langu('add1_swal_discard_title'),
+                text: window.langu('add1_swal_discard_text'),
                 icon: 'warning',
                 iconColor: '#f39c12',
                 showCancelButton: true,
                 confirmButtonColor: '#e74c3c',
                 cancelButtonColor: '#bdc3c7',
-                confirmButtonText: '<i class="fas fa-trash-alt"></i> نعم، تجاهل',
-                cancelButtonText: 'تراجع',
+                confirmButtonText: '<i class="fas fa-trash-alt"></i> ' + window.langu('add1_swal_yes_discard'),
+                cancelButtonText: window.langu('add1_swal_cancel_discard'),
                 background: '#ffffff',
                 customClass: {
                     title: 'swal-modern-title',
