@@ -296,3 +296,36 @@
         margin-bottom: 15px;
     }
 }
+
+/* Floating Settings Button (Same as User Dashboard) */
+#index-settings-btn {
+    position: fixed;
+    bottom: 25px;
+    width: 42px;
+    height: 42px;
+    background-color: var(--primary-color, #007bff);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    z-index: 999;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 0;
+    /* Position */
+    right: 25px;
+}
+
+#index-settings-btn i {
+    font-size: 18px;
+    color: white;
+    margin: 0;
+}
+
+#index-settings-btn:active {
+    transform: scale(0.9);
+    background-color: var(--dark-blue, #03478f);
+}

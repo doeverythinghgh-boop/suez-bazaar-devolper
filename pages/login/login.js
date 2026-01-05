@@ -106,6 +106,66 @@ function login_setupLoginForm() {
     } catch (error) {
         console.error("🚫 خطأ في دالة login_setupLoginForm:", error);
     }
+
+    // 6. Bind Settings Button
+    const settingsBtn = document.getElementById("index-settings-btn");
+    if (settingsBtn) {
+        settingsBtn.addEventListener("click", () => {
+            const isDark = document.body.classList.contains('dark-theme');
+            const themeIcon = isDark ? 'fa-sun' : 'fa-moon';
+            const themeText = isDark ? window.langu("dash_theme_day") : window.langu("dash_theme_night");
+            const themeColor = isDark ? '#f39c12' : '#555';
+
+            Swal.fire({
+                title: `<span style="color: var(--dark-blue, #03478f); font-weight: bold;">${window.langu("dash_settings_title")}</span>`,
+                html: `
+              <div class="settings-modal-content" style="text-align: inherit; direction: inherit;">
+                
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                   <!-- Theme Toggle -->
+                   <div onclick="window.toggleAppTheme();"
+                        class="settings-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 12px; cursor: pointer;">
+                      <span>
+                         <i class="fas ${themeIcon}" style="color: ${themeColor}; width: 20px;"></i> ${themeText}
+                      </span>
+                    <div style="width: 36px; height: 20px; background: ${isDark ? '#4cd964' : '#e5e5ea'}; border-radius: 20px; position: relative;">
+                        <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${isDark ? 'left' : 'right'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+                      </div>
+                   </div>
+    
+                    <!-- Language Toggle -->
+                   <div onclick="window.toggleAppLanguage();"
+                        class="settings-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 12px; cursor: pointer;">
+                      <span>
+                         <i class="fas fa-language" style="color: var(--primary-color); width: 20px;"></i> ${localStorage.getItem('app_language') === 'en' ? 'English' : 'اللغة العربية'}
+                      </span>
+                      <div style="width: 36px; height: 20px; background: ${localStorage.getItem('app_language') === 'en' ? '#e5e5ea' : '#4cd964'}; border-radius: 20px; position: relative;">
+                        <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${localStorage.getItem('app_language') === 'en' ? 'inset-inline-end' : 'inset-inline-start'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+                      </div>
+                   </div>
+                   
+                   <!-- Contact Support -->
+                   <div onclick="mainLoader('pages/contact.html', 'index-contact-container', 0, undefined, 'showHomeIcon', true); Swal.close();"
+                        class="settings-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 12px; cursor: pointer;">
+                      <span>
+                         <i class="fas fa-headset"></i> ${window.langu("dash_support")}
+                      </span>
+                      <i class="fas fa-chevron-left chevron"></i>
+                   </div>
+    
+                </div>
+    
+              </div>
+            `,
+                showConfirmButton: false,
+                showCloseButton: true,
+                background: 'var(--modal-bg)',
+                color: 'var(--text-color-dark)',
+                width: '350px',
+                padding: '20px'
+            });
+        });
+    }
 }
 
 /**
