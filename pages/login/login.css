@@ -82,8 +82,8 @@
 /* 5. Input Field Group (Label and Field) */
 .login_form-group {
     margin-bottom: 20px;
-    text-align: right;
-    /* Align labels to the right */
+    text-align: inherit;
+    /* Inherit direction from parent */
     position: relative;
     /* Important for positioning the icon inside */
 }
@@ -101,8 +101,8 @@
 .login_form-group input {
     width: 100%;
     /* Fix: Full width of the container */
-    padding: 14px 45px 14px 15px;
-    /* Space for icon on the right */
+    padding: 14px 15px;
+    /* General padding */
     border: 1px solid var(--border-color-input);
     /* Lighter border color */
     border-radius: 10px;
@@ -128,8 +128,8 @@
     /* Fix: Improve icon alignment */
     position: absolute;
     top: 50%;
-    right: 15px;
-    /* To the right in RTL */
+    inset-inline-start: 15px;
+    /* Start of the line relative to direction */
     transform: translateY(calc(-50% + 14px));
     /* Precise vertical alignment adjustment */
     color: var(--icon-color);
@@ -226,18 +226,21 @@
 .login_toggle-password {
     position: absolute;
     top: 50%;
-    left: 15px;
-    /* To the left in RTL */
+    inset-inline-end: 15px;
+    /* End of the line relative to direction */
     transform: translateY(calc(-50% + 14px));
     /* Precise vertical alignment adjustment */
     color: var(--icon-color);
     cursor: pointer;
 }
 
-/* Modify password field to place icon on the left */
+/* Modify input fields for icons */
+#login_phone {
+    padding-inline-start: 45px;
+}
+
 #login_password {
-    padding-left: 45px;
-    /* Space for eye icon on the left */
+    padding-inline-end: 45px;
 }
 
 .login_form-footer a strong {
