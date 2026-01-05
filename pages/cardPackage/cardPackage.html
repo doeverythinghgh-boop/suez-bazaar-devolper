@@ -12,53 +12,53 @@
             <div class="cartPage_cart-items" id="cartPage_cartItemsContainer">
                 <div class="cartPage_loading" id="cartPage_loadingIndicator">
                     <i class="fas fa-spinner fa-spin"></i>
-                    <p>جاري تحميل سلة المشتريات...</p>
+                    <p data-lkey="cart_loading">جاري تحميل سلة المشتريات...</p>
                 </div>
             </div>
 
             <!-- Cart Summary -->
             <div class="cartPage_cart-summary" id="cartPage_cartSummary">
-                <h2 id="cartPage_summaryTitle"><i class="fas fa-receipt"></i> ملخص الطلب</h2>
+                <h2 id="cartPage_summaryTitle"><i class="fas fa-receipt"></i> <span data-lkey="cart_summary_title">ملخص الطلب</span></h2>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowCount">
-                    <span>عدد المنتجات:</span>
+                    <span data-lkey="cart_item_count">عدد المنتجات:</span>
                     <span class="cartPage_summary-value" id="cartPage_itemCount">0</span>
                 </div>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowSubtotal">
-                    <span>المجموع الجزئي:</span>
+                    <span data-lkey="cart_subtotal">المجموع الجزئي:</span>
                     <span class="cartPage_summary-value" id="cartPage_subtotal">0.00 ج.م</span>
                 </div>
                 <div class="cartPage_summary-row savings" id="cartPage_summaryRowSavings">
-                    <span>التوفير:</span>
+                    <span data-lkey="cart_savings">التوفير:</span>
                     <span class="cartPage_summary-value" id="cartPage_savings">0.00 ج.م</span>
                 </div>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowFixedDelivery">
-                    <span>خدمه التوصيل:</span>
+                    <span data-lkey="cart_delivery_fee">خدمه التوصيل:</span>
                     <span class="cartPage_summary-value" id="cartPage_fixedDeliveryFee">40.00 ج.م</span>
                 </div>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowSmartDelivery"
                     style="display: none; color: var(--primary-color);">
-                    <span>التوصيل الذكي:</span>
+                    <span data-lkey="cart_smart_delivery">التوصيل الذكي:</span>
                     <span class="cartPage_summary-value" style="display: flex; align-items: center; gap: 8px;">
                         <span id="cartPage_smartDeliveryFee">
                             <div class="loader-mini" id="cartPage_smartDeliveryLoader"></div>
                         </span>
                         <button id="cartPage_deliveryDetailsBtn"
                             style="display: none; padding: 4px 12px; font-size: 0.85rem; background: var(--primary-color); color: white; border: none; border-radius: 4px; cursor: pointer; transition: all 0.3s;">
-                            <i class="fas fa-info-circle"></i> تفاصيل
+                            <i class="fas fa-info-circle"></i> <span data-lkey="cart_details">تفاصيل</span>
                         </button>
                     </span>
                 </div>
                 <div class="cartPage_summary-row total" id="cartPage_summaryRowTotal">
-                    <span>المجموع الكلي:</span>
+                    <span data-lkey="cart_total">المجموع الكلي:</span>
                     <span class="cartPage_summary-value" id="cartPage_total">0.00 ج.م</span>
                 </div>
 
                 <button class="cartPage_checkout-btn" id="cartPage_checkoutBtn">
-                    <i class="fas fa-lock"></i> إتمام عملية الشراء
+                    <i class="fas fa-lock"></i> <span data-lkey="cart_checkout_btn">إتمام عملية الشراء</span>
                 </button>
 
                 <button class="cartPage_clear-cart-btn" id="cartPage_clearCartBtn">
-                    <i class="fas fa-trash"></i> تفريغ السلة
+                    <i class="fas fa-trash"></i> <span data-lkey="cart_clear_btn">تفريغ السلة</span>
                 </button>
             </div>
         </div>
@@ -69,12 +69,12 @@
             <div class="cartPage_empty-cart-icon" id="cartPage_emptyCartIcon">
                 <i class="fas fa-shopping-cart"></i>
             </div>
-            <h2 id="cartPage_emptyCartTitle">سلة المشتريات فارغة</h2>
-            <p id="cartPage_emptyCartMessage">لم تقم بإضافة أي منتجات إلى سلة المشتريات بعد. ابدأ التسوق الآن لإضافة
+            <h2 id="cartPage_emptyCartTitle" data-lkey="cart_empty_title">سلة المشتريات فارغة</h2>
+            <p id="cartPage_emptyCartMessage" data-lkey="cart_empty_message">لم تقم بإضافة أي منتجات إلى سلة المشتريات بعد. ابدأ التسوق الآن لإضافة
                 منتجات رائعة!</p>
             <a href="#" class="cartPage_continue-shopping" id="cartPage_continueShoppingBtn"
                 onclick="mainLoader('./pages/home.html', 'index-home-container', 0, undefined, 'hiddenHomeIcon',false); return false;">
-                <i class="fas fa-store"></i> متابعة التسوق
+                <i class="fas fa-store"></i> <span data-lkey="cart_continue_shopping">متابعة التسوق</span>
             </a>
         </div>
     </div>
@@ -85,14 +85,14 @@
     <div class="cartPage_note-modal" id="cartPage_noteModal">
         <div class="cartPage_note-modal-content" id="cartPage_noteModalContent">
             <div class="cartPage_note-modal-header" id="cartPage_noteModalHeader">
-                <h3 id="cartPage_noteModalTitle">تعديل الملاحظة</h3>
+                <h3 id="cartPage_noteModalTitle" data-lkey="cart_edit_note">تعديل الملاحظة</h3>
                 <button class="cartPage_close-modal" id="cartPage_closeNoteModal">&times;</button>
             </div>
             <div class="cartPage_note-modal-body" id="cartPage_noteModalBody">
-                <textarea id="cartPage_noteTextarea" placeholder="أضف ملاحظة خاصة لهذا المنتج (اختياري)"></textarea>
+                <textarea id="cartPage_noteTextarea" data-lkey="cart_note_placeholder" placeholder="أضف ملاحظة خاصة لهذا المنتج (اختياري)"></textarea>
                 <div class="cartPage_note-modal-actions" id="cartPage_noteModalActions">
-                    <button class="cartPage_cancel-note-btn" id="cartPage_cancelNoteBtn">إلغاء</button>
-                    <button class="cartPage_save-note-btn" id="cartPage_saveNoteBtn">حفظ</button>
+                    <button class="cartPage_cancel-note-btn" id="cartPage_cancelNoteBtn" data-lkey="cart_cancel">إلغاء</button>
+                    <button class="cartPage_save-note-btn" id="cartPage_saveNoteBtn" data-lkey="cart_save">حفظ</button>
                 </div>
             </div>
         </div>
@@ -101,8 +101,8 @@
     <!-- ✅ New: Photo Order Success Message -->
     <div id="cartPage_photoOrderMessage"
         style="display:none; background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin:20px; border:1px solid #c3e6cb; position:relative; text-align:right;">
-        <strong><i class="fas fa-check-circle"></i> تم استلام طلبك الخاص بالصور!</strong>
-        <p style="margin:5px 0 0 0;">لقد قمت بإرسال طلب يحتوي على صور وملاحظات. سيتم مراجعته قريباً.</p>
+        <strong><i class="fas fa-check-circle"></i> <span data-lkey="cart_photo_order_success">تم استلام طلبك الخاص بالصور!</span></strong>
+        <p style="margin:5px 0 0 0;" data-lkey="cart_photo_order_desc">لقد قمت بإرسال طلب يحتوي على صور وملاحظات. سيتم مراجعته قريباً.</p>
         <button onclick="this.parentElement.style.display='none'; localStorage.removeItem('showOrderPhotoMessage');"
             style="position:absolute; top:10px; left:10px; background:none; border:none; cursor:pointer; color:#155724; font-size:1.2rem;">&times;</button>
     </div>

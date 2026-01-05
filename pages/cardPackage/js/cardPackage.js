@@ -87,9 +87,9 @@ function addToCart(product, quantity, note = "") {
   ) {
     window.Swal.fire({
       icon: "error",
-      title: "عذراً",
-      text: "لا يمكنك شراء منتجاتك الخاصة",
-      confirmButtonText: "موافق",
+      title: window.langu('cart_error_own_product_title'),
+      text: window.langu('cart_error_own_product_text'),
+      confirmButtonText: window.langu('alert_confirm_btn'),
     });
     containerGoBack();
     return false;
@@ -122,9 +122,9 @@ function addToCart(product, quantity, note = "") {
 
   window.Swal.fire({
     icon: "success",
-    title: `تمت إضافة "${product.productName}" إلى السلة`,
-    text: "يمكنك متابعة التسوق.",
-    confirmButtonText: "موافق",
+    title: window.langu('cart_added_success').replace('{name}', product.productName),
+    text: window.langu('cart_added_desc'),
+    confirmButtonText: window.langu('alert_confirm_btn'),
   }).then((result) => {
     if (result.isConfirmed) {
       containerGoBack();

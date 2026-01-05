@@ -18,7 +18,7 @@ async function sendOrder2Excution() {
         const cart = getCart();
         // 3. Check Cart
         if (cart.length === 0) {
-            Swal.fire("السلة فارغة", "لا توجد منتجات في السلة لإتمام الشراء.", "info");
+            Swal.fire(window.langu('cart_empty_checkout_title'), window.langu('cart_empty_checkout_text'), "info");
             return;
         }
 
@@ -40,10 +40,13 @@ async function sendOrder2Excution() {
             const group = sellerGroups[sellerKey];
             if (group.total < group.limit) {
                 Swal.fire({
-                    title: "تنبيه: حد الباقة",
-                    text: `عذراً، لا يمكن الشراء من البائع بأقل من ${group.limit.toFixed(2)} جنيه. مجموع مشترياتك الحالية منه هو ${group.total.toFixed(2)} جنيه.`,
+                    title: window.langu('cart_limit_title'),
+                    text: window.langu('cart_limit_text')
+                        .replace('{limit}', group.limit.toFixed(2))
+                        .replace('{total}', group.total.toFixed(2))
+                        .replace(/{currency}/g, window.langu('cart_currency')),
                     icon: "warning",
-                    confirmButtonText: "موافق"
+                    confirmButtonText: window.langu('alert_confirm_btn')
                 });
                 return; // Stop execution
             }
@@ -75,12 +78,14 @@ async function sendOrder2Excution() {
 
         // 6. Show Confirmation Message
         const result = await Swal.fire({
-            title: "تأكيد الطلب",
-            text: `المبلغ الإجمالي هو ${totalAmount.toFixed(2)} جنيه. هل تريد المتابعة؟`,
+            title: window.langu('cart_confirm_order_title'),
+            text: window.langu('cart_total_confirm')
+                .replace('{amount}', totalAmount.toFixed(2))
+                .replace('{currency}', window.langu('cart_currency')),
             icon: "question",
             showCancelButton: true,
-            confirmButtonText: "نعم، أرسل الطلب!",
-            cancelButtonText: "إلغاء",
+            confirmButtonText: window.langu('alert_confirm_yes'),
+            cancelButtonText: window.langu('alert_cancel_btn'),
             showLoaderOnConfirm: true,
             preConfirm: async () => {
                 try {
@@ -112,10 +117,10 @@ async function sendOrder2Excution() {
             // 9. Clear Cart and Show Success Message
             clearCart();
             await Swal.fire({
-                title: "تم إتمام طلبك بنجاح! 🎉",
-                text: `رقم الطلب: #${createdOrderKey}`,
+                title: window.langu('cart_checkout_success_title'),
+                text: window.langu('cart_order_id').replace('{id}', createdOrderKey),
                 icon: "success",
-                confirmButtonText: "حسناً"
+                confirmButtonText: window.langu('cart_success_ok')
             });
 
         } else if (result.value && result.value.error) {

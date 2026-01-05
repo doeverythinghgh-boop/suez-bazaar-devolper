@@ -78,7 +78,7 @@ async function cartPage_loadCart() {
                                         ${cartPage_item.original_price && cartPage_item.original_price > cartPage_item.price ?
                     `<span class="cartPage_original-price" id="cartPage_originalPrice-${cartPage_item.product_key}">${cartPage_item.original_price.toFixed(2)} ${currency}</span>` : ''}
                                         ${cartPage_discount > 0 ?
-                    `<span class="cartPage_discount-badge" id="cartPage_discountBadge-${cartPage_item.product_key}">توفير ${cartPage_discount}%</span>` : ''}
+                    `<span class="cartPage_discount-badge" id="cartPage_discountBadge-${cartPage_item.product_key}">${window.langu('cart_discount_badge').replace('{n}', cartPage_discount)}</span>` : ''}
                                     </div>
                                 </div>
                             </td>
@@ -88,10 +88,10 @@ async function cartPage_loadCart() {
                                 <div class="cartPage_cart-item-note">
                                     <div class="cartPage_note-label" id="cartPage_noteLabel-${cartPage_item.product_key}">
                                         <i class="fas fa-sticky-note"></i>
-                                        <span>ملاحظاتك:</span>
+                                        <span>${window.langu('cart_notes_label')}</span>
                                     </div>
                                     <div class="cartPage_note-text ${cartPage_item.note ? '' : 'empty'}" id="cartPage_noteText-${cartPage_item.product_key}">
-                                        ${cartPage_item.note || 'لا توجد ملاحظات'}
+                                        ${cartPage_item.note || window.langu('cart_no_notes')}
                                         <button class="cartPage_edit-note-btn" id="cartPage_editNoteBtn-${cartPage_item.product_key}" data-product-key="${cartPage_item.product_key}">
                                             <i class="fas fa-edit"></i>
                                         </button>
@@ -111,7 +111,7 @@ async function cartPage_loadCart() {
                             </td>
                             <td id="cartPage_removeBtn-${cartPage_item.product_key}">
                                 <button class="cartPage_remove-btn" data-product-key="${cartPage_item.product_key}">
-                                    <i class="fas fa-trash"></i> حذف
+                                    <i class="fas fa-trash"></i> ${window.langu('cart_delete_btn')}
                                 </button>
                             </td>
                         </tr>
@@ -259,7 +259,7 @@ async function cartPage_updateCartSummary() {
         }
 
         // Fallback or Non-Admin state: Final Total is always Subtotal + Fixed Fee
-        if (smartDeliveryElement) smartDeliveryElement.textContent = 'غير متاح';
+        if (smartDeliveryElement) smartDeliveryElement.textContent = window.langu('cart_not_available');
         const finalTotalFallback = cartPage_subtotal + FIXED_DELIVERY_FEE;
         document.getElementById('cartPage_total').textContent = finalTotalFallback.toFixed(2) + ' ' + currency;
 
@@ -353,7 +353,7 @@ function showDeliveryDetails(deliveryResult) {
             // Direct route: Office to Customer
             segmentHTML += `
                 <div class="delivery-row" style="margin-bottom: 8px;">
-                    <span style="flex: 1;">🏢 المكتب ← 🏠 العميل</span>
+                    <span style="flex: 1;">${window.langu('cart_delivery_segment_direct')}</span>
                     <span style="font-weight: bold; color: var(--primary-color);">${segments[0].toFixed(2)} كم</span>
                 </div>
             `;
@@ -361,7 +361,7 @@ function showDeliveryDetails(deliveryResult) {
             // Multi-stop route
             segmentHTML += `
                 <div class="delivery-row" style="margin-bottom: 8px;">
-                    <span style="flex: 1;">🏢 المكتب ← 📦 البائع الأول</span>
+                    <span style="flex: 1;">${window.langu('cart_delivery_segment_first')}</span>
                     <span style="font-weight: bold; color: var(--primary-color);">${segments[0].toFixed(2)} كم</span>
                 </div>
             `;
@@ -370,7 +370,7 @@ function showDeliveryDetails(deliveryResult) {
             for (let i = 1; i < segments.length - 1; i++) {
                 segmentHTML += `
                     <div class="delivery-row" style="margin-bottom: 8px;">
-                        <span style="flex: 1;">📦 البائع ${i} ← 📦 البائع ${i + 1}</span>
+                        <span style="flex: 1;">${window.langu('cart_delivery_segment_between').replace('{i}', i).replace('{j}', i + 1)}</span>
                         <span style="font-weight: bold; color: var(--primary-color);">${segments[i].toFixed(2)} كم</span>
                     </div>
                 `;
@@ -379,7 +379,7 @@ function showDeliveryDetails(deliveryResult) {
             // Last seller to customer
             segmentHTML += `
                 <div class="delivery-row" style="margin-bottom: 8px;">
-                    <span style="flex: 1;">📦 البائع الأخير ← 🏠 العميل</span>
+                    <span style="flex: 1;">${window.langu('cart_delivery_segment_last')}</span>
                     <span style="font-weight: bold; color: var(--primary-color);">${segments[segments.length - 1].toFixed(2)} كم</span>
                 </div>
             `;
@@ -392,28 +392,28 @@ function showDeliveryDetails(deliveryResult) {
     // Build detailed HTML content
     let detailsHTML = `
         <div class="container-fluid">
-            <h3 class="delivery-details-header">📊 تفاصيل حساب خدمة التوصيل</h3>
+            <h3 class="delivery-details-header">${window.langu('cart_delivery_details_title')}</h3>
             
             <div style="max-height: 50vh; overflow-y: auto; padding-right: 5px;">
                 <div class="delivery-section delivery-section-stages">
-                    <strong style="display: block; margin-bottom: 10px;">📏 مراحل التوصيل:</strong>
+                    <strong style="display: block; margin-bottom: 10px;">${window.langu('cart_delivery_stages')}</strong>
                     ${distanceBreakdown}
                     <hr style="margin: 10px 0; border: none; border-top: 1px dashed #ccc;">
                     <div class="delivery-row" style="margin-top: 10px;">
-                        <span style="flex: 1; font-weight: bold;">المسافة الكلية:</span>
+                        <span style="flex: 1; font-weight: bold;">${window.langu('cart_delivery_total_dist')}</span>
                         <span style="font-weight: bold; color: #2196F3; font-size: 1.1rem;">${totalDistance.toFixed(2)} كم</span>
                     </div>
                     <div class="delivery-row-detail">
-                        <span class="delivery-label">تكلفة المسافة (${totalDistance.toFixed(2)} × ${defaults.price_per_km}):</span>
+                        <span class="delivery-label">${window.langu('cart_delivery_dist_cost').replace('{dist}', totalDistance.toFixed(2)).replace('{price}', defaults.price_per_km)}</span>
                         <span class="delivery-cost-minus">+${distanceCost.toFixed(2)} ${currency}</span>
                     </div>
                 </div>
 
                 <div class="delivery-section delivery-section-vehicle">
                     <div class="delivery-row">
-                        <strong>🚗 نوع المركبة:</strong>
-                        <span>${breakdown.vehicleType === 'truck' ? '🚛 شاحنة' :
-            breakdown.vehicleType === 'car' ? '🚗 سيارة' : '🏍️ دراجة نارية'}</span>
+                        <strong>${window.langu('cart_delivery_vehicle_label')}</strong>
+                        <span>${breakdown.vehicleType === 'truck' ? window.langu('cart_delivery_vehicle_truck') :
+            breakdown.vehicleType === 'car' ? window.langu('cart_delivery_vehicle_car') : window.langu('cart_delivery_vehicle_bike')}</span>
                     </div>
                     ${vehicleCost > 0 ? `
                     <div class="delivery-row-detail">
@@ -425,7 +425,7 @@ function showDeliveryDetails(deliveryResult) {
 
                 <div class="delivery-section delivery-section-value">
                     <div class="delivery-row">
-                        <strong>💰 قيمة الطلب:</strong>
+                        <strong>${window.langu('cart_delivery_value_label')}</strong>
                         <span>${breakdown.orderValue.toFixed(2)} ${currency}</span>
                     </div>
                     ${orderValueFee > 0 ? `
@@ -442,9 +442,9 @@ function showDeliveryDetails(deliveryResult) {
 
                 <div class="delivery-section delivery-section-weather">
                     <div class="delivery-row">
-                        <strong>🌦️ حالة الطقس:</strong>
-                        <span>${breakdown.weather === 'heavy_rain' ? '🌧️ أمطار غزيرة' :
-            breakdown.weather === 'light_rain' ? '🌦️ أمطار خفيفة' : '☀️ طقس عادي'}</span>
+                        <strong>${window.langu('cart_delivery_weather_label')}</strong>
+                        <span>${breakdown.weather === 'heavy_rain' ? window.langu('cart_delivery_weather_heavy') :
+            breakdown.weather === 'light_rain' ? window.langu('cart_delivery_weather_light') : window.langu('cart_delivery_weather_normal')}</span>
                     </div>
                     ${weatherCost > 0 ? `
                     <div class="delivery-row-detail">
@@ -456,9 +456,9 @@ function showDeliveryDetails(deliveryResult) {
 
                 <div class="delivery-section delivery-section-location">
                     <div class="delivery-row">
-                        <strong>📍 المنطقة:</strong>
-                        <span>${breakdown.location === 'outside_city' ? '🏞️ خارج المدينة' :
-            breakdown.location === 'suburbs' ? '🏘️ الضواحي' : '🏙️ داخل المدينة'}</span>
+                        <strong>${window.langu('cart_delivery_location_label')}</strong>
+                        <span>${breakdown.location === 'outside_city' ? window.langu('cart_delivery_location_outside') :
+            breakdown.location === 'suburbs' ? window.langu('cart_delivery_location_suburbs') : window.langu('cart_delivery_location_inside')}</span>
                     </div>
                     ${locationCost > 0 ? `
                     <div class="delivery-row-detail">
@@ -470,9 +470,9 @@ function showDeliveryDetails(deliveryResult) {
 
                 <div class="delivery-section delivery-section-eta">
                     <div class="delivery-row">
-                        <strong>⚡ سرعة التوصيل:</strong>
-                        <span>${breakdown.etaType === 'instant' ? '🚀 فوري' :
-            breakdown.etaType === 'fast' ? '⚡ سريع' : '🕐 عادي'}</span>
+                        <strong>${window.langu('cart_delivery_speed_label')}</strong>
+                        <span>${breakdown.etaType === 'instant' ? window.langu('cart_delivery_speed_instant') :
+            breakdown.etaType === 'fast' ? window.langu('cart_delivery_speed_fast') : window.langu('cart_delivery_speed_normal')}</span>
                     </div>
                     ${etaCost > 0 ? `
                     <div class="delivery-row-detail">
@@ -485,8 +485,8 @@ function showDeliveryDetails(deliveryResult) {
                 ${breakdown.specialVehicle ? `
                 <div class="delivery-section delivery-section-special">
                     <div class="delivery-row">
-                        <strong>⚠️ مركبة خاصة:</strong>
-                        <span>نعم (حمولة ثقيلة)</span>
+                        <strong>${window.langu('cart_delivery_special_label')}</strong>
+                        <span>${window.langu('cart_delivery_special_yes')}</span>
                     </div>
                     <div class="delivery-row-detail">
                         <span class="delivery-label">تكلفة إضافية (${(defaults.special_vehicle_factor * 100).toFixed(0)}%):</span>
@@ -497,8 +497,8 @@ function showDeliveryDetails(deliveryResult) {
 
                 <div class="delivery-section delivery-section-rating">
                     <div class="delivery-row">
-                        <strong>⭐ تقييم السائق:</strong>
-                        <span>${breakdown.driverRating.toFixed(1)} نجوم</span>
+                        <strong>${window.langu('cart_delivery_rating_label')}</strong>
+                        <span>${window.langu('cart_delivery_stars').replace('{n}', breakdown.driverRating.toFixed(1))}</span>
                     </div>
                     ${ratingCost !== 0 ? `
                     <div class="delivery-row-detail">
@@ -510,13 +510,13 @@ function showDeliveryDetails(deliveryResult) {
 
                 <div class="delivery-section delivery-section-base">
                     <div class="delivery-row">
-                        <strong style="color: #f57c00;">💳 الرسوم الأساسية:</strong>
+                        <strong style="color: #f57c00;">${window.langu('cart_delivery_base_fee')}</strong>
                         <span style="font-weight: bold;">+${defaults.base_fee.toFixed(2)} ${currency}</span>
                     </div>
                 </div>
                     ${discount > 0 ? `
                     <div class="delivery-row" style="padding-top: 8px; border-top: 1px solid #fff59d;">
-                        <strong style="color: #388e3c;">🎁 الخصم (للطلبات < ${defaults.discount_threshold} ${currency}):</strong>
+                        <strong style="color: #388e3c;">${window.langu('cart_delivery_discount_label')} (للطلبات < ${defaults.discount_threshold} ${currency}):</strong>
                         <span class="delivery-cost-minus">-${discount.toFixed(2)} ${currency}</span>
                     </div>
                     ` : `
@@ -529,7 +529,7 @@ function showDeliveryDetails(deliveryResult) {
                 <hr style="margin: 20px 0; border: none; border-top: 2px solid #e0e0e0;">
 
                 <div class="delivery-section-total">
-                    <strong>💵 التكلفة النهائية: ${totalCost.toFixed(2)} ${currency}</strong>
+                    <strong>${window.langu('cart_delivery_final_total').replace('{total}', totalCost.toFixed(2)).replace('{currency}', currency)}</strong>
                 </div>
             </div>
         </div>
@@ -538,7 +538,7 @@ function showDeliveryDetails(deliveryResult) {
     Swal.fire({
         html: detailsHTML,
         width: '600px',
-        confirmButtonText: 'موافق',
+        confirmButtonText: window.langu('alert_confirm_btn'),
         confirmButtonColor: 'var(--primary-color)',
         showCloseButton: true,
         customClass: {

@@ -57,18 +57,19 @@ function cartPage_setupEventListeners() {
 
                     if (cartPage_product) {
                         Swal.fire({
-                            title: 'هل أنت متأكد؟',
-                            text: `سيتم حذف المنتج "${cartPage_product.productName}" من سلة المشتريات.`,
+                            title: window.langu('cart_delete_confirm_title'),
+                            text: window.langu('cart_delete_confirm_text').replace('{name}', cartPage_product.productName),
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#d33',
                             cancelButtonColor: '#3085d6',
-                            confirmButtonText: 'نعم، احذفه!',
-                            cancelButtonText: 'إلغاء'
+                            confirmButtonText: window.langu('alert_confirm_yes'),
+                            cancelButtonText: window.langu('alert_cancel_btn'),
+                            customClass: { popup: 'fullscreen-swal' }
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 removeFromCart(cartPage_productKey);
-                                Swal.fire('تم الحذف!', 'تم حذف المنتج من السلة بنجاح.', 'success');
+                                Swal.fire(window.langu('cart_delete_success_title'), window.langu('cart_delete_success_text'), 'success');
                             }
                         });
                     }
@@ -99,15 +100,26 @@ function cartPage_setupEventListeners() {
                     if (cartPage_newQuantity > 0) {
                         updateCartQuantity(cartPage_productKey, cartPage_newQuantity);
                     } else if (cartPage_newQuantity <= 0) {
-                        const cartPage_cart = getCart();
-                        const cartPage_product = cartPage_cart.find(item => item.product_key === cartPage_productKey);
-
-                        if (cartPage_product && confirm(`هل أنت متأكد من حذف "${cartPage_product.productName}" من السلة؟`)) {
-                            removeFromCart(cartPage_productKey);
-                        } else {
-                            // Reset value to 1
-                            e.target.value = 1;
-                            updateCartQuantity(cartPage_productKey, 1);
+                        if (cartPage_product) {
+                            Swal.fire({
+                                title: window.langu('cart_delete_confirm_title'),
+                                text: window.langu('cart_delete_confirm_text').replace('{name}', cartPage_product.productName),
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#d33',
+                                cancelButtonColor: '#3085d6',
+                                confirmButtonText: window.langu('alert_confirm_yes'),
+                                cancelButtonText: window.langu('alert_cancel_btn'),
+                                customClass: { popup: 'fullscreen-swal' }
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    removeFromCart(cartPage_productKey);
+                                } else {
+                                    // Reset value to 1
+                                    e.target.value = 1;
+                                    updateCartQuantity(cartPage_productKey, 1);
+                                }
+                            });
                         }
                     }
                 }
@@ -119,19 +131,20 @@ function cartPage_setupEventListeners() {
         // Clear Cart
         document.getElementById('cartPage_clearCartBtn').addEventListener('click', function () {
             Swal.fire({
-                title: 'هل أنت متأكد؟',
-                text: "سيتم تفريغ سلة المشتريات بالكامل!",
+                title: window.langu('cart_clear_confirm_title'),
+                text: window.langu('cart_clear_confirm_text'),
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'نعم، قم بالتفريغ!',
-                cancelButtonText: 'إلغاء'
+                confirmButtonText: window.langu('alert_confirm_yes'),
+                cancelButtonText: window.langu('alert_cancel_btn'),
+                customClass: { popup: 'fullscreen-swal' }
             }).then((result) => {
                 if (result.isConfirmed) {
                     clearCart();
                     // Show success message after clearing
-                    Swal.fire('تم التفريغ!', 'تم تفريغ سلة المشتريات .', 'success');
+                    Swal.fire(window.langu('cart_clear_success_title'), window.langu('cart_clear_success_text'), 'success');
                 }
             });
         });

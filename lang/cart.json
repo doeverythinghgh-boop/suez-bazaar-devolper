@@ -1,0 +1,334 @@
+{
+  "cart_loading": {
+    "ar": "جاري تحميل سلة المشتريات...",
+    "en": "Loading shopping cart..."
+  },
+  "cart_summary_title": {
+    "ar": "ملخص الطلب",
+    "en": "Order Summary"
+  },
+  "cart_item_count": {
+    "ar": "عدد المنتجات:",
+    "en": "Item Count:"
+  },
+  "cart_subtotal": {
+    "ar": "المجموع الجزئي:",
+    "en": "Subtotal:"
+  },
+  "cart_savings": {
+    "ar": "التوفير:",
+    "en": "Savings:"
+  },
+  "cart_delivery_fee": {
+    "ar": "خدمه التوصيل:",
+    "en": "Delivery Fee:"
+  },
+  "cart_smart_delivery": {
+    "ar": "التوصيل الذكي:",
+    "en": "Smart Delivery:"
+  },
+  "cart_details": {
+    "ar": "تفاصيل",
+    "en": "Details"
+  },
+  "cart_total": {
+    "ar": "المجموع الكلي:",
+    "en": "Total Amount:"
+  },
+  "cart_checkout_btn": {
+    "ar": "إتمام عملية الشراء",
+    "en": "Checkout"
+  },
+  "cart_clear_btn": {
+    "ar": "تفريغ السلة",
+    "en": "Clear Cart"
+  },
+  "cart_empty_title": {
+    "ar": "سلة المشتريات فارغة",
+    "en": "Cart is Empty"
+  },
+  "cart_empty_message": {
+    "ar": "لم تقم بإضافة أي منتجات إلى سلة المشتريات بعد. ابدأ التسوق الآن لإضافة منتجات رائعة!",
+    "en": "You haven't added any products to your cart yet. Start shopping now to add great products!"
+  },
+  "cart_continue_shopping": {
+    "ar": "متابعة التسوق",
+    "en": "Continue Shopping"
+  },
+  "cart_edit_note": {
+    "ar": "تعديل الملاحظة",
+    "en": "Edit Note"
+  },
+  "cart_note_placeholder": {
+    "ar": "أضف ملاحظة خاصة لهذا المنتج (اختياري)",
+    "en": "Add a special note for this product (optional)"
+  },
+  "cart_save": {
+    "ar": "حفظ",
+    "en": "Save"
+  },
+  "cart_cancel": {
+    "ar": "إلغاء",
+    "en": "Cancel"
+  },
+  "cart_photo_order_success": {
+    "ar": "تم استلام طلبك الخاص بالصور!",
+    "en": "Your photo order has been received!"
+  },
+  "cart_photo_order_desc": {
+    "ar": "لقد قمت بإرسال طلب يحتوي على صور وملاحظات. سيتم مراجعته قريباً.",
+    "en": "You have submitted an order with photos and notes. It will be reviewed soon."
+  },
+  "cart_delete_confirm_title": {
+    "ar": "هل أنت متأكد؟",
+    "en": "Are you sure?"
+  },
+  "cart_delete_confirm_text": {
+    "ar": "سيتم حذف هذا المنتج من سلة المشتريات.",
+    "en": "This product will be removed from your cart."
+  },
+  "cart_delete_success_title": {
+    "ar": "تم الحذف!",
+    "en": "Deleted!"
+  },
+  "cart_delete_success_text": {
+    "ar": "تم حذف المنتج من السلة بنجاح.",
+    "en": "Product removed from cart successfully."
+  },
+  "cart_clear_confirm_title": {
+    "ar": "تفريغ السلة",
+    "en": "Clear Cart"
+  },
+  "cart_clear_confirm_text": {
+    "ar": "هل أنت متأكد من تفريغ كافة محتويات السلة؟",
+    "en": "Are you sure you want to clear all items from the cart?"
+  },
+  "cart_clear_success_title": {
+    "ar": "تم التفريغ!",
+    "en": "Cleared!"
+  },
+  "cart_clear_success_text": {
+    "ar": "تم تفريغ سلة المشتريات بنجاح.",
+    "en": "Shopping cart cleared successfully."
+  },
+  "cart_empty_checkout_title": {
+    "ar": "السلة فارغة",
+    "en": "Empty Cart"
+  },
+  "cart_empty_checkout_text": {
+    "ar": "لا توجد منتجات في السلة لإتمام الشراء.",
+    "en": "There are no products in the cart to complete the purchase."
+  },
+  "cart_confirm_order_title": {
+    "ar": "تأكيد الطلب",
+    "en": "Confirm Order"
+  },
+  "cart_confirm_order_text": {
+    "ar": "سيتم إرسال طلبك إلى الموردين.",
+    "en": "Your order will be sent to the suppliers."
+  },
+  "cart_send_order_success_title": {
+    "ar": "تم الإرسال!",
+    "en": "Sent!"
+  },
+  "cart_send_order_success_text": {
+    "ar": "تم إرسال طلبك بنجاح.",
+    "en": "Your order has been sent successfully."
+  },
+  "cart_error_update_qty": {
+    "ar": "فشل في تحديث الكمية.",
+    "en": "Failed to update quantity."
+  },
+  "cart_error_own_product_title": {
+    "ar": "عذراً",
+    "en": "Sorry"
+  },
+  "cart_error_own_product_text": {
+    "ar": "لا يمكنك شراء منتجاتك الخاصة",
+    "en": "You cannot buy your own products"
+  },
+  "cart_added_success": {
+    "ar": "تمت إضافة \"{name}\" إلى السلة",
+    "en": "\"{name}\" added to cart"
+  },
+  "cart_added_desc": {
+    "ar": "يمكنك متابعة التسوق.",
+    "en": "You can continue shopping."
+  },
+  "cart_limit_title": {
+    "ar": "تنبيه: حد الباقة",
+    "en": "Warning: Order Limit"
+  },
+  "cart_limit_text": {
+    "ar": "عذراً، لا يمكن الشراء من البائع بأقل من {limit} {currency}. مجموع مشترياتك الحالية منه هو {total} {currency}.",
+    "en": "Sorry, you cannot buy from this seller for less than {limit} {currency}. Your current total is {total} {currency}."
+  },
+  "cart_total_confirm": {
+    "ar": "المبلغ الإجمالي هو {amount} {currency}. هل تريد المتابعة؟",
+    "en": "The total amount is {amount} {currency}. Do you want to continue?"
+  },
+  "cart_checkout_success_title": {
+    "ar": "تم إتمام طلبك بنجاح! 🎉",
+    "en": "Your order has been placed successfully! 🎉"
+  },
+  "cart_order_id": {
+    "ar": "رقم الطلب: #{id}",
+    "en": "Order ID: #{id}"
+  },
+  "cart_success_ok": {
+    "ar": "حسناً",
+    "en": "OK"
+  },
+  "cart_discount_badge": {
+    "ar": "توفير {n}%",
+    "en": "Save {n}%"
+  },
+  "cart_notes_label": {
+    "ar": "ملاحظاتك:",
+    "en": "Your Notes:"
+  },
+  "cart_no_notes": {
+    "ar": "لا توجد ملاحظات",
+    "en": "No notes"
+  },
+  "cart_delete_btn": {
+    "ar": "حذف",
+    "en": "Delete"
+  },
+  "cart_not_available": {
+    "ar": "غير متاح",
+    "en": "N/A"
+  },
+  "cart_delivery_details_title": {
+    "ar": "📊 تفاصيل حساب خدمة التوصيل",
+    "en": "📊 Delivery Calculation Details"
+  },
+  "cart_delivery_stages": {
+    "ar": "📏 مراحل التوصيل:",
+    "en": "📏 Delivery Stages:"
+  },
+  "cart_delivery_total_dist": {
+    "ar": "المسافة الكلية:",
+    "en": "Total Distance:"
+  },
+  "cart_delivery_dist_cost": {
+    "ar": "تكلفة المسافة ({dist} × {price}):",
+    "en": "Distance Cost ({dist} × {price}):"
+  },
+  "cart_delivery_segment_direct": {
+    "ar": "🏢 المكتب ← 🏠 العميل",
+    "en": "🏢 Office ← 🏠 Customer"
+  },
+  "cart_delivery_segment_first": {
+    "ar": "🏢 المكتب ← 📦 البائع الأول",
+    "en": "🏢 Office ← 📦 First Seller"
+  },
+  "cart_delivery_segment_between": {
+    "ar": "📦 البائع {i} ← 📦 البائع {j}",
+    "en": "📦 Seller {i} ← 📦 Seller {j}"
+  },
+  "cart_delivery_segment_last": {
+    "ar": "📦 البائع الأخير ← 🏠 العميل",
+    "en": "📦 Last Seller ← 🏠 Customer"
+  },
+  "cart_delivery_vehicle_label": {
+    "ar": "🚗 نوع المركبة:",
+    "en": "🚗 Vehicle Type:"
+  },
+  "cart_delivery_vehicle_truck": {
+    "ar": "🚛 شاحنة",
+    "en": "🚛 Truck"
+  },
+  "cart_delivery_vehicle_car": {
+    "ar": "🚗 سيارة",
+    "en": "🚗 Car"
+  },
+  "cart_delivery_vehicle_bike": {
+    "ar": "🏍️ دراجة نارية",
+    "en": "🏍️ Motorcycle"
+  },
+  "cart_delivery_value_label": {
+    "ar": "💰 قيمة الطلب:",
+    "en": "💰 Order Value:"
+  },
+  "cart_delivery_weather_label": {
+    "ar": "🌦️ حالة الطقس:",
+    "en": "🌦️ Weather Status:"
+  },
+  "cart_delivery_weather_heavy": {
+    "ar": "🌧️ أمطار غزيرة",
+    "en": "🌧️ Heavy Rain"
+  },
+  "cart_delivery_weather_light": {
+    "ar": "🌦️ أمطار خفيفة",
+    "en": "🌦️ Light Rain"
+  },
+  "cart_delivery_weather_normal": {
+    "ar": "☀️ طقس عادي",
+    "en": "☀️ Normal Weather"
+  },
+  "cart_delivery_location_label": {
+    "ar": "📍 المنطقة:",
+    "en": "📍 Region:"
+  },
+  "cart_delivery_location_outside": {
+    "ar": "🏞️ خارج المدينة",
+    "en": "🏞️ Outside City"
+  },
+  "cart_delivery_location_suburbs": {
+    "ar": "🏘️ الضواحي",
+    "en": "🏘️ Suburbs"
+  },
+  "cart_delivery_location_inside": {
+    "ar": "🏙️ داخل المدينة",
+    "en": "🏙️ Inside City"
+  },
+  "cart_delivery_speed_label": {
+    "ar": "⚡ سرعة التوصيل:",
+    "en": "⚡ Delivery Speed:"
+  },
+  "cart_delivery_speed_instant": {
+    "ar": "🚀 فوري",
+    "en": "🚀 Instant"
+  },
+  "cart_delivery_speed_fast": {
+    "ar": "⚡ سريع",
+    "en": "⚡ Fast"
+  },
+  "cart_delivery_speed_normal": {
+    "ar": "🕐 عادي",
+    "en": "🕐 Normal"
+  },
+  "cart_delivery_special_label": {
+    "ar": "⚠️ مركبة خاصة:",
+    "en": "⚠️ Special Vehicle:"
+  },
+  "cart_delivery_special_yes": {
+    "ar": "نعم (حمولة ثقيلة)",
+    "en": "Yes (Heavy Load)"
+  },
+  "cart_delivery_rating_label": {
+    "ar": "⭐ تقييم السائق:",
+    "en": "⭐ Driver Rating:"
+  },
+  "cart_delivery_stars": {
+    "ar": "{n} نجوم",
+    "en": "{n} Stars"
+  },
+  "cart_delivery_base_fee": {
+    "ar": "💳 الرسوم الأساسية:",
+    "en": "💳 Base Fee:"
+  },
+  "cart_delivery_discount_label": {
+    "ar": "🎁 الخصم:",
+    "en": "🎁 Discount:"
+  },
+  "cart_delivery_final_total": {
+    "ar": "💵 التكلفة النهائية: {total} {currency}",
+    "en": "💵 Final Cost: {total} {currency}"
+  },
+  "cart_currency": {
+    "ar": "ج.م",
+    "en": "EGP"
+  }
+}
