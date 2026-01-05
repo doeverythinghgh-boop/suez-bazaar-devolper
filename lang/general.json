@@ -35,6 +35,26 @@
     "ar": "موافق",
     "en": "OK"
   },
+  "alert_cancel_btn": {
+    "ar": "إلغاء",
+    "en": "Cancel"
+  },
+  "alert_confirm_yes": {
+    "ar": "نعم",
+    "en": "Yes"
+  },
+  "alert_confirm_no": {
+    "ar": "لا",
+    "en": "No"
+  },
+  "failed_operation_title": {
+    "ar": "فشل العملية",
+    "en": "Operation Failed"
+  },
+  "success_operation_title": {
+    "ar": "تمت العملية بنجاح",
+    "en": "Operation Successful"
+  },
   "page_title": {
     "ar": "سوق السويس",
     "en": "Suez Bazaar"

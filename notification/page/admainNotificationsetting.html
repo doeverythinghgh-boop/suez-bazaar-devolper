@@ -12,19 +12,19 @@
 
     <div class="notifiSetting_container">
         <header>
-            <h1><i class="fas fa-cogs"></i> إعدادات نظام الإشعارات</h1>
-            <p class="notifiSetting_description">تحكم في من يستقبل الإشعارات لكل حدث في النظام.</p>
+            <h1 data-lkey="notif_settings_title"><i class="fas fa-cogs"></i> إعدادات نظام الإشعارات</h1>
+            <p class="notifiSetting_description" data-lkey="notif_settings_desc">تحكم في من يستقبل الإشعارات لكل حدث في النظام.</p>
         </header>
 
         <div class="table-responsive">
             <table>
                 <thead>
                     <tr>
-                        <th>الحدث (Event)</th>
-                        <th>المشتري <i class="fas fa-user"></i></th>
-                        <th>الإدارة <i class="fas fa-user-shield"></i></th>
-                        <th>البائعين <i class="fas fa-store"></i></th>
-                        <th>التوصيل <i class="fas fa-truck"></i></th>
+                        <th data-lkey="notif_event_col">الحدث (Event)</th>
+                        <th><span data-lkey="notif_buyer_col">المشتري</span> <i class="fas fa-user"></i></th>
+                        <th><span data-lkey="notif_admin_col">الإدارة</span> <i class="fas fa-user-shield"></i></th>
+                        <th><span data-lkey="notif_sellers_col">البائعين</span> <i class="fas fa-store"></i></th>
+                        <th><span data-lkey="notif_delivery_col">التوصيل</span> <i class="fas fa-truck"></i></th>
                     </tr>
                 </thead>
                 <tbody id="notifiSetting_settings-body">
@@ -35,7 +35,7 @@
 
         <div class="notifiSetting_controls">
             <button id="notifiSetting_reset-btn" class="notifiSetting_btn notifiSetting_btn-reset">
-                <i class="fas fa-undo"></i> استعادة الافتراضيات
+                <i class="fas fa-undo"></i> <span data-lkey="notif_reset_btn">استعادة الافتراضيات</span>
             </button>
         </div>
     </div>

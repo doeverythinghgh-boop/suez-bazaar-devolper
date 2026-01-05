@@ -105,8 +105,11 @@ async function loadIndexTranslations() {
     const profileRes = await fetch('lang/profile-modal.json');
     const profileData = profileRes.ok ? await profileRes.json() : {};
 
+    const notificationsRes = await fetch('lang/notifications.json');
+    const notificationsData = notificationsRes.ok ? await notificationsRes.json() : {};
+
     // 3. Merge them
-    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData, ...profileData };
+    window.appTranslations = { ...generalData, ...indexData, ...loginData, ...dashboardData, ...profileData, ...notificationsData };
 
     console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحات البداية، الدخول، ولوحة التحكم.');
     if (window.applyAppTranslations) window.applyAppTranslations();

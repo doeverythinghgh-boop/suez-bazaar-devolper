@@ -43,7 +43,7 @@ const notifiSetting_Controller = {
             this.notifiSetting_setupEventListeners();
         } catch (notifiSetting_error) {
             console.error('حدث خطأ أثناء تهيئة إعدادات الإشعارات:', notifiSetting_error);
-            this.notifiSetting_showToast('فشل تحميل الصفحة بشكل صحيح ❌');
+            this.notifiSetting_showToast(window.langu('notifications_init_error'));
         }
     },
     /**
@@ -80,7 +80,7 @@ const notifiSetting_Controller = {
                 console.log('تم تحميل الإعدادات الافتراضية المحلية.');
             } catch (localError) {
                 console.error('فشل تحميل الإعدادات المحلية والآمنة:', localError);
-                this.notifiSetting_showToast('فشل تحميل الإعدادات ⚠️');
+                this.notifiSetting_showToast(window.langu('notif_load_fail'));
                 notifiSetting_DEFAULT_CONFIG = {};
                 this.notifiSetting_config = {};
             }
@@ -123,7 +123,7 @@ const notifiSetting_Controller = {
      */
     async notifiSetting_saveConfig() {
         try {
-            this.notifiSetting_showToast('جاري رفع الإعدادات للسحابة... ☁️');
+            this.notifiSetting_showToast(window.langu('notif_uploading'));
 
             const jsonString = JSON.stringify(this.notifiSetting_config, null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
@@ -131,11 +131,11 @@ const notifiSetting_Controller = {
             // استخدام مكتبة cloudFileManager للرفع
             await uploadFile2cf(blob, 'notification_config.json', (msg) => console.log(msg));
 
-            this.notifiSetting_showToast('تم حفظ الإعدادات وتحديث السحابة بنجاح ✅');
+            this.notifiSetting_showToast(window.langu('notif_save_success'));
             console.log('[notifiSetting] تم حفظ الإعدادات في Cloudflare:', this.notifiSetting_config);
         } catch (notifiSetting_error) {
             console.error('حدث خطأ أثناء حفظ الإعدادات في Cloudflare:', notifiSetting_error);
-            this.notifiSetting_showToast('فشل حفظ الإعدادات في السحابة ❌');
+            this.notifiSetting_showToast(window.langu('notif_save_fail'));
         }
     },
     /**
@@ -147,9 +147,18 @@ const notifiSetting_Controller = {
      * @description استعادة الإعدادات الافتراضية
      * @returns {void}
      */
-    notifiSetting_resetDefaults() {
+    async notifiSetting_resetDefaults() {
         try {
-            if (confirm('هل أنت متأكد من استعادة الافتراضيات؟')) {
+            const result = await Swal.fire({
+                title: window.langu('notif_reset_confirm'),
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: window.langu('alert_confirm_yes'),
+                cancelButtonText: window.langu('alert_cancel_btn'),
+                customClass: { popup: 'fullscreen-swal' }
+            });
+
+            if (result.isConfirmed) {
                 this.notifiSetting_config = JSON.parse(JSON.stringify(notifiSetting_DEFAULT_CONFIG));
                 this.notifiSetting_saveConfig();
                 this.notifiSetting_renderTable();
@@ -205,8 +214,14 @@ const notifiSetting_Controller = {
                 const notifiSetting_data = this.notifiSetting_config[notifiSetting_key];
                 const notifiSetting_row = document.createElement('tr');
 
+                // ترجمة التسمية (Label) بناءً على مفتاح الحدث
+                // المفاتيح المتوقعة: purchase, step-review, step-cancelled, etc.
+                // نحولها لمفاتيح الترجمة: notif_label_purchase, notif_label_review, etc.
+                const transKey = `notif_label_${notifiSetting_key.replace('step-', '')}`;
+                const displayLabel = window.langu(transKey) !== transKey ? window.langu(transKey) : notifiSetting_data.label;
+
                 notifiSetting_row.innerHTML = `
-                    <td class="notifiSetting_event-name">${notifiSetting_data.label}</td>
+                    <td class="notifiSetting_event-name">${displayLabel}</td>
                     <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'buyer', notifiSetting_data.buyer)}</td>
                     <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'admin', notifiSetting_data.admin)}</td>
                     <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'seller', notifiSetting_data.seller)}</td>

@@ -16,8 +16,8 @@
         <div class="notifications-settings" id="notifications-settings">
             <div class="settings-item">
                 <div class="settings-info">
-                    <h3 id="toggle-title">تفعيل الإشعارات</h3>
-                    <p id="toggle-desc">استلام تنبيهات فورية عند وصول رسائل أو تحديثات جديدة</p>
+                    <h3 id="toggle-title" data-lkey="notification_disabled_title">تفعيل الإشعارات</h3>
+                    <p id="toggle-desc" data-lkey="notification_disabled_desc">استلام تنبيهات فورية عند وصول رسائل أو تحديثات جديدة</p>
                 </div>
                 <label class="switch">
                     <input type="checkbox" id="notification-master-toggle">
@@ -35,25 +35,25 @@
         <div class="state-container" id="loading-state">
             <div class="loading-state">
                 <i class="fas fa-spinner fa-spin"></i>
-                <h3>جاري تحميل الإشعارات...</h3>
+                <h3 data-lkey="notifications_loading">جاري تحميل الإشعارات...</h3>
             </div>
         </div>
 
         <div class="state-container" id="empty-state">
             <div class="empty-state">
                 <i class="far fa-bell-slash"></i>
-                <h3>لا توجد إشعارات حتى الآن</h3>
-                <p>سيظهر هنا أي إشعارات تصل إليك</p>
+                <h3 data-lkey="notifications_empty_title">لا توجد إشعارات حتى الآن</h3>
+                <p data-lkey="notifications_empty_desc">سيظهر هنا أي إشعارات تصل إليك</p>
             </div>
         </div>
 
         <div class="state-container" id="error-state">
             <div class="error-state">
                 <i class="fas fa-exclamation-triangle"></i>
-                <h3>حدث خطأ أثناء تحميل الإشعارات</h3>
-                <p class="error-message">فشل في تحميل الإشعارات. تأكد من اتصالك بالإنترنت.</p>
+                <h3 data-lkey="notifications_error_title">حدث خطأ أثناء تحميل الإشعارات</h3>
+                <p class="error-message" data-lkey="notifications_error_desc">فشل في تحميل الإشعارات. تأكد من اتصالك بالإنترنت.</p>
                 <button class="btn btn-primary" onclick="window.location.reload()">
-                    <i class="fas fa-redo"></i> إعادة المحاولة
+                    <i class="fas fa-redo"></i> <span data-lkey="notifications_retry_btn">إعادة المحاولة</span>
                 </button>
             </div>
         </div>

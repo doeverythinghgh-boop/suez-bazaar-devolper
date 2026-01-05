@@ -1,0 +1,170 @@
+{
+  "notifications_page_title": {
+    "ar": "الإشعارات",
+    "en": "Notifications"
+  },
+  "notifications_loading": {
+    "ar": "جاري تحميل الإشعارات...",
+    "en": "Loading notifications..."
+  },
+  "notifications_empty_title": {
+    "ar": "لا توجد إشعارات حتى الآن",
+    "en": "No notifications yet"
+  },
+  "notifications_empty_desc": {
+    "ar": "سيظهر هنا أي إشعارات تصل إليك",
+    "en": "Your notifications will appear here"
+  },
+  "notifications_error_title": {
+    "ar": "حدث خطأ أثناء تحميل الإشعارات",
+    "en": "Error loading notifications"
+  },
+  "notifications_error_desc": {
+    "ar": "فشل في تحميل الإشعارات. تأكد من اتصالك بالإنترنت.",
+    "en": "Failed to load notifications. Please check your internet connection."
+  },
+  "notifications_new_received": {
+    "ar": "تم استقبال إشعار جديد",
+    "en": "New notification received"
+  },
+  "notifications_delete_confirm_title": {
+    "ar": "هل أنت متأكد؟",
+    "en": "Are you sure?"
+  },
+  "notifications_delete_confirm_text": {
+    "ar": "سيتم حذف هذه الرسالة نهائياً من جهازك.",
+    "en": "This message will be permanently deleted from your device."
+  },
+  "notifications_delete_success": {
+    "ar": "تم حذف الرسالة بنجاح",
+    "en": "Message deleted successfully"
+  },
+  "notifications_delete_fail": {
+    "ar": "فشل حذف الرسالة",
+    "en": "Failed to delete message"
+  },
+  "notifications_mark_all_read_confirm": {
+    "ar": "هل تريد تحديد جميع الإشعارات كمقروءة؟",
+    "en": "Do you want to mark all notifications as read?"
+  },
+  "notifications_mark_all_read_success": {
+    "ar": "تم تحديد جميع الإشعارات كمقروءة",
+    "en": "All notifications marked as read"
+  },
+  "notifications_sys_permission_required": {
+    "ar": "إذن النظام مطلوب",
+    "en": "System permission required"
+  },
+  "notifications_sys_permission_text": {
+    "ar": "يرجى السماح بالإشعارات من نافذة النظام التي ستظهر الآن.",
+    "en": "Please allow notifications from the system popup that will appear."
+  },
+  "notifications_blocked_title": {
+    "ar": "الإشعارات محظورة",
+    "en": "Notifications blocked"
+  },
+  "notifications_blocked_text": {
+    "ar": "لقد قمت بحظر الإشعارات مسبقاً. يرجى فك الحظر، اذهب إلى الإعدادات ثم اختر التطبيق وفعل الإشعارات لتتمكن من استقبال التنبيهات.",
+    "en": "You have blocked notifications. Please unblock them in settings to receive alerts."
+  },
+  "notifications_enabling": {
+    "ar": "جاري تفعيل الإشعارات...",
+    "en": "Enabling notifications..."
+  },
+  "notifications_enabled_success": {
+    "ar": "تم التفعيل بنجاح",
+    "en": "Notifications enabled successfully"
+  },
+  "notifications_enabled_desc": {
+    "ar": "ستصلك الإشعارات فور صدورها",
+    "en": "You will receive notifications as they occur"
+  },
+  "notifications_disable_confirm_title": {
+    "ar": "هل تريد تعطيل الإشعارات؟",
+    "en": "Do you want to disable notifications?"
+  },
+  "notifications_disable_confirm_text": {
+    "ar": "لن تصلك تنبيهات بخصوص الرسائل الجديدة",
+    "en": "You will not receive alerts for new messages"
+  },
+  "notifications_disabled_success": {
+    "ar": "تم التعطيل",
+    "en": "Notifications disabled"
+  },
+  "notifications_disabled_desc": {
+    "ar": "تم إيقاف استقبال الإشعارات على هذا الجهاز",
+    "en": "Notification reception has been stopped on this device"
+  },
+  "notifications_init_error": {
+    "ar": "حدث خطأ في تهيئة صفحة الإشعارات",
+    "en": "Error initializing notifications page"
+  },
+  "notif_settings_title": {
+    "ar": "إعدادات نظام الإشعارات",
+    "en": "Notification System Settings"
+  },
+  "notif_settings_desc": {
+    "ar": "تحكم في من يستقبل الإشعارات لكل حدث في النظام.",
+    "en": "Control who receives notifications for each system event."
+  },
+  "notif_event_col": {
+    "ar": "الحدث",
+    "en": "Event"
+  },
+  "notif_buyer_col": {
+    "ar": "المشتري",
+    "en": "Buyer"
+  },
+  "notif_admin_col": {
+    "ar": "الإدارة",
+    "en": "Admin"
+  },
+  "notif_sellers_col": {
+    "ar": "البائعين",
+    "en": "Sellers"
+  },
+  "notif_delivery_col": {
+    "ar": "التوصيل",
+    "en": "Delivery"
+  },
+  "notif_reset_btn": {
+    "ar": "استعادة الافتراضيات",
+    "en": "Restore Defaults"
+  },
+  "notif_uploading": {
+    "ar": "جاري رفع الإعدادات للسحابة... ☁️",
+    "en": "Uploading settings to cloud... ☁️"
+  },
+  "notif_save_success": {
+    "ar": "تم حفظ الإعدادات وتحديث السحابة بنجاح ✅",
+    "en": "Settings saved and cloud updated successfully ✅"
+  },
+  "notif_save_fail": {
+    "ar": "فشل حفظ الإعدادات في السحابة ❌",
+    "en": "Failed to save settings to cloud ❌"
+  },
+  "notif_reset_confirm": {
+    "ar": "هل أنت متأكد من استعادة الافتراضيات؟",
+    "en": "Are you sure you want to restore defaults?"
+  },
+  "notif_load_fail": {
+    "ar": "فشل تحميل الإعدادات ⚠️",
+    "en": "Failed to load settings ⚠️"
+  },
+  "notif_label_purchase": { "ar": "شراء", "en": "Purchase" },
+  "notif_label_review": { "ar": "مراجعة", "en": "Review" },
+  "notif_label_cancelled": { "ar": "ملغي", "en": "Cancelled" },
+  "notif_label_confirmed": { "ar": "تأكيد", "en": "Confirmed" },
+  "notif_label_rejected": { "ar": "مرفوض", "en": "Rejected" },
+  "notif_label_shipped": { "ar": "شحن", "en": "Shipped" },
+  "notif_label_delivered": { "ar": "تسليم", "en": "Delivered" },
+  "notif_label_returned": { "ar": "مرتجع", "en": "Returned" },
+  "notif_status_enabled": {
+    "ar": "مفعل",
+    "en": "Enabled"
+  },
+  "notif_status_disabled": {
+    "ar": "معطل",
+    "en": "Disabled"
+  }
+}

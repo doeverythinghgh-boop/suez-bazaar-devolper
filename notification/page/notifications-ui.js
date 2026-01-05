@@ -12,13 +12,13 @@ Object.assign(NotificationPage, {
         if (!this.elements.toggleTitle || !this.elements.toggleDesc) return;
 
         if (isEnabled) {
-            this.elements.toggleTitle.textContent = 'الإشعارات مفعلة';
+            this.elements.toggleTitle.textContent = window.langu('notification_enabled_title');
             this.elements.toggleTitle.style.color = 'var(--text-color-dark)';
-            this.elements.toggleDesc.textContent = 'ستصلك تنبيهات الرسائل وتحديثات طلباتك فور صدورها.';
+            this.elements.toggleDesc.textContent = window.langu('notification_enabled_desc');
         } else {
-            this.elements.toggleTitle.textContent = 'تفعيل الإشعارات';
+            this.elements.toggleTitle.textContent = window.langu('notification_disabled_title');
             this.elements.toggleTitle.style.color = 'var(--text-color-medium)';
-            this.elements.toggleDesc.textContent = 'قم بالتفعيل لاستلام تنبيهات الرسائل والتحديثات الخاصة بطلباتك.';
+            this.elements.toggleDesc.textContent = window.langu('notification_disabled_desc');
         }
     },
 
@@ -55,7 +55,8 @@ Object.assign(NotificationPage, {
 
             this.state.filteredNotifications.forEach(notification => {
                 const date = new Date(notification.timestamp);
-                const dateString = date.toLocaleDateString('ar-EG', {
+                const locale = window.app_language === 'ar' ? 'ar-EG' : 'en-US';
+                const dateString = date.toLocaleDateString(locale, {
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                 });
 
@@ -73,7 +74,7 @@ Object.assign(NotificationPage, {
             });
         } catch (error) {
             console.error('[Notifications UI] خطأ في رسم الإشعارات:', error);
-            this.showError('حدث خطأ أثناء عرض الإشعارات');
+            this.showError(window.langu('notifications_init_error'));
         }
     },
 
@@ -90,12 +91,13 @@ Object.assign(NotificationPage, {
             element.dataset.id = notification.id;
 
             const date = new Date(notification.timestamp);
-            const timeString = date.toLocaleTimeString('ar-EG', {
+            const locale = window.app_language === 'ar' ? 'ar-EG' : 'en-US';
+            const timeString = date.toLocaleTimeString(locale, {
                 hour: '2-digit', minute: '2-digit', hour12: true
             });
 
-            const senderName = notification.type === 'sent' ? 'أنت' :
-                (notification.relatedUser && notification.relatedUser.name ? notification.relatedUser.name : 'مستخدم');
+            const senderName = notification.type === 'sent' ? window.langu('notifications_sender_you') :
+                (notification.relatedUser && notification.relatedUser.name ? notification.relatedUser.name : window.langu('notifications_sender_user'));
 
             const statusClass = notification.status === 'read' ? 'read' : 'unread';
             const statusIcon = notification.status === 'read' ? 'fa-check-double' : 'fa-check';
@@ -109,10 +111,10 @@ Object.assign(NotificationPage, {
                 </div>
                 <div class="notification-meta">
                     <span class="notification-time">${timeString}</span>
-                    <span class="read-status ${statusClass}" title="تغيير الحالة">
+                    <span class="read-status ${statusClass}" title="${window.langu('notifications_status_tooltip')}">
                         <i class="fas ${statusIcon}"></i>
                     </span>
-                    <button class="delete-notification-btn" title="حذف الرسالة">
+                    <button class="delete-notification-btn" title="${window.langu('notifications_delete_tooltip')}">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </div>
@@ -131,7 +133,7 @@ Object.assign(NotificationPage, {
         } catch (error) {
             console.error('[Notifications UI] خطأ في إنشاء عنصر الإشعار:', error);
             const errDiv = document.createElement('div');
-            errDiv.textContent = 'خطأ في عرض الإشعار';
+            errDiv.textContent = window.langu('notifications_init_error');
             return errDiv;
         }
     },
@@ -234,10 +236,10 @@ Object.assign(NotificationPage, {
         const diffHour = Math.floor(diffMin / 60);
         const diffDay = Math.floor(diffHour / 24);
 
-        if (diffDay > 0) return `قبل ${diffDay} يوم`;
-        if (diffHour > 0) return `قبل ${diffHour} ساعة`;
-        if (diffMin > 0) return `قبل ${diffMin} دقيقة`;
-        return 'الآن';
+        if (diffDay > 0) return window.langu('time_days_ago').replace('{n}', diffDay);
+        if (diffHour > 0) return window.langu('time_hours_ago').replace('{n}', diffHour);
+        if (diffMin > 0) return window.langu('time_minutes_ago').replace('{n}', diffMin);
+        return window.langu('time_now');
     },
 
     /**

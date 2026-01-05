@@ -7,10 +7,6 @@
  * - `logout`: Logs the user out by removing their data from LocalStorage and refreshing the page.
  */
 
-
-
-
-
 /**
  * @description Logs out the user by removing their data from local storage and redirecting to `index.html`.
  *   This includes removing FCM tokens from the server and `localStorage`.

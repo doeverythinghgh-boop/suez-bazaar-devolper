@@ -88,7 +88,7 @@ Object.assign(NotificationPage, {
                     if (!this.state || !this.elements || !this.elements.list) return;
                     await this.refreshNotifications();
                     if (!document.hidden && event.detail && event.detail.type === 'received') {
-                        this.showToast('تم استقبال إشعار جديد', 'info');
+                        this.showToast(window.langu('notifications_new_received'), 'info');
                     }
                 } catch (innerError) {
                     console.error('[Notifications Action] خطأ عند استقبال إشعار جديد:', innerError);
@@ -143,7 +143,7 @@ Object.assign(NotificationPage, {
             this.setState({
                 isLoading: false,
                 hasError: true,
-                errorMessage: 'فشل في تحميل الإشعارات. تأكد من اتصالك بالإنترنت.'
+                errorMessage: window.langu('notifications_error_desc')
             });
         }
     },
@@ -200,14 +200,14 @@ Object.assign(NotificationPage, {
     async deleteNotification(id, element) {
         try {
             const result = await Swal.fire({
-                title: 'هل أنت متأكد؟',
-                text: "سيتم حذف هذه الرسالة نهائياً من جهازك.",
+                title: window.langu('notifications_delete_confirm_title'),
+                text: window.langu('notifications_delete_confirm_text'),
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
                 cancelButtonColor: '#3085d6',
-                confirmButtonText: 'نعم، احذفها',
-                cancelButtonText: 'إلغاء',
+                confirmButtonText: window.langu('alert_confirm_yes'),
+                cancelButtonText: window.langu('alert_cancel_btn'),
                 customClass: { popup: 'fullscreen-swal' }
             });
 
@@ -222,11 +222,11 @@ Object.assign(NotificationPage, {
                     this.updateStats(this.state.notifications);
                     if (this.state.filteredNotifications.length === 0) this.showEmptyState();
                 }, 300);
-                this.showToast('تم حذف الرسالة بنجاح', 'success');
+                this.showToast(window.langu('notifications_delete_success'), 'success');
             }
         } catch (error) {
             console.error('[Notifications Action] خطأ في حذف الإشعار:', error);
-            this.showToast('فشل حذف الرسالة', 'error');
+            this.showToast(window.langu('notifications_delete_fail'), 'error');
         }
     },
 
@@ -234,7 +234,17 @@ Object.assign(NotificationPage, {
      * @description تحديد جميع الإشعارات كمقروءة
      */
     async markAllAsRead(silent = false) {
-        if (!silent && !confirm('هل تريد تحديد جميع الإشعارات كمقروءة؟')) return;
+        if (!silent) {
+            const result = await Swal.fire({
+                title: window.langu('notifications_mark_all_read_confirm'),
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: window.langu('alert_confirm_yes'),
+                cancelButtonText: window.langu('alert_cancel_btn'),
+                customClass: { popup: 'fullscreen-swal' }
+            });
+            if (!result.isConfirmed) return;
+        }
         try {
             if (typeof markAllNotificationsAsReadInDB === 'function') await markAllNotificationsAsReadInDB();
             this.state.notifications.forEach(n => n.status = 'read');
@@ -249,10 +259,10 @@ Object.assign(NotificationPage, {
             this.state.stats.unread = 0;
             if (this.elements.unreadCountEl) this.elements.unreadCountEl.textContent = '0';
             this.updateStats(this.state.notifications);
-            if (!silent) this.showToast('تم تحديد جميع الإشعارات كمقروءة', 'success');
+            if (!silent) this.showToast(window.langu('notifications_mark_all_read_success'), 'success');
         } catch (error) {
             console.error('[Notifications Action] خطأ في تحديد الكل كمقروء:', error);
-            if (!silent) this.showToast('حدث خطأ أثناء العملية', 'error');
+            if (!silent) this.showToast(window.langu('unexpected_error'), 'error');
         }
     },
 
@@ -329,12 +339,22 @@ Object.assign(NotificationPage, {
                     if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
                         console.log('[Dev] ⚙️ الخطوة 1-A: بيئة أندرويد - جاري استدعاء طلب إذن النظام (OS Permission Request)...');
                         window.Android.requestNotificationPermission();
-                        Swal.fire({ icon: 'info', title: 'إذن النظام مطلوب', text: 'يرجى السماح بالإشعارات من نافذة النظام التي ستظهر الآن.', confirmButtonText: 'حسناً' });
+                        Swal.fire({ 
+                            icon: 'info', 
+                            title: window.langu('notifications_sys_permission_required'), 
+                            text: window.langu('notifications_sys_permission_text'), 
+                            confirmButtonText: window.langu('alert_confirm_btn') 
+                        });
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
                     } else {
                         console.log('[Dev] ⚙️ الخطوة 1-B: بيئة ويب - لا يمكن طلب الإذن برمجياً بعد الرفض.');
-                        Swal.fire({ icon: 'warning', title: 'الإشعارات محظورة', html: 'لقد قمت بحظر الإشعارات مسبقاً. يرجى فك الحظر اذهب الي الاعدادات ثم اختر التطبيق وفعل الاشعارات لتتمكن من استقبال التنبيهات.', confirmButtonText: 'فهمت' });
+                        Swal.fire({ 
+                            icon: 'warning', 
+                            title: window.langu('notifications_blocked_title'), 
+                            html: window.langu('notifications_blocked_text'), 
+                            confirmButtonText: window.langu('alert_confirm_btn') 
+                        });
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
                     }
@@ -342,7 +362,7 @@ Object.assign(NotificationPage, {
             }
 
             console.log('[Dev] ⚙️ الخطوة 2: إظهار رسالة جاري التفعيل للمستخدم...');
-            Swal.fire({ title: 'جاري تفعيل الإشعارات...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: window.langu('notifications_enabling'), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             if ('Notification' in window) {
                 console.log('[Dev] ⚙️ الخطوة 3: استدعاء Notification.requestPermission()...');
@@ -357,14 +377,24 @@ Object.assign(NotificationPage, {
                 console.log('[Dev] ⚙️ الخطوة 6: تم اكتمال setupFCM بنجاح.');
                 localStorage.setItem('notifications_enabled', 'true');
                 this.updateToggleUI(true);
-                Swal.fire({ icon: 'success', title: 'تم التفعيل', text: 'ستصلك الإشعارات فور صدورها', timer: 2000, showConfirmButton: false });
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: window.langu('notifications_enabled_success'), 
+                    text: window.langu('notifications_enabled_desc'), 
+                    timer: 2000, 
+                    showConfirmButton: false 
+                });
             } else {
                 throw new Error('نظام الإشعارات غير متوفر حالياً');
             }
         } catch (error) {
             console.error('[Notifications Action] فشل التفعيل:', error);
             console.log('[Dev] ❌ فشل التفعيل في مكان ما.');
-            Swal.fire({ icon: 'error', title: 'فشل التفعيل', text: error.message || 'حدث خطأ أثناء محاولة تفعيل الإشعارات' });
+            Swal.fire({ 
+                icon: 'error', 
+                title: window.langu('failed_operation_title'), 
+                text: error.message || window.langu('unexpected_error') 
+            });
             if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
         }
     },
@@ -377,14 +407,14 @@ Object.assign(NotificationPage, {
         try {
             console.log('[Dev] 🛑 الخطوة 1: طلب تأكيد التعطيل من المستخدم...');
             const result = await Swal.fire({
-                title: 'هل تريد تعطيل الإشعارات؟',
-                text: 'لن تصلك تنبيهات بخصوص الرسائل الجديدة',
+                title: window.langu('notifications_disable_confirm_title'),
+                text: window.langu('notifications_disable_confirm_text'),
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'نعم، قم بالتعطيل',
-                cancelButtonText: 'إلغاء'
+                confirmButtonText: window.langu('logout_confirm_btn'),
+                cancelButtonText: window.langu('alert_cancel_btn')
             });
 
             if (result.isConfirmed) {
@@ -394,7 +424,13 @@ Object.assign(NotificationPage, {
                 console.log('[Dev] 🛑 الخطوة 3: مسح توكنات FCM المحفوظة محلياً...');
                 localStorage.removeItem('fcm_token');
                 localStorage.removeItem('android_fcm_key');
-                Swal.fire({ icon: 'success', title: 'تم التعطيل', text: 'تم إيقاف استقبال الإشعارات على هذا الجهاز', timer: 2000, showConfirmButton: false });
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: window.langu('notifications_disabled_success'), 
+                    text: window.langu('notifications_disabled_desc'), 
+                    timer: 2000, 
+                    showConfirmButton: false 
+                });
                 console.log('[Dev] 🛑 تم الانتهاء من التعطيل بنجاح.');
             } else {
                 console.log('[Dev] 🛑 تم إلغاء التعطيل، استعادة حالة المفتاح.');

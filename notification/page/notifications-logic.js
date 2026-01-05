@@ -65,7 +65,7 @@ Object.assign(NotificationPage, {
             if (this.elements.autoRefreshToggle) {
                 this.elements.autoRefreshToggle.checked = this.refreshSettings.autoRefresh;
                 this.elements.autoRefreshToggle.nextElementSibling.textContent =
-                    this.refreshSettings.autoRefresh ? 'مفعل' : 'معطل';
+                    this.refreshSettings.autoRefresh ? window.langu('notif_status_enabled') : window.langu('notif_status_disabled');
             }
         } catch (error) {
             console.error('[Notifications Logic] خطأ في تحديث زر التحديث التلقائي:', error);
