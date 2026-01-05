@@ -400,7 +400,8 @@
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 20px;
-    padding: 0; /* Remove padding here */
+    padding: 0;
+    /* Remove padding here */
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
     max-height: 95px;
@@ -408,7 +409,8 @@
 
   .contact_legal-section.contact_expanded {
     max-height: 2000px;
-    padding: 0; /* Remove padding here */
+    padding: 0;
+    /* Remove padding here */
   }
 
   .contact_legal-tabs {
@@ -416,7 +418,8 @@
     gap: 10px;
     margin-bottom: 0;
     border-bottom: none;
-    padding: 15px 15px 0 15px; /* Add padding here for tabs only */
+    padding: 15px 15px 0 15px;
+    /* Add padding here for tabs only */
     transition: all 0.3s ease;
   }
 
@@ -681,6 +684,38 @@
     transform: scale(0.96);
     background-color: #e9ecef;
   }
+
+  /* QR Code Section */
+  .contact_qr_section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: var(--bg-color-white);
+    border-radius: 15px;
+    text-align: center;
+    border: 1px dashed var(--accent-color);
+  }
+
+  .contact_qr_section h4 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  .contact_qr_image_wrapper {
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .contact_qr_image {
+    width: 180px;
+    height: 180px;
+    display: block;
+    object-fit: contain;
+  }
 </style>
 
 <body id="contact_body" style="background-color: var(--bg-color-light);">
@@ -799,17 +834,23 @@
             <i class="fas fa-clock" id="contact_icon_i_hours"></i>
           </div>
           <div class="contact_details" id="contact_details_hours">
-            <h4 id="contact_details_title_hours">ساعات العمل للدعم الفني</h4>
-            <p id="contact_hours_p1">الأحد - الخميس: 8 صباحاً - 5 مساءً</p>
-            <p id="contact_hours_p2">الجمعة - السبت: مغلق</p>
-            <h4 id="contact_details_title_hours">خدمات التوصيل</h4>
-            <p id="contact_hours_p1">علي مدار الساعة</p>
+            <h4 id="contact_details_title_hours">ساعات العمل</h4>
+            <p id="contact_hours_text">يومياً: 9:00 صباحاً - 10:00 مساءً</p>
+          </div>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="contact_qr_section" id="contact_qr_container">
+          <h4 id="contact_qr_title">امسح الرمز للوصول السريع</h4>
+          <div class="contact_qr_image_wrapper">
+            <img src="../images/qr-code.png" alt="Suez Bazaar QR Code" class="contact_qr_image" id="contact_qr_img">
           </div>
         </div>
       </div>
 
       <!-- Contact Form and Services Tabs Section -->
-      <div class="contact_legal-section" id="contact_form_services_section" style="background-color: var(--bg-color-light);">
+      <div class="contact_legal-section" id="contact_form_services_section"
+        style="background-color: var(--bg-color-light);">
         <div class="contact_legal-tabs" id="contact_form_services_tabs">
           <button class="contact_legal-tab" id="contact_form_title" data-tab="form">
             <i class="fas fa-envelope" id="contact_form_title_icon"></i>
@@ -828,7 +869,8 @@
             <span id="contact_legal_text_delete">حذف البيانات</span>
           </button>
         </div>
-        <div class="contact_legal-iframe-container" id="contact_form_services_container" style="background-color: var(--bg-color-light);">
+        <div class="contact_legal-iframe-container" id="contact_form_services_container"
+          style="background-color: var(--bg-color-light);">
           <!-- Contact Form -->
           <div class="contact_form contact_tab_content contact_hidden" id="contact_form_div" data-content="form">
             <form id="contact_contactForm">
@@ -876,7 +918,8 @@
             </form>
           </div>
           <!-- Services Section -->
-          <div class="contact_info contact_tab_content contact_hidden" id="contact_services_section" data-content="services">
+          <div class="contact_info contact_tab_content contact_hidden" id="contact_services_section"
+            data-content="services">
             <div class="contact_services-grid" id="contact_services_grid">
               <!-- ✅ EDIT: Title and description merged into one container -->
               <div class="contact_service-card" id="contact_service_card_digital">
