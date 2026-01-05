@@ -55,7 +55,7 @@ function showCustomInstallModal() {
   const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=hgh.hgh.suezbazaar&pcampaignid=web_share";
   if (!window.Android) {
     Swal.fire({
-    title: '<span style="font-family: var(--font-primary); font-size: 1.2rem; color: var(--dark-blue);">اختر الطريقة المناسبة لك</span>',
+    title: `<span style="font-family: var(--font-primary); font-size: 1.2rem; color: var(--dark-blue);">${window.langu("install_pwa_title")}</span>`,
     html: `
       <div class="install-modal-container">
         
@@ -188,23 +188,23 @@ window.triggerPWAInstall = async () => {
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isIOS) {
       Swal.fire({
-        title: '<span style="font-size: 1.1rem; font-weight: 600;">تثبيت على الآيفون</span>',
+        title: `<span style="font-size: 1.1rem; font-weight: 600;">${window.langu("install_ios_title")}</span>`,
         html: `
-            <div style="text-align: right; font-size: 0.95rem; line-height: 1.6;">
-                <p style="margin-bottom: 15px; color: #555;">لتحميل التطبيق، يرجى اتباع الآتي:</p>
+            <div style="text-align: inherit; font-size: 0.95rem; line-height: 1.6;">
+                <p style="margin-bottom: 15px; color: #555;">${window.langu("install_ios_desc")}</p>
                 
                 <div class="ios-step">
                     <span class="step-num">1</span>
-                    <span>اضغط على زر <b>مشاركة</b> في الأسفل</span>
-                    <i class="fas fa-share-square fa-lg" style="color: #007aff; margin-right: auto;"></i>
+                    <span>${window.langu("install_ios_step_1")}</span>
+                    <i class="fas fa-share-square fa-lg" style="color: #007aff; margin-inline-start: auto;"></i>
                 </div>
                 
                 <div class="install-divider"></div>
 
                 <div class="ios-step">
                     <span class="step-num">2</span>
-                    <span>اختر <b>إضافة إلى الصفحة الرئيسية</b></span>
-                    <i class="far fa-plus-square fa-lg" style="color: #555; margin-right: auto;"></i>
+                    <span>${window.langu("install_ios_step_2")}</span>
+                    <i class="far fa-plus-square fa-lg" style="color: #555; margin-inline-start: auto;"></i>
                 </div>
                 
 
@@ -256,7 +256,7 @@ window.triggerPWAInstall = async () => {
         `,
         position: 'bottom',
         showConfirmButton: true,
-        confirmButtonText: 'تم',
+        confirmButtonText: window.langu("install_done_btn"),
         confirmButtonColor: '#007aff',
         background: '#f9f9f9',
         customClass: {

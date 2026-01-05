@@ -11,7 +11,7 @@ const AuthUI = {
      * @param {string} title - Title of the loading popup.
      * @param {string} text - Optional text description.
      */
-    showLoading: (title, text = "يرجى الانتظار لحظة.") => {
+    showLoading: (title, text = window.langu("auth_wait_moment")) => {
         Swal.fire({
             title: title,
             text: text,
@@ -43,7 +43,7 @@ const AuthUI = {
             icon: "success",
             title: title,
             html: text, // using html to allow rich text if needed
-            confirmButtonText: "موافق",
+            confirmButtonText: window.langu("alert_confirm_btn"),
             customClass: { popup: 'fullscreen-swal' },
         });
     },
@@ -59,7 +59,7 @@ const AuthUI = {
             icon: "error",
             title: title,
             text: text,
-            confirmButtonText: "موافق",
+            confirmButtonText: window.langu("alert_confirm_btn"),
             customClass: { popup: 'fullscreen-swal' },
         });
     },
@@ -98,17 +98,17 @@ const AuthUI = {
      * @description Shows a popup to prompt the user to enter their password for confirmation.
      * @returns {Promise<string|null>} - Resolves with the password if confirmed, or null if cancelled.
      */
-    confirmPassword: async (title = "التحقق من الهوية", text = "يرجى إدخال كلمة المرور للمتابعة.") => {
+    confirmPassword: async (title = window.langu("auth_confirm_identity"), text = window.langu("auth_enter_password_to_continue")) => {
         const { value: password, isConfirmed } = await Swal.fire({
             title: title,
             text: text,
             input: "password",
-            inputPlaceholder: "أدخل كلمة المرور",
+            inputPlaceholder: window.langu("auth_enter_password_placeholder"),
             inputAttributes: { autocapitalize: "off", autocorrect: "off" },
             customClass: { popup: 'fullscreen-swal' },
             showCancelButton: true,
-            confirmButtonText: "تأكيد",
-            cancelButtonText: "إلغاء",
+            confirmButtonText: window.langu("auth_confirm_btn"),
+            cancelButtonText: window.langu("alert_cancel_btn"),
             allowOutsideClick: () => !Swal.isLoading(),
         });
 

@@ -151,6 +151,62 @@
     "ar": "حدث خطأ غير متوقع.",
     "en": "An unexpected error occurred."
   },
+  "auth_wait_moment": {
+    "ar": "يرجى الانتظار لحظة.",
+    "en": "Please wait a moment."
+  },
+  "auth_confirm_identity": {
+    "ar": "التحقق من الهوية",
+    "en": "Identify Verification"
+  },
+  "auth_enter_password_to_continue": {
+    "ar": "يرجى إدخال كلمة المرور للمتابعة.",
+    "en": "Please enter password to continue."
+  },
+  "auth_enter_password_placeholder": {
+    "ar": "أدخل كلمة المرور",
+    "en": "Enter your password"
+  },
+  "auth_confirm_btn": {
+    "ar": "تأكيد",
+    "en": "Confirm"
+  },
+  "install_pwa_title": {
+    "ar": "اختر الطريقة المناسبة لك",
+    "en": "Choose the Suitable Method"
+  },
+  "install_ios_title": {
+    "ar": "تثبيت على الآيفون",
+    "en": "Install on iPhone"
+  },
+  "install_ios_desc": {
+    "ar": "لتحميل التطبيق، يرجى اتباع الآتي:",
+    "en": "To install the app, please follow these steps:"
+  },
+  "install_ios_step_1": {
+    "ar": "اضغط على زر <b>مشاركة</b> في الأسفل",
+    "en": "Tap the <b>Share</b> button at the bottom"
+  },
+  "install_ios_step_2": {
+    "ar": "اختر <b>إضافة إلى الصفحة الرئيسية</b>",
+    "en": "Choose <b>Add to Home Screen</b>"
+  },
+  "install_done_btn": {
+    "ar": "تم",
+    "en": "Done"
+  },
+  "logout_confirm_title": {
+    "ar": "هل أنت متأكد؟",
+    "en": "Are you sure?"
+  },
+  "logout_confirm_text": {
+    "ar": "سيتم تسجيل خروجك.",
+    "en": "You will be logged out."
+  },
+  "logout_confirm_btn": {
+    "ar": "نعم، تسجيل الخروج",
+    "en": "Yes, Logout"
+  },
   "tagline_1": {
     "ar": "بازار السويس... فرصة واحدة تجمع كل الفرص",
     "en": "Suez Bazaar... One opportunity for all opportunities"
