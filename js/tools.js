@@ -184,7 +184,9 @@ function setUserNameInIndexBar() {
       loginTextElement.textContent = displayName;
     }
   } else {
-    loginTextElement.textContent = langu("login_text");
+    loginTextElement.textContent = (typeof window.langu === 'function') 
+      ? window.langu("login_text") 
+      : "تسجيل الدخول";
 
   }
 }

@@ -170,7 +170,7 @@ async function login_handleSubmit(e) {
 
         if (loginIsValid) {
             // 4. Show Loading
-            AuthUI.showLoading("جاري تسجيل الدخول...");
+            AuthUI.showLoading(langu("logging_in"));
 
             try {
                 // 5. Verify Credentials
@@ -183,14 +183,14 @@ async function login_handleSubmit(e) {
                 } else {
                     // 7. Error
                     AuthUI.close();
-                    const errMsg = verificationResult?.error || "كلمة المرور أو رقم الهاتف غير صحيح.";
-                    AuthUI.showError("خطأ", errMsg);
+                    const errMsg = verificationResult?.error || langu("login_invalid_credentials");
+                    AuthUI.showError(langu("alert_title_info"), errMsg);
                     AuthUI.showFieldValidationMsg(loginPasswordInput, errMsg);
                 }
             } catch (error) {
                 console.error(error);
                 AuthUI.close();
-                AuthUI.showError("خطأ", "حدث خطأ غير متوقع.");
+                AuthUI.showError(langu("alert_title_info"), langu("unexpected_error"));
             }
         }
     } catch (error) {

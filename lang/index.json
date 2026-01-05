@@ -23,120 +23,32 @@
     "ar": "طلبات",
     "en": "Orders"
   },
-  "alert_lang_change_title": {
-    "ar": "تغيير اللغة",
-    "en": "Language Change"
+  "label_phone": {
+    "ar": "رقم الهاتف",
+    "en": "Phone Number"
   },
-  "alert_lang_change_text": {
-    "ar": "سيتم إعادة تحميل الصفحة لتطبيق تغيير اللغة.",
-    "en": "The page will be reloaded to apply the language change."
+  "label_password": {
+    "ar": "كلمة المرور",
+    "en": "Password"
   },
-  "alert_confirm_btn": {
-    "ar": "موافق",
-    "en": "OK"
+  "no_account": {
+    "ar": "ليس لديك حساب؟",
+    "en": "Don't have an account?"
   },
-  "page_title": {
-    "ar": "سوق السويس",
-    "en": "Suez Bazaar"
+  "register_now": {
+    "ar": "سجل الآن",
+    "en": "Register Now"
   },
-  "admin_mode_watermark": {
-    "ar": "وضع المسؤول: تتصفح بصلاحيات المستخدم",
-    "en": "Admin Mode: Browsing as user"
+  "or_you_can": {
+    "ar": "أو يمكنك",
+    "en": "Or you can"
   },
-  "alert_title_info": {
-    "ar": "تنبيه",
-    "en": "Alert"
+  "login_as_guest": {
+    "ar": "الدخول كضيف",
+    "en": "Login as Guest"
   },
-  "alert_login_required": {
-    "ar": "يرجى تسجيل الدخول أولاً للتمكن من استخدام هذه الميزة.",
-    "en": "Please login first to use this feature."
-  },
-  "alert_cancel_btn": {
-    "ar": "إلغاء",
-    "en": "Cancel"
-  },
-  "unknown_status": {
-    "ar": "غير معروف",
-    "en": "Unknown"
-  },
-  "unknown_status_desc": {
-    "ar": "حالة الطلب غير معروفة.",
-    "en": "Order status is unknown."
-  },
-  "net_no_connection": {
-    "ar": "لا يوجد اتصال بالإنترنت",
-    "en": "No internet connection"
-  },
-  "net_restored": {
-    "ar": "تم استعادة الاتصال بالإنترنت.",
-    "en": "Internet connection restored."
-  },
-  "net_lost": {
-    "ar": "انقطع الاتصال بالإنترنت.",
-    "en": "Internet connection lost."
-  },
-  "net_weak_or_disconnected": {
-    "ar": "اتصال الإنترنت ضعيف أو مقطوع",
-    "en": "Internet connection is weak or disconnected"
-  },
-  "api_fetch_label": {
-    "ar": "[جلب API]",
-    "en": "[API Fetch]"
-  },
-  "api_http_error": {
-    "ar": "خطأ HTTP! الحالة:",
-    "en": "HTTP Error! Status:"
-  },
-  "api_connection_failed": {
-    "ar": "فشل الاتصال:",
-    "en": "Connection failed:"
-  },
-  "notification_enabled_title": {
-    "ar": "الإشعارات مفعلة",
-    "en": "Notifications Enabled"
-  },
-  "notification_enabled_desc": {
-    "ar": "ستصلك تنبيهات الرسائل وتحديثات طلباتك فور صدورها.",
-    "en": "You will receive message alerts and order updates immediately."
-  },
-  "notification_disabled_title": {
-    "ar": "تفعيل الإشعارات",
-    "en": "Enable Notifications"
-  },
-  "notification_disabled_desc": {
-    "ar": "قم بالتفعيل لاستلام تنبيهات الرسائل والتحديثات الخاصة بطلباتك.",
-    "en": "Enable to receive message alerts and updates for your orders."
-  },
-  "time_now": {
-    "ar": "الآن",
-    "en": "Just now"
-  },
-  "time_minutes_ago": {
-    "ar": "قبل {n} دقيقة",
-    "en": "{n} minutes ago"
-  },
-  "time_hours_ago": {
-    "ar": "قبل {n} ساعة",
-    "en": "{n} hours ago"
-  },
-  "time_days_ago": {
-    "ar": "قبل {n} يوم",
-    "en": "{n} days ago"
-  },
-  "sender_you": {
-    "ar": "أنت",
-    "en": "You"
-  },
-  "sender_user": {
-    "ar": "مستخدم",
-    "en": "User"
-  },
-  "delete_message": {
-    "ar": "حذف الرسالة",
-    "en": "Delete Message"
-  },
-  "change_status": {
-    "ar": "تغيير الحالة",
-    "en": "Change Status"
+  "to_browse_products": {
+    "ar": "لتصفح المنتجات",
+    "en": "to browse products"
   }
 }

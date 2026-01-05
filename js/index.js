@@ -28,6 +28,68 @@ function showHomeIcon() {
   }
 }
 
+// [Global translation variables and functions]
+window.appTranslations = {};
+
+/**
+ * @description Returns the translated text for a given key based on the current app language.
+ * @function langu
+ * @param {string} key - The translation key.
+ * @returns {string} - The translated text or the key itself if not found.
+ */
+window.langu = function (key) {
+  const lang = localStorage.getItem('app_language') || 'ar';
+  if (window.appTranslations && window.appTranslations[key]) {
+    return window.appTranslations[key][lang] || key;
+  }
+  return key;
+};
+
+/**
+ * @description Applies translations to all elements with data-lkey attribute and sets page direction.
+ * @function applyAppTranslations
+ */
+window.applyAppTranslations = function () {
+  const lang = localStorage.getItem('app_language') || 'ar';
+  
+  // Set HTML dir and lang attributes
+  const htmlRoot = document.getElementById('index-html-root');
+  if (htmlRoot) {
+    htmlRoot.setAttribute('lang', lang);
+    htmlRoot.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  }
+
+  // Translate DOM elements
+  document.querySelectorAll('[data-lkey]').forEach(el => {
+    const key = el.getAttribute('data-lkey');
+    el.textContent = window.langu(key);
+  });
+
+  // Translate Page Title
+  document.title = window.langu('page_title');
+};
+
+async function loadIndexTranslations() {
+  try {
+    // 1. Load General Translations
+    const generalRes = await fetch('lang/general.json');
+    const generalData = generalRes.ok ? await generalRes.json() : {};
+
+    // 2. Load Page-specific Translations (Index)
+    const indexRes = await fetch('lang/index.json');
+    const indexData = indexRes.ok ? await indexRes.json() : {};
+
+    // 3. Merge them
+    window.appTranslations = { ...generalData, ...indexData };
+
+    console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بالصفحة الرئيسية.');
+    if (window.applyAppTranslations) window.applyAppTranslations();
+
+  } catch (e) {
+    console.error('❌ خطأ في تحميل ملفات الترجمة:', e);
+  }
+}
+
 // [EntryPoint] Executed when DOM is fully loaded.
 /**
  * @event DOMContentLoaded
@@ -49,59 +111,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   // [Step -1.1.2] Load Translations for Index Page
-  window.indexPageTranslations = {};
-  async function loadIndexTranslations() {
-    try {
-      const response = await fetch('/lang/index.json');
-      if (response.ok) {
-        window.indexPageTranslations = await response.json();
-        console.log('✅ تم تحميل ترجمات الصفحة الرئيسية بنجاح.');
-        applyAppTranslations();
-      }
-    } catch (e) {
-      console.error('❌ خطأ في تحميل ملف الترجمة:', e);
-    }
-  }
-
-  /**
-   * @description Returns the translated text for a given key based on the current app language.
-   * @function langu
-   * @param {string} key - The translation key.
-   * @returns {string} - The translated text or the key itself if not found.
-   */
-  window.langu = function (key) {
-    const lang = localStorage.getItem('app_language') || 'ar';
-    if (window.indexPageTranslations && window.indexPageTranslations[key]) {
-      return window.indexPageTranslations[key][lang] || key;
-    }
-    return key;
-  };
-
-  /**
-   * @description Applies translations to all elements with data-lkey attribute and sets page direction.
-   * @function applyAppTranslations
-   */
-  function applyAppTranslations() {
-    const lang = localStorage.getItem('app_language') || 'ar';
-    
-    // Set HTML dir and lang attributes
-    const htmlRoot = document.getElementById('index-html-root');
-    if (htmlRoot) {
-      htmlRoot.setAttribute('lang', lang);
-      htmlRoot.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-    }
-
-    // Translate DOM elements
-    document.querySelectorAll('[data-lkey]').forEach(el => {
-      const key = el.getAttribute('data-lkey');
-      el.textContent = window.langu(key);
-    });
-
-    // Translate Page Title
-    document.title = window.langu('page_title');
-  }
-
   await loadIndexTranslations();
+  window.applyAppTranslations(); // Initial translation application
 
   // Define Global Toggle Functions
   window.toggleAppTheme = function () {

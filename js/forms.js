@@ -329,7 +329,12 @@ async function mainLoader(
             "color: #0d47a1; font-size: 12px; font-weight: bold; font-family: 'Tahoma';"
         );
 
-        // 7. Execute callback
+        // 11. Apply translations if the system is available
+        if (typeof window.applyAppTranslations === 'function') {
+            await window.applyAppTranslations();
+        }
+
+        // 12. Execute callback
         profileExecuteCallback(callbackName);
 
     } catch (globalError) {
