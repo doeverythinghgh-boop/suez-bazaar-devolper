@@ -67,6 +67,11 @@ window.applyAppTranslations = function () {
 
   // Translate Page Title
   document.title = window.langu('page_title');
+
+  // Final step: Ensure session-specific texts are correct
+  if (typeof setUserNameInIndexBar === 'function') {
+    setUserNameInIndexBar();
+  }
 };
 
 async function loadIndexTranslations() {

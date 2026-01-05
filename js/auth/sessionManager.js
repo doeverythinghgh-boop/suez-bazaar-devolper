@@ -108,13 +108,20 @@ const SessionManager = {
         }
         localStorage.removeItem("android_fcm_key");
 
-        // 2. Clear Data
+        // 2. Clear Data (Keep language and theme)
+        const currentLang = localStorage.getItem("app_language");
+        const currentTheme = localStorage.getItem("theme");
+
         if (typeof clearAllBrowserData === 'function') {
             await clearAllBrowserData();
         } else {
             localStorage.clear();
             sessionStorage.clear();
         }
+
+        // 2.1 Restore preferences
+        if (currentLang) localStorage.setItem("app_language", currentLang);
+        if (currentTheme) localStorage.setItem("theme", currentTheme);
 
         // 3. Clear Containers (Local helper or importing logic)
         const containerIds = [
