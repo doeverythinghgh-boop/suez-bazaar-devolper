@@ -4,21 +4,21 @@
  */
 
 // [Immediate Check] Redirect to dashboard if user is already logged in.
-(function() {
-    const currentUser = typeof SessionManager !== 'undefined' ? SessionManager.getUser() : null;
-    if (currentUser) {
-        console.log("[Register] User already logged in, redirecting to dashboard.");
-        if (typeof mainLoader === 'function') {
-            mainLoader(
-                "pages/user-dashboard.html",
-                "index-user-container",
-                0,
-                undefined,
-                "showHomeIcon",
-                true
-            );
-        }
+(function () {
+  const currentUser = typeof SessionManager !== 'undefined' ? SessionManager.getUser() : null;
+  if (currentUser) {
+    console.log("[Register] User already logged in, redirecting to dashboard.");
+    if (typeof mainLoader === 'function') {
+      mainLoader(
+        "pages/user-dashboard.html",
+        "index-user-container",
+        0,
+        undefined,
+        "showHomeIcon",
+        true
+      );
     }
+  }
 })();
 
 var register_form = document.getElementById("register_form");
@@ -51,27 +51,27 @@ if (register_sellerOptionsBtn) {
     const { value: formValues } = await Swal.fire({
       title: "إعدادات البائع",
       html: `
-        <div style="text-align: right; direction: rtl; font-family: 'Tajawal', sans-serif;">
-          <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #e2e8f0;">
-            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; color: #1e293b; font-size: 1rem;">
+        <div style="font-family: 'Tajawal', sans-serif;">
+          <div class="register-modal-section">
+            <label class="register-modal-label">
               <i class="fas fa-truck-moving" style="color: #10b981;"></i> هل لديك خدمة توصيل خاصة بك؟
             </label>
-            <select id="swal_is-delevred" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;">
+            <select id="swal_is-delevred" class="swal2-input register-modal-input">
               <option value="0" ${register_isDelevredInput.value == "0" ? "selected" : ""}>لا (الاعتماد على مناديب التطبيق)</option>
               <option value="1" ${register_isDelevredInput.value == "1" ? "selected" : ""}>نعم (أقوم بالتوصيل بنفسي)</option>
             </select>
           </div>
-          <div style="background: #f8fafc; padding: 15px; border-radius: 12px; margin-bottom: 0px; border: 1px solid #e2e8f0;">
-            <label style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; font-weight: 700; color: #1e293b; font-size: 1rem;">
+          <div class="register-modal-section" style="margin-bottom: 0;">
+            <label class="register-modal-label">
               <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> هل تضع حداً أدنى لطلبات الشراء؟
             </label>
-            <select id="swal_has-limit" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;">
+            <select id="swal_has-limit" class="swal2-input register-modal-input">
               <option value="no" ${register_limitPackageInput.value == "0" ? "selected" : ""}>لا يوجد حد أدنى</option>
               <option value="yes" ${register_limitPackageInput.value != "0" ? "selected" : ""}>نعم، يوجد حد أدنى للطلب</option>
             </select>
             <div id="swal_limit-container" style="margin-top: 15px; display: ${register_limitPackageInput.value != "0" ? "block" : "none"};">
-              <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #64748b; font-size: 0.9rem;">الحد الأدنى للطلب (ج.م):</label>
-              <input type="number" id="swal_limit-value" class="swal2-input" style="width: 100%; margin: 0; height: 50px; border-radius: 8px; border: 1px solid #cbd5e1; background: white; font-family: 'Tajawal', sans-serif;" value="${register_limitPackageInput.value}" placeholder="مثلاً: 100">
+              <label class="register-modal-sublabel">الحد الأدنى للطلب (ج.م):</label>
+              <input type="number" id="swal_limit-value" class="swal2-input register-modal-input" value="${register_limitPackageInput.value}" placeholder="مثلاً: 100">
             </div>
           </div>
         </div>

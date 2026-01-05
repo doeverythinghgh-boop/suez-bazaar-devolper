@@ -334,3 +334,68 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
 .fullscreen-swal a[href^="tel:"] i {
     font-size: 0.8em;
 }
+
+/* ============================================
+   Dark Mode Support (Stepper & SWF)
+   ============================================ */
+body.dark-theme div:where(.swal2-container) .fullscreen-swal,
+body.dark-theme .swal2-popup {
+    background: #1e1e1e !important;
+    color: #ffffff !important;
+}
+
+body.dark-theme div:where(.swal2-container) .fullscreen-swal .swal2-title,
+body.dark-theme .swal2-title {
+    background-color: #2d2d2d !important;
+    /* modal-item-bg */
+    color: #ffffff !important;
+    border-bottom-color: #444 !important;
+}
+
+body.dark-theme .fullscreen-swal .swal2-actions,
+body.dark-theme .swal2-actions {
+    background-color: #2d2d2d !important;
+    border-top-color: #444 !important;
+}
+
+body.dark-theme .swal2-html-container,
+body.dark-theme .swal2-content {
+    color: #dedede !important;
+}
+
+body.dark-theme .swal2-close {
+    color: #dedede !important;
+}
+
+/* Checkbox items in dark mode */
+body.dark-theme .fullscreen-swal .checkbox-item:hover {
+    background-color: #333 !important;
+}
+
+/* Footer Inputs in Dark Mode */
+body.dark-theme .order-service-footer {
+    background: #1e1e1e;
+    border-color: #444;
+}
+
+body.dark-theme .order-photo-link {
+    background: #2d2d2d;
+    border-color: #444;
+    color: #ddd;
+}
+
+body.dark-theme .order-photo-link i {
+    color: #667eea;
+    /* Keep primary or adjust if needed */
+}
+
+body.dark-theme .order-value-input {
+    background: #2d2d2d !important;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-theme .order-value-input:focus {
+    background: #333 !important;
+    border-color: #667eea;
+}

@@ -29,6 +29,24 @@
         } else {
             window.userSession = JSON.parse(localStorage.getItem("loggedInUser")) || null;
         }
+
+        // Dark Mode Initialization
+        function applyTheme() {
+            const isDark = localStorage.getItem('theme') === 'dark';
+            if (isDark) {
+                document.body.classList.add('dark-theme');
+            } else {
+                document.body.classList.remove('dark-theme');
+            }
+        }
+
+        // Listen for storage changes to sync theme if changed in another tab/window
+        window.addEventListener('storage', (e) => {
+            if (e.key === 'theme') applyTheme();
+        });
+
+        // Apply on load (will be called in body onload or just script execution)
+        window.addEventListener('DOMContentLoaded', applyTheme);
     </script>
 
     <script src="./main.js" type="module" id="main-script"></script>
