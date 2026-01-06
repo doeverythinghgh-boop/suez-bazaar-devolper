@@ -29,7 +29,15 @@
     padding-bottom: 10px;
 }
 
-/* ... */
+/* Table Container Responsive Support */
+.admin-panel-table-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: var(--bg-color-white);
+    border-radius: 8px;
+    margin-top: 15px;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
 /* Table styling */
 .admin-panel-users-table {
     width: 100%;
@@ -55,7 +63,7 @@
     transition: background-color 0.2s;
 }
 
-#admin-panel-users-tbody tr:hover {
+#admin-panel-users-tbody tr:active {
     background-color: var(--bg-color-light);
 }
 
