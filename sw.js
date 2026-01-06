@@ -84,8 +84,8 @@ self.addEventListener('fetch', (event) => {
     const request = event.request;
     const url = new URL(request.url);
 
-    // Strategy 1: Navigation (HTML) -> Network First, Fallback to Offline
-    if (request.mode === 'navigate') {
+    // Strategy 1: HTML Requests (Navigation or Fragments) -> Network First, Fallback to Offline
+    if (request.mode === 'navigate' || (request.method === 'GET' && request.url.includes('.html'))) {
         event.respondWith(
             fetch(request)
                 .catch(() => {
