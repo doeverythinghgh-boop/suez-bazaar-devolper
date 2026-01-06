@@ -172,7 +172,11 @@ async function build() {
         allJSFiles.forEach(file => {
             console.log(`   - Obfuscating: ${file}`);
             const fullPath = path.join(PROJECT_ROOT, file);
-            const content = fs.readFileSync(fullPath, 'utf8');
+            let content = fs.readFileSync(fullPath, 'utf8');
+
+            // Wrap in IIFE to avoid global scope pollution/conflicts in SPA environments
+            // This prevents re-declaration errors (e.g. Const re-declaration) when re-injecting scripts via AJAX/SPA
+            content = `(function(){\n${content}\n})();`;
 
             try {
                 const obfuscatedResult = obfuscate(content, obfuscationOptions);
@@ -197,7 +201,11 @@ async function build() {
             if (fs.existsSync(fullPath)) {
                 if (file.endsWith('.js')) {
                     console.log(`🔐 Obfuscating root file: ${file}`);
-                    const content = fs.readFileSync(fullPath, 'utf8');
+                    let content = fs.readFileSync(fullPath, 'utf8');
+                    
+                    // Wrap in IIFE (Optional for root files but good for consistency)
+                    content = `(function(){\n${content}\n})();`;
+                    
                     const obfuscatedResult = obfuscate(content, obfuscationOptions);
                     fs.writeFileSync(path.join(OUTPUT_DIR, file), obfuscatedResult.getObfuscatedCode());
                 } else {
