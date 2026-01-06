@@ -191,76 +191,11 @@ window.triggerPWAInstall = async () => {
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isIOS) {
       Swal.fire({
-        title: `<span style="font-size: 1.1rem; font-weight: 600;">${window.langu("install_ios_title")}</span>`,
-        html: `
-            <div style="text-align: inherit; font-size: 0.95rem; line-height: 1.6;">
-                <p style="margin-bottom: 15px; color: #555;">${window.langu("install_ios_desc")}</p>
-                
-                <div class="ios-step">
-                    <span class="step-num">1</span>
-                    <span>${window.langu("install_ios_step_1")}</span>
-                    <i class="fas fa-share-square fa-lg" style="color: #007aff; margin-inline-start: auto;"></i>
-                </div>
-                
-                <div class="install-divider"></div>
-
-                <div class="ios-step">
-                    <span class="step-num">2</span>
-                    <span>${window.langu("install_ios_step_2")}</span>
-                    <i class="far fa-plus-square fa-lg" style="color: #555; margin-inline-start: auto;"></i>
-                </div>
-                
-
-
-            </div>
-            <style>
-                .ios-step {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    padding: 8px 0;
-                }
-                .step-num {
-                    background: #eee;
-                    color: #333;
-                    width: 24px;
-                    height: 24px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 0.8rem;
-                    font-weight: bold;
-                    flex-shrink: 0;
-                }
-                .install-divider {
-                    height: 1px;
-                    background-color: #f0f0f0;
-                    margin: 5px 0;
-                    width: 100%;
-                }
-                /* Animation for the arrow pointing to Share button */
-                .share-arrow-anim {
-                    position: fixed;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    font-size: 2rem;
-                    color: #007aff;
-                    animation: bounce 2s infinite;
-                    z-index: 10000;
-                }
-                @keyframes bounce {
-                    0%, 20%, 50%, 80%, 100% {transform: translateX(-50%) translateY(0);}
-                    40% {transform: translateX(-50%) translateY(-10px);}
-                    60% {transform: translateX(-50%) translateY(-5px);}
-                }
-            </style>
-        `,
+        title: `<span style="font-size: 1.1rem; font-weight: 600;">لتنصيب البرنامج كتطبيق وب اتبع الخطوات الاتية في الفديو</span>`,
         position: 'bottom',
-        showConfirmButton: true,
-        confirmButtonText: window.langu("install_done_btn"),
-        confirmButtonColor: '#007aff',
+        timer: 5000,
+        timerProgressBar: true,
+        showConfirmButton: false,
         background: '#f9f9f9',
         customClass: {
           popup: 'ios-install-popup'
@@ -268,9 +203,11 @@ window.triggerPWAInstall = async () => {
         backdrop: true,
         allowOutsideClick: false,
         allowEscapeKey: false
-      }).then(() => {
-        window.showWelcomeAndThanksPage();
+      }).then((result) => {
+        // After 5s or if dismissed (though confirm is hidden here)
+        showIOSVideoPage();
       });
+    } else {
     } else {
       // Fallback generic
       console.warn('[InstallPrompt] No deferred prompt available.');
@@ -320,3 +257,28 @@ window.showWelcomeAndThanksPage = function () {
     console.error("Error showing welcome page:", err);
   }
 };
+/**
+ * @description Substitutes the entire page content with a full-screen looping instructional video for iOS.
+ */
+function showIOSVideoPage() {
+  console.log('[InstallPrompt] Transitioning to iOS Video instructional page.');
+  
+  // Create full-screen video container
+  const videoHtml = `
+    <div id="ios-video-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center;">
+      <video autoplay loop muted playsinline aria-label="iOS Installation Guide" style="max-width: 100%; max-height: 100%; outline: none; border: none;">
+        <source src="images/ios.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
+    </div>
+  `;
+  
+  // Replace body content completely as requested
+  document.body.innerHTML = videoHtml;
+  
+  // Ensure the body doesn't scroll
+  document.body.style.overflow = 'hidden';
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
+  document.body.style.backgroundColor = '#000';
+}
