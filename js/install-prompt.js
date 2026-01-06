@@ -268,10 +268,10 @@ window.showWelcomeAndThanksPage = function () {
 function showIOSVideoPage() {
   console.log('[InstallPrompt] Transitioning to iOS Video instructional page.');
   
-  // Create full-screen video container
+  // Create full-screen video container (centered)
   const videoHtml = `
-    <div id="ios-video-wrapper" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center;">
-      <video autoplay loop muted playsinline aria-label="iOS Installation Guide" style="max-width: 100%; max-height: 100%; outline: none; border: none;">
+    <div id="ios-video-wrapper" style="position: fixed; top: 50%; left: 50%; width: 80vw; height: 80vh; background: #000; z-index: 100000; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+      <video autoplay loop muted playsinline aria-label="iOS Installation Guide" style="width: 100%; height: 100%; object-fit: contain; outline: none; border: none;">
         <source src="images/ios.mp4" type="video/mp4">
         Your browser does not support the video tag.
       </video>
