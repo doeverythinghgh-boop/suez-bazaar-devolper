@@ -69,7 +69,7 @@ function showCustomInstallModal() {
         </a>
 
         <!-- Option 2: PWA Install (Styled as generic App Store / Apple Style) -->
-        <div class="install-btn apple-store-style" onclick="triggerPWAInstall()">
+        <div class="install-btn apple-store-style" onclick="triggerPWAInstall('apple')">
           <i class="fab fa-apple"></i>
           <div class="btn-text">
             <span class="small-text">Download on the</span>
@@ -172,8 +172,31 @@ function showCustomInstallModal() {
 }
 
 // 3. Trigger PWA Logic
-window.triggerPWAInstall = async () => {
-  console.log('[InstallPrompt] Apple/PWA button clicked');
+window.triggerPWAInstall = async (platform = 'generic') => {
+  console.log(`[InstallPrompt] ${platform} button clicked`);
+
+  // If user specifically clicked Apple/PWA or we are on iOS and native prompt fails
+  if (platform === 'apple') {
+    // Show instruction for iOS style (And anyone else clicking this)
+    Swal.fire({
+      title: `<span style="font-size: 1.1rem; font-weight: 600;">لتنصيب البرنامج كتطبيق وب اتبع الخطوات الاتية في الفديو</span>`,
+      position: 'bottom',
+      timer: 5000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      background: '#f9f9f9',
+      customClass: {
+        popup: 'ios-install-popup'
+      },
+      backdrop: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false
+    }).then(() => {
+      // Show the video after the 5s timer
+      showIOSVideoPage();
+    });
+    return;
+  }
 
   if (deferredPrompt) {
     // Show the install prompt
@@ -186,33 +209,15 @@ window.triggerPWAInstall = async () => {
     Swal.close(); // Close our modal
     window.showWelcomeAndThanksPage();
   } else {
-    // Fallback for iOS or if prompt unavailable (e.g. fired too early/late or not supported)
-    // Show instruction for iOS
+    // Fallback if no deferredPrompt and not explicitly 'apple'
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isIOS) {
-      Swal.fire({
-        title: `<span style="font-size: 1.1rem; font-weight: 600;">لتنصيب البرنامج كتطبيق وب اتبع الخطوات الاتية في الفديو</span>`,
-        position: 'bottom',
-        timer: 5000,
-        timerProgressBar: true,
-        showConfirmButton: false,
-        background: '#f9f9f9',
-        customClass: {
-          popup: 'ios-install-popup'
-        },
-        backdrop: true,
-        allowOutsideClick: false,
-        allowEscapeKey: false
-      }).then((result) => {
-        // After 5s or if dismissed (though confirm is hidden here)
-        showIOSVideoPage();
-      });
+        // Re-use logic for iOS fallback
+        triggerPWAInstall('apple');
     } else {
-    } else {
-      // Fallback generic
-      console.warn('[InstallPrompt] No deferred prompt available.');
-      Swal.close();
-      window.showWelcomeAndThanksPage();
+        console.warn('[InstallPrompt] No deferred prompt available.');
+        Swal.close();
+        window.showWelcomeAndThanksPage();
     }
   }
 };
@@ -275,6 +280,12 @@ function showIOSVideoPage() {
   
   // Replace body content completely as requested
   document.body.innerHTML = videoHtml;
+  
+  // Ensure the video plays (sometimes autoplay attribute is blocked)
+  const videoElement = document.querySelector('#ios-video-wrapper video');
+  if (videoElement) {
+    videoElement.play().catch(e => console.warn('[InstallPrompt] Video play failed:', e));
+  }
   
   // Ensure the body doesn't scroll
   document.body.style.overflow = 'hidden';
