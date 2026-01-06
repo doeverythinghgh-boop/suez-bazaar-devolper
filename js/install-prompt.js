@@ -5,7 +5,7 @@
  * a choice between Google Play Store (app) or Apple Store style (PWA Install).
  */
 
-let deferredPrompt;
+var deferredPrompt;
 
 // 1. Capture the PWA install prompt event
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -55,8 +55,8 @@ function showCustomInstallModal() {
   const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=hgh.hgh.suezbazaar&pcampaignid=web_share";
   if (!window.Android) {
     Swal.fire({
-    title: `<span style="font-family: var(--font-primary); font-size: 1.2rem; color: var(--dark-blue);">${window.langu("install_pwa_title")}</span>`,
-    html: `
+      title: `<span style="font-family: var(--font-primary); font-size: 1.2rem; color: var(--dark-blue);">${window.langu("install_pwa_title")}</span>`,
+      html: `
       <div class="install-modal-container">
         
         <!-- Option 1: Google Play -->
@@ -158,15 +158,17 @@ function showCustomInstallModal() {
         }
       </style>
     `,
-    showConfirmButton: false,
-    showCloseButton: true,
-    background: '#fff',
-    didOpen: () => {
-      // REMOVED: User requested to show always.
-      // localStorage.setItem('installPromptShown_v1', 'true');
-    }
-  });
-}
+      showConfirmButton: false,
+      showCloseButton: false,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      background: '#fff',
+      didOpen: () => {
+        // REMOVED: User requested to show always.
+        // localStorage.setItem('installPromptShown_v1', 'true');
+      }
+    });
+  }
 }
 
 // 3. Trigger PWA Logic
@@ -182,6 +184,7 @@ window.triggerPWAInstall = async () => {
     // We've used the prompt, and can't use it again, throw it away
     deferredPrompt = null;
     Swal.close(); // Close our modal
+    window.showWelcomeAndThanksPage();
   } else {
     // Fallback for iOS or if prompt unavailable (e.g. fired too early/late or not supported)
     // Show instruction for iOS
@@ -262,7 +265,11 @@ window.triggerPWAInstall = async () => {
         customClass: {
           popup: 'ios-install-popup'
         },
-        backdrop: true
+        backdrop: true,
+        allowOutsideClick: false,
+        allowEscapeKey: false
+      }).then(() => {
+        window.showWelcomeAndThanksPage();
       });
     } else {
       // Fallback generic
@@ -276,4 +283,40 @@ window.triggerPWAInstall = async () => {
 window.handleInstallChoice = (choice) => {
   console.log('[InstallPrompt] User chose:', choice);
   Swal.close();
+  window.showWelcomeAndThanksPage();
+};
+
+/**
+ * @description Loads the welcome page and hides the main navigation to focus on "Thanks".
+ * Shows features and benefits of Suez Bazaar.
+ */
+window.showWelcomeAndThanksPage = function () {
+  try {
+    console.log('[InstallPrompt] Showing Welcome/Thanks page.');
+
+    // Hide Main Header
+    /** @type {HTMLElement|null} */
+    var header = document.getElementById('index-app-header');
+    if (header) {
+      header.style.display = 'none';
+    }
+
+    // Use index-user-container or a dedicated one to show the welcome page
+    // We use mainLoader to fetch and insert it
+    if (typeof mainLoader === 'function') {
+      mainLoader(
+        "pages/welcome.html",
+        "index-user-container",
+        0,
+        "position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; overflow: auto; background: var(--bg-color-light);",
+        undefined,
+        true // Reload to ensure scripts run
+      );
+    } else {
+      // Fallback if mainLoader not available
+      window.location.href = "pages/welcome.html";
+    }
+  } catch (err) {
+    console.error("Error showing welcome page:", err);
+  }
 };

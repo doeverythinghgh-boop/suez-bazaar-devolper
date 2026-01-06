@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        .welcome-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            background-color: var(--bg-color-light);
+            font-family: var(--font-primary);
+            color: var(--text-color);
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            max-width: 500px;
+            width: 100%;
+            border: 1px solid #f0f0f0;
+        }
+
+        .welcome-image {
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 25px;
+            border-radius: 15px;
+        }
+
+        .welcome-title {
+            font-size: 1.8rem;
+            color: var(--dark-blue);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        .features-list {
+            text-align: right;
+            margin-bottom: 30px;
+            display: grid;
+            gap: 12px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        .feature-item i {
+            color: #28a745;
+            font-size: 1.1rem;
+        }
+
+        .enter-app-btn {
+            background-color: var(--dark-blue);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s;
+        }
+
+        .enter-app-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Dark mode support */
+        body.dark-theme .welcome-card {
+            background: #1e1e1e;
+            border-color: #333;
+        }
+
+        body.dark-theme .welcome-text,
+        body.dark-theme .feature-item {
+            color: #ccc;
+        }
+
+        body.dark-theme .welcome-title {
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="welcome-page" id="welcome_page_root">
+        <div class="welcome-card">
+            <img src="images/welcome_banner.png" alt="Welcome to Suez Bazaar" class="welcome-image">
+
+            <h1 class="welcome-title">شكراً لانضمامك إلينا!</h1>
+            <p class="welcome-text">
+                أنت الآن جزء من مجتمع <b>سوق السويس</b>، المنصة الأقوى التي تجمع تجار السويس بالمشترين مباشرة.
+            </p>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>تصفح آلاف المنتجات من موردين موثوقين داخل السويس.</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>متابعة حية لطلباتك حتى وصولها لباب منزلك.</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>عروض وخصومات حصرية يومية لا تتوفر في أي مكان آخر.</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-check-circle"></i>
+                    <span>دعم فني وتواصل مباشر مع التجار لضمان أفضل جودة.</span>
+                </div>
+            </div>
+
+            <button class="enter-app-btn" id="welcome_enter_btn">ابدأ التسوق الآن</button>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * @file pages/welcome.html
+         * @description Handles interaction on the welcome/thanks page.
+         */
+
+        /**
+         * @description Initializes the welcome page logic, specifically the 'Start Shopping' button action.
+         * Hides the welcome view and restores the main application visibility.
+         */
+        try {
+            var welcome_enterBtn = document.getElementById('welcome_enter_btn');
+            if (welcome_enterBtn) {
+                welcome_enterBtn.addEventListener('click', function () {
+                    /** @type {HTMLElement|null} */
+                    var header = document.getElementById('index-app-header');
+                    if (header) {
+                        header.style.display = 'flex';
+                    }
+
+                    // Proceed back or load home page
+                    if (typeof handleHomeButtonClick === 'function') {
+                        handleHomeButtonClick();
+                    } else {
+                        // Fallback: Use location.reload() to reset app state if home button handler is missing
+                        window.location.reload();
+                    }
+                });
+            }
+        } catch (err) {
+            console.error("Error in welcome page script:", err);
+        }
+    </script>
+</body>
+
+</html>
