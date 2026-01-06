@@ -406,5 +406,9 @@
   "gen_cam_use_gallery": {
     "ar": "اختر من المعرض",
     "en": "Pick from Gallery"
+  },
+  "contact_details_title_phone": {
+    "ar": "هاتف او واتس اب",
+    "en": "Phone or WhatsApp"
   }
 }

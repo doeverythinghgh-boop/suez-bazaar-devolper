@@ -177,6 +177,40 @@
         padding-bottom: 10px;
         border-bottom: 1px solid #eee;
         color: #555;
+        width: 100%;
+        text-align: right;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* Styles for the toggle button */
+    .btn-toggle-section {
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        text-align: right;
+        font-family: inherit;
+        font-size: 1.1em;
+        font-weight: 600;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .btn-toggle-section:active {
+        background-color: #e9ecef;
+    }
+
+    .btn-toggle-section i.arrow-icon {
+        transition: transform 0.3s ease;
+    }
+
+    .btn-toggle-section.active i.arrow-icon {
+        transform: rotate(180deg);
     }
 
     .no-data-msg {
@@ -185,6 +219,47 @@
         color: #888;
         background: #fafafa;
         border-radius: 6px;
+    }
+
+    .loader-container {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    /* Load More Button Styles */
+    .load-more-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .btn-load-more {
+        background-color: var(--primary-color, #007bff);
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-load-more:active {
+        transform: scale(0.95);
+        background-color: var(--dark-blue, #0056b3);
+    }
+
+    .btn-load-more:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+        box-shadow: none;
     }
 
     /* 
@@ -314,21 +389,48 @@
 
     <!-- PENDING PRODUCTS LIST (Cards) -->
     <div style="margin-bottom: 40px;">
-        <div class="section-title" style="color: #d39e00;">
-            <i class="fas fa-clock"></i> المنتجات المعلقة (بانتظار الموافقة)
-        </div>
-        <div id="pending-list-container">
-            <div class="loader"></div>
+        <button id="toggle-pending-btn" class="btn-toggle-section section-title" style="color: #d39e00; width: 100%;">
+            <span><i class="fas fa-clock"></i> المنتجات المعلقة (بانتظار الموافقة)</span>
+            <i class="fas fa-chevron-down arrow-icon"></i>
+        </button>
+        <div id="pending-list-container" style="display: none; margin-top: 15px;">
+            <div id="pending-cards-wrapper">
+                <div class="loader-container">
+                    <div class="loader"></div>
+                </div>
+            </div>
+            
+            <!-- Load More Section for Pending -->
+            <div class="load-more-container" id="load-more-pending-container" style="display: none;">
+                <button id="btn-load-more-pending" class="btn-load-more" style="background-color: #d39e00;">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>تحميل المزيد</span>
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- PUBLISHED PRODUCTS LIST (Table) -->
     <div>
-        <div class="section-title" style="color: #28a745;">
-            <i class="fas fa-check-circle"></i> المنتجات المنشورة
-        </div>
-        <div id="published-list-container">
-            <div class="loader"></div>
+        <button id="toggle-published-btn" class="btn-toggle-section section-title" style="color: #28a745; width: 100%;">
+            <span><i class="fas fa-check-circle"></i> المنتجات المنشورة</span>
+            <i class="fas fa-chevron-down arrow-icon"></i>
+        </button>
+        <div id="published-list-container" style="display: none; margin-top: 15px;">
+            <!-- Table will be injected here -->
+            <div id="published-table-wrapper">
+                 <div class="loader-container">
+                    <div class="loader"></div>
+                </div>
+            </div>
+            
+            <!-- Load More Section -->
+            <div class="load-more-container" id="load-more-published-container" style="display: none;">
+                <button id="btn-load-more-published" class="btn-load-more">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>تحميل المزيد</span>
+                </button>
+            </div>
         </div>
     </div>
 </div>

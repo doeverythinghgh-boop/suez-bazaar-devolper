@@ -58,6 +58,8 @@ export default async function handler(request) {
       const SubCategory = searchParams.get('SubCategory');
       const product_key = searchParams.get('product_key');
       const status = searchParams.get('status');
+      const limit = searchParams.get('limit');
+      const offset = searchParams.get('offset');
 
       // Logging search criteria for debugging
       console.log(`[API: /api/products GET] Received request with params: searchTerm='${searchTerm}', MainCategory='${MainCategory}', SubCategory='${SubCategory}', user_key='${user_key}', status='${status}', product_key='${product_key}'`);
@@ -160,6 +162,16 @@ export default async function handler(request) {
       else {
         // Default: Return empty if no valid params
         return new Response(JSON.stringify([]), { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
+      // 5. Apply Pagination (Common for search, vendor, and admin views)
+      if (limit && !product_key) {
+        sql += " LIMIT ?";
+        args.push(parseInt(limit));
+        if (offset) {
+          sql += " OFFSET ?";
+          args.push(parseInt(offset));
+        }
       }
 
       // Log final SQL and arguments before execution
