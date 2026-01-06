@@ -275,7 +275,7 @@ window.triggerPWAInstall = async () => {
       // Fallback generic
       console.warn('[InstallPrompt] No deferred prompt available.');
       Swal.close();
-      // Maybe reload page?
+      window.showWelcomeAndThanksPage();
     }
   }
 };

@@ -81,22 +81,6 @@
             font-size: 1.1rem;
         }
 
-        .enter-app-btn {
-            background-color: var(--dark-blue);
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            transition: transform 0.2s;
-        }
-
-        .enter-app-btn:active {
-            transform: scale(0.98);
-        }
 
         /* Dark mode support */
         body.dark-theme .welcome-card {
@@ -144,42 +128,14 @@
                 </div>
             </div>
 
-            <button class="enter-app-btn" id="welcome_enter_btn">ابدأ التسوق الآن</button>
         </div>
     </div>
 
     <script>
         /**
          * @file pages/welcome.html
-         * @description Handles interaction on the welcome/thanks page.
+         * @description Welcome/thanks page view.
          */
-
-        /**
-         * @description Initializes the welcome page logic, specifically the 'Start Shopping' button action.
-         * Hides the welcome view and restores the main application visibility.
-         */
-        try {
-            var welcome_enterBtn = document.getElementById('welcome_enter_btn');
-            if (welcome_enterBtn) {
-                welcome_enterBtn.addEventListener('click', function () {
-                    /** @type {HTMLElement|null} */
-                    var header = document.getElementById('index-app-header');
-                    if (header) {
-                        header.style.display = 'flex';
-                    }
-
-                    // Proceed back or load home page
-                    if (typeof handleHomeButtonClick === 'function') {
-                        handleHomeButtonClick();
-                    } else {
-                        // Fallback: Use location.reload() to reset app state if home button handler is missing
-                        window.location.reload();
-                    }
-                });
-            }
-        } catch (err) {
-            console.error("Error in welcome page script:", err);
-        }
     </script>
 </body>
 
