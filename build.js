@@ -138,10 +138,40 @@ const obfuscationOptions = {
 };
 
 /**
+ * Automatically increments the patch version in the root version.json file.
+ */
+function bumpVersion() {
+    const rootVersionFile = path.join(PROJECT_ROOT, 'version.json');
+    if (!fs.existsSync(rootVersionFile)) return;
+
+    try {
+        const content = fs.readFileSync(rootVersionFile, 'utf8');
+        const data = JSON.parse(content);
+
+        if (data.version) {
+            const parts = data.version.split('.').map(Number);
+            if (parts.length === 3) {
+                const oldVersion = data.version;
+                parts[2]++; // Increment patch
+                data.version = parts.join('.');
+                // Update root version.json so the change is permanent in source
+                fs.writeFileSync(rootVersionFile, JSON.stringify(data, null, 2));
+                console.log(`\n🚀 [Auto-Version] Build detected. Version bumped: ${oldVersion} -> ${data.version}`);
+            }
+        }
+    } catch (e) {
+        console.error("⚠️ Failed to bump version in root:", e);
+    }
+}
+
+/**
  * Main build process
  */
 async function build() {
     console.log('🏗️ Starting project build with individual obfuscation...');
+
+    // 0. Bump version in root before copying
+    bumpVersion();
 
     try {
         if (fs.existsSync(OUTPUT_DIR)) {
