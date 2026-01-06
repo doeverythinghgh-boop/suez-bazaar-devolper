@@ -64,10 +64,10 @@ body.dark-theme {
   --bg-color-white: #1e1e1e;
   --bg-color-glass: rgba(30, 30, 30, 0.9);
 
-  --text-color-dark: #e2e8f0;
-  --text-color-medium: #cbd5e1;
-  --text-color-light: #94a3b8;
-  --icon-color: #94a3b8;
+  --text-color-dark: #ffffff;
+  --text-color-medium: #ffffff;
+  --text-color-light: #ffffff;
+  --icon-color: #ffffff;
 
   --border-color: #2d2d2d;
   --border-color-input: #4b5563;

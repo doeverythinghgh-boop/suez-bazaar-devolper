@@ -68,7 +68,8 @@
     max-width: 420px;
     /* Modify max-width */
     /* NEW: Transparent glass effect */
-    background-color: rgba(255, 255, 255, 0.85);
+    /* NEW: Transparent glass effect */
+    background-color: var(--bg-color-glass);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
     padding: 40px;
