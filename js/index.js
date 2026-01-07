@@ -51,7 +51,7 @@ window.langu = function (key) {
  */
 window.applyAppTranslations = function () {
   const lang = window.app_language || 'ar';
-  
+
   // Set HTML dir and lang attributes
   const htmlRoot = document.getElementById('index-html-root');
   if (htmlRoot) {
@@ -96,7 +96,7 @@ async function loadIndexTranslations() {
     // 2. Load Page-specific Translations (Index & Login)
     const indexRes = await fetch(`lang/index.json?t=${timestamp}`);
     const indexData = indexRes.ok ? await indexRes.json() : {};
-    
+
     const loginRes = await fetch(`lang/login.json?t=${timestamp}`);
     const loginData = loginRes.ok ? await loginRes.json() : {};
 
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       allowEscapeKey: false
     }).then((result) => {
       if (result.isConfirmed) {
-        window.location.href = '/'; // Reload to home page
+        window.location.reload(); // Reload to apply language changes safely
       }
     });
   };
