@@ -134,11 +134,11 @@ function categories_createCategoryCell(category, mainRow, allCategories) {
         if (isHomePage && categoryImage) {
             // Display image for main categories on home page
             const imagePath = `images/mainCategories/${categoryImage}`;
-            iconHtml = `<img src="${imagePath}" class="categories_cell_content__image" alt="${displayTitle}">`;
+            iconHtml = `<div class="categories_cell_media"><img src="${imagePath}" class="categories_cell_content__image" alt="${displayTitle}"></div>`;
         } else {
             // Fallback to FontAwesome icon
             const iconClass = category.icon || "fas fa-store";
-            iconHtml = `<i class="categories_cell_content__icon ${iconClass}"></i>`;
+            iconHtml = `<div class="categories_cell_media"><i class="categories_cell_content__icon ${iconClass}"></i></div>`;
         }
 
         cell.innerHTML = `
@@ -195,8 +195,12 @@ function categories_toggleSubcategories(mainRow, mainCategory, clickedCell) {
         const existingSubRow = tbody.querySelector(".categories_sub_row");
         const isClickingSameCell = currentlyActiveCell === clickedCell;
 
-        // 1. Remove any currently open rows (sub or products)
-        if (existingSubRow) existingSubRow.remove();
+        // 1. Remove any existing subcategory row (and its internal gallery if exists)
+        if (existingSubRow) {
+            categories_removeInternalGallery(existingSubRow);
+            existingSubRow.remove();
+        }
+        // Also remove any separate product gallery row if it exists
         if (existingProductsRow) existingProductsRow.remove();
 
         // 2. Update highlighting and toggle open/close
@@ -250,7 +254,14 @@ function categories_createSubcategoryRow(mainRow, subcategories, mainCatId) {
         subCell.colSpan = 4;
 
         const subcategoriesContainer = document.createElement("div");
-        subcategoriesContainer.className = "categories_subcategories_container";
+        const subCount = subcategories.length;
+
+        // Dynamic layout class based on count
+        if (subCount <= 5) {
+            subcategoriesContainer.className = "categories_subcategories_container categories_sub_one_row";
+        } else {
+            subcategoriesContainer.className = "categories_subcategories_container categories_sub_two_row";
+        }
 
         subcategories.forEach((sub) => {
             const subItem = categories_createSubcategoryItem(
@@ -362,39 +373,37 @@ async function categories_showProductGallery(subRow, mainCatId, subCatId) {
             "color: #fd7e14;"
         );
 
-        // Remove any previously open product gallery
-        const existingGallery = document.querySelector(
-            ".categories_products_gallery_row"
-        );
-        if (existingGallery) existingGallery.remove();
+        // 1. Get or Create Gallery Container inside subRow cell
+        const subCell = subRow.querySelector("td");
+        let galleryContainerWrapper = subCell.querySelector(".categories_gallery_internal_wrapper");
 
-        // 1. Create empty row and add loading indicator
-        const galleryRow = categories_createGalleryRow(subRow);
-        const galleryCell = galleryRow.querySelector("td");
-        galleryCell.innerHTML = `<div class="loader" style="margin: 20px auto;"></div>`;
+        if (!galleryContainerWrapper) {
+            galleryContainerWrapper = document.createElement("div");
+            galleryContainerWrapper.className = "categories_gallery_internal_wrapper";
+            subCell.appendChild(galleryContainerWrapper);
+        }
+
+        galleryContainerWrapper.innerHTML = `<div class="loader" style="margin: 20px auto;"></div>`;
+        const galleryCell = galleryContainerWrapper; // Use wrapper as target
 
         // 2. Fetch products (External function getProductsByCategory name remains unchanged)
         const products = await getProductsByCategory(mainCatId, subCatId);
 
-        // 3. Check if row persists (category was not closed)
-        const currentRow = subRow.nextElementSibling;
-        const isGalleryStillNeeded =
-            currentRow &&
-            currentRow.classList.contains("categories_products_gallery_row");
+        // 3. Mark the subRow as containing a gallery (for cleanup logic)
+        subRow.classList.add("categories_has_gallery");
 
-        if (!isGalleryStillNeeded) {
-            console.warn(
-                "[Products] تم إغلاق القسم قبل اكتمال تحميل المنتجات. تتوقف العملية."
-            );
-            return;
-        }
+        // 4. Find the subcategory object to get its title
+        const allCategories = await categories_fetchCategories();
+        const mainCategory = allCategories.find(c => String(c.id) === String(mainCatId));
+        const subcategory = mainCategory ? mainCategory.subcategories.find(s => String(s.id) === String(subCatId)) : null;
 
-        // 4. Display results
+        // 5. Display results
         if (products && products.length > 0) {
-            await categories_renderProductGallery(galleryCell, products);
+            // Display gallery
+            await categories_renderProductGallery(galleryCell, products, subcategory);
         } else {
             console.log("[Products] لا توجد منتجات في هذه الفئة.");
-            galleryCell.innerHTML = `<p class="no-products-message">${window.langu('cat_no_products_message')}</p>`;
+            galleryCell.innerHTML = `<p class="no-products-message" style="text-align:center; padding: 30px; color: var(--text-color-light); font-size: 0.9rem;">${window.langu('cat_no_products_message')}</p>`;
         }
     } catch (error) {
         console.error(
@@ -402,39 +411,27 @@ async function categories_showProductGallery(subRow, mainCatId, subCatId) {
             "color: red; font-weight: bold;",
             error
         );
-        const galleryCell = subRow.nextElementSibling
-            ? subRow.nextElementSibling.querySelector("td")
-            : null;
-        if (galleryCell) {
-            galleryCell.innerHTML = `<p class="error-message">${window.langu('cat_fetch_products_error')}</p>`;
+        const subCell = subRow.querySelector("td");
+        const galleryContainerWrapper = subCell.querySelector(".categories_gallery_internal_wrapper");
+        if (galleryContainerWrapper) {
+            galleryContainerWrapper.innerHTML = `<p class="error-message">${window.langu('cat_fetch_products_error')}</p>`;
         }
     }
 }
 
 /**
- * @description Creates product gallery row and inserts to DOM (SRP).
- * @function categories_createGalleryRow
- * @param {HTMLTableRowElement} subRow - The row following the gallery row.
- * @returns {HTMLTableRowElement} The created gallery row.
+ * @description Removes internal gallery from specified subcategory row.
+ * @function categories_removeInternalGallery
+ * @param {HTMLTableRowElement} subRow - The subcategory row with gallery.
  */
-function categories_createGalleryRow(subRow) {
+function categories_removeInternalGallery(subRow) {
     try {
-        const galleryRow = document.createElement("tr");
-        galleryRow.className = "categories_products_gallery_row";
-        const galleryCell = document.createElement("td");
-        galleryCell.colSpan = 4;
-        galleryRow.appendChild(galleryCell);
-        subRow.parentNode.insertBefore(galleryRow, subRow.nextSibling);
-        return galleryRow;
+        if (!subRow) return;
+        const galleryWrapper = subRow.querySelector(".categories_gallery_internal_wrapper");
+        if (galleryWrapper) galleryWrapper.remove();
+        subRow.classList.remove("categories_has_gallery");
     } catch (error) {
-        console.error(
-            "%c[categories_createGalleryRow] خطأ في إنشاء صف المعرض:",
-            "color: red;",
-            error
-        );
-        const galleryRow = document.createElement("tr");
-        galleryRow.innerHTML = `<td><p class="error-message">فشل في إنشاء صف المعرض.</p></td>`;
-        return galleryRow;
+        console.error("[categories_removeInternalGallery] Error:", error);
     }
 }
 
@@ -446,10 +443,10 @@ function categories_createGalleryRow(subRow) {
  * @param {Array<Object>} products - Array of products.
  * @returns {Promise<void>}
  */
-async function categories_renderProductGallery(galleryCell, products) {
+async function categories_renderProductGallery(galleryCell, products, subcategory) {
     try {
         console.log(
-            `[Products] تم العثور على ${products.length} منتج. جاري بناء المعرض...`
+            `[Products] تم العثور على ${products.length} منتج للفئة "${subcategory ? subcategory.title[window.app_language] || subcategory.title['ar'] : ''}". جاري بناء المعرض...`
         );
 
         // 1. Create Control Header
@@ -461,13 +458,15 @@ async function categories_renderProductGallery(galleryCell, products) {
         toggleBtn.className = "categories_view_toggle";
         toggleBtn.type = "button";
         toggleBtn.title = window.langu('cat_view_toggle_title');
-        toggleBtn.innerHTML = '<i class="fas fa-th"></i>'; // Default to Grid icon
+        // Now it starts as Grid, so icon should be "List" to toggle back
+        toggleBtn.innerHTML = '<i class="fas fa-list"></i>';
 
         controlsHeader.appendChild(toggleBtn);
 
         // 2. Create Gallery Container
         const galleryContainer = document.createElement("div");
-        galleryContainer.className = "categories_products_gallery_container";
+        // Default to grid-view as requested
+        galleryContainer.className = "categories_products_gallery_container grid-view";
 
         // 3. Assemble
         galleryCell.innerHTML = "";
@@ -481,8 +480,6 @@ async function categories_renderProductGallery(galleryCell, products) {
 
             // Switch Icon
             toggleBtn.innerHTML = isGrid ? '<i class="fas fa-list"></i>' : '<i class="fas fa-th"></i>';
-
-
         });
 
         for (const product of products) {
@@ -577,9 +574,7 @@ function categories_createProductElement(product, imgElement) {
     try {
         const productItem = document.createElement("div");
         productItem.className = "categories_product_item";
-        productItem.style.opacity = "0";
-        productItem.style.transform = "translateY(20px)";
-        productItem.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+        // Inline styles removed to rely on CSS pop-in animation
 
         const productName = document.createElement("p");
         productName.className = "categories_product_item__name";
@@ -617,11 +612,10 @@ function categories_createProductElement(product, imgElement) {
  */
 function categories_animateProductIn(productItem, resolve) {
     try {
+        // Delay to allow frame to transition smoothly before next item
         setTimeout(() => {
-            productItem.style.opacity = "1";
-            productItem.style.transform = "translateY(0)";
             resolve();
-        }, 50);
+        }, 80);
     } catch (error) {
         console.error(
             "%c[categories_animateProductIn] خطأ في تطبيق الحركة:",
