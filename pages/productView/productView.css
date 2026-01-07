@@ -8,8 +8,43 @@
 
 .productView_modal_content {
     padding: 20px;
-    max-width: 700px;
+    max-width: 1200px;
+    /* Increased max-width for desktop */
+    margin: 0 auto;
+    /* Center container */
     animation: productView_fadeInScaleUp 0.4s ease-out forwards;
+    display: grid;
+    /* Default mobile: 1 column */
+    grid-template-columns: 1fr;
+    gap: 20px;
+}
+
+/* Tablet & Desktop: 2 Columns */
+@media (min-width: 768px) {
+    .productView_modal_content {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto 1fr;
+        /* Auto for header, 1fr for content */
+        align-items: start;
+        /* Prevent stretching */
+    }
+
+    /* Top actions span full width */
+    .productView_top_actions {
+        grid-column: 1 / -1;
+    }
+
+    /* Image on Left */
+    .productView_image_container {
+        position: sticky;
+        top: 20px;
+        /* Sticky image on scroll */
+    }
+
+    /* Details on Right */
+    .productView_details {
+        /* No specific styles needed, takes 2nd column */
+    }
 }
 
 /* Top Actions Container */
@@ -41,6 +76,20 @@
 .productView_btn_back:active {
     transform: scale(0.96);
     background-color: var(--border-color, #e9ecef);
+}
+
+/* Main Product Image */
+#productView_image {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    /* Limit height on large screens */
+    object-fit: contain;
+    background-color: var(--bg-color-white, #fff);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+    margin-bottom: 15px;
+    display: block;
 }
 
 /* ... (skip to thumbs) ... */
