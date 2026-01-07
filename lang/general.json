@@ -56,7 +56,7 @@
     "en": "Operation Successful"
   },
   "page_title": {
-    "ar": "Suez Bazaar" ,
+    "ar": "Suez Bazaar",
     "en": "Suez Bazaar"
   },
   "admin_mode_watermark": {
@@ -298,6 +298,10 @@
   "gen_btn_back": {
     "ar": "رجوع",
     "en": "Back"
+  },
+  "gen_btn_hide": {
+    "ar": "إخفاء",
+    "en": "Hide"
   },
   "gen_btn_discard": {
     "ar": "تجاهل",

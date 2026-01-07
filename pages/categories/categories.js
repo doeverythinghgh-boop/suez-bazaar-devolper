@@ -192,8 +192,9 @@ function categories_toggleSubcategoriesGrid(gridContainer, mainCategory, clicked
             const items = Array.from(gridContainer.querySelectorAll(".categories_grid_item"));
             const clickedIndex = items.indexOf(clickedItem);
 
-            // Assuming 4 columns as per CSS grid-template-columns: repeat(4, 1fr)
-            const columns = 4;
+            // Dynamically detect column count based on viewport width to match CSS media queries
+            const columns = window.innerWidth < 480 ? 3 : 4;
+
             const rowIndex = Math.floor(clickedIndex / columns);
             const lastItemIndexInRow = Math.min(items.length - 1, (rowIndex * columns) + (columns - 1));
 

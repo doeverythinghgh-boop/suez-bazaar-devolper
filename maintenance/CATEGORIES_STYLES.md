@@ -61,10 +61,9 @@
 - **العرض الأقصى:** 1200px مع توسيط تلقائي
 - **Padding الجانبي:** 15px لمنع الالتصاق بالحواف
 
-**⚠️ ملاحظة هامة:** عند تغيير عدد الأعمدة، يجب تحديث:
-1. قيمة `grid-template-columns` في CSS
-2. متغير `columns` في `categories.js`
-3. جميع Media Queries المتعلقة
+**⚠️ ملاحظة هامة:** عند تغيير هيكل الشبكة، يجب التأكد من:
+1. تحديث قيم `grid-template-columns` في ملف CSS لجميع فئات الشاشات.
+2. التأكد من أن منطق حساب الأعمدة في `categories.js` (دالة `categories_toggleSubcategoriesGrid`) يطابق تماماً الـ Media Queries المستخدمة في CSS.
 
 ---
 
@@ -263,27 +262,14 @@
 
 **شرح مفصل للقيم:**
 
-#### `bottom: -17px`
-**الحساب:**
-```
-padding-bottom = 20px
-grid-gap = 15px
-المسافة الفعلية = 20 - 15 = 5px
+#### `bottom: -6px`
+**السبب:** التداخل الدقيق مع حدود الحاوية السفلية لمنع ظهور أي فجوات بيضاء.
 
-للتداخل مع الحاوية السفلية:
-5px (المسافة) + 15px (gap) - 2px (تداخل) = -17px
-```
+#### `height: 15px`
+**السبب:** تغطية منطقة الالتحام بين العنصر والشبكة.
 
-#### `height: 37px`
-**الحساب:**
-```
-المسافة المطلوب تغطيتها = 35px
-التداخل الإضافي = 2px
-الإجمالي = 37px
-```
-
-#### `width: 82px`
-**السبب:** عرض مناسب لإنشاء "عنق" الالتحام دون أن يكون واسعاً جداً.
+#### `width: 60px`
+**السبب:** عرض رشيق يتناسب مع الأحجام الجديدة.
 
 #### `z-index: 55`
 **الترتيب:**
@@ -307,7 +293,7 @@ grid-gap = 15px
     border-radius: 12px;
     box-shadow: var(--shadow-focus);
     overflow: hidden;
-    margin-top: -35px;                      /* حرج للالتحام */
+    margin-top: -25px;                      /* سحب الحاوية لتكون قريبة من النص دون تداخله */
     z-index: 40;
     display: flex;
     flex-direction: column;
@@ -329,7 +315,7 @@ grid-gap = 15px
 السالب يسحب الحاوية للأعلى لإنشاء التحام صفري
 ```
 
-**⚠️ تحذير:** هذه القيمة **يجب** أن تتطابق مع مجموع `padding-bottom` و `gap`.
+**⚠️ تحذير:** تم ضبط `margin-top` ليكون -25px لتحقيق توازن مثالي بين القرب من النصوص ومنع التداخل.
 
 ---
 
@@ -351,7 +337,7 @@ const clickedIndex = allItems.indexOf(clickedItem);
 
 #### الخطوة 3: حساب نهاية الصف
 ```javascript
-const columns = 4;  // يجب مطابقة CSS
+const columns = window.innerWidth < 480 ? 3 : 4;  // يجب مطابقة CSS Media Queries
 const rowEndIndex = Math.floor(clickedIndex / columns) * columns + (columns - 1);
 ```
 

@@ -51,6 +51,10 @@ function checkAndShowInstallPrompt() {
 }
 
 function showCustomInstallModal() {
+  // Check for specific user to show Hide button
+  var currentUser = window.userSession;
+  var showHideBtn = currentUser && currentUser.user_key === "682dri6b";
+
   // Google Play Link
   const PLAY_STORE_URL = "https://play.google.com/store/apps/details?id=hgh.hgh.suezbazaar&pcampaignid=web_share";
   if (!window.Android) {
@@ -78,6 +82,13 @@ function showCustomInstallModal() {
         </div>
 
       </div>
+      ${showHideBtn ? `
+        <div style="margin-top: 20px; text-align: center; width: 100%;">
+            <button onclick="Swal.close()" style="background-color: var(--modal-item-bg); color: var(--text-color-medium); border: 1px solid var(--border-color); padding: 10px 25px; border-radius: 8px; font-size: 0.95rem; cursor: pointer; font-family: var(--font-primary);">
+                ${window.langu("gen_btn_hide")}
+            </button>
+        </div>
+      ` : ''}
       <style>
         .install-modal-container {
           display: flex;
@@ -212,12 +223,12 @@ window.triggerPWAInstall = async (platform = 'generic') => {
     // Fallback if no deferredPrompt and not explicitly 'apple'
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isIOS) {
-        // Re-use logic for iOS fallback
-        triggerPWAInstall('apple');
+      // Re-use logic for iOS fallback
+      triggerPWAInstall('apple');
     } else {
-        console.warn('[InstallPrompt] No deferred prompt available.');
-        Swal.close();
-        window.showWelcomeAndThanksPage();
+      console.warn('[InstallPrompt] No deferred prompt available.');
+      Swal.close();
+      window.showWelcomeAndThanksPage();
     }
   }
 };
@@ -267,7 +278,7 @@ window.showWelcomeAndThanksPage = function () {
  */
 function showIOSVideoPage() {
   console.log('[InstallPrompt] Transitioning to iOS Video instructional page.');
-  
+
   // Create full-screen video container (centered)
   const videoHtml = `
     <div id="ios-video-wrapper" style="position: fixed; top: 50%; left: 50%; width: 80vw; height: 80vh; background: #fff; z-index: 100000; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
@@ -277,16 +288,16 @@ function showIOSVideoPage() {
       </video>
     </div>
   `;
-  
+
   // Replace body content completely as requested
   document.body.innerHTML = videoHtml;
-  
+
   // Ensure the video plays (sometimes autoplay attribute is blocked)
   const videoElement = document.querySelector('#ios-video-wrapper video');
   if (videoElement) {
     videoElement.play().catch(e => console.warn('[InstallPrompt] Video play failed:', e));
   }
-  
+
   // Ensure the body doesn't scroll
   document.body.style.overflow = 'hidden';
   document.body.style.margin = '0';

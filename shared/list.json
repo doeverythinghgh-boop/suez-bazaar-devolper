@@ -15,7 +15,8 @@
             "ar": "ملابس نسائية",
             "en": "Women's Clothing"
           },
-          "icon": "fas fa-person-dress"
+          "icon": "fas fa-person-dress",
+          "image": "Women's Clothing.jpg"
         },
         {
           "id": 2,
@@ -23,7 +24,8 @@
             "ar": "ملابس رجالية",
             "en": "Men's Clothing"
           },
-          "icon": "fas fa-user-tie"
+          "icon": "fas fa-user-tie",
+          "image": "Men's Clothing.jpg"
         },
         {
           "id": 3,
@@ -31,7 +33,8 @@
             "ar": "ملابس أطفال وحديثي الولادة",
             "en": "Children's & Newborn Clothing"
           },
-          "icon": "fas fa-child-reaching"
+          "icon": "fas fa-child-reaching",
+          "image": "Children's & Newborn Clothing.jpg"
         },
         {
           "id": 4,
@@ -39,7 +42,8 @@
             "ar": "العبايات والجلابيات",
             "en": "Abayas & Galabiyas"
           },
-          "icon": "fas fa-vest-patches"
+          "icon": "fas fa-vest-patches",
+          "image": "Abayas & Galabiyas.jpg"
         },
         {
           "id": 5,
@@ -47,7 +51,8 @@
             "ar": "الأحذية والحقائب الجلدية والقماشية",
             "en": "Shoes, Leather & Fabric Bags"
           },
-          "icon": "fas fa-shopping-bag"
+          "icon": "fas fa-shopping-bag",
+          "image": "Shoes, Leather & Fabric Bags.jpg"
         },
         {
           "id": 6,
@@ -55,7 +60,8 @@
             "ar": "الإكسسوارات النسائية والرجالية",
             "en": "Men's & Women's Accessories"
           },
-          "icon": "fas fa-glasses"
+          "icon": "fas fa-glasses",
+          "image": "Men's & Women's Accessories.jpg"
         },
         {
           "id": 7,
@@ -63,7 +69,8 @@
             "ar": "ملابس رياضية ",
             "en": "Sportswear"
           },
-          "icon": "fas fa-running"
+          "icon": "fas fa-running",
+          "image": "Sportswear.jpg"
         },
         {
           "id": 8,
@@ -71,7 +78,8 @@
             "ar": "ملابس المناسبات الخاصة (أعراس، حفلات)",
             "en": "Formal Wear (Weddings, Parties)"
           },
-          "icon": "fas fa-ring"
+          "icon": "fas fa-ring",
+          "image": "Formal Wear (Weddings, Parties).jpg"
         },
         {
           "id": 9,
@@ -79,7 +87,8 @@
             "ar": "ملابس داخلية وملابس نوم",
             "en": "Underwear & Sleepwear"
           },
-          "icon": "fas fa-bed"
+          "icon": "fas fa-bed",
+          "image": "Underwear & Sleepwear.jpg"
         },
         {
           "id": 10,
@@ -87,7 +96,8 @@
             "ar": "أقمشة ومستلزمات خياطة",
             "en": "Fabrics & Sewing Supplies"
           },
-          "icon": "fas fa-ruler-combined"
+          "icon": "fas fa-ruler-combined",
+          "image": "Fabrics & Sewing Supplies.jpg"
         },
         {
           "id": 11,
@@ -95,7 +105,8 @@
             "ar": "ملابس مستعملة بحالة جيدة",
             "en": "Good Condition Used Clothes"
           },
-          "icon": "fas fa-recycle"
+          "icon": "fas fa-recycle",
+          "image": "Good Condition Used Clothes.jpg"
         },
         {
           "id": 12,
@@ -103,7 +114,8 @@
             "ar": "أزياء وملابس ذات علامات تجارية",
             "en": "Branded Fashion & Clothing"
           },
-          "icon": "fas fa-star"
+          "icon": "fas fa-star",
+          "image": "Branded Fashion & Clothing.jpg"
         }
       ]
     },
@@ -122,7 +134,8 @@
             "ar": "الأطباق الرئيسية والوجبات الجاهزة",
             "en": "Main Dishes & Ready Meals"
           },
-          "icon": "fas fa-concierge-bell"
+          "icon": "fas fa-concierge-bell",
+          "image": "Main Dishes & Ready Meals.jpg"
         },
         {
           "id": 2,
@@ -130,7 +143,8 @@
             "ar": "المخبوزات والمعجنات",
             "en": "Bakery & Pastry"
           },
-          "icon": "fas fa-bread-slice"
+          "icon": "fas fa-bread-slice",
+          "image": "Bakery & Pastry.jpg"
         },
         {
           "id": 3,
@@ -138,7 +152,8 @@
             "ar": "الحلويات",
             "en": "Sweets"
           },
-          "icon": "fas fa-candy-cane"
+          "icon": "fas fa-candy-cane",
+          "image": "Sweets.jpg"
         },
         {
           "id": 4,
@@ -146,7 +161,8 @@
             "ar": "مشروبات وعصائر طبيعية",
             "en": "Drinks & Natural Juices"
           },
-          "icon": "fas fa-blender"
+          "icon": "fas fa-blender",
+          "image": "Drinks & Natural Juices.jpg"
         },
         {
           "id": 5,
@@ -154,7 +170,8 @@
             "ar": "مواد غذائية معلبة ومجففة",
             "en": "Canned & Dried Foods"
           },
-          "icon": "fas fa-box-open"
+          "icon": "fas fa-box-open",
+          "image": "Canned & Dried Foods.jpg"
         },
         {
           "id": 6,
@@ -162,7 +179,8 @@
             "ar": "منتجات الألبان والبيض",
             "en": "Dairy & Eggs"
           },
-          "icon": "fas fa-egg"
+          "icon": "fas fa-egg",
+          "image": "Dairy & Eggs.jpg"
         },
         {
           "id": 7,
@@ -170,7 +188,8 @@
             "ar": "التوابل والأعشاب",
             "en": "Spices & Herbs"
           },
-          "icon": "fas fa-leaf"
+          "icon": "fas fa-leaf",
+          "image": "Spices & Herbs.jpg"
         },
         {
           "id": 8,
@@ -178,7 +197,8 @@
             "ar": "مكسرات وبذور وفواكه مجففة",
             "en": "Nuts, Seeds & Dried Fruits"
           },
-          "icon": "fas fa-seedling"
+          "icon": "fas fa-seedling",
+          "image": "Nuts, Seeds & Dried Fruits.jpg"
         },
         {
           "id": 9,
@@ -186,7 +206,8 @@
             "ar": "زيوت وسمن ودهون",
             "en": "Oils, Ghee & Fats"
           },
-          "icon": "fas fa-oil-can"
+          "icon": "fas fa-oil-can",
+          "image": "Oils, Ghee & Fats.jpg"
         },
         {
           "id": 10,
@@ -194,7 +215,8 @@
             "ar": "لحوم ودواجن وأسماك",
             "en": "Meat, Poultry & Fish"
           },
-          "icon": "fas fa-drumstick-bite"
+          "icon": "fas fa-drumstick-bite",
+          "image": "Meat, Poultry & Fish.jpg"
         },
         {
           "id": 11,
@@ -202,7 +224,8 @@
             "ar": "منتجات غذائية وعضوية",
             "en": "Food & Organic Products"
           },
-          "icon": "fas fa-carrot"
+          "icon": "fas fa-carrot",
+          "image": "Food & Organic Products.jpg"
         },
         {
           "id": 12,
@@ -210,7 +233,8 @@
             "ar": "أطعمة مجمدة ومثلجة",
             "en": "Frozen & Chilled Foods"
           },
-          "icon": "fas fa-snowflake"
+          "icon": "fas fa-snowflake",
+          "image": "Frozen & Chilled Foods.jpg"
         }
       ]
     },
@@ -226,90 +250,101 @@
         {
           "id": 1,
           "title": {
-            "ar": "الهواتف الذكية والأجهزة اللوحية",
+            "ar": "هواتف ذكية وأجهزة لوحية",
             "en": "Smartphones & Tablets"
           },
-          "icon": "fas fa-mobile-alt"
+          "icon": "fas fa-mobile-alt",
+          "image": "Smartphones & Tablets.jpg"
         },
         {
           "id": 2,
           "title": {
-            "ar": "أجهزة الحاسوب المحمول والمكتبي",
+            "ar": "لابتوب وأجهزة كمبيوتر مكتبية",
             "en": "Laptops & Desktops"
           },
-          "icon": "fas fa-laptop"
+          "icon": "fas fa-laptop",
+          "image": "Laptops & Desktops.jpg"
         },
         {
           "id": 3,
           "title": {
-            "ar": "الإكسسوارات الرقمية وملحقاتها",
+            "ar": "إكسسوارات رقمية (ساعات، سماعات، شواحن)",
             "en": "Digital Accessories"
           },
-          "icon": "fas fa-headphones"
+          "icon": "fas fa-headphones-alt",
+          "image": "Digital Accessories.jpg"
         },
         {
           "id": 4,
           "title": {
-            "ar": "برامج وحلول رقمية جاهزة",
+            "ar": "برمجيات وحلول رقمية ومحاسبية",
             "en": "Software & Digital Solutions"
           },
-          "icon": "fas fa-compact-disc"
+          "icon": "fas fa-code",
+          "image": "Software & Digital Solutions.jpg"
         },
         {
           "id": 5,
           "title": {
-            "ar": "خدمات تطوير المواقع والتطبيقات",
+            "ar": "تطوير مواقع وتطبيقات الموبايل",
             "en": "Web & App Development"
           },
-          "icon": "fas fa-code"
+          "icon": "fas fa-terminal",
+          "image": "Web & App Development.jpg"
         },
         {
           "id": 6,
           "title": {
-            "ar": "أجهزة الألعاب والفيديو جيمز",
+            "ar": "أجهزة ألعاب فيديو ومنصات جيمنج",
             "en": "Gaming Consoles & Video Games"
           },
-          "icon": "fas fa-gamepad"
+          "icon": "fas fa-gamepad",
+          "image": "Gaming Consoles & Video Games.jpg"
         },
         {
           "id": 7,
           "title": {
-            "ar": "أنظمة الأمن والمراقبة المنزلية",
+            "ar": "أنظمة مراقبة وأمن منزلي",
             "en": "Security & Home Monitoring"
           },
-          "icon": "fas fa-video"
+          "icon": "fas fa-video",
+          "image": "Security & Home Monitoring.jpg"
         },
         {
           "id": 8,
           "title": {
-            "ar": "الأجهزة الكهربائية المنزلية",
+            "ar": "أجهزة كهربائية منزلية (ثلاجات، غسالات)",
             "en": "Home Electrical Appliances"
           },
-          "icon": "fas fa-plug"
+          "icon": "fas fa-blender",
+          "image": "Home Electrical Appliances.jpg"
         },
         {
           "id": 9,
           "title": {
-            "ar": "الكاميرات والتقنيات البصرية",
+            "ar": "كاميرات وتقنيات بصرية",
             "en": "Cameras & Optical Tech"
           },
-          "icon": "fas fa-camera-retro"
+          "icon": "fas fa-camera",
+          "image": "Cameras & Optical Tech.jpg"
         },
         {
           "id": 10,
           "title": {
-            "ar": "أجهزة الصوت والسماعات",
+            "ar": "أجهزة صوتية وسماعات احترافية",
             "en": "Audio Devices & Headphones"
           },
-          "icon": "fas fa-volume-up"
+          "icon": "fas fa-volume-up",
+          "image": "Audio Devices & Headphones.jpg"
         },
         {
-          "id": 12,
+          "id": 11,
           "title": {
-            "ar": "أجهزة الشبكات والاتصالات",
+            "ar": "شبكات واتصالات (راوتر، تقوية إشارة)",
             "en": "Networking & Telecom"
           },
-          "icon": "fas fa-wifi"
+          "icon": "fas fa-wifi",
+          "image": "Networking & Telecom.jpg"
         }
       ]
     },
