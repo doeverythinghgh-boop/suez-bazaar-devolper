@@ -5,7 +5,7 @@
 
 // [Immediate Check] Redirect to dashboard if user is already logged in.
 (function () {
-  const currentUser = typeof SessionManager !== 'undefined' ? SessionManager.getUser() : null;
+  var currentUser = typeof SessionManager !== 'undefined' ? SessionManager.getUser() : null;
   if (currentUser) {
     console.log("[Register] User already logged in, redirecting to dashboard.");
     if (typeof mainLoader === 'function') {
@@ -48,7 +48,7 @@ var register_limitPackageInput = document.getElementById("register_limit-package
 
 if (register_sellerOptionsBtn) {
   register_sellerOptionsBtn.addEventListener("click", async () => {
-    const { value: formValues } = await Swal.fire({
+    var { value: formValues } = await Swal.fire({
       title: "إعدادات البائع",
       html: `
         <div style="font-family: 'Tajawal', sans-serif;">
@@ -86,16 +86,16 @@ if (register_sellerOptionsBtn) {
         cancelButton: 'modern-swal-cancel'
       },
       didOpen: () => {
-        const hasLimitSelect = document.getElementById("swal_has-limit");
-        const limitContainer = document.getElementById("swal_limit-container");
+        var hasLimitSelect = document.getElementById("swal_has-limit");
+        var limitContainer = document.getElementById("swal_limit-container");
         hasLimitSelect.addEventListener("change", (e) => {
           limitContainer.style.display = e.target.value === "yes" ? "block" : "none";
         });
       },
       preConfirm: () => {
-        const isDelevred = document.getElementById("swal_is-delevred").value;
-        const hasLimit = document.getElementById("swal_has-limit").value;
-        const limitValue = document.getElementById("swal_limit-value").value;
+        var isDelevred = document.getElementById("swal_is-delevred").value;
+        var hasLimit = document.getElementById("swal_has-limit").value;
+        var limitValue = document.getElementById("swal_limit-value").value;
 
         if (hasLimit === "yes" && (!limitValue || limitValue <= 0)) {
           Swal.showValidationMessage("يرجى إدخال قيمة صحيحة للحد الأدنى");
@@ -114,8 +114,8 @@ if (register_sellerOptionsBtn) {
       register_limitPackageInput.value = formValues.limitPackage;
 
       // Update UI feedback on the button
-      const isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
-      const statusText = isSet ? " (تم ضبط الإعدادات ✅)" : " (لا توجد إعدادات خاصة)";
+      var isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
+      var statusText = isSet ? " (تم ضبط الإعدادات ✅)" : " (لا توجد إعدادات خاصة)";
       register_sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${statusText}`;
       register_sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
       register_sellerOptionsBtn.style.borderStyle = isSet ? "solid" : "dashed";
@@ -124,13 +124,13 @@ if (register_sellerOptionsBtn) {
 }
 
 // Embedded Map Message Listener
-const handleRegisterMessage = (event) => {
-  const mapStatus = document.getElementById("register_map-status");
-  const mapError = document.getElementById("register_map-error");
-  const coordsInput = document.getElementById("register_coords");
+var handleRegisterMessage = (event) => {
+  var mapStatus = document.getElementById("register_map-status");
+  var mapError = document.getElementById("register_map-error");
+  var coordsInput = document.getElementById("register_coords");
 
   if (event.data && event.data.type === 'LOCATION_SELECTED') {
-    const coords = event.data.coordinates;
+    var coords = event.data.coordinates;
     console.log("[Register] Received coordinates from map:", coords);
     if (coordsInput) coordsInput.value = coords;
 
@@ -164,33 +164,33 @@ if (register_form) {
     AuthUI.clearFieldValidationMsg(register_address);
 
     // Clear Map Errors
-    const mapError = document.getElementById("register_map-error");
+    var mapError = document.getElementById("register_map-error");
     if (mapError) mapError.style.display = "none";
 
     // Validate Username
-    const usernameValidation = AuthValidators.validateUsername(register_username.value.trim());
+    var usernameValidation = AuthValidators.validateUsername(register_username.value.trim());
     if (!usernameValidation.isValid) {
       AuthUI.showFieldValidationMsg(register_username, usernameValidation.message);
       register_isValid = false;
     }
 
     // Validate Phone
-    const normalizedPhone = AuthValidators.normalizePhone(register_phone.value.trim());
-    const phoneValidation = AuthValidators.validatePhone(normalizedPhone);
+    var normalizedPhone = AuthValidators.normalizePhone(register_phone.value.trim());
+    var phoneValidation = AuthValidators.validatePhone(normalizedPhone);
     if (!phoneValidation.isValid) {
       AuthUI.showFieldValidationMsg(register_phone, phoneValidation.message);
       register_isValid = false;
     }
 
     // Validate Password
-    const passwordValidation = AuthValidators.validatePassword(register_password.value.trim());
+    var passwordValidation = AuthValidators.validatePassword(register_password.value.trim());
     if (!passwordValidation.isValid) {
       AuthUI.showFieldValidationMsg(register_password, passwordValidation.message);
       register_isValid = false;
     }
 
     // Mandatory Location Validation
-    const coordsValue = document.getElementById("register_coords")?.value || "";
+    var coordsValue = document.getElementById("register_coords")?.value || "";
     if (!coordsValue) {
       if (mapError) {
         mapError.textContent = "يرجى تحديد موقعك على الخريطة أولاً لضمان سرعة التوصيل.";
@@ -202,7 +202,7 @@ if (register_form) {
     }
 
     // Validate Address Detail
-    const addressValidation = AuthValidators.validateAddress(register_address.value.trim(), !!coordsValue);
+    var addressValidation = AuthValidators.validateAddress(register_address.value.trim(), !!coordsValue);
     if (!addressValidation.isValid) {
       AuthUI.showFieldValidationMsg(register_address, addressValidation.message);
       register_isValid = false;
@@ -211,7 +211,7 @@ if (register_form) {
     if (!register_isValid) return;
 
     // 2. Password Confirmation
-    const { value: register_confirmedPassword } = await Swal.fire({
+    var { value: register_confirmedPassword } = await Swal.fire({
       title: "تأكيد كلمة المرور",
       html: `
         <p>يرجى إعادة إدخال كلمة المرور للتأكيد</p>
@@ -225,12 +225,12 @@ if (register_form) {
       cancelButtonText: "إلغاء",
       customClass: { popup: 'fullscreen-swal' },
       didOpen: () => {
-        const confirmInput = document.getElementById("register_swal-confirm-password");
-        const toggleIcon = document.getElementById("register_swal-toggle-confirm-password");
+        var confirmInput = document.getElementById("register_swal-confirm-password");
+        var toggleIcon = document.getElementById("register_swal-toggle-confirm-password");
         if (confirmInput) confirmInput.focus();
         if (toggleIcon && confirmInput) {
           toggleIcon.addEventListener("click", () => {
-            const isPassword = confirmInput.type === "password";
+            var isPassword = confirmInput.type === "password";
             confirmInput.type = isPassword ? "text" : "password";
             toggleIcon.classList.toggle("fa-eye");
             toggleIcon.classList.toggle("fa-eye-slash");
@@ -238,7 +238,7 @@ if (register_form) {
         }
       },
       preConfirm: () => {
-        const confirmValue = document.getElementById("register_swal-confirm-password").value;
+        var confirmValue = document.getElementById("register_swal-confirm-password").value;
         if (confirmValue !== register_password.value) {
           Swal.showValidationMessage("كلمات المرور غير متطابقة!");
           return false;
@@ -251,8 +251,8 @@ if (register_form) {
     if (!register_confirmedPassword) return;
 
     // 3. Create User
-    const register_userKey = generateSerial();
-    const register_newUser = {
+    var register_userKey = generateSerial();
+    var register_newUser = {
       username: register_username.value.trim(),
       phone: normalizedPhone,
       user_key: register_userKey,
@@ -267,12 +267,12 @@ if (register_form) {
     AuthUI.showLoading("إنشاء حساب...");
 
     try {
-      const register_result = await addUser(register_newUser);
+      var register_result = await addUser(register_newUser);
       AuthUI.close();
 
       if (register_result && register_result.message) {
         // Success
-        const register_loggedInUserData = {
+        var register_loggedInUserData = {
           username: register_newUser.username,
           phone: register_newUser.phone,
           user_key: register_newUser.user_key,
@@ -331,7 +331,7 @@ if (register_form) {
 
 // Handle navigation to the login page.
 try {
-  const register_loginLink = document.getElementById(
+  var register_loginLink = document.getElementById(
     "register_goToLoginLink"
   );
   if (register_loginLink) {
@@ -358,7 +358,7 @@ var register_togglePasswordIcon = document.getElementById(
 if (register_togglePasswordIcon && register_password) {
   register_togglePasswordIcon.addEventListener("click", function () {
     // Toggle input type.
-    const type =
+    var type =
       register_password.getAttribute("type") === "password"
         ? "text"
         : "password";
@@ -375,15 +375,15 @@ insertUniqueSnapshot("/pages/header.html", "header-container1Xx", 300);
 
 // Check for saved location on load
 function register_restoreSavedLocation() {
-  const savedLocation = localStorage.getItem('saved_location') || localStorage.getItem('bidstory_user_saved_location');
-  const coordsInput = document.getElementById("register_coords");
-  const mapIframe = document.getElementById("register_location-iframe");
+  var savedLocation = localStorage.getItem('saved_location') || localStorage.getItem('bidstory_user_saved_location');
+  var coordsInput = document.getElementById("register_coords");
+  var mapIframe = document.getElementById("register_location-iframe");
 
   if (coordsInput) {
     let initialCoords = "";
     if (savedLocation) {
       try {
-        const parsed = JSON.parse(savedLocation);
+        var parsed = JSON.parse(savedLocation);
         if (parsed && (parsed.lat || parsed.lng)) {
           initialCoords = parsed.coordinates || `${parsed.lat}, ${parsed.lng}`;
         }
@@ -394,7 +394,7 @@ function register_restoreSavedLocation() {
 
     if (initialCoords) {
       coordsInput.value = initialCoords;
-      const mapStatus = document.getElementById("register_map-status");
+      var mapStatus = document.getElementById("register_map-status");
       if (mapStatus) {
         mapStatus.style.color = "#10b981";
         mapStatus.innerHTML = '<i class="fas fa-check-circle"></i> تم استرجاع موقعك المحفوظ.';
@@ -403,13 +403,13 @@ function register_restoreSavedLocation() {
 
       // Update Iframe with saved coords + cache busting
       if (mapIframe) {
-        const [lt, ln] = initialCoords.split(",").map(c => c.trim());
-        const timestamp = new Date().getTime();
+        var [lt, ln] = initialCoords.split(",").map(c => c.trim());
+        var timestamp = new Date().getTime();
         mapIframe.src = `location/LOCATION.html?lat=${lt}&lng=${ln}&embedded=true&hideSave=true&v=${timestamp}`;
       }
     } else if (mapIframe) {
       // No saved location, just add cache busting
-      const timestamp = new Date().getTime();
+      var timestamp = new Date().getTime();
       mapIframe.src = `location/LOCATION.html?embedded=true&hideSave=true&v=${timestamp}`;
     }
   }
