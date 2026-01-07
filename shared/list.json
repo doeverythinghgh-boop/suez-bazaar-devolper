@@ -7,6 +7,7 @@
         "en": "Clothing & Fashion"
       },
       "icon": "fas fa-shirt",
+      "image": "Clothing & Fashion.jpg",
       "subcategories": [
         {
           "id": 1,
@@ -113,6 +114,7 @@
         "en": "Food & Beverages"
       },
       "icon": "fas fa-utensils",
+      "image": "Food & Beverages.jpg",
       "subcategories": [
         {
           "id": 1,
@@ -219,6 +221,7 @@
         "en": "Tech & Electronics"
       },
       "icon": "fas fa-robot",
+      "image": "Tech & Electronics.png",
       "subcategories": [
         {
           "id": 1,
@@ -317,6 +320,7 @@
         "en": "Health & Beauty"
       },
       "icon": "fas fa-spa",
+      "image": "Health & Beauty.png",
       "subcategories": [
         {
           "id": 1,
@@ -415,6 +419,7 @@
         "en": "Oriflame"
       },
       "icon": "fas fa-circle-notch",
+      "image": "Oriflame.png",
       "subcategories": [
         {
           "id": 1,
@@ -457,6 +462,7 @@
         "en": "Vehicles Market"
       },
       "icon": "fas fa-car",
+      "image": "Vehicles Market.png",
       "subcategories": [
         {
           "id": 1,
@@ -547,6 +553,7 @@
         "en": "Home & Furniture"
       },
       "icon": "fas fa-couch",
+      "image": "Home & Furniture.png",
       "subcategories": [
         {
           "id": 1,
@@ -653,6 +660,7 @@
         "en": "Real Estate"
       },
       "icon": "fas fa-city",
+      "image": "Real Estate.jpg",
       "subcategories": [
         {
           "id": 1,
@@ -719,6 +727,7 @@
         "en": "Avon"
       },
       "icon": "fas fa-v",
+      "image": "Avon.png",
       "subcategories": [
         {
           "id": 1,
@@ -761,6 +770,7 @@
         "en": "Sports & Entertainment"
       },
       "icon": "fas fa-basketball-ball",
+      "image": "Sports.png",
       "subcategories": [
         {
           "id": 2,
@@ -819,6 +829,7 @@
         "en": "Arts & Crafts"
       },
       "icon": "fas fa-paint-brush",
+      "image": "Arts & Crafts.png",
       "subcategories": [
         {
           "id": 1,
@@ -893,6 +904,7 @@
         "en": "Events & Gifts"
       },
       "icon": "fas fa-gift",
+      "image": "Events & Gifts.png",
       "subcategories": [
         {
           "id": 8,
@@ -943,6 +955,7 @@
         "en": "My Way"
       },
       "icon": "fas fa-m",
+      "image": "My Way.png",
       "subcategories": [
         {
           "id": 1,
@@ -985,6 +998,7 @@
         "en": "Medical Services"
       },
       "icon": "fas fa-user-md",
+      "image": "Medical Services.png",
       "subcategories": [
         {
           "id": 201,
@@ -1059,6 +1073,7 @@
         "en": "General Services"
       },
       "icon": "fas fa-briefcase",
+      "image": "General Services.png",
       "subcategories": [
         {
           "id": 9,
@@ -1093,6 +1108,7 @@
         "en": "Pets"
       },
       "icon": "fas fa-paw",
+      "image": "Pets.png",
       "subcategories": [
         {
           "id": 4,
@@ -1159,6 +1175,7 @@
         "en": "Wholesalers"
       },
       "icon": "fas fa-archive",
+      "image": "Wholesalers.png",
       "subcategories": [
         {
           "id": 8,
@@ -1177,6 +1194,7 @@
         "en": "Charity Work"
       },
       "icon": "fas fa-hand-holding-heart",
+      "image": "Charity Work.png",
       "subcategories": [
         {
           "id": 1,

@@ -111,6 +111,15 @@
     transition: color 0.3s ease;
 }
 
+.categories_cell_content__image {
+    width: 45px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    display: block;
+}
+
 .categories_cell_content__text {
     font-size: 0.6rem;
     color: var(--text-color-medium);

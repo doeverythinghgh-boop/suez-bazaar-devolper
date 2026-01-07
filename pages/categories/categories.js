@@ -56,7 +56,7 @@ async function categories_fetchCategories(url) {
     try {
         // Use global categories list if available, otherwise fetch
         const data = window.appCategoriesList || await fetchAppCategories();
-        
+
         if (!data || !data.categories || !Array.isArray(data.categories)) {
             throw new Error("تنسيق ملف الفئات غير صحيح أو تعذر التحميل.");
         }
@@ -122,12 +122,24 @@ function categories_createCategoryCell(category, mainRow, allCategories) {
         cell.className = "categories_main_cell";
         cell.dataset.categoryId = category.id;
 
-        const iconClass = category.icon || "fas fa-store";
-        const iconHtml = `<i class="categories_cell_content__icon ${iconClass}"></i>`;
+        // Determine if it's the home page and if an image is available
+        const isHomePage = document.getElementById("categories00") !== null;
+        const categoryImage = category.image;
 
+        let iconHtml;
         const titleObj = category.title;
-        const displayTitle = typeof titleObj === 'object' ? 
+        const displayTitle = typeof titleObj === 'object' ?
             (titleObj[window.app_language] || titleObj['ar']) : titleObj;
+
+        if (isHomePage && categoryImage) {
+            // Display image for main categories on home page
+            const imagePath = `images/mainCategories/${categoryImage}`;
+            iconHtml = `<img src="${imagePath}" class="categories_cell_content__image" alt="${displayTitle}">`;
+        } else {
+            // Fallback to FontAwesome icon
+            const iconClass = category.icon || "fas fa-store";
+            iconHtml = `<i class="categories_cell_content__icon ${iconClass}"></i>`;
+        }
 
         cell.innerHTML = `
             <div class="categories_cell_content">
@@ -284,7 +296,7 @@ function categories_createSubcategoryItem(sub, subRow, mainCatId) {
             ? `<i class="categories_subcategory_item__icon ${sub.icon}"></i>`
             : '<i class="categories_subcategory_item__icon fas fa-tag"></i>';
         const subTitleObj = sub.title;
-        const subDisplayTitle = typeof subTitleObj === 'object' ? 
+        const subDisplayTitle = typeof subTitleObj === 'object' ?
             (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
 
         subItem.innerHTML = `${iconHtml} ${subDisplayTitle}`.trim();

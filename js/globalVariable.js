@@ -27,17 +27,17 @@ window.app_language = localStorage.getItem('app_language') || 'ar';
  * @returns {Promise<object|null>} - The categories data or null on failure.
  */
 async function fetchAppCategories() {
-    if (window.appCategoriesList) return window.appCategoriesList;
-    try {
-        const response = await fetch("shared/list.json");
-        if (!response.ok) throw new Error("Failed to load list.json");
-        window.appCategoriesList = await response.json();
-        console.log("✅ [Global] تم تحميل قائمة الفئات بنجاح.");
-        return window.appCategoriesList;
-    } catch (error) {
-        console.error("❌ [Global] خطأ في تحميل قائمة الفئات:", error);
-        return null;
-    }
+  if (window.appCategoriesList) return window.appCategoriesList;
+  try {
+    const response = await fetch(`shared/list.json?v=${Date.now()}`);
+    if (!response.ok) throw new Error("Failed to load list.json");
+    window.appCategoriesList = await response.json();
+    console.log("✅ [Global] تم تحميل قائمة الفئات بنجاح.");
+    return window.appCategoriesList;
+  } catch (error) {
+    console.error("❌ [Global] خطأ في تحميل قائمة الفئات:", error);
+    return null;
+  }
 }
 
 /**
