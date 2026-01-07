@@ -591,97 +591,146 @@ margin-top: -35px      /* Margin سالب للحاوية (حرج) */
 
 ---
 
-## 6. الفئات الفرعية (Subcategories)
+## 6. الفئات الفرعية (Subcategories) - نمط القصص (Story Style) 📸
 
-### 6.1 الحاوية
+تم تحديث تصميم الفئات الفرعية ليحاكي نمط "القصص" (Stories) الشهير، حيث يتم التركيز على الصورة الدائرية مع نص أسفلها، مما يوفر تجربة بصرية عصرية وجذابة.
 
-```css
-.categories_subcategories_container {
-    display: grid;
-    grid-auto-flow: column;
-    overflow-x: auto;
-    overflow-y: hidden;
-    max-height: 250px;
-    justify-content: flex-start;
-    padding: 15px;
-    gap: 12px;
-    scrollbar-width: thin;
-}
-```
-
-**الوظائف:**
-- **Grid Auto Flow:** column - العناصر تصطف أفقياً
-- **Overflow X:** auto - تمرير أفقي عند الحاجة
-- **Max Height:** 250px لمنع الارتفاع الزائد
-
----
-
-### 6.2 شريط التمرير المخصص
-
-```css
-.categories_subcategories_container::-webkit-scrollbar {
-    height: 3px;
-}
-
-.categories_subcategories_container::-webkit-scrollbar-thumb {
-    background-color: var(--primary-color);
-    border-radius: 3px;
-    opacity: 0.3;
-}
-```
-
-**التصميم:** شريط تمرير رفيع وناعم.
-
----
-
-### 6.3 عنصر الفئة الفرعية
+### 6.1 الحاوية (Items Wrapper)
 
 ```css
 .categories_subcategory_item {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;         /* ترتيب عمودي: صورة ثم نص */
     align-items: center;
-    gap: 8px;
-    background-color: var(--bg-color-medium);
-    border: 1px solid var(--border-color);
-    border-radius: 20px;
-    padding: 8px 16px;
+    gap: 8px;                       /* مسافة بين الصورة والنص */
+    background-color: transparent;  /* خلفية شفافة لإبراز الدائرة */
+    border: none;                   /* إزالة الحدود القديمة */
+    padding: 5px;
     text-decoration: none;
-    color: var(--primary-color);
-    font-weight: 600;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow-soft);
+    min-width: 80px;
+    max-width: 100px;
+    cursor: pointer;
+    
+    /* Animation Initial State */
+    opacity: 0;                     /* البداية مخفية للأنيميشن */
+    animation: categoryPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 ```
 
-**الشكل:** "Chip" أفقي مع أيقونة ونص.
+**المميزات:**
+- **شفافية:** الحاوية نفسها لا تملك خلفية أو حدود، مما يجعل العنصر يبدو "عائماً".
+- **التخطيط:** عمودي (Vertical Stack).
+- **الحجم:** عرض محدد (80-100px) لضمان الاستقامة.
 
 ---
 
-### 6.4 الفئة الفرعية النشطة
+### 6.2 الصورة الدائرية (Circular Image)
 
 ```css
-.categories_subcategory_item--active {
-    border-color: var(--border-color-active);
-    box-shadow: var(--shadow-focus);
-    position: relative;
-}
-
-.categories_subcategory_item--active::after {
-    content: "";
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 6px solid var(--border-color-active);
+.categories_subcategory_item__image {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;              /* ملء الدائرة دون تشويه */
+    border-radius: 50%;             /* دائرة كاملة */
+    border: 1px solid var(--border-color); /* إطار رفيع متطابق مع العناصر الرئيسية */
+    background-color: #fff;
+    box-shadow: var(--shadow-soft);
+    display: block;
+    transition: all 0.3s ease;
 }
 ```
 
-**التأثير:** سهم صغير يشير للأسفل تحت الفئة النشطة.
+**التفاصيل:**
+- **الأبعاد:** 70px × 70px (ثابتة).
+- **الإطار:** 1px (تم توحيده مع العناصر الرئيسية).
+- **الشكل:** دائري تماماً (`border-radius: 50%`).
+
+---
+
+### 6.3 الأيقونة (Fallback Icon)
+
+في حال عدم توفر صورة، يتم عرض أيقونة داخل دائرة مطابقة تماماً لتصميم الصورة:
+
+```css
+.categories_subcategory_item__icon {
+    width: 70px;
+    height: 70px;
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    background-color: var(--bg-color-light);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+}
+```
+
+---
+
+### 6.4 النص (Label)
+
+تم فصل النص في عنصر `span` خاص لسهولة التحكم:
+
+```css
+.categories_subcategory_title {
+    color: var(--primary-color);
+    font-size: 0.75rem;          /* حجم صغير (12px) */
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.3;
+    width: 100%;
+    word-break: break-word;     /* كسر الكلمات الطويلة */
+}
+```
+
+---
+
+### 6.5 الحالة النشطة (Active State)
+
+عند اختيار فئة فرعية:
+
+```css
+.categories_subcategory_item--active .categories_subcategory_item__image,
+.categories_subcategory_item--active .categories_subcategory_item__icon {
+    border-color: var(--border-color-active);
+    box-shadow: var(--shadow-focus);
+    transform: scale(1.05);     /* تكبير طفيف */
+}
+```
+
+**المؤشرات البصرية:**
+1. **توهج:** الإطار يتلون بلون التفعيل (`--border-color-active`).
+2. **ظل:** يظهر ظل التركيز (`--shadow-focus`).
+3. **سهم:** يظهر سهم صغير يشير للأعلى (نحو الصورة) أسفل النص.
+
+---
+
+### 6.6 الأنيميشن المتتابع (Staggered Animation) 🚀
+
+تظهر الفئات الفرعية بتأثير "Pop-In" متتابع (واحدة تلو الأخرى) لإضفاء الحيوية.
+
+**CSS Keyframes:**
+```css
+@keyframes categoryPopIn {
+    0% { opacity: 0; transform: translateY(20px) scale(0.8); }
+    60% { transform: translateY(-5px) scale(1.05); }     /* قفزة خفيفة */
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+```
+
+**JavaScript Logic:**
+يتم حساب التأخير الزمني (`animation-delay`) بناءً على ترتيب العنصر (`index`):
+
+```javascript
+// في دالة categories_createSubcategoryItemDiv
+subItem.style.animationDelay = `${index * 0.05}s`;
+```
+
+حيث `index` هو ترتيب العنصر في المصفوفة. هذا يعني أن العنصر الأول يظهر فوراً، الثاني بعد 50ms، الثالث بعد 100ms، وهكذا.
+
 
 ---
 
