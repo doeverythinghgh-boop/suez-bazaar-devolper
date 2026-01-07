@@ -320,6 +320,23 @@
     gap: 12px;
 }
 
+/* Product Zoom In Animation */
+@keyframes productZoomIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    80% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 .categories_product_item {
     display: flex;
     flex-direction: column;
@@ -333,6 +350,10 @@
     box-shadow: var(--shadow-soft);
     position: relative;
     overflow: hidden;
+    /* Animation Properties */
+    opacity: 0;
+    /* Start hidden */
+    animation: productZoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 .categories_product_item:active {
