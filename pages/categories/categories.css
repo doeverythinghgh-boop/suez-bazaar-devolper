@@ -284,13 +284,45 @@
 
 
 /* Gallery Controls */
+/* Gallery Controls - Modern & Clean */
 .categories_gallery_controls {
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 8px 15px;
-    background-color: rgba(0, 0, 0, 0.03);
-    border-top: 1px solid var(--border-color);
+    padding: 10px 20px;
+    background-color: transparent;
+    margin-bottom: 5px;
+}
+
+/* Toggle Button - Floating Action Style */
+.categories_view_toggle {
+    background-color: var(--bg-color-white, #fff);
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    /* Circle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft, 0 2px 8px rgba(0, 0, 0, 0.08));
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    font-size: 1.1rem;
+    outline: none;
+}
+
+.categories_view_toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-focus, 0 5px 15px rgba(0, 0, 0, 0.12));
+    border-color: var(--primary-color);
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.categories_view_toggle:active {
+    transform: scale(0.95);
 }
 
 /* Animations */
