@@ -19,27 +19,26 @@
  */
 async function categories_loadCategoriesAsTable() {
     try {
-        const tbody = document.getElementById("categories_tbody");
-        if (!tbody) return;
+        const gridContainer = document.getElementById("categories_grid");
+        if (!gridContainer) return;
 
         // 1. Fetch data
         const categories = await categories_fetchCategories(
             "shared/list.json"
         );
 
-        // 2. Build table
-        tbody.innerHTML = ""; // Clear old content
-        categories_buildCategoryTable(tbody, categories);
+        // 2. Build grid
+        gridContainer.innerHTML = ""; // Clear old content
+        categories_buildCategoryGrid(gridContainer, categories);
     } catch (error) {
         console.error(
             "%c[Categories] خطأ فادح في عرض الفئات:",
             "color: red; font-weight: bold;",
             error
         );
-        const tbody = document.getElementById("categories_tbody");
-        if (tbody) {
-            // Show error message to user
-            tbody.innerHTML = `<tr><td colspan="4">${window.langu('cat_empty_list_error')}</td></tr>`;
+        const gridContainer = document.getElementById("categories_grid");
+        if (gridContainer) {
+            gridContainer.innerHTML = `<div class="error-message">${window.langu('cat_empty_list_error')}</div>`;
         }
     }
 }
@@ -69,39 +68,25 @@ async function categories_fetchCategories(url) {
 }
 
 /**
- * @description Builds category table rows and adds event listeners (SRP).
- * @function categories_buildCategoryTable
- * @param {HTMLElement} tbody - <tbody> element to insert rows into.
+ * @description Builds category grid and adds event listeners (SRP).
+ * @function categories_buildCategoryGrid
+ * @param {HTMLElement} gridContainer - container element to insert items into.
  * @param {Array<Object>} categories - Array of main categories.
  * @returns {void}
  */
-function categories_buildCategoryTable(tbody, categories) {
+function categories_buildCategoryGrid(gridContainer, categories) {
     try {
-        // Group categories in batches of 4 to display four columns
-        for (let i = 0; i < categories.length; i += 4) {
-            const chunk = categories.slice(i, i + 4);
-            const mainRow = document.createElement("tr");
-            mainRow.className = "categories_main_row";
-
-            chunk.forEach((category) => {
-                const cell = categories_createCategoryCell(
-                    category,
-                    mainRow,
-                    categories
-                );
-                mainRow.appendChild(cell);
-            });
-
-            // Fill the row with empty cells if number of categories is less than 4
-            while (mainRow.cells.length < 4) {
-                mainRow.appendChild(document.createElement("td"));
-            }
-
-            tbody.appendChild(mainRow);
-        }
+        categories.forEach((category) => {
+            const item = categories_createCategoryItemGrid(
+                category,
+                gridContainer,
+                categories
+            );
+            gridContainer.appendChild(item);
+        });
     } catch (error) {
         console.error(
-            "%c[categories_buildCategoryTable] خطأ في بناء جدول الفئات:",
+            "%c[categories_buildCategoryGrid] خطأ في بناء شبكة الفئات:",
             "color: red;",
             error
         );
@@ -109,20 +94,20 @@ function categories_buildCategoryTable(tbody, categories) {
 }
 
 /**
- * @description Creates main category cell and adds click handler (SRP).
- * @function categories_createCategoryCell
+ * @description Creates main category grid item and adds click handler (SRP).
+ * @function categories_createCategoryItemGrid
  * @param {Object} category - Category object.
- * @param {HTMLTableRowElement} mainRow - Parent table row.
- * @param {Array<Object>} allCategories - All categories to pass to categories_toggleSubcategories.
- * @returns {HTMLTableCellElement} The created cell.
+ * @param {HTMLElement} gridContainer - Parent grid container.
+ * @param {Array<Object>} allCategories - All categories.
+ * @returns {HTMLElement} The created grid item.
  */
-function categories_createCategoryCell(category, mainRow, allCategories) {
+function categories_createCategoryItemGrid(category, gridContainer, allCategories) {
     try {
-        const cell = document.createElement("td");
-        cell.className = "categories_main_cell";
-        cell.dataset.categoryId = category.id;
+        const item = document.createElement("div");
+        item.className = "categories_grid_item";
+        item.dataset.categoryId = category.id;
 
-        // Determine if it's the home page and if an image is available
+        // Determine if image is available
         const isHomePage = document.getElementById("categories00") !== null;
         const categoryImage = category.image;
 
@@ -132,131 +117,110 @@ function categories_createCategoryCell(category, mainRow, allCategories) {
             (titleObj[window.app_language] || titleObj['ar']) : titleObj;
 
         if (isHomePage && categoryImage) {
-            // Display image for main categories on home page
             const imagePath = `images/mainCategories/${categoryImage}`;
             iconHtml = `<div class="categories_cell_media"><img src="${imagePath}" class="categories_cell_content__image" alt="${displayTitle}"></div>`;
         } else {
-            // Fallback to FontAwesome icon
             const iconClass = category.icon || "fas fa-store";
             iconHtml = `<div class="categories_cell_media"><i class="categories_cell_content__icon ${iconClass}"></i></div>`;
         }
 
-        cell.innerHTML = `
+        item.innerHTML = `
             <div class="categories_cell_content">
                 ${iconHtml}
                 <span class="categories_cell_content__text">${displayTitle}</span>
-            </div>`;
+            </div>
+        `;
 
         if (category.subcategories && category.subcategories.length > 0) {
-            cell.classList.add("categories_main_cell--has-subcategories");
-            // Pass all categories to enable categories_toggleSubcategories to access the clicked category
-            cell.addEventListener("click", () => {
-                // Pass the category itself instead of searching for it later, for efficiency
-                categories_toggleSubcategories(mainRow, category, cell);
+            item.classList.add("categories_grid_item--has-subcategories");
+            item.addEventListener("click", () => {
+                categories_toggleSubcategoriesGrid(gridContainer, category, item);
             });
         }
-        return cell;
+        return item;
     } catch (error) {
         console.error(
-            "%c[categories_createCategoryCell] خطأ في إنشاء خلية الفئة:",
+            "%c[categories_createCategoryItemGrid] خطأ في إنشاء عنصر الفئة:",
             "color: red;",
             error
         );
-        // Return empty cell in case of error to ensure table building continues
-        const cell = document.createElement("td");
-        cell.className = "categories_main_cell";
-        cell.innerHTML = `<div><span class="error-message">خطأ في عرض الفئة</span></div>`;
-        return cell;
+        const item = document.createElement("div");
+        item.className = "categories_grid_item";
+        item.innerHTML = `<span class="error-message">Error</span>`;
+        return item;
     }
 }
 
 /**
- * @description Toggles display of subcategories row and product gallery.
- * @function categories_toggleSubcategories
- * @param {HTMLTableRowElement} mainRow - The clicked main category row.
- * @param {Object} mainCategory - The clicked main category object (contains subcategories).
- * @param {HTMLTableCellElement} clickedCell - The clicked main category cell.
+ * @description Toggles display of subcategories grid and product gallery.
+ * @function categories_toggleSubcategoriesGrid
+ * @param {HTMLElement} gridContainer - The grid container.
+ * @param {Object} mainCategory - The clicked main category object.
+ * @param {HTMLElement} clickedItem - The clicked grid item.
  * @returns {void}
  */
-function categories_toggleSubcategories(mainRow, mainCategory, clickedCell) {
+function categories_toggleSubcategoriesGrid(gridContainer, mainCategory, clickedItem) {
     try {
-        console.log(
-            `%c[Subcategories] تم النقر على الفئة الرئيسية (ID: ${mainCategory.id})`,
-            "color: purple;"
-        );
-        const tbody = mainRow.parentNode;
-        // Find elements using new selectors
-        const currentlyActiveCell = tbody.querySelector(
-            "td.categories_main_cell--active"
-        );
-        const existingProductsRow = tbody.querySelector(
-            ".categories_products_gallery_row"
-        );
-        const existingSubRow = tbody.querySelector(".categories_sub_row");
-        const isClickingSameCell = currentlyActiveCell === clickedCell;
+        console.log(`%c[Grid] Toggling category (ID: ${mainCategory.id})`, "color: purple;");
 
-        // 1. Remove any existing subcategory row (and its internal gallery if exists)
-        if (existingSubRow) {
-            categories_removeInternalGallery(existingSubRow);
-            existingSubRow.remove();
+        const currentlyActiveItem = gridContainer.querySelector(".categories_grid_item--active");
+        const existingDetails = gridContainer.querySelector(".categories_details_container");
+        const isClickingSameItem = currentlyActiveItem === clickedItem;
+
+        // Cleanup existing
+        if (existingDetails) {
+            // Note: We need a way to find subRow equivalent for cleanup logic
+            // In grid, details container handles it.
+            existingDetails.remove();
         }
-        // Also remove any separate product gallery row if it exists
-        if (existingProductsRow) existingProductsRow.remove();
+        if (currentlyActiveItem) {
+            currentlyActiveItem.classList.remove("categories_grid_item--active");
+        }
 
-        // 2. Update highlighting and toggle open/close
-        if (!isClickingSameCell) {
-            console.log("%c[DevLog] الحالة: فتح قسم جديد.", "color: green;");
+        if (!isClickingSameItem) {
+            clickedItem.classList.add("categories_grid_item--active");
 
-            // Remove old highlighting and apply new
-            if (currentlyActiveCell) {
-                currentlyActiveCell.classList.remove("categories_main_cell--active");
-            }
-            clickedCell.classList.add("categories_main_cell--active");
-
-            // Build and insert subcategory row
-            const subRow = categories_createSubcategoryRow(
-                mainRow,
+            // Build details container (subcategories + products)
+            const detailsContainer = categories_createDetailsContainer(
                 mainCategory.subcategories,
                 mainCategory.id
             );
-            mainRow.parentNode.insertBefore(subRow, mainRow.nextSibling);
-        } else {
-            console.log("%c[DevLog] الحالة: إغلاق القسم الحالي.", "color: red;");
-            if (currentlyActiveCell)
-                currentlyActiveCell.classList.remove("categories_main_cell--active");
+
+            // Correct Positioning in Grid:
+            // To prevent shifting other items in the same row, we must insert 
+            // the full-width details container AFTER the last item of the CURRENT row.
+            const items = Array.from(gridContainer.querySelectorAll(".categories_grid_item"));
+            const clickedIndex = items.indexOf(clickedItem);
+
+            // Assuming 4 columns as per CSS grid-template-columns: repeat(4, 1fr)
+            const columns = 4;
+            const rowIndex = Math.floor(clickedIndex / columns);
+            const lastItemIndexInRow = Math.min(items.length - 1, (rowIndex * columns) + (columns - 1));
+
+            const insertionTarget = items[lastItemIndexInRow];
+            insertionTarget.after(detailsContainer);
         }
     } catch (error) {
-        console.error(
-            "%c[categories_toggleSubcategories] خطأ:",
-            "color: red;",
-            error
-        );
-        // No critical user interaction here, just log error
+        console.error("%c[categories_toggleSubcategoriesGrid] Error:", "color: red;", error);
     }
 }
 
 /**
- * @description Creates subcategory row and adds click handlers (SRP).
- * @function categories_createSubcategoryRow
- * @param {HTMLTableRowElement} mainRow - The row following the subcategory row.
+ * @description Creates details container for subcategories and products.
+ * @function categories_createDetailsContainer
  * @param {Array<Object>} subcategories - Array of subcategories.
  * @param {string} mainCatId - Main category ID.
- * @returns {HTMLTableRowElement} The created subcategory row.
+ * @returns {HTMLElement} The created container.
  */
-function categories_createSubcategoryRow(mainRow, subcategories, mainCatId) {
+function categories_createDetailsContainer(subcategories, mainCatId) {
     try {
-        const subRow = document.createElement("tr");
-        subRow.className = "categories_sub_row";
-        subRow.style.animation =
-            "categories_slide_fade_in 1.5s ease-out forwards";
-
-        const subCell = document.createElement("td");
-        subCell.colSpan = 4;
+        const container = document.createElement("div");
+        container.className = "categories_details_container";
+        container.style.animation = "categories_slide_fade_in 0.8s ease-out forwards";
 
         const subcategoriesContainer = document.createElement("div");
         const subCount = subcategories.length;
 
-        // Dynamic layout class based on count
         if (subCount <= 5) {
             subcategoriesContainer.className = "categories_subcategories_container categories_sub_one_row";
         } else {
@@ -264,39 +228,34 @@ function categories_createSubcategoryRow(mainRow, subcategories, mainCatId) {
         }
 
         subcategories.forEach((sub) => {
-            const subItem = categories_createSubcategoryItem(
+            const subItem = categories_createSubcategoryItemDiv(
                 sub,
-                subRow,
+                container,
                 mainCatId
             );
             subcategoriesContainer.appendChild(subItem);
         });
 
-        subCell.appendChild(subcategoriesContainer);
-        subRow.appendChild(subCell);
-
-        return subRow;
+        container.appendChild(subcategoriesContainer);
+        return container;
     } catch (error) {
-        console.error(
-            "%c[categories_createSubcategoryRow] خطأ في إنشاء صف الفئات الفرعية:",
-            "color: red;",
-            error
-        );
-        const subRow = document.createElement("tr");
-        subRow.innerHTML = `<td><p class="error-message">فشل في إنشاء قسم الفئات الفرعية.</p></td>`;
-        return subRow;
+        console.error("%c[categories_createDetailsContainer] Error:", "color: red;", error);
+        const container = document.createElement("div");
+        container.className = "categories_details_container";
+        container.innerHTML = `<p class="error-message">Error loading subcategories.</p>`;
+        return container;
     }
 }
 
 /**
- * @description Creates subcategory item and adds click handler (SRP).
- * @function categories_createSubcategoryItem
+ * @description Creates subcategory element for grid structure.
+ * @function categories_createSubcategoryItemDiv
  * @param {Object} sub - Subcategory object.
- * @param {HTMLTableRowElement} subRow - Subcategory row.
+ * @param {HTMLElement} detailsContainer - Parent container.
  * @param {string} mainCatId - Main category ID.
- * @returns {HTMLAnchorElement} The created subcategory element.
+ * @returns {HTMLAnchorElement} The created element.
  */
-function categories_createSubcategoryItem(sub, subRow, mainCatId) {
+function categories_createSubcategoryItemDiv(sub, detailsContainer, mainCatId) {
     try {
         const subItem = document.createElement("a");
         subItem.href = `#`;
@@ -315,41 +274,20 @@ function categories_createSubcategoryItem(sub, subRow, mainCatId) {
         subItem.addEventListener("click", (e) => {
             try {
                 e.preventDefault();
+                detailsContainer.querySelectorAll(".categories_subcategory_item--active")
+                    .forEach((item) => item.classList.remove("categories_subcategory_item--active"));
 
-                // Remove old highlighting and apply new
-                document
-                    .querySelectorAll(".categories_subcategory_item--active")
-                    .forEach((item) =>
-                        item.classList.remove("categories_subcategory_item--active")
-                    );
-
-                console.log(
-                    `[Subcategories] تم النقر على الفئة الفرعية (ID: ${sub.id})`
-                );
                 subItem.classList.add("categories_subcategory_item--active");
-
-                // Show product gallery
-                categories_showProductGallery(subRow, mainCatId, sub.id);
+                categories_showProductGalleryGrid(detailsContainer, mainCatId, sub.id);
             } catch (error) {
-                console.error(
-                    "%c[categories_createSubcategoryItem.click] خطأ في معالج النقر:",
-                    "color: red;",
-                    error
-                );
+                console.error("%c[categories_createSubcategoryItemDiv.click] Error:", "color: red;", error);
             }
         });
 
         return subItem;
     } catch (error) {
-        console.error(
-            "%c[categories_createSubcategoryItem] خطأ في إنشاء عنصر الفئة الفرعية:",
-            "color: red;",
-            error
-        );
-        const subItem = document.createElement("a");
-        subItem.textContent = "خطأ";
-        subItem.className = "categories_subcategory_item";
-        return subItem;
+        console.error("%c[categories_createSubcategoryItemDiv] Error:", "color: red;", error);
+        return document.createElement("a");
     }
 }
 
@@ -361,61 +299,39 @@ function categories_createSubcategoryItem(sub, subRow, mainCatId) {
  * @description Displays product gallery below subcategory row.
  * @async
  * @function categories_showProductGallery
- * @param {HTMLTableRowElement} subRow - Subcategory row.
+ * @description Displays product gallery inside internal wrapper.
+ * @async
+ * @function categories_showProductGalleryGrid
+ * @param {HTMLElement} detailsContainer - The details container (subRow equivalent).
  * @param {string} mainCatId - Main category ID.
  * @param {string} subCatId - Subcategory ID.
- * @returns {Promise<void>} Promise that resolves when gallery is displayed.
+ * @returns {Promise<void>}
  */
-async function categories_showProductGallery(subRow, mainCatId, subCatId) {
+async function categories_showProductGalleryGrid(detailsContainer, mainCatId, subCatId) {
     try {
-        console.log(
-            `%c[Products] بدء عرض معرض المنتجات للفئة (${mainCatId} / ${subCatId})`,
-            "color: #fd7e14;"
-        );
-
-        // 1. Get or Create Gallery Container inside subRow cell
-        const subCell = subRow.querySelector("td");
-        let galleryContainerWrapper = subCell.querySelector(".categories_gallery_internal_wrapper");
-
-        if (!galleryContainerWrapper) {
-            galleryContainerWrapper = document.createElement("div");
-            galleryContainerWrapper.className = "categories_gallery_internal_wrapper";
-            subCell.appendChild(galleryContainerWrapper);
+        let galleryWrapper = detailsContainer.querySelector(".categories_gallery_internal_wrapper");
+        if (!galleryWrapper) {
+            galleryWrapper = document.createElement("div");
+            galleryWrapper.className = "categories_gallery_internal_wrapper";
+            detailsContainer.appendChild(galleryWrapper);
         }
 
-        galleryContainerWrapper.innerHTML = `<div class="loader" style="margin: 20px auto;"></div>`;
-        const galleryCell = galleryContainerWrapper; // Use wrapper as target
+        galleryWrapper.innerHTML = `<div class="loader" style="margin: 20px auto;"></div>`;
 
-        // 2. Fetch products (External function getProductsByCategory name remains unchanged)
         const products = await getProductsByCategory(mainCatId, subCatId);
 
-        // 3. Mark the subRow as containing a gallery (for cleanup logic)
-        subRow.classList.add("categories_has_gallery");
-
-        // 4. Find the subcategory object to get its title
+        // Fetch subcategory for title (if needed in future, currently arrow is enough)
         const allCategories = await categories_fetchCategories();
         const mainCategory = allCategories.find(c => String(c.id) === String(mainCatId));
         const subcategory = mainCategory ? mainCategory.subcategories.find(s => String(s.id) === String(subCatId)) : null;
 
-        // 5. Display results
         if (products && products.length > 0) {
-            // Display gallery
-            await categories_renderProductGallery(galleryCell, products, subcategory);
+            await categories_renderProductGallery(galleryWrapper, products, subcategory);
         } else {
-            console.log("[Products] لا توجد منتجات في هذه الفئة.");
-            galleryCell.innerHTML = `<p class="no-products-message" style="text-align:center; padding: 30px; color: var(--text-color-light); font-size: 0.9rem;">${window.langu('cat_no_products_message')}</p>`;
+            galleryWrapper.innerHTML = `<p class="no-products-message" style="text-align:center; padding: 30px; color: var(--text-color-light); font-size: 0.9rem;">${window.langu('cat_no_products_message')}</p>`;
         }
     } catch (error) {
-        console.error(
-            `%c[categories_showProductGallery] فشل في عرض معرض المنتجات للفئة (${mainCatId} / ${subCatId}):`,
-            "color: red; font-weight: bold;",
-            error
-        );
-        const subCell = subRow.querySelector("td");
-        const galleryContainerWrapper = subCell.querySelector(".categories_gallery_internal_wrapper");
-        if (galleryContainerWrapper) {
-            galleryContainerWrapper.innerHTML = `<p class="error-message">${window.langu('cat_fetch_products_error')}</p>`;
-        }
+        console.error("%c[categories_showProductGalleryGrid] Error:", "color: red;", error);
     }
 }
 
@@ -424,26 +340,22 @@ async function categories_showProductGallery(subRow, mainCatId, subCatId) {
  * @function categories_removeInternalGallery
  * @param {HTMLTableRowElement} subRow - The subcategory row with gallery.
  */
-function categories_removeInternalGallery(subRow) {
-    try {
-        if (!subRow) return;
-        const galleryWrapper = subRow.querySelector(".categories_gallery_internal_wrapper");
-        if (galleryWrapper) galleryWrapper.remove();
-        subRow.classList.remove("categories_has_gallery");
-    } catch (error) {
-        console.error("[categories_removeInternalGallery] Error:", error);
-    }
-}
+/**
+ * @description Placeholder for cleanup (already handled by removal of detailsContainer in Grid).
+ * @function categories_removeInternalGallery
+ */
+function categories_removeInternalGallery() { }
 
 /**
  * @description Renders products in the gallery sequentially with lazy loading for images (SRP).
  * @async
  * @function categories_renderProductGallery
- * @param {HTMLTableCellElement} galleryCell - The cell to populate with gallery.
+ * @param {HTMLElement} galleryWrapper - The container to populate with gallery.
  * @param {Array<Object>} products - Array of products.
+ * @param {Object} subcategory - Subcategory object for context.
  * @returns {Promise<void>}
  */
-async function categories_renderProductGallery(galleryCell, products, subcategory) {
+async function categories_renderProductGallery(galleryWrapper, products, subcategory) {
     try {
         console.log(
             `[Products] تم العثور على ${products.length} منتج للفئة "${subcategory ? subcategory.title[window.app_language] || subcategory.title['ar'] : ''}". جاري بناء المعرض...`
@@ -469,9 +381,9 @@ async function categories_renderProductGallery(galleryCell, products, subcategor
         galleryContainer.className = "categories_products_gallery_container grid-view";
 
         // 3. Assemble
-        galleryCell.innerHTML = "";
-        galleryCell.appendChild(controlsHeader);
-        galleryCell.appendChild(galleryContainer);
+        galleryWrapper.innerHTML = "";
+        galleryWrapper.appendChild(controlsHeader);
+        galleryWrapper.appendChild(galleryContainer);
 
         // 4. Toggle Logic
         toggleBtn.addEventListener('click', () => {
