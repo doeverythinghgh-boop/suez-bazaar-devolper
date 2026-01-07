@@ -228,11 +228,12 @@ function categories_createDetailsContainer(subcategories, mainCatId) {
             subcategoriesContainer.className = "categories_subcategories_container categories_sub_two_row";
         }
 
-        subcategories.forEach((sub) => {
+        subcategories.forEach((sub, index) => {
             const subItem = categories_createSubcategoryItemDiv(
                 sub,
                 container,
-                mainCatId
+                mainCatId,
+                index // Pass index for animation stagger
             );
             subcategoriesContainer.appendChild(subItem);
         });
@@ -254,23 +255,35 @@ function categories_createDetailsContainer(subcategories, mainCatId) {
  * @param {Object} sub - Subcategory object.
  * @param {HTMLElement} detailsContainer - Parent container.
  * @param {string} mainCatId - Main category ID.
+ * @param {number} index - Index of the item for animation delay.
  * @returns {HTMLAnchorElement} The created element.
  */
-function categories_createSubcategoryItemDiv(sub, detailsContainer, mainCatId) {
+function categories_createSubcategoryItemDiv(sub, detailsContainer, mainCatId, index = 0) {
     try {
         const subItem = document.createElement("a");
         subItem.href = `#`;
         subItem.className = "categories_subcategory_item";
         subItem.dataset.subcategoryId = sub.id;
 
-        const iconHtml = sub.icon
-            ? `<i class="categories_subcategory_item__icon ${sub.icon}"></i>`
-            : '<i class="categories_subcategory_item__icon fas fa-tag"></i>';
+        // Apply staggered animation delay
+        // Delay = index * 50ms (allows for quick sequential pop-in)
+        subItem.style.animationDelay = `${index * 0.05}s`;
+
+        // Check if subcategory has an image, if so use it instead of icon
+        let mediaHtml;
+        if (sub.image) {
+            const imagePath = `images/subCategories/${sub.image}`;
+            mediaHtml = `<img src="${imagePath}" class="categories_subcategory_item__image" alt="${sub.title[window.app_language] || sub.title['ar']}" />`;
+        } else {
+            const iconClass = sub.icon || 'fas fa-tag';
+            mediaHtml = `<i class="categories_subcategory_item__icon ${iconClass}"></i>`;
+        }
+
         const subTitleObj = sub.title;
         const subDisplayTitle = typeof subTitleObj === 'object' ?
             (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
 
-        subItem.innerHTML = `${iconHtml} ${subDisplayTitle}`.trim();
+        subItem.innerHTML = `${mediaHtml} <span class="categories_subcategory_title">${subDisplayTitle}</span>`.trim();
 
         subItem.addEventListener("click", (e) => {
             try {
