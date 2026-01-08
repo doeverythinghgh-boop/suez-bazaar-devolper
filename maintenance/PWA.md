@@ -1,147 +1,147 @@
-# توثيق تطبيق الويب التقدمي (PWA Architecture Report)
+# Progressive Web App (PWA Architecture Report)
 
-يوفر هذا التقرير شرحاً دقيقاً وشاملاً لكيفية عمل تقنية PWA في مشروع Suez Bazaar، بما في ذلك استراتيجيات التخزين المؤقت، إدارة الخدمات (Service Workers)، والعمل بدون اتصال.
-
----
-
-## 1. المكونات الأساسية (Core Components)
-
-### أ. ملف البيان (`manifest.json`)
-- **الوظيفة:** يعرف هوية التطبيق للمتصفح ونظام التشغيل.
-- **الإعدادات الرئيسية:**
-    - `display: standalone`: يضمن ظهور التطبيق واجهة مستقلة بدون شريط أدوات المتصفح.
-    - `start_url: /index.html`: نقطة دخول التطبيق.
-    - `theme_color: #007bff`: لون شريط الحالة في الهواتف.
-    - **الأيقونات:** يتضمن أيقونات بمقاسات (192x192) و (512x512) مع دعم `maskable` للتوافق مع مختلف منصات الهواتف.
-
-### ب. عامل الخدمة الرئيسي (`sw.js`)
-هو المحرك الأساسي لإدارة الشبكة والتخزين المؤقت. يقوم بدمج منطق الإشعارات مع منطق التخزين.
-- **التثبيت (Install):** يقوم بتحميل الأصول الثابتة (Static Assets) مسبقاً (Precaching).
-- **التفعيل (Activate):** ينظف النسخ الاحتياطية (Caches) القديمة لضمان تحديث التطبيق.
-
-### ج. عامل خدمة الإشعارات (`firebase-messaging-sw.js`)
-مسؤول حصرياً عن استقبال رسائل Push عبر Firebase في الخلفية (Background) حتى لو كان التطبيق مغلقاً.
+This report provides a precise and comprehensive explanation of how PWA technology works in the Suez Bazaar project, including caching strategies, service worker management, and offline operation.
 
 ---
 
-## 2. استراتيجيات التخزين المؤقت (Caching Strategies)
+## 1. Core Components
 
-يعتمد التطبيق على استراتيجيات مختلفة حسب نوع الطلب لتحقيق أفضل توازن بين السرعة والحداثة:
+### A. Manifest File (`manifest.json`)
+- **Function:** Defines the application's identity to the browser and operating system.
+- **Key Settings:**
+    - `display: standalone`: Ensures the application appears as an independent interface without the browser toolbar.
+    - `start_url: /index.html`: The application's entry point.
+    - `theme_color: #007bff`: The status bar color on phones.
+    - **Icons:** Includes icons in sizes (192x192) and (512x512) with `maskable` support for compatibility with various mobile platforms.
 
-| نوع الملف                       | الاستراتيجية المتبعة | السلوك                                                        |
+### B. Main Service Worker (`sw.js`)
+The primary engine for network and cache management. It integrates notification logic with storage logic.
+- **Install:** Pre-loads static assets (Precaching).
+- **Activate:** Cleans up old caches to ensure the application is updated.
+
+### C. Notification Service Worker (`firebase-messaging-sw.js`)
+Exclusively responsible for receiving Push messages via Firebase in the background, even if the application is closed.
+
+---
+
+## 2. Caching Strategies
+
+The application relies on different strategies depending on the request type to achieve the best balance between speed and freshness:
+
+| File Type                       | Strategy Followed    | Behavior                                                        |
 | :------------------------------ | :------------------- | :------------------------------------------------------------ |
-| **صفحات HTML (Navigation)**     | **Network First**    | يحاول الشبكة أولاً، وفي حال الفشل يفتح صفحة `offline.html`.    |
-| **أصول ثابتة (CSS, JS, Fonts)** | **Cache First**      | يبحث في الكاش أولاً للسرعة، وفي حال عدم الوجود يجلبها ويخزنها. |
-| **الصور (Images)**              | **Cache First**      | يتم تخزين الصور لتقليل استهلاك البيانات والتحميل الفوري.      |
-| **البيانات الديناميكية (APIs)** | **Network Only**     | لضمان دقة البيانات وحداثتها (مثل الأسعار والطلبات).           |
+| **HTML Pages (Navigation)**     | **Network First**    | Tries the network first, and in case of failure, opens `offline.html`. |
+| **Static Assets (CSS, JS, Fonts)** | **Cache First**      | Looks in the cache first for speed, and if not present, fetches and stores it. |
+| **Images (Images)**              | **Cache First**      | Images are cached to reduce data consumption and for immediate loading. |
+| **Dynamic Data (APIs)** | **Network Only**     | To ensure data accuracy and freshness (e.g., prices and orders). |
 
 ---
 
-## 3. العمل بدون اتصال (Offline Support)
+## 3. Offline Support
 
-1. **الصفحة الاحتياطية:** عند فقدان الاتصال ومحاولة فتح الرابط، يعرض التطبيق صفحة `offline.html` المسجلة مسبقاً في الكاش.
-2. **استمرارية الواجهة:** بفضل تخزين ملفات CSS و JS، تظل واجهة التطبيق الأساسية تعمل حتى بدون إنترنت، مع عرض تنبيهات للمستخدم بشأن حالة الاتصال.
-3. **التوثيق المحلي:** يتم استخدام وقاعدة بيانات `IndexedDB` (عبر `notification-db-manager.js`) لحفظ سجلات الإشعارات محلياً، مما يسمح للمستخدم بتصفحها لاحقاً.
-
----
-
-## 4. نظام الإشعارات في PWA
-
-- **التكامل مع FCM:** يستخدم التطبيق إصدار Firebase v8 المتوافق مع Service Workers.
-- **الاستقبال النشط (Foreground):** تتم معالجته في `notificationSetUp.js` لعرض تنبيهات داخلية فورية.
-- **الاستقبال في الخلفية (Background):** تتم معالجته في `firebase-messaging-sw.js` باستخدام `onBackgroundMessage`.
-- **التخزين في IndexedDB:** كل إشعار يصل يتم حفظه فوراً في مخزن `notificationsLog` داخل قاعدة بيانات `bazaarAppDB`.
+1. **Fallback Page:** When connection is lost and a link is attempted, the application displays the `offline.html` page previously registered in the cache.
+2. **Interface Continuity:** Thanks to caching CSS and JS files, the core application interface remains functional even without internet, displaying alerts to the user regarding connection status.
+3. **Local Documentation:** `IndexedDB` (via `notification-db-manager.js`) is used to save notification logs locally, allowing the user to browse them later.
 
 ---
 
-## 5. آلية التسجيل والتحديث
+## 4. Notification System in PWA
 
-1. يبدأ التسجيل عند تشغيل `DOMContentLoaded` في `js/index.js`.
-2. يتم استدعاء `setupFCM()` التي تقرر تسجيل الويب أو الأندرويد.
-3. يتم استخدام `navigator.serviceWorker.register` لتفعيل `sw.js`.
-4. يدعم التطبيق التحديث الفوري عبر `skipWaiting()` و `clients.claim()` المضمنة في ملفات الـ Service Worker.
-
----
-
-## 6. نظام الإصدارات والتحديث التلقائي (Version Management)
-
-لضمان حصول المستخدين على أحدث نسخة من ملفات التطبيق (CSS, JS) وتجنب مشاكل الكاش القديم، يعتمد التطبيق على آلية تحديث قسرية:
-
-### أ. ملف الإصدار (`version.json`)
-يحتوي على رقم الإصدار الحالي (مثل `1.1.10`) وتاريخ آخر تحديث. يتم تحديثه يدوياً أو عبر أدوات الأتمتة عند رفع نسخة جديدة.
-
-### ب. آلية التحقق (`checkAppVersionAndClearData`)
-موجودة في ملف `js/tools.js` وتعمل كالتالي:
-1. **الجلب:** استدعاء ملف `version.json` مع منع الكاش (`?t=timestamp`).
-2. **المقارنة:** مقارنة الإصدار المجتلب مع الإصدار المخزن في `localStorage` (`app_version`).
-3. **التحديث القسري:** في حال وجود إصدار جديد، يقوم التطبيق بـ:
-    - مسح `sessionStorage` والكوكيز.
-    - إلغاء تسجيل كافة الـ **Service Workers**.
-    - مسح كافة ملفات الكاش في المتصفح (**Cache Storage**).
-    - حفظ الإصدار الجديد وإعادة تحميل الصفحة من السيرفر فوراً.
-
-### ج. دورية التحقق
-يتم إجراء هذا الفحص في حالتين:
-1. عند كل عملية تحميل أو تحديث للصفحة (DOMContentLoaded).
-2. فحص دوري كل ساعة (ساعة واحدة) لضمان التحديث حتى لو كان التطبيق مفتوحاً لفترات طويلة.
+- **FCM Integration:** The application uses Firebase v8, which is compatible with Service Workers.
+- **Foreground Reception:** Handled in `notificationSetUp.js` to display immediate internal alerts.
+- **Background Reception:** Handled in `firebase-messaging-sw.js` using `onBackgroundMessage`.
+- **IndexedDB Storage:** Every incoming notification is immediately saved in the `notificationsLog` store within the `bazaarAppDB` database.
 
 ---
 
-## 7. معايير التثبيت والبيئة الآمنة (Installation & Security)
+## 5. Registration and Update Mechanism
 
-لكي يظهر خيار "تثبيت التطبيق" للمستخدم، يجب استيفاء المعايير التالية:
-- **HTTPS:** يجب أن يعمل الموقع عبر بروتوكول آمن (يُستثنى من ذلك `localhost`).
-- **Manifest:** وجود ملف `manifest.json` مكتمل (كما هو موضح في القسم 1).
-- **Service Worker:** وجود SW مسجل ويحتوي على معالج لأحداث `fetch`.
+1. Registration begins when `DOMContentLoaded` is triggered in `js/index.js`.
+2. `setupFCM()` is called, which decides whether to register for Web or Android.
+3. `navigator.serviceWorker.register` is used to activate `sw.js`.
+4. The application supports immediate updates via `skipWaiting()` and `clients.claim()` embedded in the Service Worker files.
 
-## 8. الفروقات بين المنصات (Cross-Platform Handling)
+---
 
-يتعامل التطبيق بذكاء مع بيئتي التشغيل المختلفتين:
+## 6. Version Management and Auto-Update
 
-### أ. بيئة Android WebView
-- لا يستخدم التطبيق مكتبات Firebase JS مباشرة، بل يعتمد على واجهة `window.Android`.
-- يتم طلب التوكن من النظام الأصلي (Native) عبر `window.Android.onUserLoggedIn`.
-- يتم استقبال التوكن في `localStorage` عبر دالة `waitForFcmKey`.
+To ensure users receive the latest version of application files (CSS, JS) and avoid old cache issues, the application relies on a forced update mechanism:
 
-### ب. متصفحات الويب (Chrome, Safari, Edge)
-- يتم تحميل مكتبات Firebase v8 ديناميكياً عند الحاجة.
-- يتم طلب الإذن عبر `Notification.requestPermission()`.
-- تُستخدم مفاتيح **VAPID** لتأمين عملية إرسال الإشعارات.
+### A. Version File (`version.json`)
+Contains the current version number (e.g., `1.1.10`) and the date of the last update. It is updated manually or via automation tools when a new version is uploaded.
 
-## 9. استكشاف الأخطاء وإصلاحها (Troubleshooting)
+### B. Verification Mechanism (`checkAppVersionAndClearData`)
+Located in the `js/tools.js` file and works as follows:
+1. **Fetching:** Calls the `version.json` file with cache prevention (`?t=timestamp`).
+2. **Comparison:** Compares the fetched version with the version stored in `localStorage` (`app_version`).
+3. **Forced Update:** If a new version exists, the application:
+    - Clears `sessionStorage` and cookies.
+    - Unregisters all **Service Workers**.
+    - Clears all cache files in the browser (**Cache Storage**).
+    - Saves the new version and reloads the page from the server immediately.
 
-للمطورين، يمكن اتباع هذه الخطوات عند تعطل ميزات الـ PWA:
+### C. Verification Frequency
+This check is performed in two cases:
+1. Upon every page load or refresh (DOMContentLoaded).
+2. A periodic check every hour (1 hour) to ensure updates even if the application is open for long periods.
 
-1. **فحص الـ Service Worker:** عبر Chrome DevTools -> Application -> Service Workers. تأكد من أنه "Activated and Running".
-2. **فحص سجلات التوكن:** تأكد من ظهور `fcm_token` (للويب) أو `android_fcm_key` (للأندرويد) في الـ `localStorage`.
-3. **أخطاء الشبكة:** في حال فشل جلب `version.json` أو `notification_config.json` بسبب مشاكل الاتصال، سيعتمد التطبيق على النسخ المحلية المخزنة.
-4. **دعم النصائح البرمجية:** إذا لم تظهر الإشعارات، تأكد من أن حالة `notifications_enabled` في `localStorage` ليست `false`.
+---
 
-## 10. نظام تثبيت التطبيق وتوجيه المستخدم (App Installation & Welcome Flow)
+## 7. Installation & Security Standards
 
-يستخدم مشروع بزار نظاماً ذكياً لتشجيع المستخدمين على تثبيت التطبيق لضمان تجربة مستخدم أفضل واستقرار الإشعارات.
+For the "Install App" option to appear to the user, the following criteria must be met:
+- **HTTPS:** The site must run over a secure protocol (except for `localhost`).
+- **Manifest:** Presence of a complete `manifest.json` file (as shown in Section 1).
+- **Service Worker:** Presence of a registered SW containing a handler for `fetch` events.
 
-### أ. آلية التفعيل (Triggering Mechanism)
-- يتم التقاط حدث `beforeinstallprompt` وتخزينه في المتغير العالمي `deferredPrompt`.
-- عند تحميل التطبيق (`window.load`) وبعد مرور 3 ثوانٍ، يتم استدعاء `checkAndShowInstallPrompt`.
-- يتم التحقق مما إذا كان المستخدم يتصفح عبر الموبايل وما إذا كان التطبيق مثبتاً بالفعل (Standalone Mode).
+## 8. Cross-Platform Handling
 
-### ب. نافذة "اختر الطريقة المناسبة لك"
-تظهر نافذة `SweetAlert2` مخصصة تعرض خيارين:
-1.  **Google Play**: رابط مباشر لمتجر جوجل بلاي لمستخدمي أندرويد.
-2.  **App Store (PWA Style)**: زر "تثبيت التطبيق" الذي يستخدم منطق الـ PWA.
+The application intelligently handles the two different execution environments:
 
-### ج. منطق التثبيت الذكي (triggerPWAInstall)
-- **للمتصفحات الداعمة**: يتم استدعاء `deferredPrompt.prompt()` لإظهار نافذة المتصفح الرسمية للتثبيت.
-- **لمستخدمي iOS**: نظراً لعدم دعم Apple لحدث التحريض التلقائي، يتم عرض نافذة تعليمات توضح خطوات التثبيت اليدوي (زر المشاركة > إضافة للشاشة الرئيسية).
-- **الموجّه الاحتياطي**: في حال عدم توفر طلب تثبيت، يتم توجيه المستخدم مباشرة لصفحة الترحيب.
+### A. Android WebView Environment
+- The application does not use Firebase JS libraries directly but relies on the `window.Android` interface.
+- The token is requested from the native system via `window.Android.onUserLoggedIn`.
+- The token is received in `localStorage` via the `waitForFcmKey` function.
 
-### د. صفحة الترحيب والفوائد (`pages/welcome.html`)
-سواء اختار المستخدم التثبيت من المتجر أو عبر المتصفح، يتم توجيهه في النهاية إلى دالة `showWelcomeAndThanksPage`:
-- يتم إخفاء الهيدر الرئيسي للتطبيق (`index-app-header`).
-- يتم تحميل صفحة `pages/welcome.html` وعرضها بملء الشاشة (`fixed position`).
-- تهدف هذه الصفحة لتعريف المستخدم بمميزات Suez Bazaar وشكره على الانضمام.
+### B. Web Browsers (Chrome, Safari, Edge)
+- Firebase v8 libraries are loaded dynamically when needed.
+- Permission is requested via `Notification.requestPermission()`.
+- **VAPID** keys are used to secure the notification sending process.
+
+## 9. Troubleshooting
+
+For developers, these steps can be followed when PWA features fail:
+
+1. **Check Service Worker:** Via Chrome DevTools -> Application -> Service Workers. Ensure it is "Activated and Running".
+2. **Check Token Logs:** Ensure `fcm_token` (for Web) or `android_fcm_key` (for Android) appears in `localStorage`.
+3. **Network Errors:** If fetching `version.json` or `notification_config.json` fails due to connection issues, the application will rely on stored local copies.
+4. **Programming Tips Support:** If notifications do not appear, ensure that the `notifications_enabled` status in `localStorage` is not `false`.
+
+## 10. App Installation & Welcome Flow
+
+The Bazaar project uses a smart system to encourage users to install the application to ensure a better user experience and notification stability.
+
+### A. Triggering Mechanism
+- The `beforeinstallprompt` event is captured and stored in the global variable `deferredPrompt`.
+- Upon application load (`window.load`) and after 3 seconds, `checkAndShowInstallPrompt` is called.
+- It is checked whether the user is browsing via mobile and whether the application is already installed (Standalone Mode).
+
+### B. "Choose the Right Method for You" Window
+A custom `SweetAlert2` window appears displaying two options:
+1.  **Google Play**: A direct link to the Google Play Store for Android users.
+2.  **App Store (PWA Style)**: An "Install App" button that uses PWA logic.
+
+### C. Smart Installation Logic (triggerPWAInstall)
+- **For Supporting Browsers**: `deferredPrompt.prompt()` is called to show the official browser installation window.
+- **For iOS Users**: Since Apple does not support the automatic trigger event, an instruction window is displayed showing manual installation steps (Share button > Add to Home Screen).
+- **Fallback Redirect**: If an installation request is unavailable, the user is redirected directly to the welcome page.
+
+### D. Welcome and Benefits Page (`pages/welcome.html`)
+Whether the user chooses to install from the store or via the browser, they are eventually directed to the `showWelcomeAndThanksPage` function:
+- The main application header (`index-app-header`) is hidden.
+- The `pages/welcome.html` page is loaded and displayed in full screen (`fixed position`).
+- This page aims to introduce the user to Suez Bazaar features and thank them for joining.
 
 ---
 > [!TIP]
-> عند اختبار PWA محلياً، يفضل استخدام وضع "Incognito" أو "Guest" لتجنب تداخل الكاش من جلسات سابقة، وتذكر دائماً تنظيف الكاش من تبويب "Application" عند إجراء تغييرات جذرية في `sw.js`.
+> When testing PWA locally, it is preferred to use "Incognito" or "Guest" mode to avoid cache interference from previous sessions, and always remember to clear the cache from the "Application" tab when making radical changes to `sw.js`.

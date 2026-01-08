@@ -1,82 +1,82 @@
-# دليل تطبيق نظام تحديد الموقع (BidStory Location)
+# Location System Implementation Guide (BidStory Location)
 
-هذا المستند يشرح بنية ونظام عمل تطبيق تحديد الموقع الجغرافي، والذي تم إعادة هيكلته ليعمل بنظام الوحدات (Modules) لضمان سهولة الصيانة والتطوير.
+This document explains the architecture and operation of the geographic location application, which has been restructured into a modular system (Modules) to ensure ease of maintenance and development.
 
-## هيكل المجلدات والملفات
+## Directory and File Structure
 
-يقع التطبيق في المجلد `location/`، وتم تقسيم الكود المصدري إلى `location/js/location/` كالتالي:
+The application is located in the `location/` directory, and the source code is divided into `location/js/location/` as follows:
 
-| الملف | الوصف |
-| :--- | :--- |
-| `config.js` | يحتوي على تعريف الكائن الرئيسي `location_app` والثوابت (مثل الإحداثيات الافتراضية ومستوى التكبير). |
-| `ui.js` | مسؤول عن عناصر الواجهة مثل شاشات التحميل (Loading) والتنبيهات (SweetAlert2). |
-| `storage.js` | يدير تخزين الموقع المختار بشكل مؤقت في الذاكرة (`memory state`) والتحقق من صحة الإحداثيات. |
-| `map.js` | يحتوي على منطق تهيئة خريطة Leaflet، إضافة العلامات (Markers)، وتحديد الموقع الأولي بناءً على معاملات الرابط (URL Params) أو الإحداثيات الافتراضية. |
-| `gps.js` | يدير خدمة تحديد الموقع عبر GPS والتعامل مع الأذونات والأخطاء الناتجة عنها (يدوي فقط). |
-| `utils.js` | يحتوي على وظائف إضافية مثل مشاركة الإحداثيات (نسخ أو فتح في الخرائط) وإعادة تعيين الموقع. |
-| `core.js` | يحتوي على دالة التهيئة الرئيسية `init` التي تربط جميع الوحدات ببعضها. |
-| `location_app.js` | (في المجلد الرئيسي `location/`) هو نقطة الدخول (Entry Point) التي تطلق التطبيق عند تحميل الصفحة وتدير الأخطاء الشاملة. |
+| File              | Description                                                                                                                                               |
+| :---------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `config.js`       | Contains the definition of the main `location_app` object and constants (such as default coordinates and zoom level).                                     |
+| `ui.js`           | Responsible for interface elements such as loading screens and alerts (SweetAlert2).                                                                      |
+| `storage.js`      | Manages the temporary storage of the selected location in memory (`memory state`) and coordinate validation.                                              |
+| `map.js`          | Contains the logic for initializing the Leaflet map, adding markers, and determining the initial location based on URL parameters or default coordinates. |
+| `gps.js`          | Manages the GPS location service and handles permissions and resulting errors (manual only).                                                              |
+| `utils.js`        | Contains additional functions such as coordinate sharing (copying or opening in maps) and resetting the location.                                         |
+| `core.js`         | Contains the main `init` function that links all modules together.                                                                                        |
+| `location_app.js` | (In the main `location/` folder) is the entry point that launches the application upon page load and manages global errors.                               |
 
-## المميزات الرئيسية
+## Key Features
 
-1. **نظام التحديث بدفعة واحدة (Batch Update)**: لا يتم الاتصال بالسيرفر عند اختيار الموقع في الخريطة. بدلاً من ذلك، يتم إرسال الإحداثيات للنافذة الأم ليتم حفظها "محلياً" في حقل مخفي داخل النموذج. تتم المزامنة مع السيرفر فقط عندما يقوم المستخدم بالضغط على زر "حفظ التغييرات" أو "إنشاء حساب" النهائي.
-2. **أزرار تحكم محليّة**:
-   - **زر حفظ (Save)**: يقوم بإرسال الإحداثيات للنافذة الأم وتحديث واجهة المستخدم (مثل تغيير لون زر الموقع).
-   - **زر إغلاق (Close)**: زر دائري عصري (X) يغلق النافذة مع إبلاغ النافذة الأم بالحالة الحالية للموقع لضمان اتساق البيانات قبل الحفظ النهائي.
-3. **دعم GPS يدوي**: تم تعطيل تحديد الموقع التلقائي عند فتح الخريطة لتجنب التشتيت. تفتح الخريطة دائماً على "الموقع المحفوظ" (إذا وجد) أو "الموقع الافتراضي - السويس" (إذا لم يوجد). يمكن للمستخدم الضغط على زر "تحديد" (GPS) في أي وقت للحصول على موقعه الحالي يدوياً.
-4. **تصميم عصري مستجيب**: 
-   - أزرار تحكم مرتبة في حاوية عائمة (Floating Panel) بزوايا مستديرة وظل عميق.
-   - تظهر في صف واحد دائماً حتى على الهواتف مع دعم التمرير الأفقي (Horizontal Scroll).
-5. **الاعتماد على السيرفر**: يتم استرجاع الموقع المحفوظ تلقائياً من بيانات المستخدم عند تسجيل الدخول لضمان وصول المندوب بدقة دون الحاجة للتخزين المحلي.
-6. **خيارات المشاركة المتقدمة**: نسخ الإحداثيات أو فتح الموقع مباشرة في تطبيق الخرائط.
+1. **Batch Update System**: No server communication occurs when selecting a location on the map. Instead, coordinates are sent to the parent window to be saved "locally" in a hidden field within the form. Synchronization with the server occurs only when the user clicks the final "Save Changes" or "Create Account" button.
+2. **Local Control Buttons**:
+   - **Save Button**: Sends coordinates to the parent window and updates the UI (e.g., changing the location button color).
+   - **Close Button**: A modern circular (X) button that closes the window while informing the parent window of the current location status to ensure data consistency before the final save.
+3. **Manual GPS Support**: Automatic location determination upon opening the map has been disabled to avoid distraction. The map always opens at the "Saved Location" (if found) or the "Default Location - Suez" (if not). The user can click the "Locate" (GPS) button at any time to manually get their current location.
+4. **Modern Responsive Design**: 
+   - Control buttons are arranged in a floating panel with rounded corners and deep shadows.
+   - They always appear in a single row even on phones with horizontal scroll support.
+5. **Server Dependency**: The saved location is automatically retrieved from user data upon login to ensure accurate courier arrival without the need for local storage.
+6. **Advanced Sharing Options**: Copying coordinates or opening the location directly in a maps application.
 
-## التواصل مع النافذة الأم (Parent Communication)
+## Parent Communication
 
-يعمل التطبيق داخل `iframe` ويتواصل مع الصفحة الرئيسية عبر `window.postMessage`:
-- **`LOCATION_SELECTED`**: تُرسل عند الضغط على زر "حفظ" وتحتوي على الإحداثيات (lat, lng) لتحديث النموذج في النافذة الأم.
-- **`LOCATION_RESET`**: تُرسل عند الضغط على زر "إعادة ضبط" لتصفير الإحداثيات وتنبيه الواجهة الأمامية.
-- **`CLOSE_LOCATION_MODAL`**: تُرسل عند الضغط على زر الإغلاق (X) لطلب غلق النافذة من الصفحة الأم.
+The application runs inside an `iframe` and communicates with the main page via `window.postMessage`:
+- **`LOCATION_SELECTED`**: Sent when the "Save" button is clicked, containing coordinates (lat, lng) to update the form in the parent window.
+- **`LOCATION_RESET`**: Sent when the "Reset" button is clicked to zero out coordinates and alert the frontend.
+- **`CLOSE_LOCATION_MODAL`**: Sent when the close button (X) is clicked to request closing the window from the parent page.
 
-### استرجاع الموقع الحالي وأنماط العرض
-يتم تمرير البيانات والمعاملات للخريطة عبر معاملات الرابط (URL Parameters):
--   `lat` و `lng`: لضبط العرض الأولي والمؤشر (Marker) عند موقع محدد.
--   `viewOnly=true`: **(جديد)** لتفعيل وضع "العرض فقط"، ويترتب عليه:
-    -   إخفاء أزرار التحرير (حفظ، GPS، إعادة تعيين).
-    -   الإبقاء على زر **المشاركة** وزر **الإغلاق الداخلي** فقط.
-    -   تعطيل إمكانية تغيير الموقع بالنقر أو الضغط المطول.
-    -   تحسين مظهر النافذة لغرض المعاينة المباشرة (تجربة النافذة الواحدة).
-- `embedded=true`: لإخفاء زر الإغلاق (X) عندما يكون التطبيق مضمناً كجزء من صفحة أخرى وليس نافذة منبثقة.
-- `hideSave=true`: لإخفاء زر "حفظ" الداخلي (للحالات التي يكون فيها زر الحفظ خارج الـ iframe).
+### Retrieving Current Location and View Modes
+Data and parameters are passed to the map via URL parameters:
+-   `lat` and `lng`: To set the initial view and marker at a specific location.
+-   `viewOnly=true`: **(New)** To activate "View Only" mode, which results in:
+    -   Hiding editing buttons (Save, GPS, Reset).
+    -   Keeping only the **Share** and **Internal Close** buttons.
+    -   Disabling the ability to change location by clicking or long-pressing.
+    -   Improving the window appearance for direct preview purposes (single-window experience).
+- `embedded=true`: To hide the close button (X) when the application is embedded as part of another page rather than a pop-up window.
+- `hideSave=true`: To hide the internal "Save" button (for cases where the save button is outside the iframe).
 
-مثال للرابط: `location/LOCATION.html?lat=...&lng=...&viewOnly=true`
-ويقوم ملفي `core.js` و `map.js` بالتقاط هذه المعاملات لضبط سلوك التطبيق.
+Example URL: `location/LOCATION.html?lat=...&lng=...&viewOnly=true`
+The `core.js` and `map.js` files capture these parameters to adjust the application behavior.
 
-## وضع العرض فقط وتجربة "النافذة الواحدة"
+## View Only Mode and "Single Window" Experience
 
-تم تحسين واجهة الخريطة لتعمل كـ **نافذة واحدة مدمجة** عند الحاجة للمعاينة:
-1.  **التكامل مع الصفحة الأم**: عند استخدام وضع العرض في `iframe` (مثل SweetAlert شفافة)، يتم الاعتماد على زر الإغلاق (X) الموجود داخل تطبيق الخريطة نفسه.
-2.  **التواصل التقني**: عند ضغط المستخدم على زر الإغلاق الداخلي، يرسل التطبيق رسالة `CLOSE_LOCATION_MODAL` للنافذة الأم، والتي بدورها تقوم بإغلاق الـ Modal بالكامل، مما يمنع ظهور نوافذ متداخلة.
-3.  **تصميم نظيف**: تم إخفاء كافة أدوات التحرير لترك التركيز بالكامل على الخريطة وسهولة الوصول للموقع عبر تطبيقات الخرائط الخارجية.
+The map interface has been optimized to function as a **compact single window** when needed for preview:
+1.  **Parent Page Integration**: When using view mode in an `iframe` (such as a transparent SweetAlert), the close button (X) inside the map application itself is relied upon.
+2.  **Technical Communication**: When the user clicks the internal close button, the application sends a `CLOSE_LOCATION_MODAL` message to the parent window, which in turn closes the entire Modal, preventing overlapping windows.
+3.  **Clean Design**: All editing tools are hidden to keep the focus entirely on the map and ease of access to the location via external map applications.
 
-- **حجم الخط الصغير للحقوق**: تم تصغير نص الحقوق الخاص بالخريطة (`leaflet-control-attribution`) لزيادة المساحة المرئية.
+- **Small Attribution Font Size**: The map's attribution text (`leaflet-control-attribution`) has been scaled down to increase visible space.
 
-## التوافق مع WebView (Android)
+## WebView Compatibility (Android)
 
-التطبيق مُحسّن للعمل داخل WebView في تطبيقات أندرويد:
-- دعم كامل لـ Geolocation API
-- timeout محسّن (20 ثانية) للحصول على إشارة GPS في الأماكن الضعيفة
-- دعم الأحداث اللمسية (touch events) والضغط المطول
-- تصميم مستجيب يتكيف مع جميع أحجام الشاشات
+The application is optimized for operation within a WebView in Android applications:
+- Full Geolocation API support.
+- Optimized timeout (20 seconds) to obtain a GPS signal in weak areas.
+- Support for touch events and long-press.
+- Responsive design that adapts to all screen sizes.
 
 > [!IMPORTANT]
-> عند استخدام التطبيق في WebView، تأكد من:
-> - إضافة أذونات الموقع في `AndroidManifest.xml`
-> - تفعيل JavaScript و Geolocation في إعدادات WebView
-> - تطبيق `WebChromeClient` لمعالجة طلبات الموقع
+> When using the application in a WebView, ensure:
+> - Adding location permissions in `AndroidManifest.xml`.
+> - Enabling JavaScript and Geolocation in WebView settings.
+> - Implementing `WebChromeClient` to handle location requests.
 
-## كيفية الاستخدام البرمجي
+## Programmatic Usage
 
-يتم تحميل الملفات بالترتيب التالي في `location\LOCATION.html`:
+Files are loaded in the following order in `location\LOCATION.html`:
 1. `js/location/config.js`
 2. `js/location/ui.js`
 3. `js/location/storage.js`
@@ -87,4 +87,4 @@
 8. `location_app.js`
 
 > [!IMPORTANT]
-> المتطلبات الخارجية: Leaflet JS, SweetAlert2, Material Icons.
+> External requirements: Leaflet JS, SweetAlert2, Material Icons.

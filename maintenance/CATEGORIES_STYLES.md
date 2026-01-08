@@ -1,33 +1,33 @@
-# دليل تنسيقات وتطوير قسم الفئات (Categories Maintenance Guide) 📖🏗️⚖️
+# Categories Maintenance Guide 📖🏗️⚖️
 
-> **⚠️ تحذير هام للمطورين:**  
-> **يجب إنشاء أي عنصر أو وسم جديد ليتناسب مع مختلف أنواع الشاشات باستخدام Media Queries المناسبة.**  
-> **عدم الالتزام بهذا المبدأ سيؤدي إلى كسر التصميم المتجاوب وتجربة مستخدم سيئة.**
-
----
-
-هذا الدليل يشرح البناء الهندسي والجمالي المنطقي لقسم الفئات بعد "الهجرة الكبرى للشبكة" والتحديثات الأخيرة.
+> **⚠️ Important Warning for Developers:**  
+> **Any new element or tag must be created to fit various screen types using appropriate Media Queries.**  
+> **Failure to adhere to this principle will lead to breaking the responsive design and a poor user experience.**
 
 ---
 
-## 📑 جدول المحتويات
-
-1. [الهيكل الهيكلي (DOM Structure)](#1-الهيكل-الهيكلي-dom-structure)
-2. [ميكانيكا الالتحام (Frame Fusion)](#2-ميكانيكا-الالتحام-frame-fusion-)
-3. [ميكانيكا التموضع (Insertion Logic)](#3-ميكانيكا-التموضع-insertion-logic)
-4. [التصميم المتجاوب (Responsive Design)](#4-التصميم-المتجاوب-responsive-design-)
-5. [ثوابت التصميم (Design Tokens)](#5-ثوابت-التصميم-design-tokens)
-6. [الفئات الفرعية (Subcategories)](#6-الفئات-الفرعية-subcategories)
-7. [معرض المنتجات (Products Gallery)](#7-معرض-المنتجات-products-gallery)
-8. [التفاعلات والرسوم المتحركة](#8-التفاعلات-والرسوم-المتحركة)
-9. [قواعد الصيانة الحرجة](#9-قواعد-الصيانة-الحرجة-)
-10. [الملفات ذات الصلة](#10-الملفات-ذات-الصلة)
+This guide explains the logical engineering and aesthetic construction of the categories section after the "Great Network Migration" and recent updates.
 
 ---
 
-## 1. الهيكل الهيكلي (DOM Structure)
+## 📑 Table of Contents
 
-### 1.1 الحاوية الرئيسية (Main Container)
+1. [DOM Structure](#1-dom-structure)
+2. [Frame Fusion Mechanics](#2-frame-fusion-mechanics-)
+3. [Insertion Logic](#3-insertion-logic)
+4. [Responsive Design](#4-responsive-design-)
+5. [Design Tokens](#5-design-tokens)
+6. [Subcategories](#6-subcategories)
+7. [Products Gallery](#7-products-gallery)
+8. [Interactions and Animations](#8-interactions-and-animations)
+9. [Critical Maintenance Rules](#9-critical-maintenance-rules-)
+10. [Related Files](#10-related-files)
+
+---
+
+## 1. DOM Structure
+
+### 1.1 Main Container
 
 ```css
 .categories_section_container {
@@ -37,11 +37,11 @@
 }
 ```
 
-**الوظيفة:** حاوية القسم الكامل مع padding علوي وسفلي للتباعد.
+**Function:** Full section container with top and bottom padding for spacing.
 
 ---
 
-### 1.2 شبكة الفئات (Categories Grid)
+### 1.2 Categories Grid
 
 ```css
 .categories_grid {
@@ -54,20 +54,20 @@
 }
 ```
 
-**التفاصيل:**
-- **النظام:** CSS Grid
-- **الأعمدة:** 4 أعمدة متساوية (يتغير حسب حجم الشاشة)
-- **المسافات:** 15px بين العناصر
-- **العرض الأقصى:** 1200px مع توسيط تلقائي
-- **Padding الجانبي:** 15px لمنع الالتصاق بالحواف
+**Details:**
+- **System:** CSS Grid
+- **Columns:** 4 equal columns (changes based on screen size)
+- **Gap:** 15px between items
+- **Max Width:** 1200px with automatic centering
+- **Side Padding:** 15px to prevent sticking to edges
 
-**⚠️ ملاحظة هامة:** عند تغيير هيكل الشبكة، يجب التأكد من:
-1. تحديث قيم `grid-template-columns` في ملف CSS لجميع فئات الشاشات.
-2. التأكد من أن منطق حساب الأعمدة في `categories.js` (دالة `categories_toggleSubcategoriesGrid`) يطابق تماماً الـ Media Queries المستخدمة في CSS.
+**⚠️ Important Note:** When changing the grid structure, ensure:
+1. Updating `grid-template-columns` values in the CSS file for all screen categories.
+2. Ensuring that the column calculation logic in `categories.js` (`categories_toggleSubcategoriesGrid` function) exactly matches the Media Queries used in CSS.
 
 ---
 
-### 1.3 عنصر الفئة (Category Item)
+### 1.3 Category Item
 
 ```css
 .categories_grid_item {
@@ -77,31 +77,31 @@
     cursor: pointer;
     transition: transform 0.2s ease;
     -webkit-tap-highlight-color: transparent;
-    padding-bottom: 20px;        /* مهم للالتحام */
+    padding-bottom: 20px;        /* Important for fusion */
     position: relative;
     z-index: 1;
 }
 ```
 
-**الوظائف:**
-- **Display:** Flexbox عمودي لترتيب الصورة فوق النص
-- **Cursor:** يد للإشارة إلى قابلية النقر
-- **Transition:** تأثير سلس عند التفاعل
-- **Tap Highlight:** إزالة التظليل الافتراضي على الموبايل
-- **Padding Bottom:** 20px **حرج جداً** - يوفر مساحة لجسر الالتحام
-- **Z-index:** 1 للطبقات الأساسية
+**Functions:**
+- **Display:** Vertical Flexbox to arrange image over text
+- **Cursor:** Pointer to indicate clickability
+- **Transition:** Smooth effect upon interaction
+- **Tap Highlight:** Removal of default highlighting on mobile
+- **Padding Bottom:** 20px **very critical** - provides space for the fusion bridge
+- **Z-index:** 1 for base layers
 
-**تأثير النقر:**
+**Click Effect:**
 ```css
 .categories_grid_item:active {
     transform: scale(0.95);
 }
 ```
-تصغير بنسبة 5% عند الضغط لردة فعل بصرية.
+5% scale reduction upon pressing for visual feedback.
 
 ---
 
-### 1.4 حاوية الوسائط (Media Container)
+### 1.4 Media Container
 
 ```css
 .categories_cell_media {
@@ -119,22 +119,22 @@
 }
 ```
 
-**المواصفات:**
-- **الحجم الافتراضي:** 120px × 120px (يتغير في Media Queries)
-- **الخلفية:** رمادي فاتح كخلفية احتياطية
-- **الحدود:** 1px صلبة
-- **Border Radius:** 12px للزوايا الدائرية
-- **Flexbox:** لتوسيط المحتوى (صورة أو أيقونة)
-- **Overflow:** hidden لقص أي محتوى زائد
-- **Shadow:** ظل ناعم للعمق البصري
+**Specifications:**
+- **Default Size:** 120px × 120px (changes in Media Queries)
+- **Background:** Light gray as a fallback background
+- **Border:** 1px solid
+- **Border Radius:** 12px for rounded corners
+- **Flexbox:** To center content (image or icon)
+- **Overflow:** hidden to clip any excess content
+- **Shadow:** Soft shadow for visual depth
 
-**⚠️ تنبيه:** هذا الحجم يجب تحديثه في **جميع** Media Queries عند التغيير.
+**⚠️ Warning:** This size must be updated in **all** Media Queries when changed.
 
 ---
 
-### 1.5 الصورة والأيقونة
+### 1.5 Image and Icon
 
-#### الصورة:
+#### Image:
 ```css
 .categories_cell_content__image {
     width: 100%;
@@ -144,12 +144,12 @@
 }
 ```
 
-**الخصائص:**
-- **الحجم:** 100% لملء الحاوية
-- **Object Fit:** `fill` لملء المساحة كاملة (قد يحدث تشويه طفيف)
-- **Display:** block لإزالة المسافة السفلية
+**Properties:**
+- **Size:** 100% to fill container
+- **Object Fit:** `fill` to fill entire space (slight distortion may occur)
+- **Display:** block to remove bottom spacing
 
-#### الأيقونة:
+#### Icon:
 ```css
 .categories_cell_content__icon {
     font-size: 2rem;        /* 32px */
@@ -157,11 +157,11 @@
 }
 ```
 
-**الاستخدام:** عند عدم وجود صورة، تظهر أيقونة FontAwesome.
+**Usage:** When no image is present, a FontAwesome icon appears.
 
 ---
 
-### 1.6 حاوية المحتوى
+### 1.6 Content Container
 
 ```css
 .categories_cell_content {
@@ -172,11 +172,11 @@
 }
 ```
 
-**الوظيفة:** تجميع الوسائط والنص في حاوية واحدة.
+**Function:** Grouping media and text into a single container.
 
 ---
 
-### 1.7 نص الفئة
+### 1.7 Category Text
 
 ```css
 .categories_cell_content__text {
@@ -189,20 +189,20 @@
 }
 ```
 
-**المواصفات:**
-- **المسافة العلوية:** 8px من الصورة/الأيقونة
-- **الحجم:** 12px (مخفض من 14px للتوازن البصري)
-- **الوزن:** 500 (متوسط)
-- **اللون:** اللون الأساسي للتطبيق (أزرق)
-- **Word Wrap:** كسر الكلمات الطويلة
+**Specifications:**
+- **Top Margin:** 8px from image/icon
+- **Size:** 12px (reduced from 14px for visual balance)
+- **Weight:** 500 (medium)
+- **Color:** Application's primary color (blue)
+- **Word Wrap:** Breaking long words
 
-**⚠️ ملاحظة:** حجم الخط يتغير في Media Queries للشاشات الصغيرة.
+**⚠️ Note:** Font size changes in Media Queries for small screens.
 
 ---
 
-## 2. ميكانيكا الالتحام (Frame Fusion) 🧪
+## 2. Frame Fusion Mechanics 🧪
 
-### 2.1 الحالة النشطة (Active State)
+### 2.1 Active State
 
 ```css
 .categories_grid_item--active {
@@ -213,20 +213,20 @@
 }
 ```
 
-**التغييرات عند التفعيل:**
-- **Z-index:** يرتفع إلى 50 ليكون فوق العناصر الأخرى
-- **الخلفية:** رمادي فاتح للتمييز البصري
-- **Border Radius:** الزوايا السفلية تصبح 0 للالتحام
+**Changes upon activation:**
+- **Z-index:** Rises to 50 to be above other elements
+- **Background:** Light gray for visual distinction
+- **Border Radius:** Bottom corners become 0 for fusion
 
 ---
 
-### 2.2 تعديل الوسائط في الحالة النشطة
+### 2.2 Media Adjustment in Active State
 
 ```css
 .categories_grid_item--active .categories_cell_media {
     box-shadow: var(--shadow-focus);
     border-color: var(--border-color-active);
-    border-bottom: none;                    /* حرج */
+    border-bottom: none;                    /* Critical */
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     z-index: 60;
@@ -234,15 +234,15 @@
 }
 ```
 
-**التفاصيل الحرجة:**
-- **Border Bottom:** `none` - **حرج جداً** لإزالة الحد السفلي
-- **Border Radius السفلي:** 0 لإنشاء حافة مستقيمة
-- **Z-index:** 60 ليكون فوق الجسر (55)
-- **Shadow:** ظل أقوى للتركيز
+**Critical Details:**
+- **Border Bottom:** `none` - **very critical** to remove bottom border
+- **Bottom Border Radius:** 0 to create a straight edge
+- **Z-index:** 60 to be above the bridge (55)
+- **Shadow:** Stronger shadow for focus
 
 ---
 
-### 2.3 جسر الالتحام (Fusion Bridge)
+### 2.3 Fusion Bridge
 
 ```css
 .categories_grid_item--active::after {
@@ -260,117 +260,117 @@
 }
 ```
 
-**شرح مفصل للقيم:**
+**Detailed explanation of values:**
 
-#### `bottom: -6px`
-**السبب:** التداخل الدقيق مع حدود الحاوية السفلية لمنع ظهور أي فجوات بيضاء.
+#### `bottom: -17px`
+**Reason:** Precise overlap with bottom container borders to prevent any white gaps.
 
-#### `height: 15px`
-**السبب:** تغطية منطقة الالتحام بين العنصر والشبكة.
+#### `height: 37px`
+**Reason:** Covering the fusion area between the item and the grid.
 
-#### `width: 60px`
-**السبب:** عرض رشيق يتناسب مع الأحجام الجديدة.
+#### `width: 82px`
+**Reason:** Sleek width fitting the new sizes.
 
 #### `z-index: 55`
-**الترتيب:**
-- حاوية التفاصيل: 40
-- العنصر النشط: 50
-- الجسر: 55
-- الوسائط: 60
+**Order:**
+- Details container: 40
+- Active item: 50
+- Bridge: 55
+- Media: 60
 
 #### `pointer-events: none`
-**السبب:** منع الجسر من اعتراض أحداث الماوس/اللمس.
+**Reason:** Preventing the bridge from intercepting mouse/touch events.
 
 ---
 
-### 2.4 حاوية التفاصيل (Details Container)
+### 2.4 Details Container
 
 ```css
 .categories_details_container {
-    grid-column: 1 / -1;                    /* تشغل كل الأعمدة */
+    grid-column: 1 / -1;                    /* Occupies all columns */
     background-color: var(--bg-color-light);
     border: 1px solid var(--border-color-active);
     border-radius: 12px;
     box-shadow: var(--shadow-focus);
     overflow: hidden;
-    margin-top: -25px;                      /* سحب الحاوية لتكون قريبة من النص دون تداخله */
+    margin-top: -25px;                      /* Pulling container close to text without overlap */
     z-index: 40;
     display: flex;
     flex-direction: column;
 }
 ```
 
-**التفاصيل الحرجة:**
+**Critical Details:**
 
 #### `grid-column: 1 / -1`
-**الوظيفة:** تشغل جميع الأعمدة من البداية للنهاية (صف كامل).
+**Function:** Occupies all columns from start to finish (full row).
 
 #### `margin-top: -35px`
-**الحساب:**
+**Calculation:**
 ```
-padding-bottom للعنصر = 20px
+Item padding-bottom = 20px
 grid-gap = 15px
-الإجمالي = 35px
+Total = 35px
 
-السالب يسحب الحاوية للأعلى لإنشاء التحام صفري
+Negative pulls container up to create zero-gap fusion
 ```
 
-**⚠️ تحذير:** تم ضبط `margin-top` ليكون -25px لتحقيق توازن مثالي بين القرب من النصوص ومنع التداخل.
+**⚠️ Warning:** `margin-top` was set to -25px to achieve perfect balance between proximity to texts and preventing overlap.
 
 ---
 
-## 3. ميكانيكا التموضع (Insertion Logic)
+## 3. Insertion Logic
 
-### 3.1 الدالة الرئيسية: `categories_toggleSubcategoriesGrid`
+### 3.1 Main Function: `categories_toggleSubcategoriesGrid`
 
-**الموقع:** `pages/categories/categories.js`
+**Location:** `pages/categories/categories.js`
 
-#### الخطوة 1: جمع جميع العناصر
+#### Step 1: Collect all items
 ```javascript
 const allItems = Array.from(document.querySelectorAll('.categories_grid_item'));
 ```
 
-#### الخطوة 2: تحديد موقع العنصر المنقور
+#### Step 2: Determine clicked item position
 ```javascript
 const clickedIndex = allItems.indexOf(clickedItem);
 ```
 
-#### الخطوة 3: حساب نهاية الصف
+#### Step 3: Calculate row end
 ```javascript
-const columns = window.innerWidth < 480 ? 3 : 4;  // يجب مطابقة CSS Media Queries
+const columns = window.innerWidth < 480 ? 3 : 4;  // Must match CSS Media Queries
 const rowEndIndex = Math.floor(clickedIndex / columns) * columns + (columns - 1);
 ```
 
-**مثال:**
-- إذا نقرت على العنصر رقم 5 (الفهرس 4):
+**Example:**
+- If you click item number 5 (index 4):
   ```
   Math.floor(4 / 4) = 1
   1 * 4 = 4
   4 + (4 - 1) = 7
   ```
-  النتيجة: سيتم الإدراج بعد العنصر رقم 8 (الفهرس 7).
+  Result: Insertion will occur after item number 8 (index 7).
 
-#### الخطوة 4: الإدراج
+#### Step 4: Insertion
 ```javascript
 const insertAfterElement = allItems[Math.min(rowEndIndex, allItems.length - 1)];
 insertAfterElement.after(detailsContainer);
 ```
 
-**الفائدة:** هذا يضمن أن الحاوية تظهر دائماً في نهاية الصف، مما يمنع تزحزح العناصر الأخرى.
+**Benefit:** This ensures the container always appears at the end of the row, preventing other items from shifting.
 
 ---
 
-## 4. التصميم المتجاوب (Responsive Design) 📱💻
+## 4. Responsive Design 📱💻
 
-> **⚠️ قاعدة ذهبية:**  
-> **أي عنصر جديد يجب أن يحتوي على تعديلات في جميع Media Queries المناسبة.**
+> **⚠️ Golden Rule:**  
+> **Any new element must include adjustments in all appropriate Media Queries.**
 
-### 4.1 الشاشات الصغيرة جداً (< 480px)
+### 4.1 Very Small Screens (< 480px)
 
 ```css
 @media (max-width: 479px) {
     .categories_grid {
-        grid-template-columns: repeat(3, 1fr);  /* 3 أعمدة */
+        grid-template-columns: repeat(3, 1fr);  /* 3 columns */
         gap: 8px;
         padding: 0 10px;
     }
@@ -403,16 +403,16 @@ insertAfterElement.after(detailsContainer);
 }
 ```
 
-**الأجهزة المستهدفة:** هواتف صغيرة جداً (iPhone SE، هواتف قديمة)
+**Target Devices:** Very small phones (iPhone SE, old phones)
 
-**التغييرات الرئيسية:**
-- تقليل عدد الأعمدة إلى 3
-- تصغير الصور والنصوص
-- تقليل المسافات لتوفير المساحة
+**Key Changes:**
+- Reducing columns to 3
+- Scaling down images and texts
+- Reducing spacing to save space
 
 ---
 
-### 4.2 الهواتف (480px - 767px)
+### 4.2 Phones (480px - 767px)
 
 ```css
 @media (min-width: 480px) and (max-width: 767px) {
@@ -442,15 +442,15 @@ insertAfterElement.after(detailsContainer);
 }
 ```
 
-**الأجهزة المستهدفة:** معظم الهواتف الذكية الحديثة
+**Target Devices:** Most modern smartphones
 
-**التغييرات:**
-- 4 أعمدة (العودة للتخطيط الأساسي)
-- أحجام متوسطة للصور
+**Changes:**
+- 4 columns (return to base layout)
+- Medium image sizes
 
 ---
 
-### 4.3 التابلت (768px - 991px)
+### 4.3 Tablets (768px - 991px)
 
 ```css
 @media (min-width: 768px) and (max-width: 991px) {
@@ -475,15 +475,15 @@ insertAfterElement.after(detailsContainer);
 }
 ```
 
-**الأجهزة المستهدفة:** iPad، تابلت Android
+**Target Devices:** iPad, Android tablets
 
-**التغييرات:**
-- زيادة تدريجية في الأحجام
-- العودة لحجم النص الأساسي (12px)
+**Changes:**
+- Gradual size increase
+- Return to base font size (12px)
 
 ---
 
-### 4.4 الديسكتوب (992px - 1199px)
+### 4.4 Desktop (992px - 1199px)
 
 ```css
 @media (min-width: 992px) and (max-width: 1199px) {
@@ -499,11 +499,11 @@ insertAfterElement.after(detailsContainer);
 }
 ```
 
-**الأجهزة المستهدفة:** شاشات لابتوب صغيرة ومتوسطة
+**Target Devices:** Small and medium laptop screens
 
 ---
 
-### 4.5 الشاشات الكبيرة (≥ 1200px)
+### 4.5 Large Screens (≥ 1200px)
 
 ```css
 @media (min-width: 1200px) {
@@ -519,92 +519,92 @@ insertAfterElement.after(detailsContainer);
 }
 ```
 
-**الأجهزة المستهدفة:** شاشات ديسكتوب كبيرة، شاشات 4K
+**Target Devices:** Large desktop screens, 4K screens
 
-**ملاحظة:** هذه هي القيم الافتراضية (الأساسية).
+**Note:** These are the default (base) values.
 
 ---
 
-## 5. ثوابت التصميم (Design Tokens)
+## 5. Design Tokens
 
-### 5.1 الألوان (Colors)
+### 5.1 Colors
 
 ```css
---bg-color-light      /* أبيض (#fff أو قريب منه) */
---bg-color-medium     /* رمادي فاتح (#f8f9fa أو مشابه) */
---primary-color       /* اللون الأساسي (أزرق) */
---text-color          /* لون النص الأساسي */
---border-color        /* لون الحدود العادية */
---border-color-active /* لون الحدود للعناصر النشطة */
+--bg-color-light      /* White (#fff or close to it) */
+--bg-color-medium     /* Light gray (#f8f9fa or similar) */
+--primary-color       /* Primary color (blue) */
+--text-color          /* Base text color */
+--border-color        /* Normal border color */
+--border-color-active /* Border color for active elements */
 ```
 
-**الاستخدامات:**
-- `--bg-color-light`: خلفية الحاوية الرئيسية، المنتجات
-- `--bg-color-medium`: خلفية العنصر النشط، الفئات الفرعية
-- `--primary-color`: النصوص، الأيقونات
-- `--border-color-active`: حدود العناصر النشطة
+**Usages:**
+- `--bg-color-light`: Main container background, products
+- `--bg-color-medium`: Active item background, subcategories
+- `--primary-color`: Texts, icons
+- `--border-color-active`: Active element borders
 
 ---
 
-### 5.2 الظلال (Shadows)
+### 5.2 Shadows
 
 ```css
---shadow-soft         /* ظل ناعم للعناصر العادية */
---shadow-focus        /* ظل أقوى للعناصر النشطة */
+--shadow-soft         /* Soft shadow for normal elements */
+--shadow-focus        /* Stronger shadow for active elements */
 ```
 
-**الاستخدامات:**
-- `--shadow-soft`: الصور، الفئات الفرعية، المنتجات
-- `--shadow-focus`: العنصر النشط، حاوية التفاصيل
+**Usages:**
+- `--shadow-soft`: Images, subcategories, products
+- `--shadow-focus`: Active item, details container
 
 ---
 
-### 5.3 الأحجام (Sizes)
+### 5.3 Sizes
 
-#### الصور الرئيسية:
-- **الافتراضي:** 120px × 120px
-- **الشاشات الصغيرة جداً:** 85px
-- **الهواتف:** 95px
-- **التابلت:** 110px
-- **الديسكتوب:** 115px
-- **الشاشات الكبيرة:** 120px
+#### Main Images:
+- **Default:** 120px × 120px
+- **Very Small Screens:** 85px
+- **Phones:** 95px
+- **Tablets:** 110px
+- **Desktop:** 115px
+- **Large Screens:** 120px
 
-#### النصوص:
-- **الافتراضي:** 12px
-- **الشاشات الصغيرة:** 11px
-- **التابلت وأكبر:** 12px
+#### Texts:
+- **Default:** 12px
+- **Small Screens:** 11px
+- **Tablets and up:** 12px
 
-#### الأيقونات:
-- **الافتراضي:** 2rem (32px)
-- **الشاشات الصغيرة:** 1.5rem (24px)
+#### Icons:
+- **Default:** 2rem (32px)
+- **Small Screens:** 1.5rem (24px)
 
 ---
 
-### 5.4 المسافات (Spacing)
+### 5.4 Spacing
 
 ```css
-gap: 15px              /* المسافة بين العناصر (افتراضي) */
-padding: 0 15px        /* Padding جانبي للشبكة */
-padding-bottom: 20px   /* Padding سفلي للعنصر (حرج) */
-margin-top: -35px      /* Margin سالب للحاوية (حرج) */
+gap: 15px              /* Gap between items (default) */
+padding: 0 15px        /* Grid side padding */
+padding-bottom: 20px   /* Item bottom padding (critical) */
+margin-top: -35px      /* Container negative margin (critical) */
 ```
 
 ---
 
-## 6. الفئات الفرعية (Subcategories) - نمط القصص (Story Style) 📸
+## 6. Subcategories - Story Style 📸
 
-تم تحديث تصميم الفئات الفرعية ليحاكي نمط "القصص" (Stories) الشهير، حيث يتم التركيز على الصورة الدائرية مع نص أسفلها، مما يوفر تجربة بصرية عصرية وجذابة.
+The subcategory design has been updated to mimic the popular "Stories" style, focusing on circular images with text below them, providing a modern and attractive visual experience.
 
-### 6.1 الحاوية (Items Wrapper)
+### 6.1 Items Wrapper
 
 ```css
 .categories_subcategory_item {
     display: flex;
-    flex-direction: column;         /* ترتيب عمودي: صورة ثم نص */
+    flex-direction: column;         /* Vertical order: image then text */
     align-items: center;
-    gap: 8px;                       /* مسافة بين الصورة والنص */
-    background-color: transparent;  /* خلفية شفافة لإبراز الدائرة */
-    border: none;                   /* إزالة الحدود القديمة */
+    gap: 8px;                       /* Gap between image and text */
+    background-color: transparent;  /* Transparent background to highlight circle */
+    border: none;                   /* Removal of old borders */
     padding: 5px;
     text-decoration: none;
     min-width: 80px;
@@ -612,27 +612,27 @@ margin-top: -35px      /* Margin سالب للحاوية (حرج) */
     cursor: pointer;
     
     /* Animation Initial State */
-    opacity: 0;                     /* البداية مخفية للأنيميشن */
+    opacity: 0;                     /* Initially hidden for animation */
     animation: categoryPopIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 ```
 
-**المميزات:**
-- **شفافية:** الحاوية نفسها لا تملك خلفية أو حدود، مما يجعل العنصر يبدو "عائماً".
-- **التخطيط:** عمودي (Vertical Stack).
-- **الحجم:** عرض محدد (80-100px) لضمان الاستقامة.
+**Features:**
+- **Transparency:** The container itself has no background or borders, making the item appear "floating".
+- **Layout:** Vertical Stack.
+- **Size:** Fixed width (80-100px) to ensure alignment.
 
 ---
 
-### 6.2 الصورة الدائرية (Circular Image)
+### 6.2 Circular Image
 
 ```css
 .categories_subcategory_item__image {
     width: 70px;
     height: 70px;
-    object-fit: cover;              /* ملء الدائرة دون تشويه */
-    border-radius: 50%;             /* دائرة كاملة */
-    border: 1px solid var(--border-color); /* إطار رفيع متطابق مع العناصر الرئيسية */
+    object-fit: cover;              /* Fill circle without distortion */
+    border-radius: 50%;             /* Full circle */
+    border: 1px solid var(--border-color); /* Thin border matching main items */
     background-color: #fff;
     box-shadow: var(--shadow-soft);
     display: block;
@@ -640,16 +640,16 @@ margin-top: -35px      /* Margin سالب للحاوية (حرج) */
 }
 ```
 
-**التفاصيل:**
-- **الأبعاد:** 70px × 70px (ثابتة).
-- **الإطار:** 1px (تم توحيده مع العناصر الرئيسية).
-- **الشكل:** دائري تماماً (`border-radius: 50%`).
+**Details:**
+- **Dimensions:** 70px × 70px (fixed).
+- **Border:** 1px (unified with main items).
+- **Shape:** Perfectly circular (`border-radius: 50%`).
 
 ---
 
-### 6.3 الأيقونة (Fallback Icon)
+### 6.3 Fallback Icon
 
-في حال عدم توفر صورة، يتم عرض أيقونة داخل دائرة مطابقة تماماً لتصميم الصورة:
+If an image is unavailable, an icon is displayed inside a circle perfectly matching the image design:
 
 ```css
 .categories_subcategory_item__icon {
@@ -670,73 +670,72 @@ margin-top: -35px      /* Margin سالب للحاوية (حرج) */
 
 ---
 
-### 6.4 النص (Label)
+### 6.4 Label
 
-تم فصل النص في عنصر `span` خاص لسهولة التحكم:
+The text is separated into a dedicated `span` element for easy control:
 
 ```css
 .categories_subcategory_title {
     color: var(--primary-color);
-    font-size: 0.75rem;          /* حجم صغير (12px) */
+    font-size: 0.75rem;          /* Small size (12px) */
     font-weight: 600;
     text-align: center;
     line-height: 1.3;
     width: 100%;
-    word-break: break-word;     /* كسر الكلمات الطويلة */
+    word-break: break-word;     /* Break long words */
 }
 ```
 
 ---
 
-### 6.5 الحالة النشطة (Active State)
+### 6.5 Active State
 
-عند اختيار فئة فرعية:
+When a subcategory is selected:
 
 ```css
 .categories_subcategory_item--active .categories_subcategory_item__image,
 .categories_subcategory_item--active .categories_subcategory_item__icon {
     border-color: var(--border-color-active);
     box-shadow: var(--shadow-focus);
-    transform: scale(1.05);     /* تكبير طفيف */
+    transform: scale(1.05);     /* Slight scale up */
 }
 ```
 
-**المؤشرات البصرية:**
-1. **توهج:** الإطار يتلون بلون التفعيل (`--border-color-active`).
-2. **ظل:** يظهر ظل التركيز (`--shadow-focus`).
-3. **سهم:** يظهر سهم صغير يشير للأعلى (نحو الصورة) أسفل النص.
+**Visual Indicators:**
+1. **Glow:** The border colors with the activation color (`--border-color-active`).
+2. **Shadow:** The focus shadow appears (`--shadow-focus`).
+3. **Arrow:** A small arrow appears pointing up (towards the image) below the text.
 
 ---
 
-### 6.6 الأنيميشن المتتابع (Staggered Animation) 🚀
+### 6.6 Staggered Animation 🚀
 
-تظهر الفئات الفرعية بتأثير "Pop-In" متتابع (واحدة تلو الأخرى) لإضفاء الحيوية.
+Subcategories appear with a staggered "Pop-In" effect (one after another) for liveliness.
 
 **CSS Keyframes:**
 ```css
 @keyframes categoryPopIn {
     0% { opacity: 0; transform: translateY(20px) scale(0.8); }
-    60% { transform: translateY(-5px) scale(1.05); }     /* قفزة خفيفة */
+    60% { transform: translateY(-5px) scale(1.05); }     /* Slight bounce */
     100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 ```
 
 **JavaScript Logic:**
-يتم حساب التأخير الزمني (`animation-delay`) بناءً على ترتيب العنصر (`index`):
+The time delay (`animation-delay`) is calculated based on the item's order (`index`):
 
 ```javascript
-// في دالة categories_createSubcategoryItemDiv
+// In categories_createSubcategoryItemDiv function
 subItem.style.animationDelay = `${index * 0.05}s`;
 ```
 
-حيث `index` هو ترتيب العنصر في المصفوفة. هذا يعني أن العنصر الأول يظهر فوراً، الثاني بعد 50ms، الثالث بعد 100ms، وهكذا.
-
+Where `index` is the item's order in the array. This means the first item appears immediately, the second after 50ms, the third after 100ms, and so on.
 
 ---
 
-## 7. معرض المنتجات (Products Gallery)
+## 7. Products Gallery
 
-### 7.1 الحاوية
+### 7.1 Container
 
 ```css
 .categories_products_gallery_container {
@@ -752,14 +751,14 @@ subItem.style.animationDelay = `${index * 0.05}s`;
 }
 ```
 
-**الوظائف:**
-- **Max Height:** 55% من ارتفاع الشاشة
-- **Overflow Y:** تمرير عمودي
-- **Grid:** أعمدة تلقائية بحد أدنى 110px
+**Functions:**
+- **Max Height:** 55% of screen height
+- **Overflow Y:** Vertical scroll
+- **Grid:** Automatic columns with a minimum of 110px
 
 ---
 
-### 7.2 عنصر المنتج
+### 7.2 Product Item
 
 ```css
 .categories_product_item {
@@ -784,7 +783,7 @@ subItem.style.animationDelay = `${index * 0.05}s`;
 
 ---
 
-### 7.3 صورة المنتج
+### 7.3 Product Image
 
 ```css
 .categories_product_item__image {
@@ -797,14 +796,9 @@ subItem.style.animationDelay = `${index * 0.05}s`;
 }
 ```
 
-**الخصائص:**
-- **Height:** 120px ثابت
-- **Object Fit:** contain - الحفاظ على النسب دون قص
-- **Background:** أبيض للتباين
-
 ---
 
-### 7.4 اسم المنتج
+### 7.4 Product Name
 
 ```css
 .categories_product_item__name {
@@ -823,13 +817,13 @@ subItem.style.animationDelay = `${index * 0.05}s`;
 }
 ```
 
-**التقنية:** Line Clamp لعرض سطرين فقط مع نقاط (...) للنص الطويل.
+**Technology:** Line Clamp to display only two lines with ellipsis (...) for long text.
 
 ---
 
-## 8. التفاعلات والرسوم المتحركة
+## 8. Interactions and Animations
 
-### 8.1 تأثير النقر (Active State)
+### 8.1 Click Effect (Active State)
 
 ```css
 .categories_grid_item:active {
@@ -841,11 +835,11 @@ subItem.style.animationDelay = `${index * 0.05}s`;
 }
 ```
 
-**التأثير:** تصغير 5% عند الضغط.
+**Effect:** 5% scale reduction upon pressing.
 
 ---
 
-### 8.2 الانتقالات (Transitions)
+### 8.2 Transitions
 
 ```css
 transition: transform 0.2s ease;
@@ -853,14 +847,14 @@ transition: all 0.3s ease;
 transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 ```
 
-**الأنواع:**
-- **0.2s ease:** سريع وبسيط
-- **0.3s ease:** متوسط
-- **cubic-bezier:** تأثير "bounce" خفيف
+**Types:**
+- **0.2s ease:** Fast and simple
+- **0.3s ease:** Medium
+- **cubic-bezier:** Slight "bounce" effect
 
 ---
 
-### 8.3 رسوم متحركة مخصصة
+### 8.3 Custom Animations
 
 ```css
 @keyframes categories_slide_fade_in {
@@ -875,42 +869,42 @@ transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 ```
 
-**الاستخدام:** ظهور تدريجي للعناصر من الأعلى.
+**Usage:** Gradual appearance of elements from the top.
 
 ---
 
-## 9. قواعد الصيانة الحرجة ⚠️
+## 9. Critical Maintenance Rules ⚠️
 
-### 9.1 عند تغيير عدد الأعمدة
+### 9.1 When Changing Column Count
 
-**الخطوات الإلزامية:**
+**Mandatory Steps:**
 
-1. **تحديث CSS:**
+1. **Update CSS:**
    ```css
    .categories_grid {
        grid-template-columns: repeat(X, 1fr);
    }
    ```
 
-2. **تحديث JavaScript:**
+2. **Update JavaScript:**
    ```javascript
-   const columns = X;  // في categories.js
+   const columns = X;  // In categories.js
    ```
 
-3. **تحديث جميع Media Queries:**
-   - تحقق من كل `@media` وحدث `grid-template-columns`
+3. **Update all Media Queries:**
+   - Check every `@media` and update `grid-template-columns`
 
-4. **اختبار:**
-   - اختبر على جميع أحجام الشاشات
-   - تأكد من أن الحاوية تظهر في المكان الصحيح
+4. **Testing:**
+   - Test on all screen sizes
+   - Ensure the container appears in the correct place
 
 ---
 
-### 9.2 عند تغيير أحجام الصور
+### 9.2 When Changing Image Sizes
 
-**الخطوات:**
+**Steps:**
 
-1. **تحديث الحجم الأساسي:**
+1. **Update Base Size:**
    ```css
    .categories_cell_media {
        width: Xpx;
@@ -918,161 +912,161 @@ transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
    }
    ```
 
-2. **تحديث جميع Media Queries:**
-   - حافظ على النسب المئوية (مثلاً: الموبايل = 70% من الحجم الأساسي)
+2. **Update all Media Queries:**
+   - Maintain percentages (e.g., Mobile = 70% of base size)
 
-3. **تحديث الجسر (إذا لزم الأمر):**
+3. **Update Bridge (if necessary):**
    ```css
    .categories_grid_item--active::after {
-       width: Ypx;  /* حسب الحاجة */
+       width: Ypx;  /* As needed */
    }
    ```
 
-4. **اختبار التوازن البصري:**
-   - تأكد من أن النصوص والصور متوازنة
+4. **Test Visual Balance:**
+   - Ensure texts and images are balanced
 
 ---
 
-### 9.3 عند تعديل الالتحام
+### 9.3 When Modifying Fusion
 
-**القيم الحرجة المترابطة:**
+**Interconnected Critical Values:**
 
 ```css
-/* يجب أن تتطابق هذه القيم */
-padding-bottom: 20px;           /* في .categories_grid_item */
-gap: 15px;                      /* في .categories_grid */
-margin-top: -35px;              /* في .categories_details_container */
-                                /* الحساب: -(20 + 15) = -35 */
+/* These values must match */
+padding-bottom: 20px;           /* In .categories_grid_item */
+gap: 15px;                      /* In .categories_grid */
+margin-top: -35px;              /* In .categories_details_container */
+                                /* Calculation: -(20 + 15) = -35 */
 
-bottom: -17px;                  /* في ::after */
-height: 37px;                   /* في ::after */
-                                /* الحساب: 20 - 15 + 15 - 2 = -17 */
-                                /* الحساب: 35 + 2 = 37 */
+bottom: -17px;                  /* In ::after */
+height: 37px;                   /* In ::after */
+                                /* Calculation: 20 - 15 + 15 - 2 = -17 */
+                                /* Calculation: 35 + 2 = 37 */
 ```
 
-**⚠️ تحذير:** تغيير أي قيمة يتطلب إعادة حساب القيم الأخرى.
+**⚠️ Warning:** Changing any value requires recalculating the others.
 
 ---
 
-### 9.4 عند إضافة عنصر جديد
+### 9.4 When Adding a New Element
 
-**القاعدة الذهبية:**
+**Golden Rule:**
 
-> **يجب إنشاء أي عنصر أو وسم جديد ليتناسب مع مختلف أنواع الشاشات.**
+> **Any new element must be created to fit various screen types.**
 
-**الخطوات:**
+**Steps:**
 
-1. **إنشاء الأنماط الأساسية:**
+1. **Create Base Styles:**
    ```css
    .new-element {
-       /* الأنماط الافتراضية */
+       /* Default styles */
    }
    ```
 
-2. **إضافة تعديلات في Media Queries:**
+2. **Add Adjustments in Media Queries:**
    ```css
    @media (max-width: 479px) {
        .new-element {
-           /* تعديلات للشاشات الصغيرة */
+           /* Adjustments for small screens */
        }
    }
    
    @media (min-width: 480px) and (max-width: 767px) {
        .new-element {
-           /* تعديلات للهواتف */
+           /* Adjustments for phones */
        }
    }
    
-   /* ... وهكذا لجميع النطاقات */
+   /* ... and so on for all ranges */
    ```
 
-3. **الاختبار:**
-   - اختبر على جميع أحجام الشاشات (5 نطاقات على الأقل)
-   - استخدم أدوات المطور للتحقق
+3. **Testing:**
+   - Test on all screen sizes (at least 5 ranges)
+   - Use developer tools to verify
 
 ---
 
 ### 9.5 Z-Index Hierarchy
 
-**الترتيب الحالي (من الأسفل للأعلى):**
+**Current Order (from bottom to top):**
 
 ```
-1  - العناصر العادية
-40 - حاوية التفاصيل
-50 - العنصر النشط
-55 - جسر الالتحام
-60 - وسائط العنصر النشط
+1  - Normal elements
+40 - Details container
+50 - Active item
+55 - Fusion bridge
+60 - Active item media
 ```
 
-**⚠️ تحذير:** لا تستخدم z-index أعلى من 60 إلا للضرورة القصوى.
+**⚠️ Warning:** Do not use a z-index higher than 60 unless absolutely necessary.
 
 ---
 
-### 9.6 صيغة وأبعاد الصور (Image Logic) 🖼️
+### 9.6 Image Format and Dimensions 🖼️
 
-**القاعدة الصارمة:**
-جميع الصور في الفئات الرئيسية (`mainCategories`) والفئات الفرعية (`subCategories`) يجب أن تلتزم بالمعايير التالية بدقة:
+**Strict Rule:**
+All images in main categories (`mainCategories`) and subcategories (`subCategories`) must strictly adhere to the following standards:
 
-1.  **الصيغة:** WebP فقط (لتحسين الأداء وتقليل الحجم).
-2.  **الأبعاد:** 150px × 150px بالضبط.
-3.  **الهدف:** توحيد الأحجام وضمان تحميل سريع للتطبيق.
+1.  **Format:** WebP only (for performance optimization and size reduction).
+2.  **Dimensions:** Exactly 150px × 150px.
+3.  **Goal:** Uniform sizes and ensuring fast application loading.
 
-**⚠️ تنبيه:** أي صورة لا تلتزم بهذه المعايير قد تؤدي إلى تشوه في العرض أو بطء في التحميل.
+**⚠️ Warning:** Any image not adhering to these standards may lead to display distortion or slow loading.
 
 ---
 
-## 10. الملفات ذات الصلة
+## 10. Related Files
 
-### 10.1 ملفات CSS
-- **الرئيسي:** `pages/categories/categories.css` (398 سطر)
+### 10.1 CSS Files
+- **Main:** `pages/categories/categories.css` (398 lines)
 
-### 10.2 ملفات JavaScript
-- **المنطق الرئيسي:** `pages/categories/categories.js`
-- **الدوال الرئيسية:**
+### 10.2 JavaScript Files
+- **Main Logic:** `pages/categories/categories.js`
+- **Main Functions:**
   - `categories_loadCategoriesAsTable()`
   - `categories_toggleSubcategoriesGrid()`
   - `categories_createDetailsContainer()`
 
-### 10.3 ملفات HTML
-- **القالب:** `pages/categories/categories.html`
+### 10.3 HTML Files
+- **Template:** `pages/categories/categories.html`
 
-### 10.4 ملفات البيانات
-- **قائمة الفئات:** `shared/list.json`
+### 10.4 Data Files
+- **Category List:** `shared/list.json`
 
-### 10.5 ملفات التوثيق
-- **هذا الملف:** `maintenance/CATEGORIES_STYLES.md`
-
----
-
-## 11. معلومات الإصدار
-
-- **آخر تحديث:** 2026-01-07
-- **الإصدار:** 1.2.14
-- **الحالة:** مستقر ✅
-- **التغييرات الأخيرة:**
-  - حذف المنحنيات المقعرة (Inverted Radius Curves)
-  - تكبير الصور من 100px إلى 120px
-  - تصغير النصوص من 14px إلى 12px
-  - إضافة نظام Responsive Design شامل (5 نطاقات)
+### 10.5 Documentation Files
+- **This File:** `maintenance/CATEGORIES_STYLES.md`
 
 ---
 
-## 12. نصائح الصيانة
+## 11. Version Information
 
-### ✅ افعل:
-- اختبر على جميع أحجام الشاشات قبل الدفع
-- حافظ على النسب المئوية بين الأحجام
-- استخدم متغيرات CSS للألوان والظلال
-- وثق أي تغييرات في هذا الملف
-
-### ❌ لا تفعل:
-- لا تغير عدد الأعمدة دون تحديث JavaScript
-- لا تضف عناصر بدون Media Queries
-- لا تستخدم أحجام ثابتة بدون اختبار
-- لا تغير قيم الالتحام دون إعادة الحساب
+- **Last Updated:** 2026-01-07
+- **Version:** 1.2.14
+- **Status:** Stable ✅
+- **Recent Changes:**
+  - Removal of Inverted Radius Curves
+  - Enlarging images from 100px to 120px
+  - Reducing texts from 14px to 12px
+  - Adding a comprehensive Responsive Design system (5 ranges)
 
 ---
 
-**نهاية الدليل**
+## 12. Maintenance Tips
 
-*لأي استفسارات أو تحديثات، يرجى تحديث هذا الملف والإشارة إلى رقم الإصدار.*
+### ✅ Do:
+- Test on all screen sizes before pushing
+- Maintain percentages between sizes
+- Use CSS variables for colors and shadows
+- Document any changes in this file
+
+### ❌ Don't:
+- Do not change column count without updating JavaScript
+- Do not add elements without Media Queries
+- Do not use fixed sizes without testing
+- Do not change fusion values without recalculating
+
+---
+
+**End of Guide**
+
+*For any inquiries or updates, please update this file and indicate the version number.*

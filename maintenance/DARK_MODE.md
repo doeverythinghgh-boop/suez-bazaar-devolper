@@ -1,111 +1,111 @@
-# دليل نظام الوضع الليلي (Dark Mode Architecture)
+# Dark Mode Architecture Guide
 
 > [!IMPORTANT]
-> **تنبيه هام جداً:** عند إنشاء أي عنصر جديد أو تعديل أي عنصر قائم في المشروع، **يجب** وضع الوضع الليلي (Dark Mode) في الاعتبار فوراً.
-> أي كود يتم كتابته بألوان ثابتة (Hardcoded Colors) أو بدون استخدام المتغيرات المعتمدة يعتبر **كوداً ناقصاً وغير مقبول**.
-> يرجى مراجعة قسم "قائمة التحقق للمطورين" في نهاية هذا الملف قبل اعتماد أي تغيير.
+> **Very Important Warning:** When creating any new element or modifying any existing element in the project, you **must** immediately consider Dark Mode.
+> Any code written with hardcoded colors or without using approved variables is considered **incomplete and unacceptable**.
+> Please review the "Developer Checklist" section at the end of this file before committing any changes.
 
-## نظرة عامة
-يعتمد نظام الوضع الليلي في هذا المشروع على استراتيجية **CSS Variables** (متغيرات CSS) المربوطة بفئة (Class) `dark-theme` التي يتم إضافتها إلى عنصر `<body>`.
+## Overview
+ The dark mode system in this project relies on a **CSS Variables** strategy linked to the `dark-theme` class, which is added to the `<body>` element.
 
-هذا النظام يضمن الأداء العالي، سهولة الصيانة، والتطبيق الفوري للتغييرات دون الحاجة لإعادة تحميل الصفحة.
+This system ensures high performance, ease of maintenance, and immediate application of changes without needing to reload the page.
 
 ---
 
-## 1. البنية الأساسية (Core Architecture)
+## 1. Core Architecture
 
-### 1.1 ملف المتغيرات (`style/variables.css`)
-هذا هو "العقل المدبر" للألوان. يتم تعريف كل الألوان كمتغيرات في `:root` (للوضع الفاتح) وإعادة تعريفها داخل `body.dark-theme` (للوضع الليلي).
+### 1.1 Variables File (`style/variables.css`)
+This is the "mastermind" of colors. All colors are defined as variables in `:root` (for light mode) and redefined within `body.dark-theme` (for dark mode).
 
 ```css
 :root {
-    /* الوضع الفاتح */
+    /* Light Mode */
     --bg-color-white: #ffffff;
     --text-color-dark: #333333;
     --primary-color: #667eea;
 }
 
 body.dark-theme {
-    /* الوضع الليلي */
+    /* Dark Mode */
     --bg-color-white: #1e1e1e;
     --text-color-dark: #ffffff;
-    --primary-color: #7688eb; /* تفتيح بسيط لراحة العين */
+    --primary-color: #7688eb; /* Slight lightening for eye comfort */
 }
 ```
 
-### 1.2 الاستخدام في الملفات
-يمنع منعاً باتاً استخدام أكواد الألوان Hex (مثل `#ffffff`) أو الأسماء (مثل `white`) مباشرة في ملفات CSS. بدلاً من ذلك، نستخدم:
+### 1.2 Usage in Files
+It is strictly prohibited to use Hex color codes (e.g., `#ffffff`) or names (e.g., `white`) directly in CSS files. Instead, we use:
 ```css
 .card {
-    background-color: var(--bg-color-white); /* يتغير تلقائياً */
+    background-color: var(--bg-color-white); /* Changes automatically */
     color: var(--text-color-dark);
 }
 ```
 
 ---
 
-## 2. التنفيذ البرمجي (JavaScript Implementation)
+## 2. JavaScript Implementation
 
-### 2.1 حفظ التفضيلات (`localStorage`)
-يتم تخزين تفضيل المستخدم في `localStorage` تحت مفتاح `theme`. القيم المحتملة: `dark` أو `light`.
+### 2.1 Saving Preferences (`localStorage`)
+The user's preference is stored in `localStorage` under the key `theme`. Possible values: `dark` or `light`.
 
-### 2.2 التهيئة عند البدء (`js/user-dashboard.js` & `index.html`)
-عند تحميل التطبيق، يتم فحص `localStorage` وتطبيق الفئة فوراً لمنع الوميض (FOUC).
+### 2.2 Initialization at Startup (`js/user-dashboard.js` & `index.html`)
+When the application loads, `localStorage` is checked, and the class is applied immediately to prevent Flash of Unstyled Content (FOUC).
 
 ```javascript
-/* مثال مبسط */
+/* Simplified example */
 const isDark = localStorage.getItem('theme') === 'dark';
 if (isDark) {
     document.body.classList.add('dark-theme');
 }
 ```
 
-### 2.3 تبديل الوضع (Toggle)
-الزر المسؤول عن التبديل يقوم بـ:
-1. عكس الحالة الحالية.
-2. تحديث `document.body.classList`.
-3. حفظ القيمة الجديدة في `localStorage`.
+### 2.3 Toggle Mode
+The button responsible for toggling performs the following:
+1. Inverts the current state.
+2. Updates `document.body.classList`.
+3. Saves the new value in `localStorage`.
 
 ---
 
-## 3. التعامل مع المكونات الخاصة
+## 3. Handling Special Components
 
-### 3.1 النوافذ المنبثقة (SweetAlert2)
-مكتبة SweetAlert2 تقوم بإنشاء عناصر DOM خارج نطاق التطبيق العادي. ولحل مشكلة الألوان الثابتة فيها، قمنا بالتالي:
+### 3.1 Pop-up Windows (SweetAlert2)
+The SweetAlert2 library creates DOM elements outside the normal application scope. To solve the problem of hardcoded colors in them, we did the following:
 
-1. **إلغاء الأنماط الافتراضية:** تم تعديل ملف `style/index.css` و `style/modals-and-dialogs.css` لإجبار النوافذ على استخدام متغيراتنا.
-2. **فئات مخصصة:** تم إنشاء فئة `.modern-swal-popup` لفرض الخلفية `var(--bg-color-white)` والنصوص `var(--text-color-medium)`.
+1. **Overriding Default Styles:** The `style/index.css` and `style/modals-and-dialogs.css` files were modified to force windows to use our variables.
+2. **Custom Classes:** A `.modern-swal-popup` class was created to enforce the background `var(--bg-color-white)` and texts `var(--text-color-medium)`.
 
-### 3.2 نظام الخطوات (Stepper)
-الـ Stepper يعمل أحياناً داخل `iframe` (ملف `stepper-only.html`).
-* **التحدي:** الـ iframe صفحة منفصلة لا ترث كلاسات الصفحة الأب.
-* **الحل:**
-    1. تم إنشاء `steper/css/variables.css` خاص به يحتوي على تعريفات `body.dark-theme`.
-    2. تم تحديث `steper/css/components.css` لاستخدام هذه المتغيرات.
-    3. ملف `stepper-only.html` يحتوي على سكربت يستمع لتغيرات `localStorage` ويطبق الـ theme تلقائياً عند التحميل أو عند تغيره في الصفحة الرئيسية.
+### 3.2 Stepper System
+The Stepper sometimes works inside an `iframe` (`stepper-only.html` file).
+* **Challenge:** The `iframe` is a separate page that does not inherit classes from the parent page.
+* **Solution:**
+    1. A dedicated `steper/css/variables.css` was created containing `body.dark-theme` definitions.
+    2. `steper/css/components.css` was updated to use these variables.
+    3. The `stepper-only.html` file contains a script that listens for `localStorage` changes and applies the theme automatically upon loading or when it changes on the main page.
 
-### 3.3 العناصر المولدة ديناميكياً (Inline Styles)
-واجهنا مشكلة في الجافا سكربت التي تولد HTML يحتوي على `style="background: white;"`.
-* **الحل:** تم استبدال `style="..."` بفئات CSS ذات دلالة (Semantic Classes).
-    * _مثال:_ بدلاً من `style="background: #d4edda; color: #155724;"`
-    * _أصبح:_ `class="stepper-list-item-success"`
-    * وتم تعريف هذه الفئة في CSS لتدعم الوضعين.
-
----
-
-## 4. قائمة التحقق للمطورين (Checklist)
-
-عند إضافة ميزة جديدة أو صفحة جديدة، التزم بالتالي:
-
-1. **لا تستخدم ألوان ثابتة:** استخدم دائماً `var(--variable-name)`.
-2. **لا تستعمل Inline Styles للألوان:** تجنب `div.style.background = 'red'`. استخدم `classList.add`.
-3. **تحقق من التباين:** تأكد أن النص مقروء في كلا الوضعين.
-4. **SweetAlert2:** لا تضع ألواناً في خاصية `html` داخل `Swal.fire`. استخدم `customClass`.
+### 3.3 Dynamically Generated Elements (Inline Styles)
+We encountered an issue with JavaScript generating HTML containing `style="background: white;"`.
+* **Solution:** `style="..."` was replaced with Semantic CSS Classes.
+    * _Example:_ Instead of `style="background: #d4edda; color: #155724;"`
+    * _It became:_ `class="stepper-list-item-success"`
+    * This class was defined in CSS to support both modes.
 
 ---
 
-## 5. ملفات هامة للمراجعة
-* `style/variables.css`: القاموس الرئيسي للألوان.
-* `style/modals-and-dialogs.css`: تنسيقات النوافذ المنبثقة.
-* `steper/css/variables.css`: متغيرات خاصة بنظام الخطوات.
-* `js/user-dashboard.js`: منطق زر التحويل.
+## 4. Developer Checklist
+
+When adding a new feature or a new page, adhere to the following:
+
+1. **Do not use hardcoded colors:** Always use `var(--variable-name)`.
+2. **Do not use Inline Styles for colors:** Avoid `div.style.background = 'red'`. Use `classList.add`.
+3. **Check contrast:** Ensure text is readable in both modes.
+4. **SweetAlert2:** Do not put colors in the `html` property inside `Swal.fire`. Use `customClass`.
+
+---
+
+## 5. Important Files for Review
+* `style/variables.css`: The main color dictionary.
+* `style/modals-and-dialogs.css`: Pop-up window styles.
+* `steper/css/variables.css`: Variables specific to the stepper system.
+* `js/user-dashboard.js`: Toggle button logic.

@@ -1,183 +1,177 @@
+# Service Addition Module Documentation (ProductAdd2 - Add2)
 
+The `productAdd2` module is responsible for the interface to add services (Add2). It is designed to provide a smooth user experience with advanced multimedia support.
 
-# توثيق وحدة إضافة الخدمة (ProductAdd2 - Add2)
+## 🧱 Structural Framework (HTML)
+Path: `pages/productAdd2/productAdd2.html`
 
-تعتبر وحدة `productAdd2` المسؤولة عن واجهة إضافة الخدمات (Add2). تم تصميمها لتقديم تجربة مستخدم سلسة مع دعم متطور للوسائط المتعددة.
+The structure relies on Modal elements containing a `form` with the following sections:
+- **Image Upload Area**: Prompts the user to select files or use the camera.
+- **Data Fields**: Include (Service Name, Service Description, Service Provider Message, Special Notes).
+- **Footer**: Contains the save and publish button.
+- **Camera Container**: A hidden element (`add2_camera_modal_container`) that appears when the desktop capture feature is activated.
 
-## 🧱 البنية الهيكلية (HTML)
-المسار: `pages/productAdd2/productAdd2.html`
+## 🎨 Visual Styling (CSS)
+Path: `pages/productAdd2/productAdd2.css`
 
-البنية تعتمد على عناصر (Modal) تضم نموذجاً (`form`) يحتوي على الأقسام التالية:
-- **منطقة رفع الصور**: تدفع المستخدم لاختيار ملفات أو استخدام الكاميرا.
-- **حقول البيانات**: تشمل (اسم الخدمة، وصف الخدمة، رسالة مقدم الخدمة، الملاحظات الخاصة).
-- **التذييل**: يحتوي على زر الحفظ والنشر.
-- **وعاء الكاميرا**: عنصر مخفي (`add2_camera_modal_container`) يظهر عند تفعيل ميزة التصوير المكتبي.
+- The design features solid gradients (Flat Colors) and blue (`#3498db`) as a core identity element.
+- Uses a `Grid` system to display image previews responsively.
+- Full support for `active` state instead of `hover` to ensure touch compatibility.
+- Responsive design that adjusts font sizes and padding based on screen width.
 
-## 🎨 التنسيق البصري (CSS)
-المسار: `pages/productAdd2/productAdd2.css`
+## 🧠 Programming Logic (JavaScript)
 
-- يتميز التصميم باستخدام تدرجات الألوان الصلبة (Flat Colors) واللون الأزرق (`#3498db`) كعنصر هوية أساسي.
-- استخدام نظام الشبكة (`Grid`) لعرض معاينات الصور بشكل متجاوب.
-- دعم كامل لحالة الـ `active` بدلاً من الـ `hover` لضمان توافقية اللمس.
-- تصميم متجاوب (Responsive) يغير حجم الخطوط والحشو بناءً على عرض الشاشة.
+### 1. General Settings (`add2_config.js`)
+- Update constant values for image compression and maximum files (6 images).
+- Management of the `add2_images` array which stores image states (pending, compressing, ready, error).
 
-## 🧠 المنطق البرمجي (JavaScript)
+### 2. Core Tools and Functions (`add2_utils.js`)
+- **`add2_showError(element, message)`**: Dynamically injects error messages under fields.
+- **`add2_clearError(element)`**: Cleans up error messages.
+- **`add2_formatBytes(bytes)`**: Converts file sizes to readable text.
+- **`add2_genId()`**: Generates unique IDs for preview elements.
 
-### 1. الإعدادات العامة (`add2_config.js`)
-- تحديث قيم الثوابت لضغط الصور والحد الأقصى للملفات (6 صور).
-- إدارة مصفوفة `add2_images` التي تخزن حالات الصور (pending, compressing, ready, error).
+### 3. Advanced Image Processing (`add2_image.js`)
+- **`add2_compressImage(file)`**: Uses `createImageBitmap` to intelligently scale images while considering mobile memory resources. Conversion is to `webp` or `jpeg`.
+- **`add2_handleNewFiles(fileList)`**: The main coordinator that receives files, checks available space, and launches the parallel compression process.
 
-### 2. الأدوات والوظائف الأساسية (`add2_utils.js`)
-- **`add2_showError(element, message)`**: حقن رسائل الخطأ ديناميكياً تحت الحقول.
-- **`add2_clearError(element)`**: تنظيف رسائل الخطأ.
-- **`add2_formatBytes(bytes)`**: تحويل أحجام الملفات لنصوص مقروءة.
-- **`add2_genId()`**: توليد معرفات فريدة لعناصر المعاينة.
+### 4. User Interface and Live Capture (`add2_ui.js`)
+- **`add2_createPreviewItem(state)`**: Builds preview elements with delete buttons and progress display.
+- **`add2_removeImage(id)`**: Deletes images with confirmation via `Swal`.
+- **`add2_openDesktopCamera()`**: Launches live video stream in a Modal and captures images via `Canvas`.
+- **Event Listeners**: Management of real-time character counters and numeric input filtering.
+- **`add2_renderCategories()`**: Fetches names of selected categories from `ProductStateManager.resolveCategoryNames()` and displays them as colored cards (`add2_category_badges`) under the page title.
+- **"Discard Changes" Button (`add2_btn_discard`)**: Displays a modern SweetAlert2 confirmation window, then clears the state from `ProductStateManager`, cleans the container, and goes back via `containerGoBack()`.
 
-### 3. معالجة الصور المتطورة (`add2_image.js`)
-- **`add2_compressImage(file)`**: تستخدم `createImageBitmap` لتحجيم الصور بذكاء مع مراعاة موارد ذاكرة الهواتف. التحويل يتم لـ `webp` أو `jpeg`.
-- **`add2_handleNewFiles(fileList)`**: المنسق الرئيسي الذي يستقبل الملفات، يتحقق من المساحة المتوفرة، ويطلق عملية الضغط المتوازي.
+### 5. Validation and Final Saving (`add2_submit.js`)
+- **`add2_setSubmitLoading(isLoading)`**: Visually changes the submit button state and prevents double-clicking.
+- **`submit` Handler**:
+    - Executes 4 logical tests (presence of images, name, description length, seller message).
+    - Uploads compressed images to Cloudflare R2 and obtains final links.
+    - Aggregates the data object and sends it to `addProduct`.
+    - Notifies administration and performs a comprehensive form reset after success.
 
-### 4. واجهة المستخدم والتصوير المباشر (`add2_ui.js`)
-- **`add2_createPreviewItem(state)`**: بناء عناصر المعاينة مع أزرار الحذف وعرض التقدم.
-- **`add2_removeImage(id)`**: حذف الصور مع تأكيد عبر `Swal`.
-- **`add2_openDesktopCamera()`**: تشغيل بث الفيديو المباشر في (Modal) والتقاط الصور عبر `Canvas`.
-- **مستمعي الأحداث**: إدارة عدادات الحروف اللحظية وفلترة المدخلات الرقمية.
-- **`add2_renderCategories()`**: جلب أسماء الفئات المختارة من `ProductStateManager.resolveCategoryNames()` وعرضها كبطاقات ملونة (`add2_category_badges`) تحت عنوان الصفحة.
-- **زر "تجاهل التعديلات" (`add2_btn_discard`)**: عرض نافذة تأكيد SweetAlert2 عصرية، ثم مسح الحالة من `ProductStateManager` وتنظيف الحاوية والعودة للخلف عبر `containerGoBack()`.
+## ⚙️ Technical Workflow
 
-### 5. التحقق والحفظ النهائي (`add2_submit.js`)
-- **`add2_setSubmitLoading(isLoading)`**: تغيير حالة زر الإرسال بصرياً ومنع النقر المزدوج.
-- **معالج الـ `submit`**:
-    - تنفيذ 4 اختبارات منطقية (وجود صور، الاسم، طول الوصف، رسالة البائع).
-    - رفع الصور المضغوطة لـ Cloudflare R2 والحصول على الروابط النهائية.
-    - تجميع كائن البيانات وإرساله لـ `addProduct`.
-    - إخطار الإدارة والقيام بعملية تنظيف (Reset) شاملة للنموذج بعد النجاح.
+1.  **Real-time Processing**: Images are compressed and converted to `WebP` immediately upon selection to reduce memory consumption and upload speed.
+2.  **Validation**: Ensures presence of at least one image, service name, and description length (minimum 10 characters).
+3.  **Saving Management**:
+    - Images are uploaded with a unique name based on the serial identifier.
+    - `addProduct` is called with the appropriate `serviceType` for services.
+    - An immediate notification is sent to administration after saving to ensure quick review.
 
-## ⚙️ سير العمل التقني (Detailed Workflow)
-
-1.  **المعالجة اللحظية**: يتم ضغط الصور وتحويلها لـ `WebP` فور اختيارها لتقليل استهلاك الذاكرة وسرعة الرفع.
-2.  **التحقق (Validation)**: يتم التأكد من وجود صورة واحدة على الأقل، اسم الخدمة، وطول الوصف (10 أحرف كحد أدنى).
-3.  **إدارة الحفظ**:
-    - يتم رفع الصور باسم فريد يعتمد على المعرف التسلسلي.
-    - يتم استدعاء `addProduct` مع ضبط `serviceType` المناسب للخدمات.
-    - يتم إرسال إشعار فوري للإدارة بعد الحفظ لضمان سرعة المراجعة.
-
-## 📊 جلب وحفظ البيانات
-- **الجلب**: الوحدة تبدأ بنموذج فارغ وتعتمد على مدخلات المستخدم بالكامل.
-- **الحفظ**: يتم عبر `Fetch API` لإرسال البيانات النهائية لقاعدة البيانات بعد نجاح رفع الصور لـ Cloudflare R2.
-
-
-
-# توثيق وحدة تعديل الخدمة (ProductEdit2 - Edit2)
-
-تعتبر وحدة `productEdit2` النسخة المعيارية المخصصة لتعديل الخدمات الموجودة مسبقاً. تم تقسيمها إلى 6 ملفات برمجية لضمان سهولة التوسع.
-
-## 📁 هيكل المجلد
-المسار: `pages/productEdit2/`
-
-- **`productEdit2.html`**: الهيكل الذي يضم حقول الخدمة (بدون سعر أو كمية).
-- **`productEdit2.css`**: التنسيقات البصرية للنموذج ومعاينات الصور.
-
-### 📂 مجلد البرمجيات (js/)
-1. **`edit2_config.js`**:
-   - إعدادات الضغط (1600px).
-   - الحالة المشتركة لـ `window.productModule` لضمان التوافقية مع الأنظمة القديمة.
-
-2. **`edit2_utils.js`**:
-   - إدارة رسائل الخطأ (`EDIT2_showError`).
-   - توليد المعرفات الفريدة وتنسيق أحجام الملفات.
-
-3. **`edit2_image.js`**:
-   - `EDIT2_loadExistingImages`: جلب الصور الحالية من السحابة عند البدء.
-   - منطق ضغط الصور الذكي للخدمات.
-
-4. **`edit2_ui.js`**:
-   - إدارة التفاعل مع حقول النص (الاسم، الوصف، الرسالة) وتحديث العدادات.
-   - ميزة الكاميرا لسطح المكتب والموبايل.
-   - إنشاء وحذف عناصر المعاينة.
-   - **`EDIT2_renderCategories()`**: جلب أسماء الفئات المختارة من `ProductStateManager.resolveCategoryNames()` وعرضها كبطاقات ملونة تحت عنوان الصفحة.
-   - **زر "تجاهل التعديلات" (`edit2_btn_discard`)**: عرض نافذة تأكيد SweetAlert2 عصرية، ثم مسح الحالة من `ProductStateManager` وتنظيف الحاوية والعودة للخلف عبر `containerGoBack()`.
-
-5.  **`edit2_submit.js`**:
-   - **اكتشاف التغييرات (Change Detection)**: يتم مقارنة البيانات المدخلة بالنسخة الأصلية المخزنة في `ProductStateManager`. إذا لم يحدث تغيير، يتم منع الإرسال لتوفير الموارد.
-   - **إدارة الصور السحابية**: يتم رفع الصور الجديدة وحذف الصور المزالة من R2 لضمان عدم تراكم ملفات غير مستخدمة.
-   - **تحديث قاعدة البيانات**: يتم استدعاء `updateProduct` مع إعادة ضبط الحالة لـ `is_approved: 0` لإعادة الفحص الإداري.
-
-
-6.  **`edit2_init.js`**:
-   - **جلب البيانات**: يتم استخراج كافة البيانات من `ProductStateManager` (الاسم، الوصف، الرسالة، الملاحظات) وتوزيعها على الحقول فور تحميل الصفحة.
-
-
-## 📊 تدفق البيانات (Data Flow)
-1. تحميل الصفحة -> `edit2_init.js` يملأ النموذج من الحالة في `ProductStateManager`.
-2. `edit2_ui.js` يستدعي `EDIT2_renderCategories()` لجلب وعرض أسماء الفئات المختارة كبطاقات ملونة.
-3. `edit2_image.js` يجلب الصور الحالية من السحابة.
-4. التعديل -> الضغط اللحظي للصور الجديدة.
-5. الحفظ -> `edit2_submit.js` يتحقق من التغييرات مقارنة بالحالة الأصلية -> رفع الصور -> تحديث السجل -> حذف القديم -> إخطار الإدارة.
-6. عند الضغط على "تجاهل التعديلات" -> عرض نافذة تأكيد -> مسح الحالة -> تنظيف الحاوية -> العودة للخلف.
-
+## 📊 Data Fetching and Saving
+- **Fetching**: The module starts with an empty form and relies entirely on user input.
+- **Saving**: Performed via `Fetch API` to send final data to the database after successful image upload to Cloudflare R2.
 
 ---
 
-# توثيق وحدة عرض الخدمة (ProductView2)
+# Service Editing Module Documentation (ProductEdit2 - Edit2)
 
-المسؤولة عن عرض الخدمات المتطورة باستخدام سلايدر ثلاثي الأبعاد مع نظام طلب تصوير خاص.
+The `productEdit2` module is the standardized version dedicated to editing pre-existing services. It is divided into 6 programming files to ensure ease of expansion.
 
-## 📁 هيكل المجلد
-المسار: `pages/productView2/`
+## 📁 Directory Structure
+Path: `pages/productEdit2/`
 
-### 📂 مجلد البرمجيات (js/)
-1. **`view2_config.js`**: الثوابت الخاصة بالسلايدر، ضغط الصور، ومصفوفة الصور المرفقة للطلب.
-2. **`view2_utils.js`**: `pv2_compressImage` لضغظ ورفع صور "طلب التصوير" بجودة عالية مع تحويلها لـ WebP.
-3. **`view2_slider.js`**: منطق محرك السلايدر ثلاثي الأبعاد بالكامل، بما في ذلك حساب المصفوفات للحركة والتشغيل التلقائي.
-4. **`view2_ui.js`**: إدارة معاينات الصور المرفقة في طلب التصوير والتحكم في عناصر الواجهة.
+- **`productEdit2.html`**: The structure containing service fields (no price or quantity).
+- **`productEdit2.css`**: Visual styling for the form and image previews.
+
+### 📂 Software Folder (js/)
+1. **`edit2_config.js`**:
+   - Compression settings (1600px).
+   - Shared state for `window.productModule` to ensure compatibility with legacy systems.
+
+2. **`edit2_utils.js`**:
+   - Error message management (`EDIT2_showError`).
+   - Unique ID generation and file size formatting.
+
+3. **`edit2_image.js`**:
+   - `EDIT2_loadExistingImages`: Fetches current images from the cloud upon start.
+   - Intelligent image compression logic for services.
+
+4. **`edit2_ui.js`**:
+   - Management of interaction with text fields (name, description, message) and updating counters.
+   - Desktop and mobile camera feature.
+   - Creating and deleting preview elements.
+   - **`EDIT2_renderCategories()`**: Fetches names of selected categories from `ProductStateManager.resolveCategoryNames()` and displays them as colored cards under the page title.
+   - **"Discard Changes" Button (`edit2_btn_discard`)**: Displays a modern SweetAlert2 confirmation window, then clears the state from `ProductStateManager`, cleans the container, and goes back via `containerGoBack()`.
+
+5.  **`edit2_submit.js`**:
+   - **Change Detection**: Entered data is compared with the original version stored in `ProductStateManager`. If no change occurs, submission is prevented to save resources.
+   - **Cloud Image Management**: New images are uploaded and removed images are deleted from R2 to ensure no accumulation of unused files.
+   - **Database Update**: `updateProduct` is called with state reset to `is_approved: 0` for administrative re-inspection.
+
+6.  **`edit2_init.js`**:
+   - **Data Fetching**: All data is extracted from `ProductStateManager` (name, description, message, notes) and distributed to fields as soon as the page loads.
+
+## 📊 Data Flow
+1. Page load -> `edit2_init.js` fills the form from the state in `ProductStateManager`.
+2. `edit2_ui.js` calls `EDIT2_renderCategories()` to fetch and display selected category names as colored cards.
+3. `edit2_image.js` fetches current images from the cloud.
+4. Editing -> Real-time compression of new images.
+5. Saving -> `edit2_submit.js` checks for changes compared to the original state -> upload images -> update record -> delete old -> notify administration.
+6. Upon clicking "Discard Changes" -> confirmation window displayed -> clear state -> clean container -> go back.
+
+---
+
+# Service View Module Documentation (ProductView2)
+
+Responsible for displaying advanced services using a 3D slider with a special photography request system.
+
+## 📁 Directory Structure
+Path: `pages/productView2/`
+
+### 📂 Software Folder (js/)
+1. **`view2_config.js`**: Constants for the slider, image compression, and the array of images attached to the order.
+2. **`view2_utils.js`**: `pv2_compressImage` to compress and upload "photography request" images in high quality while converting them to WebP.
+3. **`view2_slider.js`**: Full 3D slider engine logic, including matrix calculations for movement and auto-play.
+4. **`view2_ui.js`**: Management of image previews attached in the photography request and control of interface elements.
 5. **`view2_submit.js`**:
-   - **منطق طلب الصور (Photo Order flow)**:
-     - توليد معرف طلب فريد (`order_key`).
-     - تسمية الصور بنظام: `USERKEY_SELLERKEY_PRODUCTKEY_ORDERKEY_INDEX`.
-     - إنشاء سجل الطلب في `/api/orders` بـ `total_amount: 0`.
-   - **الإخطارات المدمجة**: استدعاء `handlePurchaseNotifications` لإبلاغ البائع والإدارة بالطلب الجديد فوراً.
-6. **`view2_init.js`**: دالة التهيئة التي تعتمد على `ProductStateManager` لجلب بيانات الخدمة وخيارات العرض المحددة.
+   - **Photo Order flow**:
+     - Unique order ID generation (`order_key`).
+     - Image naming system: `USERKEY_SELLERKEY_PRODUCTKEY_ORDERKEY_INDEX`.
+     - Creating an order record in `/api/orders` with `total_amount: 0`.
+   - **Integrated Notifications**: Calling `handlePurchaseNotifications` to immediately inform the seller and administration of the new order.
+6. **`view2_init.js`**: Initialization function that relies on `ProductStateManager` to fetch service data and specific view options.
 
-## 🚀 ميزات العرض المتطورة
-- **السلايدر ثلاثي الأبعاد**: نظام حركة مصفوفي (`CSSTransform`) يوفر عمقاً وتفاعلية عالية مع دعم اللمس.
-- **عرض الأدوار (Role Views)**:
-  - **المشتري**: يرى الواجهة الجذابة ونموذج "طلب تصوير" أو "طلب خدمة".
-  - **العرض فقط**: يمكن إخفاء صندوق الطلبات عبر خيار `showAddToCart: false` في الـ Options.
+## 🚀 Advanced Display Features
+- **3D Slider**: A matrix movement system (`CSSTransform`) providing high depth and interactivity with touch support.
+- **Role Views**:
+  - **Buyer**: Sees the attractive interface and "photography request" or "service request" form.
+  - **View Only**: The order box can be hidden via the `showAddToCart: false` option.
 
-## 📦 إدارة طلبات الخدمة
-- تعتمد الوحدة على ضغط الصور المرفقة من المشتري قبل رفعها لضمان سرعة تنفيذ الطلب حتى في سرعات الإنترنت الضعيفة.
-- يتم تخزين علامة `showOrderPhotoMessage` في `localStorage` لإظهار رسالة تأكيد للمستخدم بعد العودة للصفقة الرئيسية.
+## 📦 Service Order Management
+- The module relies on compressing images attached by the buyer before uploading to ensure quick order execution even on slow internet speeds.
+- A `showOrderPhotoMessage` flag is stored in `localStorage` to show a confirmation message to the user after returning to the main transaction.
 
-## 📍 أماكن الظهور في المشروع
-يتم استدعاء واجهة `ProductView2` (عرض الخدمات) من المواقع التالية:
-1.  **معرض التصنيفات (`categories.js`)**: عند النقر على أي خدمة داخل فئات الأوريفليم، السيرفرات، أو أي فئة مصنفة كخدمة.
-2.  **نتائج البحث (`search.js`)**: عند النقر على خدمة من نتائج البحث.
-3.  **إدارة خدماتي (`product2Me.js`)**: يستخدمها مقدم الخدمة لمعاينة تفاصيل خدمته.
-4.  **تفاصيل الطلبات (`sales-movement.js`)**: عند مراجعة طلبات الخدمات في حركة المبيعات أو الـ Stepper.
+## Where it Appears in the Project
+The `ProductView2` interface (service display) is called from the following locations:
+1.  **Category Gallery (`categories.js`)**: When clicking on any service within Oriflame, servers, or any category classified as a service.
+2.  **Search Results (`search.js`)**: When clicking on a service from search results.
+3.  **My Services Management (`product2Me.js`)**: Used by the service provider to preview their service details.
+4.  **Order Details (`sales-movement.js`)**: When reviewing service orders in sales movement or the Stepper.
 
-## 🛠️ الحالات الوظيفية (Display States)
-يتم تكييف واجهة الخدمات بناءً على **دور المستخدم** والهدف من العرض:
+## 🛠️ Display States
+The service interface is adapted based on the **user role** and the purpose of the display:
 
-| الحالة | قسم "بيانات الإرسال" | أزرار الطلب | وصف الحالة |
-| :--- | :--- | :--- | :--- |
-| **مشتري عام** | ✅ ظاهر | ✅ "إرسال الطلب" | الحالة الأساسية لطلب الخدمة ورفع الصور. |
-| **مقدم خدمة (Owner)**| ❌ مخفي | ❌ معطل | عند معاينة الخدمة للتأكد من المظهر. |
-| **معاينة إدارية** | ❌ مخفي | ❌ معطل | عند استدعاء الواجهة مع خيار `showAddToCart: false`. |
+| State                        | "Submission Data" Section | Order Buttons  | State Description                                                  |
+| :--------------------------- | :------------------------ | :------------- | :----------------------------------------------------------------- |
+| **General Buyer**            | ✅ Visible                 | ✅ "Send Order" | Basic state for service request and image upload.                  |
+| **Service Provider (Owner)** | ❌ Hidden                  | ❌ Disabled     | When previewing the service to check appearance.                   |
+| **Administrative Preview**   | ❌ Hidden                  | ❌ Disabled     | When calling the interface with the `showAddToCart: false` option. |
 
-## 📊 جرد البيانات (Data Schema - Services)
-تستقبل وحدة الخدمات بيانات محددة تختلف قليلاً عن المنتجات:
+## 📊 Data Schema - Services
+The service module receives specific data that differs slightly from products:
 
-| الحقل | الوصف | الظهور |
-| :--- | :--- | :--- |
-| `productName` | اسم الخدمة (أوريفليم، شحن، إلخ) | للجميع |
-| `description` | وصف تفصيلي لمميزات الخدمة | للجميع |
-| `sellerMessage` | تعليمات مقدم الخدمة للمشترين | للجميع |
-| `imageSrc` | مصفوفة صور العرض (تظهر في السلايدر) | للجميع |
-| `MainCategory` | معرف الفئة الرئيسية | برمجي |
-| `SubCategory` | معرف الفئة الفرعية (اختياري) | برمجي |
-| `type` | نوع الخدمة (ثابت للخدمات) | برمجي |
-| `sellerName` | اسم مقدم الخدمة | للإدارة والبائع فقط |
-| `user_key` | معرف مقدم الخدمة | للإدارة والبائع فقط |
-| `realPrice` | التكلفة (إن وجدت في التوصيل) | للإدارة والبائع فقط |
-
+| Field           | Description                                 | Visibility                |
+| :-------------- | :------------------------------------------ | :------------------------ |
+| `productName`   | Service name (Oriflame, shipping, etc.)     | For everyone              |
+| `description`   | Detailed description of service features    | For everyone              |
+| `sellerMessage` | Service provider instructions for buyers    | For everyone              |
+| `imageSrc`      | Display image array (appears in the slider) | For everyone              |
+| `MainCategory`  | Main category ID                            | Programmatic              |
+| `SubCategory`   | Subcategory ID (optional)                   | Programmatic              |
+| `type`          | Service type (fixed for services)           | Programmatic              |
+| `sellerName`    | Service provider name                       | For Admin and Seller only |
+| `user_key`      | Service provider ID                         | For Admin and Seller only |
+| `realPrice`     | Cost (if present in delivery)               | For Admin and Seller only |

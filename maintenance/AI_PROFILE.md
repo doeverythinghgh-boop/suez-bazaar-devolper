@@ -1,103 +1,103 @@
-# ملف تعريف المشروع للذكاء الاصطناعي (AI Project Profile)
+# AI Project Profile
 
-هذا الملف يعتبر المرجع الأساسي للذكاء الاصطناعي (AI) لفهم بيئة المشروع، القواعد الصارمة، وهيكل الملفات. يجب قراءة هذا الملف في بداية كل جلسة لضمان الامتثال الكامل لمعايير المشروع.
+This file serves as the primary reference for Artificial Intelligence (AI) to understand the project environment, strict rules, and file structure. This file must be read at the beginning of every session to ensure full compliance with project standards.
 
-## 1. القواعد العامة والصارمة (من `frist.txt`)
+## 1. General and Strict Rules (from `frist.txt`)
 
-### قواعد الكود (Code Rules)
-- **المتغيرات العامة (Global Variables)**: يُمنع منعاً باتاً استخدام `let` أو `const` للمتغيرات العامة. يجب استخدام `var` حصراً للمتغيرات العامة.
-- **التوثيق (Documentation)**:
-    - جميع التعليقات (Comments) والتوثيق (JSDoc) يجب أن تكون **باللغة الإنجليزية فقط**.
-    - كل دالة (Function)، صفحة (Page)، ومكون (Component) يجب أن يوثق بالكامل باستخدام **JSDoc**.
-- **اللغة (Language)**: أي نص يظهر للمستخدم النهائي يجب أن يكون **باللغة العربية**.
-- **الملفات المستثناة**:
-    - تجاهل محتويات مجلد `note` بالكامل.
-    - تجاهل ملف `api/database-analysis.js`.
+### Code Rules
+- **Global Variables**: It is strictly forbidden to use `let` or `const` for global variables. `var` must be used exclusively for global variables.
+- **Documentation**:
+    - All comments and documentation (JSDoc) must be in **English only**.
+    - Every function, page, and component must be fully documented using **JSDoc**.
+- **Language**: Any text displayed to the end user must be in **Arabic**.
+- **Excluded Files**:
+    - Completely ignore the contents of the `note` folder.
+    - Ignore the `api/database-analysis.js` file.
 
-### قواعد التصميم والواجهة (UI/UX Restrictions)
-- **لا تأثيرات Hover**: يمنع استخدام `:hover` أو أي تفاعلات تعتمد على مرور الماوس (لأن التطبيق موجه للأجهزة اللوحية/الموبايل).
-- **لا تدرجات لونية (No Gradients)**: يمنع استخدام `linear-gradient` أو أي نوع من التدرجات.
-- **ألوان مسطحة (Flat Colors)**: استخدم ألواناً صلبة (Solid) فقط للخلفيات.
-- **التفاعل**: يجب أن تعمل جميع التفاعلات باللمس (Touch)، ويجب استخدام `active` أو `focus` للملاحظات البصرية بدلاً من Hover.
+### UI/UX Restrictions
+- **No Hover Effects**: Using `:hover` or any interactions that depend on mouse-over is prohibited (as the application is targeted at tablets/mobiles).
+- **No Gradients**: Using `linear-gradient` or any type of gradients is prohibited.
+- **Flat Colors**: Use solid colors only for backgrounds.
+- **Interaction**: All interactions must work by touch, and `active` or `focus` should be used for visual feedback instead of Hover.
 
-### معايير الجودة (Quality Standards)
-- **عدم كسر الكود الحالي**: أي تعديل يجب ألا يوقف الميزات الحالية.
-- **مبادئ الكود النظيف**: الالتزام بـ SoC, SRP, OCP, KISS.
-- **معالجة الأخطاء**: استخدام `try...catch` لمنع توقف التطبيق، وعدم تجاهل الأخطاء بصمت.
+### Quality Standards
+- **Do Not Break Existing Code**: Any modification must not stop current features.
+- **Clean Code Principles**: Adherence to SoC, SRP, OCP, KISS.
+- **Error Handling**: Use `try...catch` to prevent application crashes, and do not ignore errors silently.
 
-### التواصل (Communication)
-- المحادثة مع المطور تكون **باللغة العربية فقط**.
-- الخطط والتقارير وملفات Markdown تكون **باللغة العربية**.
+### Communication
+- Conversation with the developer is in **Arabic only**.
+- Plans, reports, and Markdown files are in **Arabic**.
 
-## 2. هيكل المشروع (Project Structure)
+## 2. Project Structure
 
-نظرة عامة على المجلدات الرئيسية في الجذر:
+Overview of the main directories in the root:
 
-- **`api/`**: يحتوي على ملفات الاتصال بالخلفية (Backend) والتعامل مع البيانات.
-- **`assets/`**: الملفات الثابتة (صور، أيقونات، خطوط).
-- **`js/`**: ملفات جافاسكريبت الأساسية للمشروع (مثل `index.js`, `utils.js`).
-- **`pages/`**: يحتوي على صفحات التطبيق المختلفة (كل صفحة في مجلد خاص بها عادةً).
-- **`style/`**: ملفات التنسيق (CSS).
-- **`maintenance/`**: مجلد التوثيق وقواعد المشروع (المجلد الحالي).
-- **`steper/`**: يبدو أنه يحتوي على منطق "الخطوات" (Wizard/Stepper logic).
-- **`location/`**: منطق التعامل مع المواقع الجغرافية.
-- **`notification/`**: نظام الإشعارات.
-- **`lang/`**: ملفات الترجمة واللغات.
+- **`api/`**: Contains backend communication files and data handling.
+- **`assets/`**: Static files (images, icons, fonts).
+- **`js/`**: Core JavaScript files of the project (e.g., `index.js`, `utils.js`).
+- **`pages/`**: Contains various application pages (each page is usually in its own folder).
+- **`style/`**: Styling files (CSS).
+- **`maintenance/`**: Documentation and project rules folder (the current folder).
+- **`steper/`**: Appears to contain "step" logic (Wizard/Stepper logic).
+- **`location/`**: Logic for handling geographic locations.
+- **`notification/`**: Notification system.
+- **`lang/`**: Translation and language files.
 
-## 3. خريطة التوثيق (Documentation Map)
+## 3. Documentation Map
 
-شرح مختصر للملفات الموجودة في مجلد `maintenance`:
+Brief explanation of the files in the `maintenance` folder:
 
-- **`AI_PROFILE.md`**: هذا الملف (نقطة البداية للـ AI).
-- **`frist.txt`**: الملف الأصلي للقواعد الصارمة (مصدر الحقيقة).
-- **`API.md`**: توثيق نقاط الاتصال (Endpoints) وهيكل البيانات.
-- **`AuthAndRouting.md`**: توثيق نظام المصادقة والتوجيه بين الصفحات.
-- **`BUILD_SYSTEM.md`**: شرح نظام البناء (Build System) إن وجد.
-- **`CARDPACKAGE.md`**: توثيق منطق سلة المشتريات أو البطاقات.
-- **`CATEGORIES_STYLES.md`**: دليل تنسيق الفئات (Categories).
-- **`DARK_MODE.md`**: توثيق الوضع الليلي.
-- **`LOCAL_Library.md`**: توثيق المكتبات المحلية المستخدمة.
-- **`LOCATION.md`**: تفاصيل حول خدمات الموقع.
-- **`NOTIFICATION.md`**: تفاصيل نظام الإشعارات.
-- **`PRODUCT_SERVICE.md`**: توثيق خدمات المنتجات.
-- **`PWA.md`**: إعدادات تطبيق الويب التقدمي (Progressive Web App).
-- **`STEPER.md`**: توثيق مكون الخطوات.
-- **`TranslationSystem.md`**: شرح نظام الترجمة.
-- **`androidFun.md`**: توثيق الوظائف الخاصة ببيئة الأندرويد (Bridge).
-- **`product_add_view_edit.md` / `product2_add_view_edit.md`**: توثيق عمليات إضافة وعرض وتعديل المنتجات.
+- **`AI_PROFILE.md`**: This file (the starting point for the AI).
+- **`frist.txt`**: The original file for strict rules (Source of Truth).
+- **`API.md`**: Documentation of endpoints and data structure.
+- **`AuthAndRouting.md`**: Documentation of the authentication and routing system between pages.
+- **`BUILD_SYSTEM.md`**: Explanation of the Build System, if any.
+- **`CARDPACKAGE.md`**: Documentation of shopping cart or card logic.
+- **`CATEGORIES_STYLES.md`**: Guide for category formatting.
+- **`DARK_MODE.md`**: Documentation of the dark mode.
+- **`LOCAL_Library.md`**: Documentation of the local libraries used.
+- **`LOCATION.md`**: Details about location services.
+- **`NOTIFICATION.md`**: Details of the notification system.
+- **`PRODUCT_SERVICE.md`**: Documentation of product services.
+- **`PWA.md`**: Progressive Web App (PWA) settings.
+- **`STEPER.md`**: Documentation of the stepper component.
+- **`TranslationSystem.md`**: Explanation of the translation system.
+- **`AndroidBridgeProtocol.md`**: Documentation of functions specific to the Android environment (Bridge).
+- **`product_add_view_edit.md` / `product2_add_view_edit.md`**: Documentation of product addition, viewing, and editing processes.
 
-## 4. تعليمات التعامل مع التوثيق
-- **القراءة أولاً**: قبل أي تعديل، اقرأ ملف التوثيق ذي الصلة في `maintenance`.
-- **التحديث المستمر**: عند تعديل الكود، يجب تحديث ملف التوثيق المقابل ليعكس التغييرات بدقة.
-- **عدم الحذف**: لا تحذف أي معلومة من التوثيق إلا إذا تم حذف الكود المرتبط بها فعلياً.
+## 4. Documentation Handling Instructions
+- **Read First**: Before any modification, read the relevant documentation file in `maintenance`.
+- **Continuous Update**: When modifying code, the corresponding documentation file must be updated to reflect the changes accurately.
+- **No Deletion**: Do not delete any information from the documentation unless the associated code has been physically deleted.
 
 ---
-تم إنشاء هذا الملف لضمان فهم الذكاء الاصطناعي الكامل لسياق المشروع وقواعده.
+This file was created to ensure the AI's full understanding of the project context and rules.
 
-## 5. إلزامية بناء النموذج المعرفي (Mandatory Knowledge Model Construction)
+## 5. Mandatory Knowledge Model Construction
 
-**تحذير هام جداً للذكاء الاصطناعي (Critical Warning for AI):**
+**Critical Warning for AI:**
 
-يجب عليك **إلزامياً** وقبل البدء في أي مهمة برمجية أو تعديل، أن تقوم بقراءة وتحليل **جميع الملفات** الموجودة داخل مجلد `maintenance` بلا استثناء.
+You must **mandatorily**, before starting any programming task or modification, read and analyze **all files** within the `maintenance` folder without exception.
 
-**الهدف:**
-بناء نموذج معرفي داخلي (Internal Mental Model) دقيق وشامل يحتوي على:
-1.  جميع القواعد الصارمة.
-2.  هيكل البيانات (Data Structures).
-3.  تدفق العمليات (Workflows).
-4.  القيود التقنية (Technical Constraints).
+**Goal:**
+Construct an accurate and comprehensive Internal Mental Model containing:
+1.  All strict rules.
+2.  Data Structures.
+3.  Workflows.
+4.  Technical Constraints.
 
-**لماذا؟**
-لأن هذا المشروع يحتوي على قواعد خاصة جداً (مثل منع الـ Hover، استخدام `var`، هيكلية الملفات) وأي تجاهل لهذه الوثائق سيؤدي إلى كود غير صالح أو تكسير للنظام الحالي.
+**Why?**
+Because this project contains very specific rules (such as prohibiting Hover, using `var`, file structure), and any disregard for these documents will lead to invalid code or breaking the current system.
 
-**الالتزام:**
-لا تقم بأي تعديل حتى تؤكد لنفسك أنك استوعبت محتوى مجلد `maintenance` بالكامل. تجاهل هذه الخطوة يعتبر فشلاً ذريعاً في أداء المهمة.
+**Commitment:**
+Do not make any modifications until you confirm to yourself that you have fully absorbed the content of the `maintenance` folder. Ignoring this step is considered a total failure in performing the task.
 
-## 6. استقرار الاتصال والبيئة (Connection & Environment Stability)
+## 6. Connection & Environment Stability
 
-**قنوات الاتصال القوية (Strong Communication Channels):**
-يجب على الـ Agent العمل على إنشاء والحفاظ على قنوات اتصال قوية ومستقرة مع الجهاز المضيف. هذا يشمل:
+**Strong Communication Channels:**
+The Agent must work on creating and maintaining strong and stable communication channels with the host device. This includes:
 
-1.  **منع التعطل (Preventing Interruption)**: يجب توخي الحذر الشديد وتجنب أي إجراءات أو أوامر قد تؤدي إلى تعليق (Hang)، تجميد، أو تعطل (Crash) بيئة العمل أو الـ Agent نفسه أثناء التنفيذ.
-2.  **التعرف على الإعدادات (Connection Settings)**: عند بدء التشغيل أو الاتصال، يجب على الـ Agent التعرف فوراً وبسهولة على إعدادات الاتصال الخاصة بالجهاز (مثل نوع نظام التشغيل، المسارات، الصلاحيات المتاحة) لضمان توافق جميع العمليات اللاحقة.
-3.  **الهدف**: ضمان تشغيل سلس ومستمر دون انقطاعات تقنية تعيق إنجاز المهام، وتوفير بيئة عمل آمنة ومستقرة.
+1.  **Preventing Interruption**: Extreme caution must be exercised to avoid any actions or commands that may lead to a hang, freeze, or crash of the working environment or the Agent itself during execution.
+2.  **Recognizing Settings (Connection Settings)**: Upon startup or connection, the Agent must immediately and easily recognize the device's connection settings (such as OS type, paths, available permissions) to ensure the compatibility of all subsequent operations.
+3.  **Goal**: Ensure smooth and continuous operation without technical interruptions that hinder task completion, and provide a safe and stable working environment.

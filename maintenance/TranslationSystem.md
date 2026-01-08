@@ -1,102 +1,102 @@
-# دليل نظام الترجمة الموحد (Unified Localization Guide)
+# Unified Localization Guide
 
-يعتمد مشروع "بزار" على نظام ترجمة ديناميكي مركزي مصمم ليدعم كافة أجزاء المشروع تدريجياً. يسمح هذا النظام بتبديل اللغة (مثل العربية والإنجليزية) مع التغيير الفوري لاتجاه الواجهة (RTL/LTR) دون الحاجة لإعادة تحميل الموقع.
-
----
-
-## 1. هيكلية ملفات الترجمة
-
-يتم تنظيم النصوص في مجلد `lang/` وفق هيكلية موديولية (Modular) تعتمد على الدمج التلقائي:
-
-### أ. الملف العام (`general.json`)
-هو الملف الأساسي والمستودع المركزي لكافة النصوص التي تتكرر عبر النظام. يهدف هذا الملف إلى منع تكرار نفس المفاتيح في ملفات الترجمة الخاصة بالصفحات الأخرى، ويشمل:
-*   عناصر الهيدر والفوتر (Header/Footer).
-*   رسائل التنبيهات الموحدة (Alerts & Confirmations).
-*   المصطلحات العامة (مثل: "موافق"، "إلغاء"، "حفظ").
-*   رسائل حالات الشبكة والوقت.
-*   أي نص يظهر في أكثر من مكان داخل التطبيق.
-
-### ب. ملفات الصفحات (`pageName.json`)
-لكل صفحة أو موديول جديد (مثل `login`, `profile`, `products`)، يتم إنشاء ملف JSON مستقل يحتوي فقط على النصوص الخاصة بتلك الواجهة. هذا يسهل الصيانة ويمنع تضخم الملفات.
+The "Bazaar" project relies on a central dynamic translation system designed to gradually support all parts of the project. This system allows for switching languages (e.g., Arabic and English) with an immediate change in interface direction (RTL/LTR) without needing to reload the site.
 
 ---
 
-## 2. المحرك البرمجي المركزي
+## 1. Translation File Structure
 
-يعمل النظام من خلال ثلاث ركائز أساسية في `js/index.js`:
+Texts are organized in the `lang/` folder according to a modular structure that relies on automatic merging:
 
-1.  **المخزن العالمي (`window.appTranslations`)**: كائن واحد يتم فيه دمج كافة ملفات الـ JSON المحملة ليصبح "قاموس" التطبيق النشط.
-2.  **دالة الجلب (`window.langu(key)`)**: الدالة المسؤولة عن استخراج النص بناءً على مفتاح الترجمة ولغة المستخدم الحالية في الـ `localStorage`.
-3.  **دالة التطبيق الشامل (`window.applyAppTranslations()`)**:
-    *   تقوم بتحديث اتجاه الصفحة (`dir`) ووسم اللغة (`lang`) في جذر الـ HTML (`#index-html-root`).
-    *   تقوم بمسح الـ DOM وترجمة أي عنصر يحمل المفاتيح التالية:
-        *   `data-lkey`: لترجمة المحتوى النصي للعنصر (`textContent`).
-        *   `data-lkey-placeholder`: لترجمة النص التوضيحي داخل حقول الإدخال (`placeholder`).
-        *   `data-lkey-title`: لترجمة التلميحات التي تظهر عند الوقوف على العنصر (`title`).
-    *   تعيد مزامنة العناصر الحساسة (مثل اسم المستخدم في الهيدر).
+### A. General File (`general.json`)
+The primary file and central repository for all texts that recur across the system. This file aims to prevent duplication of the same keys in translation files for other pages, and includes:
+*   Header and Footer elements.
+*   Unified alert and confirmation messages.
+*   General terms (e.g., "OK", "Cancel", "Save").
+*   Network status and time messages.
+*   Any text that appears in more than one place within the application.
+
+### B. Page Files (`pageName.json`)
+For each new page or module (e.g., `login`, `profile`, `products`), an independent JSON file is created containing only the texts specific to that interface. This facilitates maintenance and prevents file bloat.
 
 ---
 
-## 3. ترجمة السمات والنصوص (Advanced Attributes)
+## 2. Central Programming Engine
 
-*   **ثبات الأيقونات والرموز (Icon Preservation)**:
-    *   **هام جداً**: عند ترجمة الأزرار أو العناوين التي تحتوي على أيقونات او رموز(`<i>` أو `<svg>`)، **يجب** وضع النص المراد ترجمته داخل وسم `<span>` يحمل `data-lkey`، بدلاً من وضع السمة على العنصر الأب.
-    *   **مثال صحيح**:
+The system operates through three main pillars in `js/index.js`:
+
+1.  **Global Store (`window.appTranslations`)**: A single object into which all loaded JSON files are merged to become the active application "dictionary".
+2.  **Fetch Function (`window.langu(key)`)**: The function responsible for extracting text based on the translation key and the user's current language in `localStorage`.
+3.  **Comprehensive Application Function (`window.applyAppTranslations()`)**:
+    *   Updates the page direction (`dir`) and language tag (`lang`) in the HTML root (`#index-html-root`).
+    *   Scans the DOM and translates any element carrying the following keys:
+        *   `data-lkey`: To translate the element's text content (`textContent`).
+        *   `data-lkey-placeholder`: To translate placeholder text within input fields.
+        *   `data-lkey-title`: To translate tooltips that appear when hovering over the element (`title`).
+    *   Resynchronizes sensitive elements (e.g., username in the header).
+
+---
+
+## 3. Attribute and Text Translation (Advanced Attributes)
+
+*   **Icon and Symbol Preservation**:
+    *   **Very Important**: When translating buttons or titles containing icons or symbols (`<i>` or `<svg>`), the text to be translated **must** be placed inside a `<span>` tag carrying `data-lkey`, instead of placing the attribute on the parent element.
+    *   **Correct Example**:
         ```html
-        <button><i class="fas fa-save"></i> <span data-lkey="save_btn">حفظ</span></button>
+        <button><i class="fas fa-save"></i> <span data-lkey="save_btn">Save</span></button>
         ```
-    *   **مثال خاطئ** (سيؤدي لاختفاء الأيقونة):
+    *   **Incorrect Example** (will cause the icon to disappear):
         ```html
-        <button data-lkey="save_btn"><i class="fas fa-save"></i> حفظ</button>
+        <button data-lkey="save_btn"><i class="fas fa-save"></i> Save</button>
         ```
 
-*   **تلميحات العناصر (Tooltips)**: نستخدم السمة `data-lkey-title` لترجمة النصوص التي تظهر عند الوقوف على العنصر (Attribute `title`).
+*   **Tooltips**: We use the `data-lkey-title` attribute to translate texts that appear when hovering over an element (Attribute `title`).
 
-*   **حقول الإدخال (Input Placeholders)**: نستخدم السمة `data-lkey-placeholder` لترجمة النصوص التوضيحية داخل الـ `input` والـ `textarea`.
-    *   **تنبيه**: استخدام `data-lkey-attr="placeholder"` غير مدعوم وقد لا يعمل بشكل صحيح. استخدم `data-lkey-placeholder` دائماً لهذا الغرض.
+*   **Input Placeholders**: We use the `data-lkey-placeholder` attribute to translate placeholder texts within `input` and `textarea`.
+    *   **Warning**: Using `data-lkey-attr="placeholder"` is not supported and may not work correctly. Always use `data-lkey-placeholder` for this purpose.
 
 ---
 
-## 4. تدويل البيانات (Data Internationalization)
+## 4. Data Internationalization
 
-عند التعامل مع ملفات JSON ضخمة تحتوي على بيانات (مثل `shared/list.json` للتصنيفات)، يتم اتباع الهيكلية التالية:
-1.  **تحويل القيم**: تحويل الحقول النصية (مثل `title`) من نص بسيط إلى كائن لغات: `"title": { "ar": "...", "en": "..." }`.
-2.  **الاستهلاك البرمجي**: المكونات التي تقرأ هذه البيانات (مثل `CategoryModal`) يجب أن تختار اللغة المناسبة برمجياً:
+When dealing with large JSON files containing data (e.g., `shared/list.json` for categories), the following structure is followed:
+1.  **Value Conversion**: Converting text fields (e.g., `title`) from simple text to a language object: `"title": { "ar": "...", "en": "..." }`.
+2.  **Programmatic Consumption**: Components that read this data (e.g., `CategoryModal`) must programmatically select the appropriate language:
     ```javascript
     const displayTitle = typeof titleObj === 'object' ? titleObj[window.app_language] : titleObj;
     ```
 
 ---
 
-## 5. النصوص داخل الكود والأنيميشن (Logic & Animation)
+## 5. Logic and Animation Texts
 
-بالنسبة للمكونات التي تعتمد على JavaScript لتوليد النصوص أو الأنيميشن (مثل الهيدر):
-*   يتم استدعاء `window.langu("key")` مباشرة داخل الكود لتلقي النص المترجم.
-*   بالنسبة للقوائم المتكررة (مثل شعارات الهيدر)، يتم تخزين المفاتيح في `general.json` بأسماء متسلسلة (`tagline_1`, `tagline_2`) واستدعاؤها عبر دورة برمجية (Loop).
-
----
-
-## 6. التكامل مع نظام التحميل الديناميكي (`mainLoader`)
-
-يضمن نظام `mainLoader` في `js/forms.js` تطبيق الترجمات تلقائياً عند تحميل أي صفحة أو موديول جديد:
-*   بمجرد انتهاء تحميل الـ HTML وتشغيل السكربتات، تقوم `mainLoader` باستدعاء `window.applyAppTranslations()`.
-*   هذا يضمن أن العناصر التي تحمل سمات `data-lkey` في الصفحات المحملة ديناميكياً ستتم ترجمتها فور ظهورها.
+For components that rely on JavaScript to generate texts or animations (e.g., the header):
+*   `window.langu("key")` is called directly within the code to receive the translated text.
+*   For recurring lists (e.g., header taglines), keys are stored in `general.json` with sequential names (`tagline_1`, `tagline_2`) and called via a loop.
 
 ---
 
-## 7. التنبيهات ونوافذ الحوار (Alerts & Modals)
+## 6. Integration with Dynamic Loading System (`mainLoader`)
 
-لضمان تعريب النوافذ المنبثقة (SweetAlert2)، يتم اتباع إحدى الطريقتين:
+The `mainLoader` system in `js/forms.js` ensures that translations are automatically applied when any new page or module is loaded:
+*   As soon as HTML loading and script execution are finished, `mainLoader` calls `window.applyAppTranslations()`.
+*   This ensures that elements carrying `data-lkey` attributes in dynamically loaded pages will be translated as soon as they appear.
 
-### أ. استخدام المساعدات الموحدة (`AuthUI`)
-يُفضل دائماً استخدام كائن `AuthUI` في `js/auth/uiHelpers.js` للمهام المتكررة، حيث أنه مترجم داخلياً بشكل تلقائي:
-*   `AuthUI.showLoading(title, text)`: يعرض مؤشر تحميل.
-*   `AuthUI.showSuccess(title, text)`: يعرض رسالة نجاح.
-*   `AuthUI.showError(title, text)`: يعرض رسالة خطأ.
-*   `AuthUI.confirmPassword(title, text)`: يطلب تأكيد كلمة المرور.
+---
 
-### ب. الاستدعاء المباشر (`Swal.fire`)
-عند الحاجة لتخصيص كامل، يجب استدعاء `window.langu()` لكل نص يظهر للمستخدم:
+## 7. Alerts and Modals
+
+To ensure localization of pop-up windows (SweetAlert2), one of two methods is followed:
+
+### A. Using Unified Helpers (`AuthUI`)
+It is always preferred to use the `AuthUI` object in `js/auth/uiHelpers.js` for recurring tasks, as it is internally translated automatically:
+*   `AuthUI.showLoading(title, text)`: Displays a loading indicator.
+*   `AuthUI.showSuccess(title, text)`: Displays a success message.
+*   `AuthUI.showError(title, text)`: Displays an error message.
+*   `AuthUI.confirmPassword(title, text)`: Requests password confirmation.
+
+### B. Direct Call (`Swal.fire`)
+When full customization is needed, `window.langu()` must be called for every text displayed to the user:
 ```javascript
 Swal.fire({
     title: window.langu("key_title"),
@@ -108,22 +108,21 @@ Swal.fire({
 
 ---
 
-## 8. كيفية البدء بترجمة موديول (صفحة) جديد
-... (بقية الخطوات كما هي)
+## 8. How to Start Translating a New Module (Page)
 
-1.  **إنشاء الملف**: أضف ملفاً جديداً في مجلد `lang/` باسم الصفحة (مثال: `myPage.json`).
-2.  **كتابة المفاتيح**: أضف النصوص بصيغة `{ "ar": "...", "en": "..." }`.
-3.  **تحديث التسجيل**: أضف أمر تحميل الملف الجديد في دالة `loadIndexTranslations()` داخل `js/index.js` ليتم دمجه في الكائن العالمي.
-4.  **تسمية العناصر**: أضف `data-lkey` للعناصر في ملف الـ HTML الخاص بالصفحة.
-5.  **التنسيق المنطقي**: تأكد من أن ملف الـ CSS الخاص بالصفحة يستخدم **Logical Properties** لضمان عمل الاتجاهين:
-    *   استخدم `inset-inline-start/end` بدلاً من `left/right`.
-    *   استخدم `padding-inline-start` بدلاً من `padding-left`.
-    *   استخدم `text-align: start` بدلاً من `text-align: right`.
+1.  **Create the File**: Add a new file in the `lang/` folder named after the page (e.g., `myPage.json`).
+2.  **Write the Keys**: Add texts in the format `{ "ar": "...", "en": "..." }`.
+3.  **Update Registration**: Add a command to load the new file in the `loadIndexTranslations()` function within `js/index.js` to merge it into the global object.
+4.  **Name the Elements**: Add `data-lkey` to elements in the page's HTML file.
+5.  **Logical Formatting**: Ensure the page's CSS file uses **Logical Properties** to ensure both directions work:
+    *   Use `inset-inline-start/end` instead of `left/right`.
+    *   Use `padding-inline-start` instead of `padding-left`.
+    *   Use `text-align: start` instead of `text-align: right`.
 
 ---
 
-9. الحفاظ على التفضيلات
+## 9. Preserving Preferences
 
-يضمن النظام بقاء لغة المستخدم المختارة حتى في الحالات التالية:
-*   **تسجيل الخروج**: يحفظ `SessionManager` اللغة قبل مسح البيانات ويعيد تعيينها فوراً لضمان بقاء الواجهة باللغة التي يفضلها المستخدم حتى بعد الخروج.
-*   **تحديث الصفحة**: يتم استرجاع اللغة من الـ `localStorage` فور تشغيل التطبيق وقبل رندر أي عنصر.
+The system ensures the user's selected language remains even in the following cases:
+*   **Logout**: `SessionManager` saves the language before clearing data and resets it immediately to ensure the interface remains in the user's preferred language even after logout.
+*   **Page Refresh**: The language is retrieved from `localStorage` as soon as the application starts and before any element is rendered.

@@ -1,45 +1,45 @@
-# دليل استضافة الموارد محلياً (Local Assets Guide)
+# Local Assets Hosting Guide (Local Assets Guide)
 
-هذا الملف يشرح كيفية إدارة الخطوط والمكتبات الخارجية داخل مشروع "سويس بازار" لضمان أفضل أداء واستقلالية تامة عن الخوادم الخارجية (CDNs).
+This file explains how fonts and external libraries are managed within the "Suez Bazaar" project to ensure best performance and complete independence from external servers (CDNs).
 
-## 1. الخطوط والأيقونات (Font Awesome)
+## 1. Fonts and Icons (Font Awesome)
 
-تم نقل Font Awesome من التحميل عبر الإنترنت إلى الاستضافة المحلية بالكامل:
-- **المسار**: `assets/fontawesome/`
-- **الملفات**:
-  - `css/all.css`: يحتوي على كافة الأنماط.
-  - `webfonts/`: يحتوي على ملفات الخطوط بصيغة `.woff2` (الأسرع والأخف).
-- **التحسين (Optimization)**:
-  نستخدم تقنية `preload` في ملف `index.html` لتحميل أهم ملفات الخطوط مبكراً جداً:
+Font Awesome has been moved from online loading to full local hosting:
+- **Path**: `assets/fontawesome/`
+- **Files**:
+  - `css/all.css`: Contains all styles.
+  - `webfonts/`: Contains font files in `.woff2` format (fastest and lightest).
+- **Optimization**:
+  We use the `preload` technique in the `index.html` file to load the most important font files very early:
   ```html
   <link rel="preload" href="assets/fontawesome/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin />
   ```
 
-## 2. المكتبات البرمجية (Third-Party Libraries)
+## 2. Third-Party Libraries
 
-توجد كافة المكتبات البرمجية في مجلد موحد لسهولة الإدارة:
-- **المسار الأساسي**: `assets/libs/`
+All programming libraries are located in a unified folder for easy management:
+- **Base Path**: `assets/libs/`
 
 ### SweetAlert2
-- **المسار**: `assets/libs/sweetalert2/sweetalert2.all.min.js`
-- **الاستخدام**: تُستدلع في كافة الصفحات التي تحتاج لتنبيهات تفاعلية.
+- **Path**: `assets/libs/sweetalert2/sweetalert2.all.min.js`
+- **Usage**: Called in all pages that require interactive alerts.
 
 ### Firebase (v8.10.1)
-تم تحميل النسخ المتوافقة مع الـ Service Worker لضمان عمل الإشعارات بدون إنترنت:
-- **المسار**: `assets/libs/firebase/`
-- **الملفات**:
+Versions compatible with the Service Worker have been downloaded to ensure notifications work offline:
+- **Path**: `assets/libs/firebase/`
+- **Files**:
   - `firebase-app-8.10.1.js`
   - `firebase-messaging-8.10.1.js`
 
-## 3. لماذا نستخدم الاستضافة المحلية؟
+## 3. Why Use Local Hosting?
 
-1. **السرعة (Performance)**: تقليل وقت الفحص (DNS Lookup) والاتصال (SSL Handshake) بمواقع خارجية.
-2. **الاستقلالية (Offline Support)**: يعمل التطبيق وتظهر الأيقونات والتنبيهات حتى لو انقطعت خدمة الإنترنت أو تم حظر الـ CDN.
-3. **ثبات الإصدارات**: نضمن عدم حدوث تغييرات مفاجئة في المكتبات نتيجة تحديثات من المصدر الخارجي.
+1. **Performance**: Reducing DNS Lookup and SSL Handshake time with external sites.
+2. **Offline Support**: The application works, and icons and alerts appear even if the internet service is interrupted or the CDN is blocked.
+3. **Version Stability**: We ensure no sudden changes occur in the libraries due to updates from the external source.
 
-## 4. كيفية التحديث
+## 4. How to Update
 
-لتحديث أي مكتبة مستقبلاً:
-1. قم بتنزيل الإصدار الجديد من موقع المكتبة الرسمي أو من `jsdelivr`.
-2. استبدل الملف القديم في مجلد `assets/libs/` مع الحفاظ على نفس اسم الملف أو تحديث المسار في ملفات الـ HTML.
-3. تأكد من تحديث كافة الصفحات التي تستخدم هذه المكتبة.
+To update any library in the future:
+1. Download the new version from the official library site or from `jsdelivr`.
+2. Replace the old file in the `assets/libs/` folder while keeping the same filename or updating the path in the HTML files.
+3. Ensure all pages using this library are updated.

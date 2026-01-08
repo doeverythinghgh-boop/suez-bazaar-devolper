@@ -1,72 +1,72 @@
-# 🚀 توثيق واجهة برمجة التطبيقات (API) - Bazaar
+# 🚀 Application Programming Interface (API) Documentation - Bazaar
 
-هذا المستند يقدم شرحاً تقنياً شاملاً ودقيقاً لكافة العمليات المتاحة في النظام، مع توضيح المنطق البرمجي خلف كل مسار لضمان سهولة الصيانة والتطوير.
+This document provides a comprehensive and accurate technical explanation of all operations available in the system, clarifying the programming logic behind each path to ensure ease of maintenance and development.
 
 ---
 
-## 📦 1. إدارة المنتجات (`/api/products`)
+## 📦 1. Product Management (`/api/products`)
 
-يتعامل هذا المسار مع جدول `marketplace_products` ويدعم كافة عمليات CRUD.
+This path handles the `marketplace_products` table and supports all CRUD operations.
 
-### 🔍 جلب المنتجات (GET)
+### 🔍 Fetching Products (GET)
 
-#### معاملات البحث والفلترة
+#### Search and Filtering Parameters
 
-| المعامل | النوع | الوصف | المنطق البرمجي |
-|:---|:---|:---|:---|
-| `product_key` | string | معرف منتج محدد | يعيد منتج واحد فقط (كائن JSON) بدلاً من مصفوفة |
-| `user_key` | string | معرف البائع | جلب منتجات بائع معين |
-| `searchTerm` | string | نص البحث | بحث في `productName` باستخدام `LIKE %term%` |
-| `MainCategory` | integer | التصنيف الرئيسي | فلترة حسب التصنيف الرئيسي |
-| `SubCategory` | integer | التصنيف الفرعي | فلترة حسب التصنيف الفرعي |
-| `status` | integer | حالة الاعتماد | `null`: معتمد فقط (افتراضي)، `0`: قيد المراجعة، `1`: معتمد |
+| Parameter      | Type    | Description                 | Programming Logic                                                   |
+| :------------- | :------ | :-------------------------- | :------------------------------------------------------------------ |
+| `product_key`  | string  | Specific product identifier | Returns only one product (JSON object) instead of an array          |
+| `user_key`     | string  | Seller identifier           | Fetches products of a specific seller                               |
+| `searchTerm`   | string  | Search text                 | Searches in `productName` using `LIKE %term%`                       |
+| `MainCategory` | integer | Main category               | Filters by main category                                            |
+| `SubCategory`  | integer | Sub-category                | Filters by sub-category                                             |
+| `status`       | integer | Approval status             | `null`: approved only (default), `0`: pending review, `1`: approved |
 
-#### سيناريوهات الجلب
+#### Fetching Scenarios
 
-1. **جلب منتج واحد**: عند تمرير `product_key`، يتم جلب تفاصيل المنتج مع بيانات البائع (username, phone, location, limitPackage, isDelevred)
-2. **البحث العام**: عند تمرير `searchTerm` أو `MainCategory`، يتم البحث في المنتجات المعتمدة فقط (ما لم يتم تحديد `status`)
-3. **منتجات البائع**: عند تمرير `user_key` فقط، يتم جلب جميع منتجات البائع
-4. **عرض المشرف**: عند تمرير `status` فقط، يتم جلب المنتجات حسب حالة الاعتماد
+1. **Fetch Single Product**: When `product_key` is passed, product details are fetched along with seller data (username, phone, location, limitPackage, isDelevred).
+2. **General Search**: When `searchTerm` or `MainCategory` is passed, only approved products are searched (unless `status` is specified).
+3. **Seller Products**: When only `user_key` is passed, all products of the seller are fetched.
+4. **Admin View**: When only `status` is passed, products are fetched according to approval status.
 
 > [!IMPORTANT]
-> - جميع الاستعلامات تستخدم `JOIN` مع جدول `users` لجلب بيانات البائع
-> - الترتيب دائماً حسب `id DESC` (الأحدث أولاً)
-> - عند عدم تمرير أي معاملات صالحة، يتم إرجاع مصفوفة فارغة
+> - All queries use `JOIN` with the `users` table to fetch seller data.
+> - Order is always by `id DESC` (newest first).
+> - When no valid parameters are passed, an empty array is returned.
 
-### ➕ إضافة منتج (POST)
+### ➕ Add Product (POST)
 
-#### الحقول المطلوبة
+#### Required Fields
 - `user_key`, `product_key`, `MainCategory`, `productName`
 
-#### الحقول الاختيارية
+#### Optional Fields
 - `product_description`, `product_price`, `original_price`, `realPrice`, `product_quantity`
 - `user_message`, `user_note`, `ImageName`, `SubCategory`, `ImageIndex`
-- `serviceType` (افتراضي: 0), `heavyLoad` (افتراضي: 0)
+- `serviceType` (default: 0), `heavyLoad` (default: 0)
 
 > [!NOTE]
-> - يتم تعيين `is_approved = 0` تلقائياً (قيد المراجعة)
-> - `product_key` يُرسل من العميل ولا يُولد في الخادم لضمان التزامن مع أسماء الصور
+> - `is_approved = 0` is automatically assigned (pending review).
+> - `product_key` is sent from the client and not generated on the server to ensure synchronization with image names.
 
-### ✏️ تحديث منتج (PUT)
+### ✏️ Update Product (PUT)
 
-- **المنطق**: تحديث ديناميكي - يتم تحديث الحقول المُرسلة فقط
-- **المطلوب**: `product_key`
-- **الحقول القابلة للتحديث**: جميع حقول المنتج بما في ذلك `is_approved`
+- **Logic**: Dynamic update - only sent fields are updated.
+- **Required**: `product_key`
+- **Updatable Fields**: All product fields including `is_approved`.
 
-### 🗑️ حذف منتج (DELETE)
+### 🗑️ Delete Product (DELETE)
 
-- **المعامل**: `product_key` (عبر Query Parameter)
-- **الاستجابة**: رسالة نجاح أو خطأ 404 إذا لم يكن موجوداً
+- **Parameter**: `product_key` (via Query Parameter)
+- **Response**: Success message or 404 error if not found.
 
 ---
 
-## 🛒 2. إدارة الطلبات (`/api/orders`)
+## 🛒 2. Order Management (`/api/orders`)
 
-يدير هذا المسار جدولين (`orders` و `order_items`) كمعاملة ذرية واحدة باستخدام `db.batch`.
+This path manages two tables (`orders` and `order_items`) as a single atomic transaction using `db.batch`.
 
-### 📝 إنشاء طلب جديد (POST)
+### 📝 Create New Order (POST)
 
-#### الحقول المطلوبة
+#### Required Fields
 ```json
 {
   "order_key": "string",
@@ -84,49 +84,49 @@
 }
 ```
 
-#### المنطق البرمجي
-1. التحقق من اكتمال البيانات (يسمح بـ `total_amount = 0`)
-2. إنشاء حالة افتراضية: `0#${ISO_Timestamp}`
-3. تنفيذ `db.batch` لإدخال الطلب وعناصره معاً
-4. إرجاع `order_key` في حالة النجاح
+#### Programming Logic
+1. Verify data completeness (allows `total_amount = 0`).
+2. Create default status: `0#${ISO_Timestamp}`.
+3. Execute `db.batch` to insert the order and its items together.
+4. Return `order_key` on success.
 
 > [!CAUTION]
-> إذا فشلت أي عملية في الـ batch، يتم التراجع عن كامل المعاملة (Atomic Transaction)
+> If any operation in the batch fails, the entire transaction is rolled back (Atomic Transaction).
 
-### 🔄 تحديث حالة الطلب (PUT)
+### 🔄 Update Order Status (PUT)
 
-- **الحقول المطلوبة**: `order_key`, `order_status`
-- **التنسيق**: يتم تحويل `order_status` إلى نص (String) قبل الحفظ
-- **الاستخدام**: لتحديث الحالة العامة للطلب (مثل: `1#2026-01-01T12:00:00.000Z`)
+- **Required Fields**: `order_key`, `order_status`
+- **Format**: `order_status` is converted to text (String) before saving.
+- **Usage**: To update the general status of the order (e.g., `1#2026-01-01T12:00:00.000Z`).
 
 ---
 
-## 💰 تحديث القيمة الإجمالية (`/api/update-order-amount`)
+## 💰 Update Total Amount (`/api/update-order-amount`)
 
 ### POST
 
-- **الحقول المطلوبة**: `order_key`, `total_amount`
-- **المنطق**: 
-  1. التحقق من وجود الطلب
-  2. تحديث `total_amount` فقط
-- **الاستخدام**: عند تعديل الطلب من قبل المشرف أو إعادة حساب التكلفة
+- **Required Fields**: `order_key`, `total_amount`
+- **Logic**: 
+  1. Verify order existence.
+  2. Update `total_amount` only.
+- **Usage**: When the order is modified by the admin or cost is recalculated.
 
 ---
 
-## 👤 3. المستخدمين والصلاحيات (`/api/users`)
+## 👤 3. Users and Permissions (`/api/users`)
 
-### 🛡️ الأدوار (is_seller)
+### 🛡️ Roles (is_seller)
 
-| القيمة | الدور | الوصف |
-|:---:|:---|:---|
-| 0 | مشتري | مستخدم عادي |
-| 1 | بائع | يمكنه إضافة منتجات |
-| 2 | توصيل | خدمة توصيل |
-| 3 | مشرف | صلاحيات كاملة |
+| Value | Role      | Description      |
+| :---: | :-------- | :--------------- |
+|   0   | Purchaser | Regular user     |
+|   1   | Seller    | Can add products |
+|   2   | Delivery  | Delivery service |
+|   3   | Admin     | Full permissions |
 
-### 🔐 إنشاء/التحقق (POST)
+### 🔐 Create/Verify (POST)
 
-#### سيناريو 1: التحقق من كلمة المرور
+#### Scenario 1: Password Verification
 ```json
 {
   "action": "verify",
@@ -134,73 +134,73 @@
   "password": "string"
 }
 ```
-- **المنطق**: استعلام `SELECT * FROM users WHERE phone = ? AND Password = ?`
-- **الاستجابة**: بيانات المستخدم الكاملة أو خطأ 401
+- **Logic**: Query `SELECT * FROM users WHERE phone = ? AND Password = ?`.
+- **Response**: Full user data or 401 error.
 
-#### سيناريو 2: إنشاء مستخدم جديد
-- **المطلوب**: `username`, `phone`, `user_key`
-- **الاختياري**: `password`, `address`, `location`, `isDelevred`, `limitPackage`
-- **المنطق**: 
-  1. التحقق من عدم تكرار رقم الهاتف
-  2. إدخال المستخدم بقيم افتراضية للحقول الفارغة
+#### Scenario 2: Create New User
+- **Required**: `username`, `phone`, `user_key`
+- **Optional**: `password`, `address`, `location`, `isDelevred`, `limitPackage`
+- **Logic**: 
+  1. Verify phone number uniqueness.
+  2. Insert user with default values for empty fields.
 
-### 🔍 جلب المستخدمين (GET)
+### 🔍 Fetch Users (GET)
 
-| المعامل | الوصف | الاستجابة |
-|:---|:---|:---|
-| `phone` | رقم هاتف محدد | مستخدم واحد أو 404 |
-| `role` | دور محدد (is_seller) | مصفوفة مستخدمين + fcm_token |
-| بدون معاملات | جميع المستخدمين | مصفوفة مع `phone_link` و fcm_token |
+| Parameter     | Description               | Response                              |
+| :------------ | :------------------------ | :------------------------------------ |
+| `phone`       | Specific phone number     | Single user or 404                    |
+| `role`        | Specific role (is_seller) | Array of users + fcm_token            |
+| No parameters | All users                 | Array with `phone_link` and fcm_token |
 
 > [!TIP]
-> عند جلب جميع المستخدمين، يتم إضافة حقل `phone_link: "tel:${phone}"` تلقائياً لسهولة الاتصال من الواجهة
+> When fetching all users, a `phone_link: "tel:${phone}"` field is automatically added for easy calling from the interface.
 
-### ✏️ تحديث المستخدمين (PUT)
+### ✏️ Update Users (PUT)
 
-#### سيناريو 1: تحديث مجمع (Bulk Update)
-- **البيانات**: مصفوفة من الكائنات `[{phone, is_seller}]`
-- **المنطق**: استخدام `transaction` لتحديث عدة مستخدمين دفعة واحدة
-- **الاستخدام**: ترقية مجموعة بائعين
+#### Scenario 1: Bulk Update
+- **Data**: Array of objects `[{phone, is_seller}]`
+- **Logic**: Use `transaction` to update multiple users at once.
+- **Usage**: Upgrading a group of sellers.
 
-#### سيناريو 2: تحديث فردي
-- **المطلوب**: `user_key`
-- **الحقول القابلة للتحديث**: `username`, `phone`, `password`, `address`, `location`, `limitPackage`, `isDelevred`
-- **المنطق**: بناء SQL ديناميكي للحقول المُرسلة فقط + التحقق من عدم تكرار الهاتف
+#### Scenario 2: Individual Update
+- **Required**: `user_key`
+- **Updatable Fields**: `username`, `phone`, `password`, `address`, `location`, `limitPackage`, `isDelevred`
+- **Logic**: Build dynamic SQL for sent fields only + verify phone uniqueness.
 
-### 🗑️ حذف مستخدم (DELETE)
+### 🗑️ Delete User (DELETE)
 
-- **المطلوب**: `user_key` (في الـ body)
-- **المنطق**: يتم حذف البيانات المرتبطة تلقائياً بفضل `ON DELETE CASCADE`
+- **Required**: `user_key` (in the body)
+- **Logic**: Associated data is automatically deleted thanks to `ON DELETE CASCADE`.
 
 ---
 
-## 🔔 4. الإشعارات والتوكنات
+## 🔔 4. Notifications and Tokens
 
-### 📱 إدارة التوكنات (`/api/tokens`)
+### 📱 Token Management (`/api/tokens`)
 
-#### حفظ التوكن (POST)
-- **المطلوب**: `user_key`, `token`, `platform`
-- **المنطق** (Transaction):
-  1. حذف أي توكن قديم لنفس المستخدم
-  2. حذف أي توكن قديم لنفس الجهاز (إذا كان مسجلاً لمستخدم آخر)
-  3. إدراج التوكن الجديد
-- **الهدف**: ضمان توكن واحد فقط لكل مستخدم/جهاز
+#### Save Token (POST)
+- **Required**: `user_key`, `token`, `platform`
+- **Logic** (Transaction):
+  1. Delete any old token for the same user.
+  2. Delete any old token for the same device (if registered to another user).
+  3. Insert the new token.
+- **Goal**: Ensure only one token per user/device.
 
-#### جلب التوكنات (GET)
-- **المعامل**: `userKeys` (مفصولة بفاصلة: `key1,key2,key3`)
-- **الاستجابة**: `{success: true, tokens: [...]}`
-- **الاستخدام**: إرسال إشعارات جماعية
+#### Fetch Tokens (GET)
+- **Parameter**: `userKeys` (comma-separated: `key1,key2,key3`)
+- **Response**: `{success: true, tokens: [...]}`
+- **Usage**: Sending group notifications.
 
-#### حذف التوكن (DELETE)
-- **المطلوب**: `user_key`
-- **الاستخدام**: عند تسجيل الخروج
+#### Delete Token (DELETE)
+- **Required**: `user_key`
+- **Usage**: Upon logout.
 
-### 📨 إرسال الإشعارات (`/api/send-notification`)
+### 📨 Send Notifications (`/api/send-notification`)
 
 > [!WARNING]
-> هذا المسار يستخدم Node.js Runtime (وليس Edge) لدعم Firebase Admin SDK
+> This path uses Node.js Runtime (not Edge) to support Firebase Admin SDK.
 
-#### المطلوب
+#### Required
 ```json
 {
   "token": "string",
@@ -209,34 +209,34 @@
 }
 ```
 
-#### المنطق
-1. التحقق من تهيئة Firebase Admin SDK
-2. التحقق من صحة التوكن
-3. إرسال الإشعار كـ `data payload` فقط (بدون `notification`)
-4. معالجة خاصة للتوكنات المنتهية (رمز 410)
+#### Logic
+1. Verify Firebase Admin SDK initialization.
+2. Verify token validity.
+3. Send notification as `data payload` only (without `notification`).
+4. Special handling for expired tokens (code 410).
 
 > [!IMPORTANT]
-> يتم إرسال البيانات كـ `data: {title, body}` فقط لضمان استدعاء `onBackgroundMessage` في جميع الحالات
+> Data is sent as `data: {title, body}` only to ensure `onBackgroundMessage` is called in all cases.
 
 ---
 
-## 📊 5. التقارير والبيانات المجمعة
+## 📊 5. Reports and Aggregated Data
 
-### 📈 حركة المبيعات (`/api/sales-movement`)
+### 📈 Sales Movement (`/api/sales-movement`)
 
-#### المعامل
-- `user_key`: معرف المستخدم الطالب
+#### Parameter
+- `user_key`: Identifier of the requesting user.
 
-#### المنطق البرمجي
-1. جلب دور المستخدم من جدول `users`
-2. بناء شرط WHERE ديناميكي:
-   - `is_seller = 1`: `WHERE oi.seller_key = ?` (البائع يرى مبيعاته فقط)
-   - `is_seller = 2 أو 3`: بدون شرط (التوصيل/المشرف يرى الكل)
-   - `is_seller = 0`: `WHERE 1 = 0` (لا نتائج)
-3. جلب البيانات من 4 جداول: `orders`, `users`, `order_items`, `marketplace_products`
-4. تجميع البيانات باستخدام `Map` لتحويل الصفوف إلى هيكل متداخل
+#### Programming Logic
+1. Fetch user role from the `users` table.
+2. Build dynamic WHERE clause:
+   - `is_seller = 1`: `WHERE oi.seller_key = ?` (Seller sees only their sales).
+   - `is_seller = 2 or 3`: No condition (Delivery/Admin sees all).
+   - `is_seller = 0`: `WHERE 1 = 0` (No results).
+3. Fetch data from 4 tables: `orders`, `users`, `order_items`, `marketplace_products`.
+4. Aggregate data using `Map` to convert rows into a nested structure.
 
-#### الاستجابة
+#### Response
 ```json
 [
   {
@@ -261,42 +261,42 @@
 ]
 ```
 
-### 📁 جميع طلبات المستخدم (`/api/user-all-orders`)
+### 📁 All User Orders (`/api/user-all-orders`)
 
-#### المعاملات المطلوبة
-- `user_key`: معرف المستخدم
-- `role`: الدور (`purchaser`, `seller`, `delivery`, `admin`)
-- `order_key` (اختياري): لجلب طلب محدد
+#### Required Parameters
+- `user_key`: User identifier.
+- `role`: Role (`purchaser`, `seller`, `delivery`, `admin`).
+- `order_key` (optional): To fetch a specific order.
 
-#### المنطق البرمجي (3 مراحل)
+#### Programming Logic (3 Stages)
 
-**المرحلة 1: جلب مفاتيح الطلبات**
+**Stage 1: Fetch Order Keys**
 - `purchaser`: `SELECT order_key FROM orders WHERE user_key = ?`
 - `seller`: `SELECT DISTINCT o.order_key FROM orders o JOIN order_items oi WHERE oi.seller_key = ?`
 - `delivery`: `SELECT DISTINCT o.order_key ... JOIN suppliers_deliveries sd WHERE sd.delivery_key = ? AND sd.is_active = 1`
 - `admin`: `SELECT order_key FROM orders WHERE 1=1`
 
-**المرحلة 2: جلب تفاصيل الطلبات والعناصر**
-- جلب بيانات الطلبات من `orders` + `users`
-- جلب عناصر الطلبات من `order_items` + `marketplace_products`
-- جلب خدمات التوصيل المفعلة من `suppliers_deliveries` + `users`
+**Stage 2: Fetch Order Details and Items**
+- Fetch order data from `orders` + `users`.
+- Fetch order items from `order_items` + `marketplace_products`.
+- Fetch active delivery services from `suppliers_deliveries` + `users`.
 
-**المرحلة 3: بناء الهيكل النهائي**
-- تحليل `order_status` لاستخراج حالات العناصر الفردية (JSON في الجزء الثالث)
-- تجميع البيانات في هيكل متداخل يحتوي على:
-  - تفاصيل الطلب
-  - مصفوفة العناصر (مع `item_status` لكل عنصر)
-  - خدمات التوصيل المتاحة لكل بائع
+**Stage 3: Build Final Structure**
+- Parse `order_status` to extract individual item statuses (JSON in part 3).
+- Aggregate data into a nested structure containing:
+  - Order details.
+  - Array of items (with `item_status` for each item).
+  - Available delivery services for each seller.
 
 > [!TIP]
-> هذا المسار يوفر معالجة أخطاء متقدمة مع رموز حالة مخصصة (503 للشبكة، 504 للوقت المنتهي)
+> This path provides advanced error handling with custom status codes (503 for network, 504 for timeout).
 
-### 🛍️ سجل المشتريات (`/api/purchases`)
+### 🛍️ Purchase History (`/api/purchases`)
 
-#### المعامل
-- `user_key`: معرف المستخدم
+#### Parameter
+- `user_key`: User identifier.
 
-#### الاستجابة
+#### Response
 ```json
 [
   {
@@ -312,15 +312,15 @@
 ```
 
 > [!NOTE]
-> هذا مسار مبسط لعرض سريع في قسم "مشترياتي" - لا يحتوي على تفاصيل البائع أو التوصيل
+> This is a simplified path for quick display in the "My Purchases" section - it does not contain seller or delivery details.
 
 ---
 
-## 🛠️ 6. الوظائف الدقيقة (Micro-Updates)
+## 🛠️ 6. Micro-Updates
 
-### 🔧 تحديث حالة عنصر (`/api/update-item-status`)
+### 🔧 Update Item Status (`/api/update-item-status`)
 
-#### المطلوب (POST)
+#### Required (POST)
 ```json
 {
   "order_key": "string",
@@ -329,36 +329,36 @@
 }
 ```
 
-#### المنطق البرمجي
-1. جلب `order_status` الحالي
-2. تحليل النص: `StepID#Timestamp#JSON_Statuses`
-3. تحديث كائن JSON بحالة المنتج الجديدة: `itemStatuses[product_key] = status`
-4. إعادة بناء النص: `${stepId}#${timestamp}#${newJsonStr}`
-5. تحديث قاعدة البيانات
+#### Programming Logic
+1. Fetch current `order_status`.
+2. Parse text: `StepID#Timestamp#JSON_Statuses`.
+3. Update JSON object with new product status: `itemStatuses[product_key] = status`.
+4. Rebuild text: `${stepId}#${timestamp}#${newJsonStr}`.
+5. Update database.
 
 > [!IMPORTANT]
-> هذا المسار لا يغير `StepID` أو `Timestamp`، بل يحدث فقط جزء JSON الخاص بحالات العناصر
+> This path does not change `StepID` or `Timestamp`, it only updates the JSON part of the item statuses.
 
-### 🚚 الموردين والموزعين (`/api/suppliers-deliveries`)
+### 🚚 Suppliers and Distributors (`/api/suppliers-deliveries`)
 
-#### جلب العلاقات (GET)
+#### Fetch Relations (GET)
 
-**السيناريو 1: علاقات بائع محدد**
-- `sellerKey`: معرف البائع
-- `activeOnly=true`: جلب الموزعين المفعلين فقط (مع fcm_token)
-- `activeOnly=false/null`: جلب جميع الموزعين مع حالة التفعيل
+**Scenario 1: Specific Seller Relations**
+- `sellerKey`: Seller identifier.
+- `activeOnly=true`: Fetch only active distributors (with fcm_token).
+- `activeOnly=false/null`: Fetch all distributors with activation status.
 
-**السيناريو 2: علاقات مستخدم (ثنائية الاتجاه)**
-- `relatedTo`: معرف المستخدم
-- **الاستجابة**:
+**Scenario 2: User Relations (Bidirectional)**
+- `relatedTo`: User identifier.
+- **Response**:
 ```json
 {
-  "asSeller": [...],  // الموزعون الذين يعملون معه
-  "asDelivery": [...]  // البائعون الذين يوزع لهم
+  "asSeller": [...],  // Distributors working with them.
+  "asDelivery": [...]  // Sellers they distribute for.
 }
 ```
 
-#### تحديث/إنشاء علاقة (PUT - UPSERT)
+#### Update/Create Relation (PUT - UPSERT)
 ```json
 {
   "sellerKey": "string",
@@ -368,44 +368,44 @@
 ```
 
 > [!CAUTION]
-> يتطلب وجود `UNIQUE INDEX` على `(seller_key, delivery_key)` لعمل UPSERT بشكل صحيح
+> Requires a `UNIQUE INDEX` on `(seller_key, delivery_key)` to perform UPSERT correctly.
 
-#### التحقق من الأدوار (POST)
-- **المطلوب**: `{userKeys: [...]}`
-- **الاستجابة**: مصفوفة تحتوي على `{key, isSeller, isDelivery}` لكل مستخدم
+#### Role Verification (POST)
+- **Required**: `{userKeys: [...]}`
+- **Response**: Array containing `{key, isSeller, isDelivery}` for each user.
 
-### 🔄 جدول التحديثات (`/api/updates`)
+### 🔄 Updates Table (`/api/updates`)
 
-#### جلب آخر تحديث (GET)
-- **الاستجابة**: `{datetime: "ISO_String"}`
-- **المنطق**: `SELECT datetime FROM updates WHERE Id = 1`
+#### Fetch Last Update (GET)
+- **Response**: `{datetime: "ISO_String"}`
+- **Logic**: `SELECT datetime FROM updates WHERE Id = 1`.
 
-#### تحديث التاريخ (POST)
-- **المنطق**: `UPDATE updates SET datetime = CURRENT_TIMESTAMP WHERE Id = 1`
-- **الاستخدام**: Cache Invalidation - إجبار التطبيقات على تحديث البيانات
+#### Update Date (POST)
+- **Logic**: `UPDATE updates SET datetime = CURRENT_TIMESTAMP WHERE Id = 1`.
+- **Usage**: Cache Invalidation - forcing apps to refresh data.
 
 ---
 
-## 📝 ملاحظات تقنية عامة
+## 📝 General Technical Notes
 
-### البيئة والتقنيات
-- **Runtime**: Vercel Edge Functions (ما عدا `/api/send-notification` يستخدم Node.js)
-- **قاعدة البيانات**: Turso (LibSQL) عبر `@libsql/client/web`
-- **CORS**: جميع المسارات تدعم `Access-Control-Allow-Origin: *`
+### Environment and Technologies
+- **Runtime**: Vercel Edge Functions (except `/api/send-notification` which uses Node.js).
+- **Database**: Turso (LibSQL) via `@libsql/client/web`.
+- **CORS**: All paths support `Access-Control-Allow-Origin: *`.
 
-### أنماط البرمجة المستخدمة
-- **Atomic Transactions**: في `/api/orders` (batch) و `/api/tokens` (transaction)
-- **Dynamic SQL Building**: في `/api/products` (PUT) و `/api/users` (PUT)
-- **Nested Data Structures**: في `/api/sales-movement` و `/api/user-all-orders`
-- **UPSERT Pattern**: في `/api/suppliers-deliveries`
+### Programming Patterns Used
+- **Atomic Transactions**: In `/api/orders` (batch) and `/api/tokens` (transaction).
+- **Dynamic SQL Building**: In `/api/products` (PUT) and `/api/users` (PUT).
+- **Nested Data Structures**: In `/api/sales-movement` and `/api/user-all-orders`.
+- **UPSERT Pattern**: In `/api/suppliers-deliveries`.
 
-### معالجة الأخطاء
-- جميع المسارات تستخدم `try-catch` مع رسائل خطأ بالعربية
-- رموز الحالة المستخدمة: 200, 201, 204, 400, 401, 404, 405, 409, 410, 500, 503, 504
-- تسجيل مفصل باستخدام `console.log` و `console.error`
+### Error Handling
+- All paths use `try-catch` with Arabic error messages.
+- Status codes used: 200, 201, 204, 400, 401, 404, 405, 409, 410, 500, 503, 504.
+- Detailed logging using `console.log` and `console.error`.
 
-### أمان البيانات
-- التحقق من المعاملات المطلوبة قبل تنفيذ الاستعلامات
-- استخدام Prepared Statements (args) لمنع SQL Injection
-- التحقق من تفرد رقم الهاتف في `/api/users`
-- التحقق من وجود السجلات قبل التحديث/الحذف
+### Data Security
+- Verify required parameters before executing queries.
+- Use Prepared Statements (args) to prevent SQL Injection.
+- Verify phone number uniqueness in `/api/users`.
+- Verify record existence before update/deletion.

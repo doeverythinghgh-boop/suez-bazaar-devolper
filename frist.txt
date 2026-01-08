@@ -5,7 +5,6 @@ Read the following and execute it.
 - Ignore all files inside the `note` folder completely.
 - Ignore file `api/database-analysis.js`.
 - Write all comments and documentation using the **English language only**.
-- Any text that appears to the **end user must be written in Arabic**.
 - Every page, every function, and every component must be **fully documented using JSDoc**.
 
 ## Code Safety & Integrity

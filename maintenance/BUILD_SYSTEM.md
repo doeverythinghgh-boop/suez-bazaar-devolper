@@ -1,122 +1,122 @@
-# نظام بناء المشروع والتشفير (Build System & Obfuscation)
+# Project Build System and Encryption (Build System & Obfuscation)
 
-يشرح هذا الملف كيفية عمل نظام البناء (Build System) الخاص بالمشروع، وكيفية توليد مجلد `dist` الذي يمثل النسخة النهائية المحمية والجاهزة للنشر.
+This file explains how the project's Build System works and how the `dist` folder, which represents the final protected and production-ready version, is generated.
 
-## 1. نظرة عامة
-الهدف من نظام البناء هو تشفير كافة ملفات JavaScript الخاصة بالمشروع بشكل مستقل وحماية الكود المصدري من الهندسة العكسية. تعتمد هذه العملية على سكربت `build.js` الذي يعمل ببيئة Node.js.
+## 1. Overview
+The goal of the build system is to independently encrypt all project JavaScript files and protect the source code from reverse engineering. This process relies on the `build.js` script, which runs in a Node.js environment.
 
-### المخرجات الرئيسية:
-- **مجلد `dist`**: يحتوي على نسخة كاملة من المشروع بنفس هيكل المجلدات الأصلي.
-- **تشفير فردي للملفات**: كل ملف JavaScript يتم تشفيره بشكل مستقل وحفظه في مساره المقابل داخل `dist`.
-- **ملفات HTML أصلية**: يتم نسخ ملفات HTML كما هي، مما يحافظ على ترتيب تحميل السكربتات الأصلي ويضمن استقرار التطبيق.
-
----
-
-## 2. بيئة التطوير مقابل الإنتاج (Development vs Production)
-
-هناك فرق جوهري بين المجلد الرئيسي ومجلد `dist` في دورة حياة المشروع:
-
-### أ. التطوير المحلي (Local Development)
-- **الملف الرئيسي**: `index.html` الموجود في جذر المشروع.
-- **الاستخدام**: بيئة العمل اليومية للمطور.
-- **المحتوى**: يستخدم ملفات الكود المصدري المباشرة (غير مشفرة)، مما يسهل عملية التعديل واكتشاف الأخطاء (Debugging).
-
-### ب. الإنتاج والنشر (Production & Deployment)
-- **الملف الرئيسي**: `dist/index.html`.
-- **الاستخدام**: النسخة النهائية التي يتم نشرها للمستخدمين (مثلاً عبر Cloudflare Pages).
-- **المحتوى**: ملفات معالجة ومشفرة بالكامل لضمان أفضل أداء وأعلى درجات الأمان.
-
-### ج. تطبيق الأندرويد (Android WebView)
-- **الاستخدام**: يعمل التطبيق كـ "موقع محلي" داخل الهاتف.
-- **المحتوى**: يعتمد التطبيق حصرياً على ملفات مجلد `dist`، حيث يتم عرضها داخل `WebView`. هذا يضمن أن التطبيق يعمل دائماً بالنسخة المحمية والمحسنة، تماماً مثل نسخة الإنتاج على الويب.
+### Main Outputs:
+- **`dist` Folder**: Contains a complete version of the project with the same original directory structure.
+- **Individual File Encryption**: Each JavaScript file is encrypted independently and saved in its corresponding path within `dist`.
+- **Original HTML Files**: HTML files are copied as-is, preserving the original script loading order and ensuring application stability.
 
 ---
 
-## 3. إدارة المستودعات (Repositories)
+## 2. Development vs Production
 
-لضمان عدم تداخل الملفات وتسهيل عملية النشر، تم فصل المشروع إلى مستودعين:
+There is a fundamental difference between the main folder and the `dist` folder in the project lifecycle:
 
-1. **المستودع الرئيسي (Main Repository)**:
-   - **الرابط**: `https://github.com/doeverythinghgh-boop/suez-bazaar-devolper.git`
-   - **المحتوى**: يحتوي على الكود المصدري الأصلي (Source Code)، بما في ذلك ملفات التكوين والتوثيق والموارد غير المشفرة.
-   - **الهدف**: التطوير، التعديل، وإدارة الإصدارات الأساسية.
+### A. Local Development
+- **Main File**: `index.html` located in the project root.
+- **Usage**: The developer's daily working environment.
+- **Content**: Uses direct source code files (unencrypted), facilitating modification and debugging.
 
-2. **مستودع التوزيع (Distribution Repository)**:
-   - **الرابط**: `https://github.com/doeverythinghgh-boop/_bazaar.git`
-   - **المسار المحلي**: `dist/`
-   - **المحتوى**: يحتوي فقط على النسخة النهائية المشفرة (Production Build).
-   - **الهدف**: النشر المباشر (Deployment) عبر Cloudflare Pages أو لاستخدامه في تطبيق Android.
+### B. Production & Deployment
+- **Main File**: `dist/index.html`.
+- **Usage**: The final version deployed to users (e.g., via Cloudflare Pages).
+- **Content**: Fully processed and encrypted files to ensure best performance and highest security levels.
+
+### C. Android Application (Android WebView)
+- **Usage**: The application runs as a "local site" inside the phone.
+- **Content**: The application relies exclusively on the files in the `dist` folder, as they are displayed within a `WebView`. This ensures the application always runs the protected and optimized version, just like the production version on the web.
+
+---
+
+## 3. Repository Management
+
+To prevent file overlap and facilitate the deployment process, the project is separated into two repositories:
+
+1. **Main Repository**:
+   - **Link**: `https://github.com/doeverythinghgh-boop/suez-bazaar-devolper.git`
+   - **Content**: Contains the original Source Code, including configuration files, documentation, and unencrypted resources.
+   - **Goal**: Development, modification, and management of core versions.
+
+2. **Distribution Repository**:
+   - **Link**: `https://github.com/doeverythinghgh-boop/_bazaar.git`
+   - **Local Path**: `dist/`
+   - **Content**: Contains only the final encrypted version (Production Build).
+   - **Goal**: Direct Deployment via Cloudflare Pages or for use in the Android application.
 
 > [!NOTE]
-> يتم تجاهل مجلد `dist` في المستودع الرئيسي (عبر `.gitignore`) لمنع ازدواجية الملفات أو رفع الملفات المشفرة إلى مستودع الكود المصدري.
+> The `dist` folder is ignored in the main repository (via `.gitignore`) to prevent file duplication or uploading encrypted files to the source code repository.
 
 ---
 
-## 4. كيفية عمل سكربت `build.js`
-يقوم السكربت بتنفيذ الخطوات التالية بالترتيب:
+## 4. How the `build.js` Script Works
+The script executes the following steps in order:
 
-### أ. زيادة إصدار المشروع (Auto-Versioning)
-تبدأ العملية بزيادة رقم الإصدار (Patch version) تلقائياً في ملف `version.json` الرئيسي، مما يضمن أن كل بناء جديد يحمل معرّفاً فريداً ويُجبر المتصفحات على تحديث التخزين المؤقت (Cache) عند الضرورة.
+### A. Auto-Versioning
+The process begins by automatically incrementing the version number (Patch version) in the main `version.json` file, ensuring each new build has a unique identifier and forcing browsers to update their cache when necessary.
 
-### ب. تنظيف البيئة (Cleanup)
-يتم حذف مجلد `dist` القديم إن وجد لضمان أن النسخة الناتجة حديثة تماماً ولا تحتوي على ملفات قديمة (مع الحفاظ على مجلد `.git`).
+### B. Cleanup
+The old `dist` folder is deleted if it exists to ensure the resulting version is completely fresh and contains no old files (while preserving the `.git` folder).
 
-### ج. نسخ الأصول والمجلدات (Assets Copying)
-يتم نسخ المجلدات الحيوية بما تحتويه من ملفات CSS وصور ومكتبات خارجية إلى مجلد `dist` باستثناء المجلدات المستبعدة (مثل `function` و `api` و `note`):
-- `assets/`: المكتبات الخارجية والخطوط.
-- `style/`: ملفات CSS الأساسية.
-- `images/`: الصور والرموز.
-- `notification/`: ملفات نظام الإشعارات.
-- `shared/`: ملفات البيانات المشتركة.
-- `location/`: ملفات الخرائط والمواقع.
-- `js/`: ملفات الجافاسكريبت الأساسية.
-- `pages/`: كافة الصفحات والمكونات الفرعية.
-- `steper/`: نظام تتبع الطلبات.
+### C. Assets Copying
+Vital folders containing CSS files, images, and external libraries are copied to the `dist` folder, excluding ignored folders (such as `function`, `api`, and `note`):
+- `assets/`: External libraries and fonts.
+- `style/`: Core CSS files.
+- `images/`: Images and icons.
+- `notification/`: Notification system files.
+- `shared/`: Shared data files.
+- `location/`: Map and location files.
+- `js/`: Core JavaScript files.
+- `pages/`: All pages and sub-components.
+- `steper/`: Order tracking system.
 
-### د. التشفير الفردي وعزل الكود (Individual Obfuscation & IIFE Isolation)
-يتم البحث عن كافة ملفات `.js` وتشفيرها بشكل منفصل، مع إضافة خطوة "العزل" البرمجي:
-- **تغليف الـ IIFE**: يتم وضع محتوى كل ملف داخل دالة استدعاء ذاتي `(function(){...})();` قبل التشفير. هذا يضمن عدم تداخل المتغيرات الداخلية للمشفر (Obfuscator) عند إعادة تحميل الصفحات في بيئة الـ SPA.
-- يتم استخدام `javascript-obfuscator` مع تعطيل `renameGlobals` للحفاظ على التواصل بين الملفات.
-- **تحسين الحجم**: تم تعطيل `deadCodeInjection` و `unicodeEscapeSequence` وتقليل عتبات (Thresholds) التشفير جزئياً لتقليل حجم الملفات النهائية وتجنب تضخم مستودع الـ `dist`.
+### D. Individual Obfuscation & IIFE Isolation
+All `.js` files are searched for and encrypted separately, with an added programmatic "isolation" step:
+- **IIFE Wrapping**: The content of each file is placed inside an Immediately Invoked Function Expression `(function(){...})();` before encryption. This ensures that the internal variables of the obfuscator do not overlap when pages are reloaded in the SPA environment.
+- `javascript-obfuscator` is used with `renameGlobals` disabled to maintain communication between files.
+- **Size Optimization**: `deadCodeInjection` and `unicodeEscapeSequence` have been disabled, and encryption thresholds partially reduced to decrease final file sizes and avoid bloating the `dist` repository.
 
-### د. حماية نظام الـ Service Worker
-يتم تشفير ملفات الجذر الخاصة بالمتصفح مثل `sw.js` و `firebase-messaging-sw.js` لضمان حماية منطق التخزين المؤقت والإشعارات.
+### D. Service Worker Protection
+Root browser files like `sw.js` and `firebase-messaging-sw.js` are encrypted to ensure the protection of caching and notification logic.
 
-### هـ. معالجة وتصغير ملفات HTML و CSS
-يتم معالجة ملفات التنسيق والهيكل لتقليل الحجم وتحسين الأمان:
-- **ملفات CSS**: يتم استخدام مكتبة `clean-css` لحذف المسافات والتعليقات وتصغير الكود بالكامل، مما يجعل قراءته صعبة ويقلل وقت تحميل الصفحة.
-- **ملفات HTML**: يتم استخدام `html-minifier-terser` لحذف التعليقات، تصغير المسافات البيضاء، وتصغير الأكواد المدمجة (Internal Styles)، مع الحفاظ على سلامة بنية الصفحة والروابط بين الملفات.
+### E. HTML and CSS Processing and Minification
+Formatting and structure files are processed to reduce size and improve security:
+- **CSS Files**: The `clean-css` library is used to remove spaces and comments and fully minify the code, making it difficult to read and reducing page load time.
+- **HTML Files**: `html-minifier-terser` is used to remove comments, minify whitespace, and minify internal styles, while maintaining the integrity of the page structure and links between files.
 
-### و. توليد فهرس الملفات والتحقق من السلامة (File Manifest & SHA-256)
-هذه خطوة حيوية لضمان سلامة النسخة النهائية:
-1. يتم مسح كافة ملفات مجلد `dist` (بما فيها الصور والخطوط وCSS).
-2. يتم حساب بصمة **SHA-256** للمحتوى **الأصلي** (قبل التشفير) لكل ملف.
-3. يتم توليد روابط تحميل مباشرة من GitHub (Raw URLs) للملفات المشفرة.
-4. يتم تحديث ملف `dist/version.json` بهذا الفهرس الشامل.
+### F. File Manifest & SHA-256 Integrity Check
+This is a vital step to ensure the integrity of the final version:
+1. All files in the `dist` folder (including images, fonts, and CSS) are scanned.
+2. A **SHA-256** hash of the **original** content (before encryption) is calculated for each file.
+3. Direct download links from GitHub (Raw URLs) for the encrypted files are generated.
+4. The `dist/version.json` file is updated with this comprehensive manifest.
 
-### ز. النشر التلقائي (Auto Deployment)
-بعد نجاح البناء وتحديث الفهرس، يقوم السكربت تلقائياً بعمل `Push` للملفات المشفرة إلى مستودع `_bazaar` لضمان مزامنة نسخة الإنتاج فوراً.
+### G. Auto Deployment
+After a successful build and manifest update, the script automatically performs a `Push` of the encrypted files to the `_bazaar` repository to ensure the production version is synchronized immediately.
 
 ---
 
-## 5. نظام التحقق من سلامة الملفات (File Integrity System)
+## 5. File Integrity System
 
-يعد ملف `dist/version.json` هو العقل المدبر لعملية التحديث والتحقق، ويحتوي على:
-- **`version`**: رقم الإصدار الحالي.
-- **`lastUpdated`**: توقيت آخر بناء للنسخة.
-- **`files`**: مصفوفة تحتوي على كل ملف في المشروع:
-    - `path`: رابط GitHub لتحميل النسخة المشفرة.
-    - `hash`: بصمة SHA-256 للملف الأصلي (للمصادقة).
-    - `size`: حجم الملف النهائي بالبايت في مجلد `dist` (بعد التشفير والتصغير).
+The `dist/version.json` file is the mastermind of the update and verification process, containing:
+- **`version`**: The current version number.
+- **`lastUpdated`**: The timestamp of the last build.
+- **`files`**: An array containing every file in the project:
+    - `path`: GitHub link to download the encrypted version.
+    - `hash`: SHA-256 hash of the original file (for authentication).
+    - `size`: Final file size in bytes in the `dist` folder (after encryption and minification).
 
 > [!IMPORTANT]
-> **لماذا بصمة الملف الأصلي؟**
-> لأن التشفير ينتج كوداً متغيراً في كل مرة، فإن الاعتماد على بصمة الملف الأصلي يضمن أن الملف المشفر -مهما اختلف شكله- قد نتج عن مصدر كود نظيف وموثوق تم التحقق منه مسبقاً. كما أن وجود **الحجم النهائي** (Size) يساعد في التحقق من اكتمال عملية التحميل.
+> **Why the original file hash?**
+> Since encryption produces variable code each time, relying on the original file hash ensures that the encrypted file—no matter how it looks—was generated from a clean and trusted source code that was previously verified. Additionally, the presence of the **final size** (Size) helps verify the completeness of the download process.
 
 ---
 
-## 6. كيفية التشغيل
-لإنشاء نسخة جديدة مشفرة، نفذ الأمر التالي في التيرمينال:
+## 6. How to Run
+To create a new encrypted version, execute the following command in the terminal:
 
 ```bash
 node build.js
@@ -124,17 +124,17 @@ node build.js
 
 ---
 
-## 7. ملاحظات تقنية هامة
+## 7. Important Technical Notes
 
 > [!TIP]
-> **استقرار التطبيق**: بفضل التشفير الفردي، أصبح التطبيق يعمل بنفس سلالة نسخة التطوير وتجنب مشاكل الـ Bundle.
+> **Application Stability**: Thanks to individual encryption, the application runs with the same stability as the development version and avoids Bundle-related issues.
 
 > [!WARNING]
-> **إدارة المساحة**: تم تحسين إعدادات التشفير لتقليل تضخم مستودع الـ `dist` الناتج عن التغييرات الجذرية في الكود المشفر.
+> **Space Management**: Encryption settings have been optimized to reduce the bloat of the `dist` repository resulting from radical changes in the encrypted code.
 
 ---
 
-## 8. الملفات المشمولة في البناء
-- كافة ملفات `.js` و `.html` و الأصول (CSS, Images, Fonts).
-- **الفهرس الرقمي**: `dist/version.json`.
-- **المستبعدات**: يتم استبعاد `api/`, `note/`, `function/`, و `docs/`.
+## 8. Files Included in the Build
+- All `.js` and `.html` files and assets (CSS, Images, Fonts).
+- **Digital Manifest**: `dist/version.json`.
+- **Exclusions**: `api/`, `note/`, `function/`, and `docs/` are excluded.

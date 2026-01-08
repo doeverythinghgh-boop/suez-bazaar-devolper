@@ -1,24 +1,24 @@
-# دليل التعامل مع المنتجات والخدمات
+# Products and Services Handling Guide
 
-## نظرة عامة
+## Overview
 
-يستخدم المشروع نظاماً مرناً للتفريق بين **المنتجات** و**الخدمات** بناءً على الفئات (Categories). يتم تحديد نوع العنصر ديناميكياً من خلال ملف تكوين مركزي، مما يسمح بإضافة فئات جديدة كخدمات دون تعديل الكود.
+The project uses a flexible system to differentiate between **Products** and **Services** based on Categories. The item type is determined dynamically through a central configuration file, allowing new categories to be added as services without modifying the code.
 
 ---
 
-## آلية التفريق بين المنتجات والخدمات
+## Mechanism for Differentiating Products and Services
 
-### ملف التكوين
+### Configuration File
 
-**الموقع:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
+**Location:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
 
 ```json
 {
   "serviceMainCategories": [6, 20],
   "serviceSubCategories": [
-    { "mainId": 3, "subId": 5, "description": "خدمات تطوير المواقع" },
-    { "mainId": 44, "subId": 4, "description": "عضوية أوريفليم" },
-    { "mainId": 7, "subId": 3, "description": "خدمات الشحن والتوصيل" }
+    { "mainId": 3, "subId": 5, "description": "Web Development Services" },
+    { "mainId": 44, "subId": 4, "description": "Oriflame Membership" },
+    { "mainId": 7, "subId": 3, "description": "Shipping and Delivery Services" }
   ],
   "settings": {
     "hidePrice": true,
@@ -28,183 +28,183 @@
 }
 ```
 
-**المكونات:**
-- **`serviceMainCategories`**: فئات رئيسية تُعتبر خدمات بالكامل (مثل: 6 = الخدمات العامة، 20 = الخدمات الطبية)
-- **`serviceSubCategories`**: فئات فرعية محددة تُعتبر خدمات
-- **`settings`**: إعدادات عامة للخدمات
+**Components:**
+- **`serviceMainCategories`**: Main categories considered entirely as services (e.g., 6 = General Services, 20 = Medical Services).
+- **`serviceSubCategories`**: Specific subcategories considered as services.
+- **`settings`**: Global settings for services.
 
 ---
 
-## الوحدات والدوال الأساسية
+## Core Modules and Functions
 
-### 1. وحدة المساعدة: `serviceCategoryHelper.js`
+### 1. Helper Module: `serviceCategoryHelper.js`
 
-**الموقع:** [`js/PRODUCT_SERVICE/serviceCategoryHelper.js`](/bazaar/js/PRODUCT_SERVICE/serviceCategoryHelper.js)
+**Location:** [`js/PRODUCT_SERVICE/serviceCategoryHelper.js`](/bazaar/js/PRODUCT_SERVICE/serviceCategoryHelper.js)
 
-#### الدوال الرئيسية:
+#### Main Functions:
 
 ##### `loadServiceConfig()`
 ```javascript
 async function loadServiceConfig()
 ```
-- **الوظيفة:** تحميل ملف التكوين من `serviceCategories.config.json`
-- **الإرجاع:** `Promise<object>` - كائن التكوين
-- **التخزين المؤقت:** يتم تخزين التكوين في `_serviceConfig` لتجنب التحميل المتكرر
+- **Functionality:** Loads the configuration file from `serviceCategories.config.json`.
+- **Returns:** `Promise<object>` - The configuration object.
+- **Caching:** The configuration is stored in `_serviceConfig` to avoid repeated loading.
 
 ##### `isServiceCategory(mainId, subId)`
 ```javascript
 function isServiceCategory(mainId, subId = null)
 ```
-- **الوظيفة:** التحقق من كون الفئة خدمة أم منتج
-- **المعاملات:**
-  - `mainId`: معرّف الفئة الرئيسية
-  - `subId`: معرّف الفئة الفرعية (اختياري)
-- **الإرجاع:** `boolean` - `true` إذا كانت خدمة، `false` إذا كانت منتج
+- **Functionality:** Checks whether a category is a service or a product.
+- **Parameters:**
+  - `mainId`: Main category ID.
+  - `subId`: Subcategory ID (optional).
+- **Returns:** `boolean` - `true` if it's a service, `false` if it's a product.
 
-**مثال:**
+**Example:**
 ```javascript
-isServiceCategory(6, null);     // true (فئة رئيسية كخدمة)
-isServiceCategory(3, 5);         // true (فئة فرعية كخدمة)
-isServiceCategory(1, 1);         // false (منتج عادي)
+isServiceCategory(6, null);     // true (Main category as service)
+isServiceCategory(3, 5);         // true (Subcategory as service)
+isServiceCategory(1, 1);         // false (Normal product)
 ```
 
 ##### `getServiceType(mainId, subId)`
 ```javascript
 function getServiceType(mainId, subId = null)
 ```
-- **الوظيفة:** الحصول على نوع العنصر كنص
-- **الإرجاع:** `'2'` للخدمات، `'0'` للمنتجات (أو حسب القيم المعرفة في `settings`)
+- **Functionality:** Gets the item type as a string.
+- **Returns:** `'2'` for services, `'0'` for products (or according to values defined in `settings`).
 
 ##### `getServiceSettings()`
 ```javascript
 function getServiceSettings()
 ```
-- **الوظيفة:** الحصول على جميع إعدادات الخدمات العامة
-- **الإرجاع:** كائن يحتوي على `hidePrice`, `serviceType`, `productType`
+- **Functionality:** Gets all global service settings.
+- **Returns:** An object containing `hidePrice`, `serviceType`, `productType`.
 
 ---
 
-### 2. وحدة إدارة الحالة: `productStateManager.js`
+### 2. State Management Module: `productStateManager.js`
 
-**الموقع:** [`js/PRODUCT_SERVICE/productStateManager.js`](/bazaar/js/PRODUCT_SERVICE/productStateManager.js)
+**Location:** [`js/PRODUCT_SERVICE/productStateManager.js`](/bazaar/js/PRODUCT_SERVICE/productStateManager.js)
 
-#### الدوال الرئيسية:
+#### Main Functions:
 
 ##### `setProductForView(productData, options)`
 ```javascript
 ProductStateManager.setProductForView(productData, options = {})
 ```
-- **الوظيفة:** تخزين بيانات المنتج/الخدمة للعرض
-- **المعاملات:**
-  - `productData`: كائن بيانات المنتج/الخدمة
-  - `options`: خيارات العرض (مثل `showAddToCart`)
+- **Functionality:** Stores product/service data for viewing.
+- **Parameters:**
+  - `productData`: Product/service data object.
+  - `options`: View options (e.g., `showAddToCart`).
 
 ##### `getCurrentProduct()`
 ```javascript
 ProductStateManager.getCurrentProduct()
 ```
-- **الوظيفة:** الحصول على بيانات المنتج/الخدمة الحالي المخزن
-- **الإرجاع:** `object|null`
+- **Functionality:** Gets the currently stored product/service data.
+- **Returns:** `object|null`
 
 ##### `getViewOptions()`
 ```javascript
 ProductStateManager.getViewOptions()
 ```
-- **الوظيفة:** الحصول على خيارات العرض المخزنة (مثل `showAddToCart`)
-- **الإرجاع:** `object` (يكون فارغاً `{}` كقيمة افتراضية)
+- **Functionality:** Gets the stored view options (e.g., `showAddToCart`).
+- **Returns:** `object` (empty `{}` by default).
 
 ##### `setSelectedCategories(mainId, subId)`
 ```javascript
 ProductStateManager.setSelectedCategories(mainId, subId)
 ```
-- **الوظيفة:** تخزين الفئات المختارة عند الإضافة/التعديل
-- **المعاملات:**
-  - `mainId`: معرّف الفئة الرئيسية
-  - `subId`: معرّف الفئة الفرعية
+- **Functionality:** Stores selected categories during add/edit.
+- **Parameters:**
+  - `mainId`: Main category ID.
+  - `subId`: Subcategory ID.
 
 ##### `getSelectedCategories()`
 ```javascript
 ProductStateManager.getSelectedCategories()
 ```
-- **الوظيفة:** الحصول على الفئات المختارة حالياً
-- **الإرجاع:** `{mainId, subId}|null`
+- **Functionality:** Gets the currently selected categories.
+- **Returns:** `{mainId, subId}|null`
 
 ##### `clear()`
 ```javascript
 ProductStateManager.clear()
 ```
-- **الوظيفة:** مسح كافة البيانات المخزنة في الـ State (المنتج الحالي، الخيارات، الفئات)
+- **Functionality:** Clears all data stored in the State (current product, options, categories).
 
 ##### `getState()`
 ```javascript
 ProductStateManager.getState()
 ```
-- **الوظيفة:** الحصول على نسخة كاملة من الحالة الداخلية (أغراض التطوير وتصحيح الأخطاء)
+- **Functionality:** Gets a full copy of the internal state (for development and debugging purposes).
 
 ##### `resolveCategoryNames()`
 ```javascript
 async ProductStateManager.resolveCategoryNames()
 ```
-- **الوظيفة:** جلب أسماء الفئات الرئيسية والفرعية المخزنة حالياً من `shared/list.json`
-- **الإرجاع:** `Promise<{main: string, sub: string}>` - كائن يحتوي على أسماء الفئات
-- **الاستخدام:** في صفحات الإضافة والتعديل لعرض بطاقات الفئات المختارة بشكل مرئي للمستخدم
-- **مثال:**
+- **Functionality:** Fetches names of currently stored main and sub categories from `shared/list.json`.
+- **Returns:** `Promise<{main: string, sub: string}>` - Object containing category names.
+- **Usage:** In add and edit pages to display selected category cards visually to the user.
+- **Example:**
 ```javascript
 const names = await ProductStateManager.resolveCategoryNames();
-// { main: "الملابس والأزياء", sub: "ملابس نسائية" }
+// { main: "Clothing & Fashion", sub: "Women's Clothing" }
 ```
 
 ---
- 
- ### 3. وحدة تحويل البيانات الموحدة: `productMapper.js`
- 
- **الموقع:** [`js/PRODUCT_SERVICE/productMapper.js`](/bazaar/js/PRODUCT_SERVICE/productMapper.js)
- 
- تهدف هذه الوحدة إلى توحيد شكل بيانات المنتج القادمة من مختلف نقاط الـ API لضمان توافقها مع واجهات العرض وسلة التسوق، مما يلغي الحاجة لمعالجة البيانات يدوياً في كل صفحة.
- 
- #### الدوال الرئيسية:
- 
- ##### `mapProductData(rawProduct)`
- ```javascript
- function mapProductData(rawProduct)
- ```
- - **الوظيفة:** تحويل كائن الـ API الخام إلى تنسيق واجهة العرض الموحد.
- - **المعاملات:**
-   - `rawProduct`: كائن البيانات القادم مباشرة من الـ API (يدعم مسميات مختلفة للحقول).
- - **الإرجاع:** `object` - كائن المنتج الموحد.
- 
- **مميزات المحول:**
- - **توحيد مسميات الحقول:** يتعامل مع الاختلافات بين `product_price` و `pricePerItem`.
- - **معالجة الصور:** يقوم بتحويل مصفوفة الأسماء `ImageName` إلى روابط كاملة تلقائياً.
- - **دعم الحقول الجديدة:** يضمن تمرير حقول مثل `limitPackage` و `isDelevred` و `heavyLoad` بشكل ثابت.
- 
- ---
- 
- ### 4. الدوال الرئيسية: `globalVariable.js`
 
-**الموقع:** [`js/globalVariable.js`](/bazaar/js/globalVariable.js)
+### 3. Unified Data Mapping Module: `productMapper.js`
+
+**Location:** [`js/PRODUCT_SERVICE/productMapper.js`](/bazaar/js/PRODUCT_SERVICE/productMapper.js)
+
+This module aims to unify the format of product data coming from various API endpoints to ensure compatibility with view interfaces and the shopping cart, eliminating the need to process data manually on every page.
+
+#### Main Functions:
+
+##### `mapProductData(rawProduct)`
+```javascript
+function mapProductData(rawProduct)
+```
+- **Functionality:** Converts a raw API object into a unified view interface format.
+- **Parameters:**
+  - `rawProduct`: Data object coming directly from the API (supports different field names).
+- **Returns:** `object` - Unified product object.
+
+**Mapper Features:**
+- **Field Name Unification:** Handles differences between `product_price` and `pricePerItem`.
+- **Image Processing:** Automatically converts the `ImageName` array of names into full URLs.
+- **New Field Support:** Ensures fields like `limitPackage`, `isDelevred`, and `heavyLoad` are passed consistently.
+
+---
+
+### 4. Main Functions: `globalVariable.js`
+
+**Location:** [`js/globalVariable.js`](/bazaar/js/globalVariable.js)
 
 #### `loadProductView(productData, options)`
 ```javascript
 function loadProductView(productData, options = {})
 ```
-- **الوظيفة:** تحميل صفحة عرض المنتج/الخدمة المناسبة
-- **المعاملات:**
-  - `productData`: كائن بيانات المنتج (يجب أن يحتوي على `MainCategory` و `SubCategory`)
-  - `options`: خيارات العرض (يمكن أن يكون `boolean` أو `object`)
-- **السلوك:**
-  - يحدد نوع العنصر باستخدام `isServiceCategory()`
-  - يحمل `productView2.html` للخدمات
-  - يحمل `productView.html` للمنتجات
+- **Functionality:** Loads the appropriate product/service view page.
+- **Parameters:**
+  - `productData`: Product data object (must contain `MainCategory` and `SubCategory`).
+  - `options`: View options (can be `boolean` or `object`).
+- **Behavior:**
+  - Determines item type using `isServiceCategory()`.
+  - Loads `productView2.html` for services.
+  - Loads `productView.html` for products.
 
-**مثال:**
+**Example:**
 ```javascript
 const productData = {
     product_key: "123",
-    productName: "خدمة تطوير موقع",
+    productName: "Web Development Service",
     MainCategory: 3,
     SubCategory: 5,
-    // ... بقية البيانات
+    // ... rest of data
 };
 
 loadProductView(productData, { showAddToCart: true });
@@ -216,24 +216,24 @@ loadProductView(productData, { showAddToCart: true });
 ```javascript
 function loadProductForm(options = {})
 ```
-- **الوظيفة:** تحميل صفحة إضافة/تعديل المنتج/الخدمة المناسبة
-- **المعاملات:**
-  - `options.editMode`: `boolean` - وضع التعديل (`true`) أو الإضافة (`false`)
-  - `options.productData`: `object` - بيانات المنتج (مطلوب في وضع التعديل)
-- **السلوك:**
-  - يحصل على الفئات المختارة من `ProductStateManager`
-  - يحدد نوع العنصر باستخدام `isServiceCategory()`
-  - يحمل الصفحة المناسبة:
-    - `productAdd2/productAdd2.html` / `productEdit2/productEdit2.html` للخدمات
-    - `productAdd/productAdd.html` / `productEdit/productEdit.html` للمنتجات
+- **Functionality:** Loads the appropriate product/service add/edit page.
+- **Parameters:**
+  - `options.editMode`: `boolean` - Edit mode (`true`) or Add mode (`false`).
+  - `options.productData`: `object` - Product data (required in edit mode).
+- **Behavior:**
+  - Gets selected categories from `ProductStateManager`.
+  - Determines item type using `isServiceCategory()`.
+  - Loads the appropriate page:
+    - `productAdd2/productAdd2.html` / `productEdit2/productEdit2.html` for services.
+    - `productAdd/productAdd.html` / `productEdit/productEdit.html` for products.
 
-**مثال:**
+**Example:**
 ```javascript
-// إضافة خدمة جديدة
+// Adding a new service
 ProductStateManager.setSelectedCategories(6, 9);
 loadProductForm({ editMode: false });
 
-// تعديل منتج موجود
+// Editing an existing product
 ProductStateManager.setSelectedCategories(1, 1);
 loadProductForm({ 
     editMode: true, 
@@ -247,26 +247,26 @@ loadProductForm({
 ```javascript
 async function showAddProductModal()
 ```
-- **الوظيفة:** عرض نافذة اختيار الفئة ثم تحميل صفحة الإضافة المناسبة
-- **السلوك:**
-  1. يعرض نافذة `CategoryModal` لاختيار الفئة
-  2. يخزن الفئات المختارة في `ProductStateManager`
-  3. يستدعي `loadProductForm()` لتحميل الصفحة المناسبة
+- **Functionality:** Displays the category selection window then loads the appropriate add page.
+- **Behavior:**
+  1. Displays the `CategoryModal` window to select a category.
+  2. Stores selected categories in `ProductStateManager`.
+  3. Calls `loadProductForm()` to load the appropriate page.
 
 ---
 
-## الصفحات المستخدمة
+## Pages Used
 
-### صفحات العرض
+### View Pages
 
-| الصفحة | الاستخدام | الوصف |
-|--------|-----------|-------|
-| [`productView/productView.html`](/bazaar/pages/productView/productView.html) | عرض المنتجات | تعرض تفاصيل المنتج مع السعر والكمية وزر الإضافة للسلة |
-| [`productView2/productView2.html`](/bazaar/pages/productView2/productView2.html) | عرض الخدمات | تعرض تفاصيل الخدمة مع سلايدر ثلاثي الأبعاد ونموذج طلب صور |
+| Page                                                                             | Usage        | Description                                                            |
+| -------------------------------------------------------------------------------- | ------------ | ---------------------------------------------------------------------- |
+| [`productView/productView.html`](/bazaar/pages/productView/productView.html)     | Product View | Displays product details with price, quantity, and add to cart button. |
+| [`productView2/productView2.html`](/bazaar/pages/productView2/productView2.html) | Service View | Displays service details with a 3D slider and image request form.      |
 
-**كيفية قراءة البيانات:**
+**How to Read Data:**
 ```javascript
-// في productView.html و productView2.html
+// In productView.html and productView2.html
 const productData = ProductStateManager.getCurrentProduct();
 const viewOptions = ProductStateManager.getViewOptions();
 
@@ -277,95 +277,95 @@ if (productData) {
 
 ---
 
-### صفحات الإضافة
+### Add Pages
 
-| الصفحة | الاستخدام | الوصف |
-|--------|-----------|-------|
-| [`productAdd/productAdd.html`](/bazaar/pages/productAdd/productAdd.html) | إضافة منتج | نموذج إضافة منتج مع حقول السعر والكمية |
-| [`productAdd2/productAdd2.html`](/bazaar/pages/productAdd2/productAdd2.html) | إضافة خدمة | نموذج إضافة خدمة بدون حقول السعر والكمية |
+| Page                                                                         | Usage       | Description                                              |
+| ---------------------------------------------------------------------------- | ----------- | -------------------------------------------------------- |
+| [`productAdd/productAdd.html`](/bazaar/pages/productAdd/productAdd.html)     | Add Product | Product addition form with price and quantity fields.    |
+| [`productAdd2/productAdd2.html`](/bazaar/pages/productAdd2/productAdd2.html) | Add Service | Service addition form without price and quantity fields. |
 
-**كيفية قراءة الفئات:**
+**How to Read Categories:**
 ```javascript
-// في صفحات الإضافة
+// In Add pages
 const categories = ProductStateManager.getSelectedCategories();
-// استخدام categories.mainId و categories.subId
+// Use categories.mainId and categories.subId
 ```
 
 ---
 
-### صفحات التعديل
+### Edit Pages
 
-| الصفحة | الاستخدام | الوصف |
-|--------|-----------|-------|
-| [`productEdit/productEdit.html`](/bazaar/pages/productEdit/productEdit.html) | تعديل منتج | نموذج تعديل منتج موجود |
-| [`productEdit2/productEdit2.html`](/bazaar/pages/productEdit2/productEdit2.html) | تعديل خدمة | نموذج تعديل خدمة موجودة |
+| Page                                                                             | Usage        | Description                       |
+| -------------------------------------------------------------------------------- | ------------ | --------------------------------- |
+| [`productEdit/productEdit.html`](/bazaar/pages/productEdit/productEdit.html)     | Edit Product | Form to edit an existing product. |
+| [`productEdit2/productEdit2.html`](/bazaar/pages/productEdit2/productEdit2.html) | Edit Service | Form to edit an existing service. |
 
-**كيفية قراءة البيانات:**
+**How to Read Data:**
 ```javascript
-// في صفحات التعديل
+// In Edit pages
 const productData = ProductStateManager.getCurrentProduct();
 const categories = ProductStateManager.getSelectedCategories();
 ```
 
 ---
 
-## سيناريوهات الاستخدام
+## Usage Scenarios
 
-### 1. إضافة منتج/خدمة جديدة
+### 1. Adding a New Product/Service
 
 ```javascript
-// 1. المستخدم ينقر على زر "إضافة منتج"
+// 1. User clicks "Add Product" button
 document.getElementById("dash-add-product-btn").addEventListener("click", () => {
     showAddProductModal();
 });
 
-// 2. يختار الفئة من النافذة المنبثقة
-// 3. يتم تخزين الفئات تلقائياً
-// 4. يتم تحميل الصفحة المناسبة تلقائياً
+// 2. Selects category from pop-up window
+// 3. Categories are automatically stored
+// 4. Appropriate page is automatically loaded
 ```
 
 ---
 
-### 2. عرض تفاصيل منتج/خدمة
+### 2. Viewing Product/Service Details
 
 ```javascript
-// في search.html أو product2Me/product2Me.html
+// In search.html or product2Me/product2Me.html
 const productData = {
     product_key: "123",
-    productName: "اسم المنتج",
+    productName: "Product Name",
     MainCategory: 6,
     SubCategory: 9,
-    // ... بقية البيانات
+    // ... rest of data
 };
 
-// استخدام الدالة الجديدة
+// Use the new function
 loadProductView(productData, true);
 ```
 
 ---
 
-### 3. تعديل منتج/خدمة موجودة
+### 3. Editing an Existing Product/Service
 
 ```javascript
-// في product2Me.html
+// In product2Me.html
 async function editProduct(productId) {
     const product = myProducts.find(p => p.id === productId);
     
-    // عرض نافذة اختيار الفئة
+    // Show category selection window
     const result = await CategoryModal.show(
         product.MainCategory, 
         product.SubCategory
     );
     
     if (result.status === 'success') {
-        // تحديث الفئات
+        // Update categories
         product.MainCategory = result.mainId;
         product.SubCategory = result.subId;
         
-        // تخزين في State Manager
+        // Store in State Manager
         ProductStateManager.setSelectedCategories(result.mainId, result.subId);
         
-        // تحميل صفحة التعديل المناسبة
+        // Load appropriate edit page
         loadProductForm({ editMode: true, productData: product });
     }
 }
@@ -373,20 +373,20 @@ async function editProduct(productId) {
 
 ---
 
-### 4. التحقق من نوع العنصر في البحث
+### 4. Checking Item Type in Search
 
 ```javascript
-// في search.html - دالة generateSearchResultHTML
+// In search.html - generateSearchResultHTML function
 function generateSearchResultHTML(product) {
-    // التحقق من نوع العنصر
+    // Check item type
     const isService = isServiceCategory(
         product.MainCategory, 
         product.SubCategory
     );
     
-    // إخفاء السعر للخدمات
+    // Hide price for services
     const priceHTML = !isService 
-        ? `<p class="price">${price} جنيه</p>` 
+        ? `<p class="price">${price} EGP</p>` 
         : "";
     
     return `<div class="product-card">${priceHTML}</div>`;
@@ -395,74 +395,75 @@ function generateSearchResultHTML(product) {
 
 ---
 
-## إضافة فئة جديدة كخدمة
+## Adding a New Category as a Service
 
-### الخطوات:
+### Steps:
 
-1. **افتح ملف التكوين:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
+1. **Open Configuration File:** [`js/PRODUCT_SERVICE/serviceCategories.config.json`](/bazaar/js/PRODUCT_SERVICE/serviceCategories.config.json)
 
-2. **أضف الفئة المناسبة:**
+2. **Add the Appropriate Category:**
 
 ```json
 {
-  "serviceMainCategories": [6, 20, 21],  // إضافة فئة رئيسية جديدة
+  "serviceMainCategories": [6, 20, 21],  // Adding a new main category
   "serviceSubCategories": [
     { "mainId": 3, "subId": 5, "description": "..." },
-    { "mainId": 7, "subId": 8, "description": "خدمة جديدة" }  // إضافة فئة فرعية
+    { "mainId": 7, "subId": 8, "description": "New Service" }  // Adding a subcategory
   ]
 }
 ```
 
-3. **احفظ الملف** - لا حاجة لتعديل أي كود!
+3. **Save the File** - No need to modify any code!
 
-4. **أعد تحميل الصفحة** - سيتم تحميل التكوين الجديد تلقائياً
-## 🔄 تكامل حالة البيانات (State Integration)
+4. **Reload the Page** - The new configuration will be loaded automatically.
 
-يعتمد المشروع الآن كلياً على **نظام إدارة الحالة المركزي** لضمان ثبات البيانات وسهولة الصيانة:
+## 🔄 State Integration
 
-1. **الاعتماد الأساسي**: يتم استخدام `ProductStateManager.getCurrentProduct()` و `ProductStateManager.getSelectedCategories()` في كافة مراحل (العرض، التعديل، الإضافة).
-2. **التوجيه الذكي**: يتم استخدام `loadProductView()` و `loadProductForm()` للتحكم في التنقل بين الصفحات بناءً على نوع العنصر المكتشف تلقائياً.
+The project now relies entirely on a **Central State Management System** to ensure data consistency and ease of maintenance:
+
+1. **Core Dependency**: `ProductStateManager.getCurrentProduct()` and `ProductStateManager.getSelectedCategories()` are used in all stages (View, Edit, Add).
+2. **Smart Routing**: `loadProductView()` and `loadProductForm()` are used to control page navigation based on the automatically detected item type.
 
 ---
 
-## الدوال والمتغيرات المهجورة (Deprecated)
+## Deprecated Functions and Variables
 
 > [!CAUTION]
-> **يُمنع استخدام العناصر التالية في أي تطوير جديد.** تم الإبقاء على تعريفاتها في `globalVariable.js` فقط لمنع تعطل الأجزاء القديمة من المشروع التي لم يتم تحديثها بعد، وسيتم إزالتها نهائياً في التحديثات القادمة.
+> **The following elements are prohibited from use in any new development.** Their definitions have been kept in `globalVariable.js` only to prevent breaking old parts of the project that haven't been updated yet, and they will be permanently removed in future updates.
 
-### الدوال المهجورة:
-- `productViewLayout(View)` → **البديل**: `loadProductView(productData, options)`
-- `productAddSetType(editMode)` → **البديل**: `loadProductForm(options)`
+### Deprecated Functions:
+- `productViewLayout(View)` → **Alternative**: `loadProductView(productData, options)`
+- `productAddSetType(editMode)` → **Alternative**: `loadProductForm(options)`
 
-### المتغيرات العامة المهجورة:
-- `window.productSession` → **البديل**: `ProductStateManager.getCurrentProduct()`
-- `window.mainCategorySelectToAdd` → **البديل**: `ProductStateManager.getSelectedCategories()`
-- `window.subCategorySelectToAdd` → **البديل**: `ProductStateManager.getSelectedCategories()`
-- `window.productTypeToAdd` → **البديل**: `isServiceCategory()` أو `getServiceType()`
-
----
-
-## نظام تمييز الطلبات (Order Identification System)
-
-يستخدم المشروع حقل `orderType` في جدول `orders` للفصل التقني بين أنواع الطلبات، مما يضمن ظهور الواجهة الصحيحة في شريط التقدم (Stepper).
-
-### قيم حقل `orderType`:
-| القيمة | النوع | المصدر | السلوك في الـ Stepper |
-| :--- | :--- | :--- | :--- |
-| **`0`** | **منتج (Product)** | `cartPackage-checkout.js` | عرض تقليدي للكميات والأسعار |
-| **`1`** | **خدمة (Service)** | `view2_submit.js` | إظهار أدوات التسعير وصور الطلب المرفقة |
+### Deprecated Global Variables:
+- `window.productSession` → **Alternative**: `ProductStateManager.getCurrentProduct()`
+- `window.mainCategorySelectToAdd` → **Alternative**: `ProductStateManager.getSelectedCategories()`
+- `window.subCategorySelectToAdd` → **Alternative**: `ProductStateManager.getSelectedCategories()`
+- `window.productTypeToAdd` → **Alternative**: `isServiceCategory()` or `getServiceType()`
 
 ---
 
-## الخلاصة النهائية
+## Order Identification System
 
-| العملية | الدالة المقترحة | النظام المستخدم | القيمة الرقمية (`orderType`) |
-| :--- | :--- | :--- | :--- |
-| **عرض منتج/خدمة** | `loadProductView()` | `ProductStateManager` | - |
-| **إضافة/تعديل** | `loadProductForm()` | `ProductStateManager` | - |
-| **تحويل البيانات** | `mapProductData()` | `productMapper.js` | - |
-| **إرسال طلب منتج** | `fetch('/api/orders')` | سلة المشتريات | `0` |
-| **إرسال طلب خدمة** | `fetch('/api/orders')` | واجهة الخدمات | `1` |
+The project uses the `orderType` field in the `orders` table for technical separation between order types, ensuring the correct interface appears in the progress bar (Stepper).
+
+### `orderType` Field Values:
+| Value   | Type        | Source                    | Stepper Behavior                                |
+| :------ | :---------- | :------------------------ | :---------------------------------------------- |
+| **`0`** | **Product** | `cartPackage-checkout.js` | Traditional display of quantities and prices    |
+| **`1`** | **Service** | `view2_submit.js`         | Showing pricing tools and attached order images |
 
 ---
-*آخر تحديث للوثيقة: ديسمبر 2025 - توحيد نظام تحويل وإدارة البيانات*
+
+## Final Summary
+
+| Operation                | Suggested Function     | System Used           | Numeric Value (`orderType`) |
+| :----------------------- | :--------------------- | :-------------------- | :-------------------------- |
+| **View Product/Service** | `loadProductView()`    | `ProductStateManager` | -                           |
+| **Add/Edit**             | `loadProductForm()`    | `ProductStateManager` | -                           |
+| **Data Mapping**         | `mapProductData()`     | `productMapper.js`    | -                           |
+| **Send Product Order**   | `fetch('/api/orders')` | Shopping Cart         | `0`                         |
+| **Send Service Order**   | `fetch('/api/orders')` | Service Interface     | `1`                         |
+
+---
+*Document last updated: December 2025 - Unification of data mapping and management system*

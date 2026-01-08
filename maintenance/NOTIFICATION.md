@@ -1,136 +1,137 @@
-# نظام الإشعارات المركزي (Architecture Report)
+# Central Notification System (Architecture Report)
 
-هذا التقرير يوضح الهيكل النهائي والمنطق البرمجي لنظام الإشعارات في المشروع، مع التركيز على ميزات الاستهداف الدقيق، الفلترة العالمية، ومرونة الرسائل.
-
----
-
-## 1. إدارة الإعدادات والتحكم
-يتم التحكم في تفعيل/تعطيل الإشعارات لكل طرف (مشتري، بائع، مندوب، إدارة) عبر ملف إعدادات مركزي.
-
-### أ. التخزين المنسدل (`Cloudflare R2`)
-- **الملف:** `notification_config.json` مخزن سحابياً لضمان المزامنة الفورية.
-- **الإدارة:** واجهة `notification/page/settings.js` تسمح للمدير بتعديل الإعدادات في وقت التشغيل.
-
-### ب. محرك التحقق (`notificationTools.js`)
-- **الدالة:** `shouldNotify(stepId, role)`
-- **الوظيفة:** تقوم بفحص الإعدادات العالمية قبل تنفيذ أي عملية إرسال، مما يضمن احترام خصوصية المستخدمين وقرارات الإدارة.
+This report outlines the final structure and programming logic of the notification system in the project, focusing on precision targeting features, global filtering, and message flexibility.
 
 ---
 
-## 2. إدارة المحتوى والرسائل (Message Management)
-تم فصل كافة النصوص والرسائل عن الكود المصدري وتجميعها في ملف JSON لسهولة الصيانة والترجمة.
+## 1. Settings and Control Management
+The activation/deactivation of notifications for each party (purchaser, seller, courier, administration) is controlled via a central settings file.
 
-### أ. ملف القوالب (`notification_messages.json`)
-- **المسار:** `notification/notification_messages.json`
-- **الوظيفة:** يحتوي على عناوين ونصوص الإشعارات مقسمة حسب الحدث (شراء، تفعيل مرحلة) وحسب الدور المستهدف.
-- **آلية التحميل:** يتم تحميله محلياً كجزء من ملفات المشروع لضمان السرعة وسهولة الإدارة داخل الكود.
-- **القوالب ديناميكية:** يدعم الملف استخدام المتغيرات مثل `${orderId}` و `${stepName}` التي يتم استبدالها برمجياً.
+### A. Cloud Storage (`Cloudflare R2`)
+- **File:** `notification_config.json` stored in the cloud to ensure immediate synchronization.
+- **Management:** The `notification/page/settings.js` interface allows the administrator to modify settings at runtime.
 
-### ب. محرك القوالب (`Template Engine`)
-- **الدالة:** `getMessageTemplate(path, placeholders)`
-- **الوظيفة:** تستخرج القالب المناسب من ملف JSON وتقوم باستبدال كافة المتغيرات الممررة بالقيم الفعلية باستخدام Regular Expressions.
-- **الأمان:** يوفر النظام رسائل احتياطية (Fallback) في حال فشل تحميل الملف لضمان استمرارية الخدمة.
+### B. Verification Engine (`notificationTools.js`)
+- **Function:** `shouldNotify(stepId, role)`
+- **Functionality:** Checks global settings before executing any sending operation, ensuring user privacy and administrative decisions are respected.
 
 ---
 
-## 3. استراتيجية الاستهداف (Targeting Strategy)
+## 2. Content and Message Management
+All texts and messages have been separated from the source code and aggregated into a JSON file for ease of maintenance and translation.
 
-تم الانتقال من الإشعارات الجماعية للطلب بالكامل إلى **الإشعارات الموجهة على مستوى المنتج (Item-level Awareness)**.
+### A. Template File (`notification_messages.json`)
+- **Path:** `notification/notification_messages.json`
+- **Functionality:** Contains notification titles and texts divided by event (purchase, stage activation) and targeted role.
+- **Loading Mechanism:** Loaded locally as part of the project files to ensure speed and ease of management within the code.
+- **Dynamic Templates:** The file supports the use of variables like `${orderId}` and `${stepName}` which are replaced programmatically.
 
-### أ. تتبع الهوية في الذاكرة
-يتم حفظ `seller_key` لكل منتج في بنية البيانات المحلية (`stateManagement.js`) عند تحميل الطلب، مما يسمح للنظام بمعرفة صاحب كل منتج فوراً.
-
-### ب. الدوال الذكية للاستخراج (`steperNotificationLogic.js`)
-- `extractRelevantSellerKeys`: ترجع قائمة بالبائعين المتأثرين فقط بالمنتجات التي تم تحديثها.
-- `extractRelevantDeliveryKeys`: ترجع قائمة بالمناديب المسؤولين فقط عن شحن أو توصيل المنتجات المعنية.
-
----
-
-## 4. الفلترة العالمية (Global Actor Filtering)
-
-قاعدة ذهبية: **"لا أحد يتلقى إشعاراً عن فعل قام به هو بنفسه"**.
-
-- **المعرف:** يتم تمرير `actingUserId` (معرف المستخدم الحالي) من واجهات الـ Popups إلى محرك الإشعارات.
-- **التطبيق:** يتم استثناء القائم بالفعل من كافة قوائم المستلمين (مشتري، بائعين، مناديب) قبل البدء في عملية الإرسال الفعلي.
+### B. Template Engine
+- **Function:** `getMessageTemplate(path, placeholders)`
+- **Functionality:** Extracts the appropriate template from the JSON file and replaces all passed variables with actual values using Regular Expressions.
+- **Security:** The system provides fallback messages in case of file loading failure to ensure service continuity.
 
 ---
 
-## 5. الاعتبارات التقنية والأداء
+## 3. Targeting Strategy
 
-1. **تحميل كسول (Lazy Loading):** يتم جلب ملف الرسائل فقط عند الحاجة الأولى للإشعار وتخزينه في الكاش لتقليل استهلاك البيانات.
-2. **إرسال متوازي (Parallel Dispatch):** يتم استخدام `Promise.all` لإرسال الإشعارات لجميع الأطراف في وقت واحد.
-3. **الاستقلالية:** نظام الإشعارات مفصول تماماً عن منطق حفظ البيانات الأساسي.
-4. **سجلات التتبع للمطور (Dev Logs):** يتضمن النظام جمل تتبع تفصيلية تتبع سير عمليات التفعيل، الأذونات، ومزامنة التوكنات، مع توضيح حالة إذن النظام (OS Permission) وبيئة التشغيل (Web vs Android).
+The system has moved from collective notifications for the entire order to **Item-level Awareness**.
 
----
+### A. Identity Tracking in Memory
+The `seller_key` for each product is saved in the local data structure (`stateManagement.js`) when the order is loaded, allowing the system to immediately identify the owner of each product.
 
-## 6. إشعارات لوحة التحكم (Admin Panel Notifications)
-
-يوفر النظام أدوات للمسؤولين للتواصل المباشر مع المستخدمين عبر إشعارات FCM فورية من خلال `adminPanel.html`.
-
-### أ. الإرسال الفردي (`sendAdminNotification`)
-- **الدالة:** `window.sendAdminNotification(userKey)` في ملف `adminPanel.js`.
-- **الآلية:**
-    1. تستخرج نص الرسالة من حقل الإدخال المقابل للمستخدم في الجدول.
-    2. تجلب توكنات المستخدم المعني باستخدام `getUsersTokens([userKey])`.
-    3. ترسل الإشعار باستخدام العنوان الافتراضي للمسؤول (`admin_manual`).
-
-### ب. الإرسال الجماعي (`sendBroadcastNotification`)
-- **الدالة:** `window.sendBroadcastNotification()` في ملف `adminPanel.js`.
-- **الآلية:**
-    1. **التصفية:** تجلب قائمة كافة المستخدمين وتصفي من لديهم `hasFCMToken`.
-    2. **التجميع:** تستخرج كافة التوكنات الصالحة من السيرفر لهؤلاء المستخدمين.
-    3. **البث:** ترسل الرسالة لكافة الأجهزة المستهدفة بالتوازي باستخدام `sendNotificationsToTokens`.
----
-
-## 7. التحكم في حالة الإشعارات للمستخدم (User Notification Control)
-
-يسمح النظام للمستخدمين بالتحكم الكامل في استقبال التنبيهات على أجهزتهم عبر مفتاح تبديل (Master Toggle) موجود في صفحة `notifications.html`.
-
-### أ. واجهة التحكم (User Interface)
-- **الموقع:** أعلى قائمة الإشعارات في صفحة `notifications.html`.
-- **العنصر:** مفتاح تبديل (Switch) بمعرف `notification-master-toggle`.
-- **التصميم:** يلتزم بالهوية البصرية للتطبيق مع توفير تغذية راجعة فورية عبر `SweetAlert2`.
-
-### ب. المنطق البرمجي (`notifications.js`)
-- **حفظ الحالة:** يتم تخزين اختيار المستخدم في `localStorage` تحت مفتاح `notifications_enabled`.
-- **التحقق المزدوج:** عند تهيئة الصفحة، يقوم النظام بمطابقة `localStorage` مع **إذن المتصفح الفعلي** (`Notification.permission`). إذا كان الإذن مسحوباً، يظهر المفتاح كـ "معطل" حتى لو كان محفوظاً كـ "مفعل" سابقاً.
-- **واجهة المستخدم الديناميكية (`updateToggleUI`):** تتغير نصوص العنوان والوصف فورياً بناءً على الحالة:
-    - **في حالة التفعيل:** يظهر العنوان "الإشعارات مفعلة" مع نص وصفي يؤكد الاستعداد لاستقبال التنبيهات.
-    - **في حالة التعطيل:** يظهر العنوان "تفعيل الإشعارات" مع نص يحث المستخدم على تشغيل الميزة.
-- **عند التفعيل (`enableNotifications`):**
-    1. **فحص الأذونات:** يتم التحقق من `Notification.permission`.
-    2. **معالجة الرفض (Denied):** 
-        - في **الويب**: يتم عرض تنبيه إرشادي للمستخدم لفك الحظر من إعدادات المتصفح.
-        - في **أندرويد**: يتم استدعاء `window.Android.requestNotificationPermission()` لإظهار طلب الإذن الخاص بالنظام مرة أخرى.
-    3. **الطلب والمزامنة:** إذا كان الإذن متاحاً، يتم استدعاء `Notification.requestPermission()` ثم `setupFCM()` لمزامنة التوكن.
-- **عند التعطيل (`disableNotifications`):** يمسح التوكنات، يوقف التهيئة، ويغير النصوص فوراً لتعكس حالة الإيقاف.
-
-### ج. التكامل عند بدء التشغيل (`index.js`)
-يحترم التطبيق قرار المستخدم عند كل إقلاع؛ فإذا كانت الحالة معطلة في `localStorage` أو كانت الأذونات غير ممنوحة، يتم تجنب استدعاء `setupFCM()` تماماً لتوفير الموارد واحترام خصوصية المستخدم.
+### B. Smart Extraction Functions (`steperNotificationLogic.js`)
+- `extractRelevantSellerKeys`: Returns a list of only the sellers affected by the updated products.
+- `extractRelevantDeliveryKeys`: Returns a list of only the couriers responsible for shipping or delivering the concerned products.
 
 ---
 
-## 8. ميزة حذف الإشعارات (Notification Deletion)
+## 4. Global Actor Filtering
 
-يسمح النظام للمستخدمين بتنظيف سجلاتهم عن طريق حذف الإشعارات بشكل فردي ونهائي.
+Golden Rule: **"No one receives a notification about an action they performed themselves"**.
 
-### أ. الآلية البرمجية
-- **قاعدة البيانات:** يتم استدعاء الدالة `deleteNotificationFromDB(id)` في `notification-db-manager.js` لإزالة السجل نهائياً من `IndexedDB`.
-- **واجهة المستخدم:** يتم استخدام زر "سلة مهملات" بجوار حالة القراءة، مع تأثير حركي (Fade-out & Slide) وتأكيد عبر `SweetAlert2`.
-- **التزامن:** يتم بث حدث `notificationDeleted` لتحديث واجهة المستخدم في كافة التبويبات المفتوحة.
+- **Identifier:** `actingUserId` (current user identifier) is passed from Popups to the notification engine.
+- **Application:** The actor is excluded from all recipient lists (purchaser, sellers, couriers) before the actual sending process begins.
 
 ---
 
-## 9. الهيكلية البرمجية المقسمة (Modular Architecture)
+## 5. Technical and Performance Considerations
 
-لضمان سهولة الصيانة، تم تقسيم منطق صفحة الإشعارات إلى أربعة ملفات متخصصة:
+1. **Lazy Loading:** The messages file is fetched only when a notification is first needed and stored in the cache to reduce data consumption.
+2. **Parallel Dispatch:** `Promise.all` is used to send notifications to all parties simultaneously.
+3. **Independence:** The notification system is completely separated from the core data saving logic.
+4. **Dev Logs:** The system includes detailed tracking statements following the flow of activation operations, permissions, and token synchronization, clarifying system permission status (OS Permission) and the execution environment (Web vs Android).
 
-1. **`notifications.js` (Core):** الملف الأساسي الذي يحتوي على هيكل البيانات (`state`) وتنسيق التهيئة.
-2. **`notifications-ui.js` (UI):** مسؤول عن رسم القائمة، الرسائل المنبثقة (Toast)، وتنسيق التواريخ.
-3. **`notifications-logic.js` (Logic):** يعالج عمليات الفلترة، حساب الإحصائيات، وإدارة التخزين المحلي.
-4. **`notifications-actions.js` (Actions):** يدير الأحداث، التفاعل مع قاعدة البيانات، وطلب أذونات نظام التشغيل.
+---
+
+## 6. Admin Panel Notifications
+
+The system provides tools for administrators to communicate directly with users via instant FCM notifications through `adminPanel.html`.
+
+### A. Individual Sending (`sendAdminNotification`)
+- **Function:** `window.sendAdminNotification(userKey)` in the `adminPanel.js` file.
+- **Mechanism:**
+    1. Extracts the message text from the corresponding input field for the user in the table.
+    2. Fetches tokens for the concerned user using `getUsersTokens([userKey])`.
+    3. Sends the notification using the default administrator title (`admin_manual`).
+
+### B. Broadcast Sending (`sendBroadcastNotification`)
+- **Function:** `window.sendBroadcastNotification()` in the `adminPanel.js` file.
+- **Mechanism:**
+    1. **Filtering:** Fetches a list of all users and filters those who have `hasFCMToken`.
+    2. **Aggregation:** Extracts all valid tokens from the server for these users.
+    3. **Broadcasting:** Sends the message to all target devices in parallel using `sendNotificationsToTokens`.
+
+---
+
+## 7. User Notification Control
+
+The system allows users to have full control over receiving alerts on their devices via a Master Toggle located on the `notifications.html` page.
+
+### A. User Interface
+- **Location:** Top of the notification list on the `notifications.html` page.
+- **Element:** A switch toggle with the ID `notification-master-toggle`.
+- **Design:** Adheres to the application's visual identity while providing immediate feedback via `SweetAlert2`.
+
+### B. Programming Logic (`notifications.js`)
+- **State Saving:** The user's choice is stored in `localStorage` under the key `notifications_enabled`.
+- **Double Verification:** Upon page initialization, the system matches `localStorage` with the **actual browser permission** (`Notification.permission`). If permission is revoked, the toggle appears as "disabled" even if previously saved as "enabled".
+- **Dynamic UI (`updateToggleUI`):** Title and description texts change immediately based on the state:
+    - **When Enabled:** The title "Notifications Enabled" appears with a descriptive text confirming readiness to receive alerts.
+    - **When Disabled:** The title "Enable Notifications" appears with text urging the user to turn on the feature.
+- **When Enabling (`enableNotifications`):**
+    1. **Permission Check:** `Notification.permission` is verified.
+    2. **Handling Denial:** 
+        - In **Web**: An instructional alert is displayed to the user to unblock from browser settings.
+        - In **Android**: `window.Android.requestNotificationPermission()` is called to show the system permission request again.
+    3. **Request and Sync:** If permission is available, `Notification.requestPermission()` is called, followed by `setupFCM()` to synchronize the token.
+- **When Disabling (`disableNotifications`):** Clears tokens, stops initialization, and changes texts immediately to reflect the disabled state.
+
+### C. Startup Integration (`index.js`)
+The application respects the user's decision at every startup; if the state is disabled in `localStorage` or permissions are not granted, `setupFCM()` is avoided entirely to save resources and respect user privacy.
+
+---
+
+## 8. Notification Deletion Feature
+
+The system allows users to clean their logs by deleting notifications individually and permanently.
+
+### A. Programming Mechanism
+- **Database:** The `deleteNotificationFromDB(id)` function in `notification-db-manager.js` is called to permanently remove the record from `IndexedDB`.
+- **User Interface:** A "trash can" button is used next to the read status, with a motion effect (Fade-out & Slide) and confirmation via `SweetAlert2`.
+- **Synchronization:** A `notificationDeleted` event is broadcast to update the UI in all open tabs.
+
+---
+
+## 9. Modular Architecture
+
+To ensure ease of maintenance, the notification page logic has been divided into four specialized files:
+
+1. **`notifications.js` (Core):** The main file containing the data structure (`state`) and initialization format.
+2. **`notifications-ui.js` (UI):** Responsible for rendering the list, pop-up messages (Toast), and date formatting.
+3. **`notifications-logic.js` (Logic):** Processes filtering operations, statistics calculation, and local storage management.
+4. **`notifications-actions.js` (Actions):** Manages events, database interaction, and requesting OS permissions.
 
 ---
 > [!NOTE]
-> هذا التحكم يتم على مستوى الجهاز (Device-level). إذا قام المستخدم بالتعطيل أو الحذف على هاتف، فلن يتأثر الجهاز الآخر المرتبط بنفس الحساب.
+> This control is performed at the device level. If a user disables or deletes on one phone, other devices linked to the same account will not be affected.

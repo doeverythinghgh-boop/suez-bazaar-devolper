@@ -1,84 +1,84 @@
-# 🎡 توثيق نظام الإعلانات (Advertisement System Guide)
+# 🎡 Advertisement System Guide
 
-يصف هذا المستند آلية عمل نظام الإعلانات في مشروع "بزار"، بدءاً من إدارة الصور في لوحة التحكم وصولاً إلى عرضها للمستخدم النهائي مع شرح لنظام التخزين المؤقت الذكي.
-
----
-
-## 🏗️ الهيكل التقني (Architecture)
-
-يتكون نظام الإعلانات من ثلاثة أجزاء متكاملة:
-
-1.  **لوحة تحكم المسؤول (`pages/ADMIN/mainAdvertises.html`)**: الواجهة التي يستخدمها المدير لرفع وترتيب وحذف الإعلانات.
-2.  **خادم التخزين (Cloudflare R2)**: يتم تخزين الصور الفعلية وملف البيان (`advertisements.json`) الذي يحتوي على قائمة الصور وترتيبها.
-3.  **موديول العرض (`pages/advertisement/`)**: المسؤول عن جلب البيانات وتحويلها إلى سلايدر (Slider) تفاعلي للمستخدم.
-
-### 3. ربط الإعلان بالبحث (Search Redirection)
-- أصبح بإمكان المسؤول كتابة "كلمة بحث" بجانب كل صورة إعلان.
-- يتم تخزين هذه الكلمة في حقل `query` داخل ملف `advertisements.json`.
-- عندما يقوم المستخدم بالنقر على الإعلان، يتم توجيهه تلقائياً إلى صفحة البحث وعرض النتائج المتعلقة بهذه الكلمة.
+This document describes the mechanics of the advertisement system in the "Bazaar" project, from image management in the admin panel to displaying them to the end user, including an explanation of the smart caching system.
 
 ---
 
-## 🏗️ هيكلية البيانات المحدثة (`advertisements.json`)
-يتم تخزين البيانات الآن ككائنات بدلاً من نصوص بسيطة لدعم الروابط:
+## 🏗️ Technical Architecture
+
+The advertisement system consists of three integrated parts:
+
+1.  **Admin Control Panel (`pages/ADMIN/mainAdvertises.html`)**: The interface used by the administrator to upload, arrange, and delete advertisements.
+2.  **Storage Server (Cloudflare R2)**: Actual images and the manifest file (`advertisements.json`), which contains the list of images and their order, are stored here.
+3.  **Display Module (`pages/advertisement/`)**: Responsible for fetching data and converting it into an interactive slider for the user.
+
+### 3. Search Redirection
+- The administrator can now write a "search query" next to each advertisement image.
+- This word is stored in the `query` field within the `advertisements.json` file.
+- When a user clicks on the advertisement, they are automatically redirected to the search page, and results related to this word are displayed.
+
+---
+
+## 🏗️ Updated Data Structure (`advertisements.json`)
+Data is now stored as objects instead of simple text to support links:
 ```json
 [
-  { "img": "ad_123.jpg", "query": "ساعات عالمية" },
+  { "img": "ad_123.jpg", "query": "Global Watches" },
   { "img": "ad_456.jpg", "query": "" }
 ]
 ```
 
-### 1. رفع الصور والمعالجة
-- يمكن للمسؤول رفع حتى **10 صور**.
-- يتم ضغط الصور تلقائياً (Compression) وتغيير حجمها لضمان سرعة التحميل وتوفير مساحة التخزين، مع تفضيل صيغة **WebP** إذا كان المتصفح يدعمها.
-- تتوفر ميزة "تغيير الأبعاد" يدوياً للصور الجديدة لضمان تناسق العرض.
+### 1. Image Upload and Processing
+- The administrator can upload up to **10 images**.
+- Images are automatically compressed and resized to ensure fast loading and save storage space, with a preference for the **WebP** format if the browser supports it.
+- A manual "resize" feature is available for new images to ensure display consistency.
 
-### 2. إستراتيجية المزامنة الذكية (Smart Sync)
-عند الضغط على "نشر الإعلان"، يقوم النظام بالخطوات التالية:
-- **الرفع المتوازي**: يتم رفع الصور الجديدة فقط بأسماء فريدة (`ad_timestamp_random.jpg`).
-- **تحديث البيان**: يتم إنشاء ورفع ملف `advertisements.json` جديد يحتوي على القائمة النهائية للصور بالترتيب الذي حدده المسؤول.
-- **التنظيف الذاتي**: يقوم النظام تلقائياً بحذف الصور القديمة من الخادم (Cloudflare R2) التي لم تعد موجودة في القائمة الجديدة لتجنب تراكم الملفات اليتيمة.
-- **إبطال ذاكرة التخزين**: يتم إرسال طلب إلى `api/updates` لتسجيل وقت التحديث، مما ينبه هواتف المستخدمين بضرورة جلب البيانات الجديدة.
-
----
-
-## 💻 ثانياً: عرض الإعلانات (واجهة المستخدم)
-
-يتم استهلاك النظام عبر العنصر `id="advertisement-section"` في الصفحة الرئيسية.
-
-### 1. آلية الجلب (Fetching)
-يعتمد موديول `advertisement.js` على منطق جلب ذكي:
-- يتأكد أولاً من وجود تحديثات عبر `api/updates`.
-- إذا كان هناك تحديث جديد أو انتهت صلاحية الذاكرة المؤقتة، يقوم بجلب ملف `advertisements.json` من الخادم.
-- يقوم ببناء السلايدر باستخدام الصور المذكورة في الملف.
-
-### 2. نظام التخزين المؤقت (Caching)
-لضمان سرعة فائقة وتقليل استهلاك البيانات:
-- يتم تخزين الصور والبيانات في `localStorage`.
-- **مدة الصلاحية**: يثق النظام في البيانات المحلية لمدة **ساعة واحدة** دون سؤال الخادم.
-- **التحقق من التحديثات**: بعد مرور ساعة، يتحقق النظام من "طابع الزمن" (Timestamp) من قاعدة البيانات؛ إذا لم يتغير، يستمر في استخدام الصور المخزنة محلياً.
-
-### 3. تجربة المستخدم (UX Features)
-- **سلايدر دائري (Circular Slider)**: يدعم التنقل اللانهائي.
-- **التشغيل التلقائي (Auto-play)**: تتغير الإعلانات كل 4 ثوانٍ تلقائياً.
-- **التفاعل الذكي**: يتوقف التشغيل التلقائي مؤقتاً عند لمس الإعلان أو الضغط عليه يدوياً.
-- **الاستجابة (Responsiveness)**: يتكيف السلايدر مع أحجام الشاشات المختلفة، ويخفي عناصر التحكم (الأسهم والنقاط) إذا كان هناك إعلان واحد فقط.
+### 2. Smart Sync Strategy
+When clicking "Publish Advertisement," the system performs the following steps:
+- **Parallel Upload**: Only new images are uploaded with unique names (`ad_timestamp_random.jpg`).
+- **Manifest Update**: A new `advertisements.json` file is created and uploaded containing the final list of images in the order specified by the administrator.
+- **Self-Cleaning**: The system automatically deletes old images from the server (Cloudflare R2) that are no longer in the new list to avoid the accumulation of orphan files.
+- **Cache Invalidation**: A request is sent to `api/updates` to record the update time, alerting users' phones to fetch new data.
 
 ---
 
-## 🛠️ الصيانات المتكررة
+## 💻 Second: Displaying Advertisements (User Interface)
 
-### إضافة إعلان جديد
-1. اذهب إلى لوحة تحكم المسؤول -> إدارة الإعلانات.
-2. اختر الصور المطلوبة (أو التقطها بالكاميرا).
-3. رتب الصور بسحبها وإفلاتها (إذا كان متاحاً) أو بالترتيب الذي أضفتها به.
-4. اضغط "نشر الإعلان الآن".
+The system is consumed via the element `id="advertisement-section"` on the home page.
 
-### في حالة عدم ظهور الإعلانات
-- تأكد من وجود ملف `advertisements.json` في حاوية (Bucket) الـ R2.
-- تأكد من صلاحية الرابط العام `R2_PUBLIC_URL` المسجل في الكود.
-- جرب مسح "بيانات الموقع" (Clear Cache) في المتصفح لتجاوز الذاكرة المؤقتة المحلية.
+### 1. Fetching Mechanism
+The `advertisement.js` module relies on smart fetching logic:
+- It first checks for updates via `api/updates`.
+- If there is a new update or the cache has expired, it fetches the `advertisements.json` file from the server.
+- It builds the slider using the images mentioned in the file.
+
+### 2. Caching System
+To ensure superior speed and reduce data consumption:
+- Images and data are stored in `localStorage`.
+- **Validity Period**: The system trusts local data for **one hour** without asking the server.
+- **Update Verification**: After one hour, the system checks the "Timestamp" from the database; if it hasn't changed, it continues to use the locally stored images.
+
+### 3. UX Features
+- **Circular Slider**: Supports infinite navigation.
+- **Auto-play**: Advertisements change every 4 seconds automatically.
+- **Smart Interaction**: Auto-play pauses temporarily when the advertisement is touched or clicked manually.
+- **Responsiveness**: The slider adapts to different screen sizes and hides controls (arrows and dots) if there is only one advertisement.
+
+---
+
+## 🛠️ Recurring Maintenance
+
+### Adding a New Advertisement
+1. Go to Admin Control Panel -> Advertisement Management.
+2. Choose the desired images (or take them with the camera).
+3. Arrange the images by dragging and dropping (if available) or in the order you added them.
+4. Click "Publish Advertisement Now."
+
+### In Case Advertisements Do Not Appear
+- Ensure the `advertisements.json` file exists in the R2 bucket.
+- Verify the validity of the public link `R2_PUBLIC_URL` registered in the code.
+- Try clearing "Site Data" (Clear Cache) in the browser to bypass the local cache.
 
 ---
 > [!NOTE]
-> يعتمد النظام بشكل أساسي على ملف `advertisements.json` كمرجع وحيد (Single Source of Truth) لترتيب وحالة الإعلانات المنشورة.
+> The system primarily relies on the `advertisements.json` file as the Single Source of Truth for the order and status of published advertisements.
