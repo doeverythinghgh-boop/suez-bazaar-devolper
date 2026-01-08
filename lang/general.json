@@ -411,6 +411,10 @@
     "ar": "اختر من المعرض",
     "en": "Pick from Gallery"
   },
+  "gen_btn_send_order": {
+    "ar": "إرسال الطلب",
+    "en": "Send Order"
+  },
   "contact_details_title_phone": {
     "ar": "هاتف او واتس اب",
     "en": "Phone or WhatsApp"

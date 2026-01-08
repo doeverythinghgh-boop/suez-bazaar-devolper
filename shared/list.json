@@ -7,7 +7,7 @@
         "en": "Clothing & Fashion"
       },
       "icon": "fas fa-shirt",
-      "image": "Clothing & Fashion.jpg",
+      "image": "Clothing & Fashion.webp",
       "subcategories": [
         {
           "id": 1,
@@ -16,7 +16,7 @@
             "en": "Women's Clothing"
           },
           "icon": "fas fa-person-dress",
-          "image": "Women's Clothing.jpg"
+          "image": "Women's Clothing.webp"
         },
         {
           "id": 2,
@@ -25,7 +25,7 @@
             "en": "Men's Clothing"
           },
           "icon": "fas fa-user-tie",
-          "image": "Men's Clothing.jpg"
+          "image": "Men's Clothing.webp"
         },
         {
           "id": 3,
@@ -34,7 +34,7 @@
             "en": "Children's & Newborn Clothing"
           },
           "icon": "fas fa-child-reaching",
-          "image": "Children's & Newborn Clothing.jpg"
+          "image": "Children's & Newborn Clothing.webp"
         },
         {
           "id": 4,
@@ -43,7 +43,7 @@
             "en": "Abayas & Galabiyas"
           },
           "icon": "fas fa-vest-patches",
-          "image": "Abayas & Galabiyas.jpg"
+          "image": "Abayas & Galabiyas.webp"
         },
         {
           "id": 5,
@@ -52,7 +52,7 @@
             "en": "Shoes, Leather & Fabric Bags"
           },
           "icon": "fas fa-shopping-bag",
-          "image": "Shoes, Leather & Fabric Bags.jpg"
+          "image": "Shoes, Leather & Fabric Bags.webp"
         },
         {
           "id": 6,
@@ -61,7 +61,7 @@
             "en": "Men's & Women's Accessories"
           },
           "icon": "fas fa-glasses",
-          "image": "Men's & Women's Accessories.jpg"
+          "image": "Men's & Women's Accessories.webp"
         },
         {
           "id": 7,
@@ -70,7 +70,7 @@
             "en": "Sportswear"
           },
           "icon": "fas fa-running",
-          "image": "Sportswear.jpg"
+          "image": "Sportswear.webp"
         },
         {
           "id": 8,
@@ -79,7 +79,7 @@
             "en": "Formal Wear (Weddings, Parties)"
           },
           "icon": "fas fa-ring",
-          "image": "Formal Wear (Weddings, Parties).jpg"
+          "image": "Formal Wear (Weddings, Parties).webp"
         },
         {
           "id": 9,
@@ -88,7 +88,7 @@
             "en": "Underwear & Sleepwear"
           },
           "icon": "fas fa-bed",
-          "image": "Underwear & Sleepwear.jpg"
+          "image": "Underwear & Sleepwear.webp"
         },
         {
           "id": 10,
@@ -97,7 +97,7 @@
             "en": "Fabrics & Sewing Supplies"
           },
           "icon": "fas fa-ruler-combined",
-          "image": "Fabrics & Sewing Supplies.jpg"
+          "image": "Fabrics & Sewing Supplies.webp"
         },
         {
           "id": 11,
@@ -106,7 +106,7 @@
             "en": "Good Condition Used Clothes"
           },
           "icon": "fas fa-recycle",
-          "image": "Good Condition Used Clothes.jpg"
+          "image": "Good Condition Used Clothes.webp"
         },
         {
           "id": 12,
@@ -115,7 +115,7 @@
             "en": "Branded Fashion & Clothing"
           },
           "icon": "fas fa-star",
-          "image": "Branded Fashion & Clothing.jpg"
+          "image": "Branded Fashion & Clothing.webp"
         }
       ]
     },
@@ -126,7 +126,7 @@
         "en": "Food & Beverages"
       },
       "icon": "fas fa-utensils",
-      "image": "Food & Beverages.jpg",
+      "image": "Food & Beverages.webp",
       "subcategories": [
         {
           "id": 1,
@@ -135,7 +135,7 @@
             "en": "Main Dishes & Ready Meals"
           },
           "icon": "fas fa-concierge-bell",
-          "image": "Main Dishes & Ready Meals.jpg"
+          "image": "Main Dishes & Ready Meals.webp"
         },
         {
           "id": 2,
@@ -144,7 +144,7 @@
             "en": "Bakery & Pastry"
           },
           "icon": "fas fa-bread-slice",
-          "image": "Bakery & Pastry.jpg"
+          "image": "Bakery & Pastry.webp"
         },
         {
           "id": 3,
@@ -153,7 +153,7 @@
             "en": "Sweets"
           },
           "icon": "fas fa-candy-cane",
-          "image": "Sweets.jpg"
+          "image": "Sweets.webp"
         },
         {
           "id": 4,
@@ -162,7 +162,7 @@
             "en": "Drinks & Natural Juices"
           },
           "icon": "fas fa-blender",
-          "image": "Drinks & Natural Juices.jpg"
+          "image": "Drinks & Natural Juices.webp"
         },
         {
           "id": 5,
@@ -171,7 +171,7 @@
             "en": "Canned & Dried Foods"
           },
           "icon": "fas fa-box-open",
-          "image": "Canned & Dried Foods.jpg"
+          "image": "Canned & Dried Foods.webp"
         },
         {
           "id": 6,
@@ -180,7 +180,7 @@
             "en": "Dairy & Eggs"
           },
           "icon": "fas fa-egg",
-          "image": "Dairy & Eggs.jpg"
+          "image": "Dairy & Eggs.webp"
         },
         {
           "id": 7,
@@ -189,7 +189,7 @@
             "en": "Spices & Herbs"
           },
           "icon": "fas fa-leaf",
-          "image": "Spices & Herbs.jpg"
+          "image": "Spices & Herbs.webp"
         },
         {
           "id": 8,
@@ -198,7 +198,7 @@
             "en": "Nuts, Seeds & Dried Fruits"
           },
           "icon": "fas fa-seedling",
-          "image": "Nuts, Seeds & Dried Fruits.jpg"
+          "image": "Nuts, Seeds & Dried Fruits.webp"
         },
         {
           "id": 9,
@@ -207,7 +207,7 @@
             "en": "Oils, Ghee & Fats"
           },
           "icon": "fas fa-oil-can",
-          "image": "Oils, Ghee & Fats.jpg"
+          "image": "Oils, Ghee & Fats.webp"
         },
         {
           "id": 10,
@@ -216,7 +216,7 @@
             "en": "Meat, Poultry & Fish"
           },
           "icon": "fas fa-drumstick-bite",
-          "image": "Meat, Poultry & Fish.jpg"
+          "image": "Meat, Poultry & Fish.webp"
         },
         {
           "id": 11,
@@ -225,7 +225,7 @@
             "en": "Food & Organic Products"
           },
           "icon": "fas fa-carrot",
-          "image": "Food & Organic Products.jpg"
+          "image": "Food & Organic Products.webp"
         },
         {
           "id": 12,
@@ -234,7 +234,7 @@
             "en": "Frozen & Chilled Foods"
           },
           "icon": "fas fa-snowflake",
-          "image": "Frozen & Chilled Foods.jpg"
+          "image": "Frozen & Chilled Foods.webp"
         }
       ]
     },
@@ -245,7 +245,7 @@
         "en": "Tech & Electronics"
       },
       "icon": "fas fa-robot",
-      "image": "Tech & Electronics.png",
+      "image": "Tech & Electronics.webp",
       "subcategories": [
         {
           "id": 1,
@@ -254,7 +254,7 @@
             "en": "Smartphones & Tablets"
           },
           "icon": "fas fa-mobile-alt",
-          "image": "Smartphones & Tablets.jpg"
+          "image": "Smartphones & Tablets.webp"
         },
         {
           "id": 2,
@@ -263,7 +263,7 @@
             "en": "Laptops & Desktops"
           },
           "icon": "fas fa-laptop",
-          "image": "Laptops & Desktops.jpg"
+          "image": "Laptops & Desktops.webp"
         },
         {
           "id": 3,
@@ -272,7 +272,7 @@
             "en": "Digital Accessories"
           },
           "icon": "fas fa-headphones-alt",
-          "image": "Digital Accessories.jpg"
+          "image": "Digital Accessories.webp"
         },
         {
           "id": 4,
@@ -281,7 +281,7 @@
             "en": "Software & Digital Solutions"
           },
           "icon": "fas fa-code",
-          "image": "Software & Digital Solutions.jpg"
+          "image": "Software & Digital Solutions.webp"
         },
         {
           "id": 5,
@@ -290,7 +290,7 @@
             "en": "Web & App Development"
           },
           "icon": "fas fa-terminal",
-          "image": "Web & App Development.jpg"
+          "image": "Web & App Development.webp"
         },
         {
           "id": 6,
@@ -299,7 +299,7 @@
             "en": "Gaming Consoles & Video Games"
           },
           "icon": "fas fa-gamepad",
-          "image": "Gaming Consoles & Video Games.jpg"
+          "image": "Gaming Consoles & Video Games.webp"
         },
         {
           "id": 7,
@@ -308,7 +308,7 @@
             "en": "Security & Home Monitoring"
           },
           "icon": "fas fa-video",
-          "image": "Security & Home Monitoring.jpg"
+          "image": "Security & Home Monitoring.webp"
         },
         {
           "id": 8,
@@ -317,7 +317,7 @@
             "en": "Home Electrical Appliances"
           },
           "icon": "fas fa-blender",
-          "image": "Home Electrical Appliances.jpg"
+          "image": "Home Electrical Appliances.webp"
         },
         {
           "id": 9,
@@ -326,7 +326,7 @@
             "en": "Cameras & Optical Tech"
           },
           "icon": "fas fa-camera",
-          "image": "Cameras & Optical Tech.jpg"
+          "image": "Cameras & Optical Tech.webp"
         },
         {
           "id": 10,
@@ -335,7 +335,7 @@
             "en": "Audio Devices & Headphones"
           },
           "icon": "fas fa-volume-up",
-          "image": "Audio Devices & Headphones.jpg"
+          "image": "Audio Devices & Headphones.webp"
         },
         {
           "id": 11,
@@ -344,7 +344,7 @@
             "en": "Networking & Telecom"
           },
           "icon": "fas fa-wifi",
-          "image": "Networking & Telecom.jpg"
+          "image": "Networking & Telecom.webp"
         }
       ]
     },
@@ -355,7 +355,7 @@
         "en": "Health & Beauty"
       },
       "icon": "fas fa-spa",
-      "image": "Health & Beauty.png",
+      "image": "Health & Beauty.webp",
       "subcategories": [
         {
           "id": 1,
@@ -364,7 +364,7 @@
             "en": "Skin & Face Care"
           },
           "icon": "fas fa-magic",
-          "image": "Skin & Face Care.jpg"
+          "image": "Skin & Face Care.webp"
         },
         {
           "id": 2,
@@ -373,7 +373,7 @@
             "en": "Hair Care"
           },
           "icon": "fas fa-cut",
-          "image": "Hair Care.jpg"
+          "image": "Hair Care.webp"
         },
         {
           "id": 3,
@@ -382,7 +382,7 @@
             "en": "Makeup & Beauty Tools"
           },
           "icon": "fas fa-paint-brush",
-          "image": "Makeup & Beauty Tools.jpg"
+          "image": "Makeup & Beauty Tools.webp"
         },
         {
           "id": 4,
@@ -391,7 +391,7 @@
             "en": "Perfumes, Incense & Burners"
           },
           "icon": "fas fa-spray-can",
-          "image": "Perfumes, Incense & Burners.jpg"
+          "image": "Perfumes, Incense & Burners.webp"
         },
         {
           "id": 5,
@@ -400,7 +400,7 @@
             "en": "Hygiene & Bath Supplies"
           },
           "icon": "fas fa-bath",
-          "image": "Hygiene & Bath Supplies.jpg"
+          "image": "Hygiene & Bath Supplies.webp"
         },
         {
           "id": 6,
@@ -409,7 +409,7 @@
             "en": "Supplements & Vitamins"
           },
           "icon": "fas fa-pills",
-          "image": "Supplements & Vitamins.jpg"
+          "image": "Supplements & Vitamins.webp"
         },
         {
           "id": 7,
@@ -418,7 +418,7 @@
             "en": "Fitness Equipment"
           },
           "icon": "fas fa-dumbbell",
-          "image": "Fitness Equipment.jpg"
+          "image": "Fitness Equipment.webp"
         },
         {
           "id": 8,
@@ -427,7 +427,7 @@
             "en": "Medical & Health Products"
           },
           "icon": "fas fa-first-aid",
-          "image": "Medical & Health Products.jpg"
+          "image": "Medical & Health Products.webp"
         },
         {
           "id": 9,
@@ -436,7 +436,7 @@
             "en": "Dental Care"
           },
           "icon": "fas fa-tooth",
-          "image": "Dental Care.jpg"
+          "image": "Dental Care.webp"
         },
         {
           "id": 10,
@@ -445,7 +445,7 @@
             "en": "Men's Care Products"
           },
           "icon": "fas fa-user-tie",
-          "image": "Men's Care Products.jpg"
+          "image": "Men's Care Products.webp"
         },
         {
           "id": 11,
@@ -454,7 +454,7 @@
             "en": "Electric Personal Care Tools"
           },
           "icon": "fas fa-bolt",
-          "image": "Electric Personal Care Tools.jpg"
+          "image": "Electric Personal Care Tools.webp"
         }
       ]
     },
@@ -465,7 +465,7 @@
         "en": "Oriflame"
       },
       "icon": "fas fa-circle-notch",
-      "image": "Oriflame.png",
+      "image": "Oriflame.webp",
       "subcategories": [
         {
           "id": 1,
@@ -474,7 +474,7 @@
             "en": "Men's & Women's Perfumes"
           },
           "icon": "fas fa-spray-can",
-          "image": "Men's & Women's Perfumes.jpg"
+          "image": "Men's & Women's Perfumes.webp"
         },
         {
           "id": 2,
@@ -483,7 +483,7 @@
             "en": "Cosmetics"
           },
           "icon": "fas fa-paint-brush",
-          "image": "Cosmetics.jpg"
+          "image": "Cosmetics.webp"
         },
         {
           "id": 3,
@@ -492,7 +492,7 @@
             "en": "Offers"
           },
           "icon": "fas fa-tags",
-          "image": "Offers.jpg"
+          "image": "Offers.webp"
         },
         {
           "id": 4,
@@ -501,7 +501,7 @@
             "en": "New Membership"
           },
           "icon": "fas fa-user-plus",
-          "image": "New Membership.jpg"
+          "image": "New Membership.webp"
         }
       ]
     },
@@ -512,7 +512,7 @@
         "en": "Vehicles Market"
       },
       "icon": "fas fa-car",
-      "image": "Vehicles Market.png",
+      "image": "Vehicles Market.webp",
       "subcategories": [
         {
           "id": 1,
@@ -521,7 +521,7 @@
             "en": "Car Services"
           },
           "icon": "fas fa-car-side",
-          "image": "Car Services.jpg"
+          "image": "Car Services.webp"
         },
         {
           "id": 3,
@@ -530,7 +530,7 @@
             "en": "Shipping & Delivery"
           },
           "icon": "fas fa-shipping-fast",
-          "image": "Shipping & Delivery.jpg"
+          "image": "Shipping & Delivery.webp"
         },
         {
           "id": 5,
@@ -539,7 +539,7 @@
             "en": "Vehicle Maintenance"
           },
           "icon": "fas fa-wrench",
-          "image": "Vehicle Maintenance.jpg"
+          "image": "Vehicle Maintenance.webp"
         },
         {
           "id": 6,
@@ -548,7 +548,7 @@
             "en": "Vehicle Rental"
           },
           "icon": "fas fa-key",
-          "image": "Vehicle Rental.jpg"
+          "image": "Vehicle Rental.webp"
         },
         {
           "id": 2,
@@ -557,7 +557,7 @@
             "en": "Bicycle Services"
           },
           "icon": "fas fa-motorcycle",
-          "image": "Bicycle Services.jpg"
+          "image": "Bicycle Services.webp"
         },
         {
           "id": 3,
@@ -566,7 +566,7 @@
             "en": "Spare Parts, Engines & Oils"
           },
           "icon": "fas fa-cogs",
-          "image": "Spare Parts, Engines & Oils.jpg"
+          "image": "Spare Parts, Engines & Oils.webp"
         },
         {
           "id": 4,
@@ -575,7 +575,7 @@
             "en": "Vehicle Accessories"
           },
           "icon": "fas fa-car-battery",
-          "image": "Vehicle Accessories.jpg"
+          "image": "Vehicle Accessories.webp"
         },
         {
           "id": 7,
@@ -584,7 +584,7 @@
             "en": "Vehicle Tires & Wheels"
           },
           "icon": "fas fa-dot-circle",
-          "image": "Vehicle Tires & Wheels.jpg"
+          "image": "Vehicle Tires & Wheels.webp"
         },
         {
           "id": 8,
@@ -593,7 +593,7 @@
             "en": "Vehicle Audio & Visual Systems"
           },
           "icon": "fas fa-volume-up",
-          "image": "Vehicle Audio & Visual Systems.jpg"
+          "image": "Vehicle Audio & Visual Systems.webp"
         },
         {
           "id": 10,
@@ -602,7 +602,7 @@
             "en": "Water Vehicles"
           },
           "icon": "fas fa-ship",
-          "image": "Water Vehicles.jpg"
+          "image": "Water Vehicles.webp"
         }
       ]
     },
@@ -613,7 +613,7 @@
         "en": "Home & Furniture"
       },
       "icon": "fas fa-couch",
-      "image": "Home & Furniture.png",
+      "image": "Home & Furniture.webp",
       "subcategories": [
         {
           "id": 1,
@@ -622,7 +622,7 @@
             "en": "Living Room & Reception Furniture"
           },
           "icon": "fas fa-couch",
-          "image": "Living Room & Reception Furniture.jpg"
+          "image": "Living Room & Reception Furniture.webp"
         },
         {
           "id": 2,
@@ -631,7 +631,7 @@
             "en": "Bedroom Furniture & Bedding"
           },
           "icon": "fas fa-bed",
-          "image": "Bedroom Furniture & Bedding.jpg"
+          "image": "Bedroom Furniture & Bedding.webp"
         },
         {
           "id": 3,
@@ -640,7 +640,7 @@
             "en": "Office Furniture & Workspaces"
           },
           "icon": "fas fa-chair",
-          "image": "Office Furniture & Workspaces.jpg"
+          "image": "Office Furniture & Workspaces.webp"
         },
         {
           "id": 4,
@@ -649,7 +649,7 @@
             "en": "Kitchen & Tableware"
           },
           "icon": "fas fa-utensils",
-          "image": "Kitchen & Tableware.jpg"
+          "image": "Kitchen & Tableware.webp"
         },
         {
           "id": 5,
@@ -658,7 +658,7 @@
             "en": "Carpets, Curtains & Rugs"
           },
           "icon": "fas fa-layer-group",
-          "image": "Carpets, Curtains & Rugs.jpg"
+          "image": "Carpets, Curtains & Rugs.webp"
         },
         {
           "id": 6,
@@ -667,7 +667,7 @@
             "en": "Lighting & Lamps"
           },
           "icon": "fas fa-lightbulb",
-          "image": "Lighting & Lamps.jpg"
+          "image": "Lighting & Lamps.webp"
         },
         {
           "id": 7,
@@ -685,7 +685,7 @@
             "en": "Home Storage & Organization"
           },
           "icon": "fas fa-box",
-          "image": "Home Storage & Organization.jpg"
+          "image": "Home Storage & Organization.webp"
         },
         {
           "id": 9,
@@ -694,7 +694,7 @@
             "en": "Home Cleaning Tools"
           },
           "icon": "fas fa-broom",
-          "image": "Home Cleaning Tools.jpg"
+          "image": "Home Cleaning Tools.webp"
         },
         {
           "id": 10,
@@ -703,7 +703,7 @@
             "en": "Bathroom & Toilet Supplies"
           },
           "icon": "fas fa-toilet",
-          "image": "Bathroom & Toilet Supplies.jpg"
+          "image": "Bathroom & Toilet Supplies.webp"
         },
         {
           "id": 11,
@@ -712,7 +712,7 @@
             "en": "Garden & Outdoor Decor"
           },
           "icon": "fas fa-tree",
-          "image": "Garden & Outdoor Decor.jpg"
+          "image": "Garden & Outdoor Decor.webp"
         },
         {
           "id": 12,
@@ -721,7 +721,7 @@
             "en": "Bedding, Covers & Pillows"
           },
           "icon": "fas fa-bed",
-          "image": "Bedding, Covers & Pillows.jpg"
+          "image": "Bedding, Covers & Pillows.webp"
         }
       ]
     },
@@ -732,7 +732,7 @@
         "en": "Real Estate"
       },
       "icon": "fas fa-city",
-      "image": "Real Estate.jpg",
+      "image": "Real Estate.webp",
       "subcategories": [
         {
           "id": 1,
@@ -741,7 +741,7 @@
             "en": "Apartments & Houses for Sale"
           },
           "icon": "fas fa-home",
-          "image": "Apartments & Houses for Sale.jpg"
+          "image": "Apartments & Houses for Sale.webp"
         },
         {
           "id": 7,
@@ -750,7 +750,7 @@
             "en": "Chalets & Villas"
           },
           "icon": "fas fa-house-chimney-window",
-          "image": "Chalets & Villas.jpg"
+          "image": "Chalets & Villas.webp"
         },
         {
           "id": 2,
@@ -759,7 +759,7 @@
             "en": "Apartments & Houses for Rent"
           },
           "icon": "fas fa-key",
-          "image": "Apartments & Houses for Rent.jpg"
+          "image": "Apartments & Houses for Rent.webp"
         },
         {
           "id": 3,
@@ -768,7 +768,7 @@
             "en": "Lands & Commercial Property"
           },
           "icon": "fas fa-map-marked-alt",
-          "image": "Lands & Commercial Property.jpg"
+          "image": "Lands & Commercial Property.webp"
         },
         {
           "id": 4,
@@ -777,7 +777,7 @@
             "en": "Offices & Workspaces"
           },
           "icon": "fas fa-building",
-          "image": "Offices & Workspaces.jpg"
+          "image": "Offices & Workspaces.webp"
         },
         {
           "id": 5,
@@ -786,7 +786,7 @@
             "en": "Real Estate Brokerage"
           },
           "icon": "fas fa-handshake",
-          "image": "Real Estate Brokerage.jpg"
+          "image": "Real Estate Brokerage.webp"
         },
         {
           "id": 6,
@@ -795,7 +795,7 @@
             "en": "Interior Design & Decoration"
           },
           "icon": "fas fa-drafting-compass",
-          "image": "Interior Design & Decoration.jpg"
+          "image": "Interior Design & Decoration.webp"
         }
       ]
     },
@@ -806,7 +806,7 @@
         "en": "Avon"
       },
       "icon": "fas fa-v",
-      "image": "Avon.png",
+      "image": "Avon.webp",
       "subcategories": [
         {
           "id": 1,
@@ -815,7 +815,7 @@
             "en": "Men's & Women's Perfumes"
           },
           "icon": "fas fa-spray-can",
-          "image": "Men's & Women's Perfumes.jpg"
+          "image": "Men's & Women's Perfumes.webp"
         },
         {
           "id": 2,
@@ -824,7 +824,7 @@
             "en": "Cosmetics"
           },
           "icon": "fas fa-paint-brush",
-          "image": "Cosmetics.jpg"
+          "image": "Cosmetics.webp"
         },
         {
           "id": 3,
@@ -833,7 +833,7 @@
             "en": "Offers"
           },
           "icon": "fas fa-tags",
-          "image": "Offers.jpg"
+          "image": "Offers.webp"
         },
         {
           "id": 4,
@@ -842,7 +842,7 @@
             "en": "New Membership"
           },
           "icon": "fas fa-user-plus",
-          "image": "New Membership.jpg"
+          "image": "New Membership.webp"
         }
       ]
     },
@@ -853,7 +853,7 @@
         "en": "Sports & Entertainment"
       },
       "icon": "fas fa-basketball-ball",
-      "image": "Sports.png",
+      "image": "Sports.webp",
       "subcategories": [
         {
           "id": 2,
@@ -862,7 +862,7 @@
             "en": "Gym"
           },
           "icon": "fas fa-dumbbell",
-          "image": "Gym.jpg"
+          "image": "Gym.webp"
         },
         {
           "id": 4,
@@ -871,7 +871,7 @@
             "en": "Fishing & Outdoor Sports"
           },
           "icon": "fas fa-fish",
-          "image": "Fishing & Outdoor Sports.jpg"
+          "image": "Fishing & Outdoor Sports.webp"
         },
         {
           "id": 5,
@@ -880,7 +880,7 @@
             "en": "Camping & Travel Gear"
           },
           "icon": "fas fa-campground",
-          "image": "Camping & Travel Gear.jpg"
+          "image": "Camping & Travel Gear.webp"
         },
         {
           "id": 7,
@@ -889,7 +889,7 @@
             "en": "Swimming & Water Sports"
           },
           "icon": "fas fa-swimmer",
-          "image": "Swimming & Water Sports.jpg"
+          "image": "Swimming & Water Sports.webp"
         },
         {
           "id": 8,
@@ -898,7 +898,7 @@
             "en": "Video Games & E-Entertainment"
           },
           "icon": "fas fa-gamepad",
-          "image": "Video Games & E-Entertainment.jpg"
+          "image": "Video Games & E-Entertainment.webp"
         },
         {
           "id": 10,
@@ -907,7 +907,7 @@
             "en": "Books, Magazines & Media"
           },
           "icon": "fas fa-book-open",
-          "image": "Books, Magazines & Media.jpg"
+          "image": "Books, Magazines & Media.webp"
         }
       ]
     },
@@ -918,7 +918,7 @@
         "en": "Arts & Crafts"
       },
       "icon": "fas fa-paint-brush",
-      "image": "Arts & Crafts.png",
+      "image": "Arts & Crafts.webp",
       "subcategories": [
         {
           "id": 1,
@@ -927,7 +927,7 @@
             "en": "Drawing & Artworks"
           },
           "icon": "fas fa-palette",
-          "image": "Drawing & Artworks.jpg"
+          "image": "Drawing & Artworks.webp"
         },
         {
           "id": 2,
@@ -936,7 +936,7 @@
             "en": "Handmade Jewelry"
           },
           "icon": "fas fa-gem",
-          "image": "Handmade Jewelry.jpg"
+          "image": "Handmade Jewelry.webp"
         },
         {
           "id": 3,
@@ -945,7 +945,7 @@
             "en": "Embroidery & Sewing"
           },
           "icon": "fas fa-cut",
-          "image": "Embroidery & Sewing.jpg"
+          "image": "Embroidery & Sewing.webp"
         },
         {
           "id": 4,
@@ -954,7 +954,7 @@
             "en": "Candles & Home Fragrances"
           },
           "icon": "fas fa-burn",
-          "image": "Candles & Home Fragrances.jpg"
+          "image": "Candles & Home Fragrances.webp"
         },
         {
           "id": 5,
@@ -963,7 +963,7 @@
             "en": "Art Tools & Supplies"
           },
           "icon": "fas fa-paint-roller",
-          "image": "Art Tools & Supplies.jpg"
+          "image": "Art Tools & Supplies.webp"
         },
         {
           "id": 6,
@@ -972,7 +972,7 @@
             "en": "Leather & Wood Products"
           },
           "icon": "fas fa-tree",
-          "image": "Leather & Wood Products.jpg"
+          "image": "Leather & Wood Products.webp"
         },
         {
           "id": 7,
@@ -981,7 +981,7 @@
             "en": "Packaging & Styling"
           },
           "icon": "fas fa-gift",
-          "image": "Packaging & Styling.jpg"
+          "image": "Packaging & Styling.webp"
         },
         {
           "id": 8,
@@ -990,7 +990,7 @@
             "en": "Heritage & Traditional Crafts"
           },
           "icon": "fas fa-landmark",
-          "image": "Heritage & Traditional Crafts.jpg"
+          "image": "Heritage & Traditional Crafts.webp"
         }
       ]
     },
@@ -1001,7 +1001,7 @@
         "en": "Events & Gifts"
       },
       "icon": "fas fa-gift",
-      "image": "Events & Gifts.png",
+      "image": "Events & Gifts.webp",
       "subcategories": [
         {
           "id": 8,
@@ -1010,7 +1010,7 @@
             "en": "Event Planning Services"
           },
           "icon": "fas fa-birthday-cake",
-          "image": "Event Planning Services.jpg"
+          "image": "Event Planning Services.webp"
         },
         {
           "id": 1,
@@ -1019,7 +1019,7 @@
             "en": "Gifts & Flower Arrangements"
           },
           "icon": "fas fa-gifts",
-          "image": "Gifts & Flower Arrangements.jpg"
+          "image": "Gifts & Flower Arrangements.webp"
         },
         {
           "id": 2,
@@ -1028,7 +1028,7 @@
             "en": "Event Decor & Ornaments"
           },
           "icon": "fas fa-birthday-cake",
-          "image": "Event Decor & Ornaments.jpg"
+          "image": "Event Decor & Ornaments.webp"
         },
         {
           "id": 3,
@@ -1037,7 +1037,7 @@
             "en": "Greeting Cards"
           },
           "icon": "fas fa-envelope-open-text",
-          "image": "Greeting Cards.jpg"
+          "image": "Greeting Cards.webp"
         },
         {
           "id": 5,
@@ -1046,7 +1046,7 @@
             "en": "Photography & Video"
           },
           "icon": "fas fa-video",
-          "image": "Photography & Video.jpg"
+          "image": "Photography & Video.webp"
         }
       ]
     },
@@ -1057,7 +1057,7 @@
         "en": "My Way"
       },
       "icon": "fas fa-m",
-      "image": "My Way.png",
+      "image": "My Way.webp",
       "subcategories": [
         {
           "id": 1,
@@ -1066,7 +1066,7 @@
             "en": "Men's & Women's Perfumes"
           },
           "icon": "fas fa-spray-can",
-          "image": "Men's & Women's Perfumes.jpg"
+          "image": "Men's & Women's Perfumes.webp"
         },
         {
           "id": 2,
@@ -1075,7 +1075,7 @@
             "en": "Cosmetics"
           },
           "icon": "fas fa-paint-brush",
-          "image": "Cosmetics.jpg"
+          "image": "Cosmetics.webp"
         },
         {
           "id": 3,
@@ -1084,7 +1084,7 @@
             "en": "Offers"
           },
           "icon": "fas fa-tags",
-          "image": "Offers.jpg"
+          "image": "Offers.webp"
         },
         {
           "id": 4,
@@ -1093,7 +1093,7 @@
             "en": "New Membership"
           },
           "icon": "fas fa-user-plus",
-          "image": "New Membership.jpg"
+          "image": "New Membership.webp"
         }
       ]
     },
@@ -1104,7 +1104,7 @@
         "en": "Medical Services"
       },
       "icon": "fas fa-user-md",
-      "image": "Medical Services.png",
+      "image": "Medical Services.webp",
       "subcategories": [
         {
           "id": 201,
@@ -1113,7 +1113,7 @@
             "en": "Doctor's Appointment"
           },
           "icon": "fas fa-stethoscope",
-          "image": "Doctor's Appointment.jpg"
+          "image": "Doctor's Appointment.webp"
         },
         {
           "id": 202,
@@ -1122,7 +1122,7 @@
             "en": "X-Ray Services"
           },
           "icon": "fas fa-x-ray",
-          "image": "X-Ray Services.jpg"
+          "image": "X-Ray Services.webp"
         },
         {
           "id": 203,
@@ -1131,7 +1131,7 @@
             "en": "Lab Tests & Checks"
           },
           "icon": "fas fa-vials",
-          "image": "Lab Tests & Checks.jpg"
+          "image": "Lab Tests & Checks.webp"
         },
         {
           "id": 204,
@@ -1140,7 +1140,7 @@
             "en": "Pharmacies & Medicine Delivery"
           },
           "icon": "fas fa-prescription-bottle-medical",
-          "image": "Pharmacies & Medicine Delivery.jpg"
+          "image": "Pharmacies & Medicine Delivery.webp"
         },
         {
           "id": 205,
@@ -1149,7 +1149,7 @@
             "en": "Home Nursing"
           },
           "icon": "fas fa-user-nurse",
-          "image": "Home Nursing.jpg"
+          "image": "Home Nursing.webp"
         },
         {
           "id": 206,
@@ -1158,7 +1158,7 @@
             "en": "Physical Therapy"
           },
           "icon": "fas fa-dumbbell",
-          "image": "Physical Therapy.jpg"
+          "image": "Physical Therapy.webp"
         },
         {
           "id": 208,
@@ -1167,7 +1167,7 @@
             "en": "Elderly & Special Needs Care"
           },
           "icon": "fas fa-hands-helping",
-          "image": "Elderly & Special Needs Care.jpg"
+          "image": "Elderly & Special Needs Care.webp"
         },
         {
           "id": 11,
@@ -1176,7 +1176,7 @@
             "en": "Home Medical Devices"
           },
           "icon": "fas fa-heartbeat",
-          "image": "Home Medical Devices.jpg"
+          "image": "Home Medical Devices.webp"
         }
       ]
     },
@@ -1187,7 +1187,7 @@
         "en": "General Services"
       },
       "icon": "fas fa-briefcase",
-      "image": "General Services.png",
+      "image": "General Services.webp",
       "subcategories": [
         {
           "id": 9,
@@ -1196,7 +1196,7 @@
             "en": "Educational Services"
           },
           "icon": "fas fa-chalkboard-teacher",
-          "image": "Educational Services.jpg"
+          "image": "Educational Services.webp"
         },
         {
           "id": 7,
@@ -1205,7 +1205,7 @@
             "en": "Personal Beauty Services"
           },
           "icon": "fas fa-cut",
-          "image": "Personal Beauty Services.jpg"
+          "image": "Personal Beauty Services.webp"
         },
         {
           "id": 4,
@@ -1214,7 +1214,7 @@
             "en": "Graphic Design & Photography"
           },
           "icon": "fas fa-drafting-compass",
-          "image": "Graphic Design & Photography.jpg"
+          "image": "Graphic Design & Photography.webp"
         }
       ]
     },
@@ -1225,7 +1225,7 @@
         "en": "Pets"
       },
       "icon": "fas fa-paw",
-      "image": "Pets.png",
+      "image": "Pets.webp",
       "subcategories": [
         {
           "id": 4,
@@ -1234,7 +1234,7 @@
             "en": "Pets"
           },
           "icon": "fas fa-dog",
-          "image": "Pets.jpg"
+          "image": "Pets.webp"
         },
         {
           "id": 1,
@@ -1243,7 +1243,7 @@
             "en": "Pet Food & Supplies"
           },
           "icon": "fas fa-bone",
-          "image": "Pet Food & Supplies.jpg"
+          "image": "Pet Food & Supplies.webp"
         },
         {
           "id": 2,
@@ -1252,7 +1252,7 @@
             "en": "Ornamental Fish & Aquariums"
           },
           "icon": "fas fa-fish",
-          "image": "Ornamental Fish & Aquariums.jpg"
+          "image": "Ornamental Fish & Aquariums.webp"
         },
         {
           "id": 3,
@@ -1261,7 +1261,7 @@
             "en": "Ornamental Birds"
           },
           "icon": "fas fa-dove",
-          "image": "Ornamental Birds.jpg"
+          "image": "Ornamental Birds.webp"
         },
         {
           "id": 5,
@@ -1270,7 +1270,7 @@
             "en": "Animal Care & Training"
           },
           "icon": "fas fa-hand-holding-heart",
-          "image": "Animal Care & Training.jpg"
+          "image": "Animal Care & Training.webp"
         },
         {
           "id": 6,
@@ -1279,7 +1279,7 @@
             "en": "Pet Toys & Accessories"
           },
           "icon": "fas fa-baseball-ball",
-          "image": "Pet Toys & Accessories.jpg"
+          "image": "Pet Toys & Accessories.webp"
         },
         {
           "id": 7,
@@ -1288,7 +1288,7 @@
             "en": "Animal Hygiene Supplies"
           },
           "icon": "fas fa-shower",
-          "image": "Animal Hygiene Supplies.jpg"
+          "image": "Animal Hygiene Supplies.webp"
         }
       ]
     },
@@ -1299,7 +1299,7 @@
         "en": "Wholesalers"
       },
       "icon": "fas fa-archive",
-      "image": "Wholesalers.png",
+      "image": "Wholesalers.webp",
       "subcategories": [
         {
           "id": 8,
@@ -1308,7 +1308,7 @@
             "en": "Merchant 1"
           },
           "icon": "fas fa-warehouse",
-          "image": "Merchant 1.jpg"
+          "image": "Merchant 1.webp"
         }
       ]
     },
@@ -1319,7 +1319,7 @@
         "en": "Charity Work"
       },
       "icon": "fas fa-hand-holding-heart",
-      "image": "Charity Work.png",
+      "image": "Charity Work.webp",
       "subcategories": [
         {
           "id": 1,
@@ -1328,7 +1328,7 @@
             "en": "Goodness Box"
           },
           "icon": "fas fa-box",
-          "image": "Goodness Box.jpg"
+          "image": "Goodness Box.webp"
         },
         {
           "id": 2,
@@ -1337,7 +1337,7 @@
             "en": "Goodness Feeding"
           },
           "icon": "fas fa-utensils",
-          "image": "Goodness Feeding.jpg"
+          "image": "Goodness Feeding.webp"
         },
         {
           "id": 3,
@@ -1346,7 +1346,7 @@
             "en": "Goodness Clothes"
           },
           "icon": "fas fa-shirt",
-          "image": "Goodness Clothes.jpg"
+          "image": "Goodness Clothes.webp"
         }
       ]
     }
