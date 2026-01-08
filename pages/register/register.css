@@ -185,307 +185,128 @@
 
 .register_error-message {
   color: var(--danger-color);
+  font-size: 12px;
+  margin-top: 5px;
+  min-height: 15px;
+  /* Reserve space to prevent layout shifts */
+}
 
-  /* Extracted from register-page.css */
-  .register_password-container {
-    position: relative;
-  }
+/* Modern Confirm Password Popup Styling - Redesigned */
+.modern-confirm-pw-popup {
+  border-radius: 16px !important;
+  padding: 1.25rem !important;
+  background: var(--bg-color-white) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+  width: 95% !important;
+  max-width: 360px !important;
+  overflow: hidden !important;
+}
 
-  .register_password-container input {
-    padding-left: 40px;
-    /* Space for icon on the left (for RTL) */
-  }
+.confirm-pw-header {
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
 
-  .register_toggle-password {
-    position: absolute;
-    left: 15px;
-    /* To the right in RTL */
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-  }
+.confirm-pw-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  background: #f1f5f9;
+  color: #64748b;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin: 0 auto 0.5rem;
+}
 
-  /* Extracted from login.css */
-  @keyframes gradient-animation {
-    0% {
-      background-position: 0% 50%;
-    }
+.confirm-pw-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--primary-color);
+  /* Primary color for title */
+  margin: 0;
+}
 
-    50% {
-      background-position: 100% 50%;
-    }
+.confirm-pw-body p {
+  color: #64748b;
+  /* Slate gray for description */
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  line-height: 1.4;
+}
 
-    100% {
-      background-position: 0% 50%;
-    }
-  }
+.modern-pw-input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
 
-  .register_page-wrapper {
-    font-family: "Tajawal", sans-serif;
-    /* NEW: Attractive animated background */
-    background-size: 400% 400%;
-    animation: gradient-animation 15s ease infinite;
-    min-height: 100vh;
-    display: flex;
-    /* ✅ Fix: Change vertical alignment method */
-    align-items: flex-start;
-    /* Align content to the top */
-    justify-content: center;
-    padding: 20px;
-    /* ✅ Fix: Add top padding to push the form down slightly */
+.modern-pw-input-group input {
+  width: 100%;
+  padding: 10px 12px 10px 35px !important;
+  border: 1.5px solid #e2e8f0 !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  transition: all 0.2s ease !important;
+  background: #f8fafc !important;
+  box-sizing: border-box;
+  text-align: center;
+}
 
-    box-sizing: border-box;
-  }
+.modern-pw-input-group input:focus {
+  border-color: var(--primary-color) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-rgb), 0.1) !important;
+  outline: none;
+}
 
-  .register_container {
-    background-color: var(--bg-color-white);
-    width: 100%;
-    /* Fix: Remove fixed min-height to fit content */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    /* Remove padding from this container */
-    background: none;
-    /* Make this container transparent */
-  }
+.modern-pw-toggle {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 13px;
+}
 
-  .register_container h2 {
-    margin-top: 0;
-    margin-bottom: 40px;
-    /* Increase bottom margin */
-    color: var(--dark-blue);
-    /* Darker and clearer color */
-    font-size: clamp(28px, 6vw, 36px);
-    /* Increase font size */
-    font-weight: 700;
-    text-align: center;
-  }
+/* Actions Row - Side by Side Buttons */
+.modern-confirm-pw-popup .swal2-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 10px !important;
+  width: 100% !important;
+  margin-top: 0.5rem !important;
+}
 
-  .register_container form {
-    width: 100%;
-    max-width: 420px;
-    /* Modify max-width */
-    /* NEW: Transparent glass effect using variables */
-    background-color: var(--bg-color-glass);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 40px;
-    border-radius: 20px;
-    /* More rounded corners */
-    /* NEW: Softer and deeper shadow */
-    box-shadow: var(--shadow-interactive);
-    border: 1px solid var(--border-color-soft);
-  }
+.modern-swal-confirm,
+.modern-swal-cancel {
+  flex: 1 !important;
+  margin: 0 !important;
+  padding: 10px 15px !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  box-shadow: none !important;
+  /* No shadow */
+  border: none !important;
+}
 
-  .register_form-group {
-    margin-bottom: 20px;
-    text-align: right;
-  }
+.modern-swal-confirm {
+  background-color: var(--primary-color) !important;
+  color: white !important;
+}
 
-  .register_form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: bold;
-    color: var(--dark-blue);
-    /* Dark gray color */
-    font-size: 0.9rem;
-  }
+.modern-swal-cancel {
+  background-color: #f1f5f9 !important;
+  color: #64748b !important;
+}
 
-  .register_form-group input {
-    width: 100%;
-    /* Fix: Full width of the container */
-    padding: 14px 45px 14px 15px;
-    /* Space for icon on the right */
-    border: 1px solid var(--border-color-input);
-    /* Lighter border color */
-    border-radius: 10px;
-    /* Increase border radius */
-    box-sizing: border-box;
-    font-family: "Tajawal", sans-serif;
-    font-size: 16px;
-    transition: border-color 0.3s, box-shadow 0.3s;
-    background-color: var(--bg-color-white);
-    /* Fix: Pure white background */
-  }
-
-  .register_form-group {
-    position: relative;
-  }
-
-  .register_form-group .fa-phone,
-  .register_form-group .fa-user {
-    /* Fix: Improve icon alignment */
-    position: absolute;
-    top: 50%;
-    right: 15px;
-    /* To the right in RTL */
-    transform: translateY(calc(-50% + 14px));
-    /* Precise vertical alignment adjustment */
-    color: var(--icon-color);
-    cursor: pointer;
-    z-index: 1;
-  }
-
-  .register_map-container {
-    width: 100%;
-    height: 400px;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border-color-input);
-    margin-bottom: 10px;
-    background-color: var(--bg-color-white);
-  }
-
-  .register_map-iframe {
-    width: 100%;
-    height: 100%;
-    border: none;
-  }
-
-  .register_btn {
-    width: 100%;
-    padding: 15px;
-    font-size: clamp(16px, 4vw, 18px);
-    /* Responsive font size */
-    margin-top: 10px;
-    border: none;
-    color: var(--bg-color-white);
-    /* Fix: Use primary color variable for background */
-    background-color: var(--primary-color);
-    /* Gradient replaced with unified variable */
-    box-shadow: var(--shadow-interactive),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    border-radius: 10px;
-    /* ✅ NEW: Add rounded corners to button */
-  }
-
-  .register_form-footer {
-    margin-top: 25px;
-    font-size: 14px;
-    text-align: center;
-    /* Center text and links inside */
-  }
-
-  .register_error-message {
-    color: var(--danger-color);
-    font-size: 12px;
-    margin-top: 5px;
-    min-height: 15px;
-    /* Reserve space to prevent layout shifts */
-  }
-
-  /* Modern Confirm Password Popup Styling - Simplified */
+@media screen and (max-width: 480px) {
   .modern-confirm-pw-popup {
-    border-radius: 20px !important;
-    padding: 1.5rem !important;
-    background: var(--bg-color-white) !important;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15) !important;
-    width: 90% !important;
-    max-width: 380px !important;
-    overflow: hidden !important;
+    padding: 1rem !important;
+    max-width: 310px !important;
   }
-
-  .confirm-pw-header {
-    text-align: center;
-    margin-bottom: 1rem;
-  }
-
-  .confirm-pw-icon-wrapper {
-    width: 45px;
-    height: 45px;
-    background: var(--primary-color-light);
-    color: var(--primary-color);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-    margin: 0 auto 0.75rem;
-  }
-
-  .confirm-pw-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--dark-blue);
-    margin: 0;
-  }
-
-  .confirm-pw-body p {
-    color: var(--text-color-medium);
-    font-size: 0.9rem;
-    margin-bottom: 1.25rem;
-    text-align: center;
-    line-height: 1.4;
-  }
-
-  .modern-pw-input-group {
-    position: relative;
-    margin-bottom: 0.5rem;
-  }
-
-  .modern-pw-input-group input {
-    width: 100%;
-    padding: 12px 15px 12px 40px !important;
-    border: 1px solid var(--border-color-soft) !important;
-    border-radius: 10px !important;
-    font-size: 15px !important;
-    transition: all 0.3s ease !important;
-    background: #fcfdfe !important;
-    box-sizing: border-box;
-  }
-
-  .modern-pw-input-group input:focus {
-    border-color: var(--primary-color) !important;
-    background: #fff !important;
-    box-shadow: 0 0 0 3px var(--primary-color-light) !important;
-  }
-
-  .modern-pw-toggle {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--icon-color);
-    cursor: pointer;
-    padding: 4px;
-    font-size: 14px;
-  }
-
-  /* Shadow for the confirm button */
-  .modern-swal-confirm {
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
-    transition: all 0.3s ease !important;
-  }
-
-  .modern-swal-confirm:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4) !important;
-  }
-
-  @media screen and (max-width: 480px) {
-    .modern-confirm-pw-popup {
-      padding: 1.25rem !important;
-      max-width: 320px !important;
-    }
-
-    .confirm-pw-icon-wrapper {
-      width: 40px;
-      height: 40px;
-      font-size: 18px;
-      margin-bottom: 0.5rem;
-    }
-
-    .confirm-pw-title {
-      font-size: 1.05rem;
-    }
-
-    .confirm-pw-body p {
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-    }
-  }
+}

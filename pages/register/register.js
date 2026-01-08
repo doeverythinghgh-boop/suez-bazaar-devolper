@@ -220,12 +220,12 @@ if (register_form) {
       html: `
         <div class="confirm-pw-header">
           <div class="confirm-pw-icon-wrapper">
-            <i class="fas fa-lock"></i>
+            <i class="fas fa-key"></i>
           </div>
-          <h3 class="confirm-pw-title">تأكيد كلمة المرور</h3>
+          <h3 class="confirm-pw-title">تأكيد الأمان</h3>
         </div>
         <div class="confirm-pw-body">
-          <p>أعد إدخال كلمة المرور للتأكيد</p>
+          <p>أعد إدخال كلمة المرور للمتابعة</p>
           <div class="modern-pw-input-group">
             <input type="password" id="register_swal-confirm-password" placeholder="كلمة المرور">
             <i class="fa fa-eye modern-pw-toggle" id="register_swal-toggle-confirm-password"></i>
