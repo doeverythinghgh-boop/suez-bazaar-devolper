@@ -79,7 +79,6 @@ These functions are called from the Android code (Java/Kotlin) to interact with 
 3. Android app generates the token -> Injects it into the browser's `localStorage`.
 4. Web waits for the token via the `waitForFcmKey` function in `notificationSetUp.js`.
 5. Once received, it is sent to the server via `sendTokenToServer` to link it to the user account.
-6. **Automatic Activation**: If a token is found or received during setup, the web automatically sets `notifications_enabled` to `'true'` in `localStorage` to ensure the UI and system are synchronized.
 
 ---
 
@@ -87,7 +86,7 @@ These functions are called from the Android code (Java/Kotlin) to interact with 
 The Android developer must handle these keys in `localStorage`:
 
 - `android_fcm_key`: The token placed by Android for the web to read.
-- `notifications_enabled`: ('true'/'false') Current notification status. **Note**: The web app may update this key automatically during the FCM setup process in Android.
+- `notifications_enabled`: ('true'/'false') Current notification status.
 - `app_language`: ('ar'/'en') Selected language.
 - `theme`: ('dark'/'light') Selected theme.
 
@@ -98,6 +97,21 @@ When `window.Android` is detected (native app environment), the web performs:
 1. **Hide PWA Install**: Prevent web app installation prompts (since the user is already in the native app).
 2. **Mute Sound**: Disable `playNotificationSound()` in the web because Android handles sound and vibration natively.
 3. **Link Adjustments**: Open external links in the default browser instead of the WebView.
+
+---
+
+## 🛡 6. Code Safety & Integrity (ProGuard/R8)
+To ensure the communication bridge remains functional in the production release (signed APK), the project implements strict ProGuard/R8 rules.
+
+### Why is this necessary?
+During the build process, Android Studio uses R8 to minify and obfuscate the code. Without protection, R8 might:
+1.  **Remove** methods that appear "unused" (since they are called from JavaScript, not from native Kotlin code).
+2.  **Rename** classes and methods, making it impossible for JavaScript to find them.
+
+### Protection Rules
+The following rules in `app/proguard-rules.pro` protect the integrity of the bridge:
+- **`@JavascriptInterface` protection**: Every method with this annotation is kept and not renamed.
+- **Class Protection**: Classes like `WebAppInterface` and `LocalizationManager` are explicitly preserved to maintain their identity during the build.
 
 ---
 
