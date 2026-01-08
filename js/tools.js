@@ -184,8 +184,8 @@ function setUserNameInIndexBar() {
       loginTextElement.textContent = displayName;
     }
   } else {
-    loginTextElement.textContent = (typeof window.langu === 'function') 
-      ? window.langu("login_text") 
+    loginTextElement.textContent = (typeof window.langu === 'function')
+      ? window.langu("login_text")
       : "تسجيل الدخول";
 
   }
@@ -292,8 +292,8 @@ async function checkAppVersionAndClearData() {
       if ('caches' in window) {
         const cacheNames = await caches.keys();
         await Promise.all(cacheNames.map(name => {
-            console.log(`[VersionCheck] Deleting cache: ${name}`);
-            return caches.delete(name);
+          console.log(`[VersionCheck] Deleting cache: ${name}`);
+          return caches.delete(name);
         }));
       }
 
@@ -307,7 +307,7 @@ async function checkAppVersionAndClearData() {
       // First time visit or storage cleared - just set the version
       localStorage.setItem(VERSION_STORAGE_KEY, latestVersion);
     }
-    
+
     // Save the time of check
     localStorage.setItem('last_version_check_time', Date.now());
   } catch (error) {
@@ -322,7 +322,11 @@ async function checkAppVersionAndClearData() {
  * @deprecated - This function is commented out in the code and appears unused.
  */
 function showNotificationsModal() {
-  //  mainLoader("./notification/page/notifications.html", "index-notifications-container", 500, undefined, "showHomeIcon", true);
+  if (typeof mainLoader === 'function') {
+    mainLoader("./notification/page/notifications.html", "index-notifications-container", 0, undefined, "showHomeIcon", true);
+  } else {
+    console.error("mainLoader function is not defined");
+  }
 }
 
 
@@ -339,48 +343,48 @@ let suzeAudioContext = null;
  * @throws {Error} - If the Web Audio API encounters an error during sound playback.
  */
 function playNotificationSound() {
-    const sampleRate = 44100;
-    const beepDurationMs = 140;
-    const silenceMs = 70;
-    const pulsesCount = 3;
-    const frequency = 900;
-    const volume = 0.75;
+  const sampleRate = 44100;
+  const beepDurationMs = 140;
+  const silenceMs = 70;
+  const pulsesCount = 3;
+  const frequency = 900;
+  const volume = 0.75;
 
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)({
-        sampleRate: sampleRate
-    });
+  const audioContext = new (window.AudioContext || window.webkitAudioContext)({
+    sampleRate: sampleRate
+  });
 
-    const beepSamples = Math.floor(beepDurationMs * sampleRate / 1000);
-    const silenceSamples = Math.floor(silenceMs * sampleRate / 1000);
-    const totalSamples = pulsesCount * (beepSamples + silenceSamples);
+  const beepSamples = Math.floor(beepDurationMs * sampleRate / 1000);
+  const silenceSamples = Math.floor(silenceMs * sampleRate / 1000);
+  const totalSamples = pulsesCount * (beepSamples + silenceSamples);
 
-    const buffer = audioContext.createBuffer(1, totalSamples, sampleRate);
-    const data = buffer.getChannelData(0);
+  const buffer = audioContext.createBuffer(1, totalSamples, sampleRate);
+  const data = buffer.getChannelData(0);
 
-    let index = 0;
+  let index = 0;
 
-    for (let pulse = 0; pulse < pulsesCount; pulse++) {
+  for (let pulse = 0; pulse < pulsesCount; pulse++) {
 
-        // Beep
-        for (let i = 0; i < beepSamples; i++) {
-            data[index++] =
-                Math.sin(2 * Math.PI * frequency * i / sampleRate) * volume;
-        }
-
-        // Silence
-        for (let i = 0; i < silenceSamples; i++) {
-            data[index++] = 0;
-        }
+    // Beep
+    for (let i = 0; i < beepSamples; i++) {
+      data[index++] =
+        Math.sin(2 * Math.PI * frequency * i / sampleRate) * volume;
     }
 
-    const source = audioContext.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioContext.destination);
-    source.start();
+    // Silence
+    for (let i = 0; i < silenceSamples; i++) {
+      data[index++] = 0;
+    }
+  }
 
-    source.onended = () => {
-        audioContext.close();
-    };
+  const source = audioContext.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioContext.destination);
+  source.start();
+
+  source.onended = () => {
+    audioContext.close();
+  };
 }
 
 
