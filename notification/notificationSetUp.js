@@ -130,6 +130,8 @@ async function setupFirebaseAndroid(userId) {
             console.log("[Dev] 📱 [Android FCM] الخطوة 4: تم استلام التوكن من النظام بنجاح.");
             console.log("[Dev] 📱 [Android FCM] الخطوة 5: جاري مزامنة التوكن الجديد مع الخادم...");
             await sendTokenToServer(userId, newToken, "android");
+            // تفعيل الإشعارات تلقائياً في الواجهة عند نجاح العملية لأول مرة
+            localStorage.setItem('notifications_enabled', 'true');
         }, 10000); // timeout
 
     } else {
@@ -230,6 +232,8 @@ async function setupFirebaseWeb(userId) {
             console.log("[Dev] 🌏 [Web FCM] الخطوة 7: جاري إرسال/تحديث التوكن في قاعدة بيانات السيرفر (sendTokenToServer)...");
             if (userId) {
                 await sendTokenToServer(userId, currentToken, "web");
+                // تفعيل الإشعارات تلقائياً في الواجهة عند نجاح العملية
+                localStorage.setItem('notifications_enabled', 'true');
             } else {
                 console.warn("[FCM Web] تم إلغاء الإرسال للسيرفر: userId غير موجود.");
             }

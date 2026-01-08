@@ -495,6 +495,35 @@ async function sendTokenToServer(userKey, token, platform) {
 }
 
 /**
+ * @description دالة لحذف توكن FCM من السيرفر (عند تسجيل الخروج أو تعطيل الإشعارات).
+ * @function deleteTokenFromServer
+ * @param {string} userKey - المفتاح التعريفي للمستخدم.
+ * @returns {Promise<void>}
+ * @async
+ */
+async function deleteTokenFromServer(userKey) {
+    if (!userKey) return;
+    console.log(`%c[FCM] جارٍ طلب حذف التوكن من السيرفر للمستخدم: ${userKey}`, "color: #dc3545");
+
+    try {
+        const response = await fetch(`${baseURL}/api/tokens`, {
+            method: "DELETE",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ user_key: userKey }),
+        });
+
+        const responseData = await response.json();
+        if (response.ok) {
+            console.log("%c[FCM] تم حذف التوكن من السيرفر بنجاح.", "color: #28a745", responseData);
+        } else {
+            console.error("[FCM] فشل السيرفر في حذف التوكن. الحالة:", response.status, responseData);
+        }
+    } catch (error) {
+        console.error("[FCM] خطأ في الشبكة أثناء محاولة حذف التوكن:", error);
+    }
+}
+
+/**
  * @description تطلب إذن الإشعارات من النظام الأصلي (Native) إذا كان التطبيق يعمل ضمن بيئة Android،
  *   وذلك باستخدام واجهة `window.Android` المعرفة.
  * @function askForNotificationPermission

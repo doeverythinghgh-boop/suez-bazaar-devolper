@@ -106,7 +106,14 @@ const SessionManager = {
                 window.Android.onUserLoggedOut(userKey);
             } catch (e) { console.error("Android logout error", e); }
         }
+
+        // 1.1 Delete Token from Server
+        if (userKey && typeof deleteTokenFromServer === 'function') {
+            await deleteTokenFromServer(userKey);
+        }
+
         localStorage.removeItem("android_fcm_key");
+        localStorage.removeItem("fcm_token");
 
         // 2. Clear Data (Keep language and theme)
         const currentLang = localStorage.getItem("app_language");

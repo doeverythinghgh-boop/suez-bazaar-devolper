@@ -339,21 +339,21 @@ Object.assign(NotificationPage, {
                     if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
                         console.log('[Dev] ⚙️ الخطوة 1-A: بيئة أندرويد - جاري استدعاء طلب إذن النظام (OS Permission Request)...');
                         window.Android.requestNotificationPermission();
-                        Swal.fire({ 
-                            icon: 'info', 
-                            title: window.langu('notifications_sys_permission_required'), 
-                            text: window.langu('notifications_sys_permission_text'), 
-                            confirmButtonText: window.langu('alert_confirm_btn') 
+                        Swal.fire({
+                            icon: 'info',
+                            title: window.langu('notifications_sys_permission_required'),
+                            text: window.langu('notifications_sys_permission_text'),
+                            confirmButtonText: window.langu('alert_confirm_btn')
                         });
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
                     } else {
                         console.log('[Dev] ⚙️ الخطوة 1-B: بيئة ويب - لا يمكن طلب الإذن برمجياً بعد الرفض.');
-                        Swal.fire({ 
-                            icon: 'warning', 
-                            title: window.langu('notifications_blocked_title'), 
-                            html: window.langu('notifications_blocked_text'), 
-                            confirmButtonText: window.langu('alert_confirm_btn') 
+                        Swal.fire({
+                            icon: 'warning',
+                            title: window.langu('notifications_blocked_title'),
+                            html: window.langu('notifications_blocked_text'),
+                            confirmButtonText: window.langu('alert_confirm_btn')
                         });
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
@@ -364,25 +364,37 @@ Object.assign(NotificationPage, {
             console.log('[Dev] ⚙️ الخطوة 2: إظهار رسالة جاري التفعيل للمستخدم...');
             Swal.fire({ title: window.langu('notifications_enabling'), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            if ('Notification' in window) {
-                console.log('[Dev] ⚙️ الخطوة 3: استدعاء Notification.requestPermission()...');
-                const permission = await Notification.requestPermission();
-                console.log(`[Dev] ⚙️ الخطوة 4: نتيجة طلب الإذن: ${permission}`);
-                if (permission !== 'granted') throw new Error('تم رفض إذن الإشعارات من المتصفح');
+            // طلب الصلاحيات (يدعم الويب وأندرويد)
+            console.log('[Dev] ⚙️ الخطوة 3: طلب إذن الإشعارات (askForNotificationPermission)...');
+            if (typeof askForNotificationPermission === 'function') {
+                await askForNotificationPermission();
+            } else if ('Notification' in window) {
+                await Notification.requestPermission();
             }
 
             console.log('[Dev] ⚙️ الخطوة 5: استدعاء setupFCM() لبدء تهيئة التوكن...');
             if (typeof setupFCM === 'function') {
                 await setupFCM();
                 console.log('[Dev] ⚙️ الخطوة 6: تم اكتمال setupFCM بنجاح.');
+
+                // إبلاغ تطبيق أندرويد بالتفعيل عبر الجسر البرمجي
+                if (window.Android && typeof window.Android.onNotificationsEnabled === 'function') {
+                    try {
+                        window.Android.onNotificationsEnabled();
+                        console.log('[Dev] 📱 تم إبلاغ تطبيق أندرويد بتفعيل الإشعارات.');
+                    } catch (e) {
+                        console.error('[Dev] ❌ خطأ في استدعاء onNotificationsEnabled:', e);
+                    }
+                }
+
                 localStorage.setItem('notifications_enabled', 'true');
                 this.updateToggleUI(true);
-                Swal.fire({ 
-                    icon: 'success', 
-                    title: window.langu('notifications_enabled_success'), 
-                    text: window.langu('notifications_enabled_desc'), 
-                    timer: 2000, 
-                    showConfirmButton: false 
+                Swal.fire({
+                    icon: 'success',
+                    title: window.langu('notifications_enabled_success'),
+                    text: window.langu('notifications_enabled_desc'),
+                    timer: 2000,
+                    showConfirmButton: false
                 });
             } else {
                 throw new Error('نظام الإشعارات غير متوفر حالياً');
@@ -390,10 +402,10 @@ Object.assign(NotificationPage, {
         } catch (error) {
             console.error('[Notifications Action] فشل التفعيل:', error);
             console.log('[Dev] ❌ فشل التفعيل في مكان ما.');
-            Swal.fire({ 
-                icon: 'error', 
-                title: window.langu('failed_operation_title'), 
-                text: error.message || window.langu('unexpected_error') 
+            Swal.fire({
+                icon: 'error',
+                title: window.langu('failed_operation_title'),
+                text: error.message || window.langu('unexpected_error')
             });
             if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
         }
@@ -421,15 +433,32 @@ Object.assign(NotificationPage, {
                 console.log('[Dev] 🛑 الخطوة 2: تم التأكيد. جاري تحديث التخزين والواجهة...');
                 localStorage.setItem('notifications_enabled', 'false');
                 this.updateToggleUI(false);
-                console.log('[Dev] 🛑 الخطوة 3: مسح توكنات FCM المحفوظة محلياً...');
+                console.log('[Dev] 🛑 الخطوة 3: مسح توكنات FCM المحفوظة محلياً وعلى السيرفر...');
+
+                // حذف التوكن من السيرفر لضمان التوقف الفعلي
+                const userKey = window.userSession?.user_key;
+                if (userKey && typeof deleteTokenFromServer === 'function') {
+                    await deleteTokenFromServer(userKey);
+                }
+
+                // إبلاغ تطبيق أندرويد بالتعطيل عبر الجسر البرمجي
+                if (window.Android && typeof window.Android.onNotificationsDisabled === 'function') {
+                    try {
+                        window.Android.onNotificationsDisabled();
+                        console.log('[Dev] 📱 تم إبلاغ تطبيق أندرويد بتعطيل الإشعارات.');
+                    } catch (e) {
+                        console.error('[Dev] ❌ خطأ في استدعاء onNotificationsDisabled:', e);
+                    }
+                }
+
                 localStorage.removeItem('fcm_token');
                 localStorage.removeItem('android_fcm_key');
-                Swal.fire({ 
-                    icon: 'success', 
-                    title: window.langu('notifications_disabled_success'), 
-                    text: window.langu('notifications_disabled_desc'), 
-                    timer: 2000, 
-                    showConfirmButton: false 
+                Swal.fire({
+                    icon: 'success',
+                    title: window.langu('notifications_disabled_success'),
+                    text: window.langu('notifications_disabled_desc'),
+                    timer: 2000,
+                    showConfirmButton: false
                 });
                 console.log('[Dev] 🛑 تم الانتهاء من التعطيل بنجاح.');
             } else {
