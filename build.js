@@ -206,7 +206,8 @@ async function build() {
 
             try {
                 // Generate unique prefix to avoid collision of helper functions between files
-                const safePrefix = crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
+                // Prefix with 'v' to ensure it starts with a letter (valid JS identifier)
+                const safePrefix = 'v' + crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
 
                 const fileOptions = {
                     ...obfuscationOptions,
@@ -244,7 +245,8 @@ async function build() {
                     const content = fs.readFileSync(fullPath, 'utf8');
 
                     // Generate unique prefix
-                    const safePrefix = crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
+                    // Prefix with 'v' to ensure it starts with a letter
+                    const safePrefix = 'v' + crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
                     const fileOptions = {
                         ...obfuscationOptions,
                         identifiersPrefix: safePrefix
