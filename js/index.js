@@ -190,6 +190,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     console.log(`[اللغة] تم تغيير اللغة إلى: ${newLang === 'ar' ? 'العربية' : 'الإنجليزية'}`);
 
+    // [Android Bridge] Sync language change with native app
+    if (window.Android && typeof window.Android.onLanguageChanged === 'function') {
+      window.Android.onLanguageChanged(newLang);
+    }
+
     const alertTitle = window.langu('alert_lang_change_title');
     const alertText = window.langu('alert_lang_change_text');
     const confirmButtonText = window.langu('alert_confirm_btn');
