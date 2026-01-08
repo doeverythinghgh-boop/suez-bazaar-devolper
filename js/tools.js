@@ -323,7 +323,7 @@ async function checkAppVersionAndClearData() {
  */
 function showNotificationsModal() {
   if (typeof mainLoader === 'function') {
-    mainLoader("./notification/page/notifications.html", "index-notifications-container", 0, undefined, "showHomeIcon", true);
+    mainLoader("./notification/page/notifications.html", "index-notifications-container", 500, undefined, "showHomeIcon", true);
   } else {
     console.error("mainLoader function is not defined");
   }
