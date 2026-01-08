@@ -79,6 +79,7 @@ These functions are called from the Android code (Java/Kotlin) to interact with 
 3. Android app generates the token -> Injects it into the browser's `localStorage`.
 4. Web waits for the token via the `waitForFcmKey` function in `notificationSetUp.js`.
 5. Once received, it is sent to the server via `sendTokenToServer` to link it to the user account.
+6. **Automatic Activation**: If a token is found or received during setup, the web automatically sets `notifications_enabled` to `'true'` in `localStorage` to ensure the UI and system are synchronized.
 
 ---
 
@@ -86,7 +87,7 @@ These functions are called from the Android code (Java/Kotlin) to interact with 
 The Android developer must handle these keys in `localStorage`:
 
 - `android_fcm_key`: The token placed by Android for the web to read.
-- `notifications_enabled`: ('true'/'false') Current notification status.
+- `notifications_enabled`: ('true'/'false') Current notification status. **Note**: The web app may update this key automatically during the FCM setup process in Android.
 - `app_language`: ('ar'/'en') Selected language.
 - `theme`: ('dark'/'light') Selected theme.
 

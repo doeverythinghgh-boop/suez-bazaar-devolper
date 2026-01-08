@@ -60,7 +60,7 @@ Golden Rule: **"No one receives a notification about an action they performed th
 1. **Lazy Loading:** The messages file is fetched only when a notification is first needed and stored in the cache to reduce data consumption.
 2. **Parallel Dispatch:** `Promise.all` is used to send notifications to all parties simultaneously.
 3. **Independence:** The notification system is completely separated from the core data saving logic.
-4. **Dev Logs:** The system includes detailed tracking statements following the flow of activation operations, permissions, and token synchronization, clarifying system permission status (OS Permission) and the execution environment (Web vs Android).
+4. **Dev Logs:** The system includes detailed tracking statements following the flow of activation operations, permissions, and token synchronization, clarifying system permission status (OS Permission) and the execution environment (Web vs Android). These logs are prefixed with `[Dev]` or `[FCM]` to aid developers in debugging.
 
 ---
 
@@ -95,7 +95,7 @@ The system allows users to have full control over receiving alerts on their devi
 
 ### B. Programming Logic (`notifications.js`)
 - **State Saving:** The user's choice is stored in `localStorage` under the key `notifications_enabled`.
-- **Double Verification:** Upon page initialization, the system matches `localStorage` with the **actual browser permission** (`Notification.permission`). If permission is revoked, the toggle appears as "disabled" even if previously saved as "enabled".
+- **Double Verification:** Upon page initialization, the system matches `localStorage` with the **actual browser permission** (`Notification.permission`). In the **Android environment**, the system prioritizes `localStorage` and assumes permission is granted if `window.Android` is present, as the native app manages system-level permissions.
 - **Dynamic UI (`updateToggleUI`):** Title and description texts change immediately based on the state:
     - **When Enabled:** The title "Notifications Enabled" appears with a descriptive text confirming readiness to receive alerts.
     - **When Disabled:** The title "Enable Notifications" appears with text urging the user to turn on the feature.
@@ -107,8 +107,8 @@ The system allows users to have full control over receiving alerts on their devi
     3. **Request and Sync:** If permission is available, `Notification.requestPermission()` is called, followed by `setupFCM()` to synchronize the token.
 - **When Disabling (`disableNotifications`):** Clears tokens, stops initialization, and changes texts immediately to reflect the disabled state.
 
-### C. Startup Integration (`index.js`)
-The application respects the user's decision at every startup; if the state is disabled in `localStorage` or permissions are not granted, `setupFCM()` is avoided entirely to save resources and respect user privacy.
+### C. Startup Integration (`index.js` & `sessionManager.js`)
+The application respects the user's decision at every startup; if the state is disabled in `localStorage` or permissions are not granted, `setupFCM()` is avoided entirely. In **Android**, if an FCM token already exists during login, `notifications_enabled` is automatically set to `'true'` to ensure immediate synchronization.
 
 ---
 
