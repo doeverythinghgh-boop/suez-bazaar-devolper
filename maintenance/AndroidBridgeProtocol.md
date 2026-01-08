@@ -3,12 +3,12 @@
 
 # Android Interface Bridge Protocol Documentation
 
-The "Bazaar" application relies on a JavaScript Interface to link the web environment (WebView) and the native Android system. Android functions are accessed via the global `window.Android` object.
+The "Bazaar" application relies on a JavaScript Interface to link the web environment (WebView) and the native Android system. Android functions are accessed via the global `window.Android` object and the `window.Localization` object.
 
 ---
 
 ## 🔗 1. Web to Native
-These functions are called from within the JavaScript code to affect the Android application. All functions follow the `window.Android.*` prefix.
+These functions are called from within the JavaScript code to affect the Android application.
 
 ### Quick Function Table
 | Function                        | Parameters                    | Purpose                                                 | Call Location in Web       |
@@ -19,7 +19,7 @@ These functions are called from within the JavaScript code to affect the Android
 | `onNotificationsEnabled`        | -                             | Inform Android of manual notification enablement.       | `notifications-actions.js` |
 | `onNotificationsDisabled`       | -                             | Inform Android of manual notification disablement.      | `notifications-actions.js` |
 | `onLanguageChanged`             | `lang` ('ar'/'en')            | Sync native app language with web language.             | `index.js`                 |
-| `checkForUpdates`               | -                             | Request check for app updates (Play Store).             | `index.js`                 |
+| `checkForUpdates`               | -                             | Request check for smart app updates (via GitHub).       | `index.js`                 |
 | `sendNotificationsToTokensP2P`  | `tokensJson`, `title`, `body` | Send direct push notification from the device.          | `notificationTools.js`     |
 
 ### Function Details
@@ -37,6 +37,11 @@ These functions are called from within the JavaScript code to affect the Android
 - **Purpose**: Request notification permission from the Android system (especially for versions 13 and above).
 - **Call**: `askForNotificationPermission` function in `notificationTools.js`.
 
+#### `checkForUpdates()`
+- **Purpose**: Triggers the internal **Smart Update Mechanism**.
+- **Logic**: The app connects to the GitHub repository, downloads `version.json`, compares it with the local version, and prepares to download only changed assets (HTML/JS/CSS).
+- **Note**: This is independent of the Google Play Store update process.
+
 #### `sendNotificationsToTokensP2P(tokensJson, title, body)`
 - **Purpose**: Send direct push notifications from the device without going through the server in certain cases.
 - **Parameters**: 
@@ -46,6 +51,7 @@ These functions are called from within the JavaScript code to affect the Android
 - **Call**: `sendNotificationsToTokens` function in `notificationTools.js`.
 
 #### `onLanguageChanged(lang)`
+- **Available on**: Both `window.Android` and `window.Localization`.
 - **Purpose**: Inform the Android app of a language change to update its interfaces and store the preference locally.
 - **Parameters**: `lang` (String): The new language code (`'ar'` or `'en'`).
 - **Call**: Automatically called when the language is changed in the `toggleAppLanguage` function within `index.js`.
@@ -95,11 +101,14 @@ When `window.Android` is detected (native app environment), the web performs:
 ---
 
 ## 💡 Technical Notes for Developers
-- **Interface Check**: Always check for the interface's existence before calling to avoid errors in standard browsers:
+- **Interface Objects**: The app registers two main interfaces:
+    - `window.Android`: General system functions.
+    - `window.Localization`: Specifically for language synchronization.
+- **Interface Check**: Always check for the interface's existence before calling:
   ```javascript
   if (window.Android && typeof window.Android.functionName === 'function') {
       // Call Android
   }
   ```
-- **Compatibility**: These functions depend on defining `WebView.addJavascriptInterface` in the Android code with the name `"Android"`.
+- **Compatibility**: These functions depend on defining `WebView.addJavascriptInterface` in the Android code.
 - **Debugging**: Debugging messages appear in the Android Logcat with the prefix `[FCM Android]` or `[Dev]`.
