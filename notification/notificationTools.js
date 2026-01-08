@@ -473,13 +473,13 @@ async function sendTokenToServer(userKey, token, platform) {
         const responseData = await response.json();
         if (response.ok) {
             console.log(
-                "%c[FCM] قام الخادم بحفظ/تحديث التوكن بنجاح.",
+                "%c[Dev] ✅ [FCM] قام الخادم بحفظ/تحديث التوكن بنجاح.",
                 "color: #28a745",
                 responseData
             );
         } else {
             console.error(
-                "[FCM] فشل الخادم في حفظ التوكن. الحالة:",
+                "[Dev] ❌ [FCM] فشل الخادم في حفظ التوكن. الحالة:",
                 response.status,
                 "الاستجابة:",
                 responseData
@@ -487,7 +487,7 @@ async function sendTokenToServer(userKey, token, platform) {
         }
     } catch (networkError) {
         console.error(
-            "%c[FCM] خطأ في الشبكة أثناء إرسال التوكن:",
+            "%c[Dev] ❌ [FCM] خطأ في الشبكة أثناء إرسال التوكن:",
             "color: #dc3545",
             networkError
         );
@@ -503,7 +503,7 @@ async function sendTokenToServer(userKey, token, platform) {
  */
 async function deleteTokenFromServer(userKey) {
     if (!userKey) return;
-    console.log(`%c[FCM] جارٍ طلب حذف التوكن من السيرفر للمستخدم: ${userKey}`, "color: #dc3545");
+    console.log(`%c[Dev] 🗑️ [FCM] جارٍ طلب حذف التوكن من السيرفر للمستخدم: ${userKey}`, "color: #dc3545");
 
     try {
         const response = await fetch(`${baseURL}/api/tokens`, {
@@ -514,12 +514,12 @@ async function deleteTokenFromServer(userKey) {
 
         const responseData = await response.json();
         if (response.ok) {
-            console.log("%c[FCM] تم حذف التوكن من السيرفر بنجاح.", "color: #28a745", responseData);
+            console.log("%c[Dev] ✅ [FCM] تم حذف التوكن من السيرفر بنجاح.", "color: #28a745", responseData);
         } else {
-            console.error("[FCM] فشل السيرفر في حذف التوكن. الحالة:", response.status, responseData);
+            console.error("[Dev] ❌ [FCM] فشل السيرفر في حذف التوكن. الحالة:", response.status, responseData);
         }
     } catch (error) {
-        console.error("[FCM] خطأ في الشبكة أثناء محاولة حذف التوكن:", error);
+        console.error("[Dev] ❌ [FCM] خطأ في الشبكة أثناء محاولة حذف التوكن:", error);
     }
 }
 
