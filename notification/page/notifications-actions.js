@@ -274,27 +274,32 @@ Object.assign(NotificationPage, {
         try {
             if (this.elements.masterToggle) {
                 const storedEnabled = localStorage.getItem('notifications_enabled');
-                console.log(`[Dev] 🔍 الخطوة 2: القيمة المخزنة في localStorage هي: ${storedEnabled}`);
+                console.log(`[Dev] 🔍 [MasterToggle] القيمة المخزنة في localStorage هي: ${storedEnabled}`);
                 let isEnabled = false;
-                const hasPermission = 'Notification' in window && Notification.permission === 'granted';
-                console.log(`[Dev] 🔍 الخطوة 3: هل إذن المتصفح/النظام (OS Permission) ممنوح حالياً؟ ${hasPermission}`);
+
+                // فحص إذن النظام (OS Permission)
+                // في الأندرويد، نعتمد أكثر على localStorage لأن التطبيق الأصلي يدير الأذونات
+                const isAndroid = !!(window.Android);
+                const hasPermission = ('Notification' in window && Notification.permission === 'granted') || isAndroid;
+
+                console.log(`[Dev] 🔍 [MasterToggle] هل إذن المتصفح/النظام (OS Permission) ممنوح حالياً؟ ${hasPermission} (المنصة: ${isAndroid ? 'Android' : 'Web'})`);
 
                 if (storedEnabled === 'true' && hasPermission) {
-                    console.log('[Dev] ✅ الحالة: مفعل (مطابق للتخزين وإذن النظام)');
+                    console.log('[Dev] ✅ [MasterToggle] الحالة: مفعل (مطابق للتخزين وإذن النظام)');
                     isEnabled = true;
                 } else if (storedEnabled === 'true' && !hasPermission) {
-                    console.warn('[Notifications Action] الإذن مفقود بالرغم من ضبط التفعيل في التخزين.');
-                    console.log('[Dev] ⚠️ الحالة: معطل (تجاهل التخزين بسبب نقص إذن النظام/المتصفح)');
+                    console.warn('[Dev] ⚠️ [MasterToggle] الإذن مفقود بالرغم من ضبط التفعيل في التخزين.');
+                    console.log('[Dev] ⚠️ [MasterToggle] الحالة: معطل (تجاهل التخزين بسبب نقص إذن النظام/المتصفح)');
                     isEnabled = false;
                 } else if (storedEnabled === 'false') {
-                    console.log('[Dev] 🚫 الحالة: معطل يدوياً من التخزين');
+                    console.log('[Dev] 🚫 [MasterToggle] الحالة: معطل يدوياً من التخزين');
                     isEnabled = false;
                 } else {
-                    console.log('[Dev] ℹ️ الحالة: أول مرة، الاعتماد على الإذن الحالي');
+                    console.log(`[Dev] ℹ️ [MasterToggle] الحالة: أول مرة أو غير محددة، الاعتماد على الإذن الحالي (${hasPermission})`);
                     isEnabled = hasPermission;
                 }
 
-                console.log(`[Dev] 🔍 الخطوة 4: تحديث واجهة المفتاح لتصبح: ${isEnabled ? 'ON' : 'OFF'}`);
+                console.log(`[Dev] 🔍 [MasterToggle] النتيجة النهائية: المفتاح سيكون ${isEnabled ? 'ON' : 'OFF'}`);
                 this.elements.masterToggle.checked = isEnabled;
                 this.updateToggleUI(isEnabled);
             }

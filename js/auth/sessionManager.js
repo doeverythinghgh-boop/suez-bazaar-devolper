@@ -25,7 +25,11 @@ const SessionManager = {
 
             // Global side effects if user exists
             if (window.userSession && window.userSession.user_key) {
-                if (typeof setupFCM === 'function') setupFCM();
+                console.log(`[SessionManager] تم العثور على جلسة نشطة للمستخدم: ${window.userSession.user_key}`);
+                if (typeof setupFCM === 'function') {
+                    console.log("[SessionManager] جاري استدعاء setupFCM عند بدء التطبيق...");
+                    setupFCM();
+                }
                 if (typeof checkImpersonationMode === 'function') checkImpersonationMode();
             }
         } catch (e) {
@@ -54,9 +58,11 @@ const SessionManager = {
 
         // 3. Side Effects (Notifications)
         if (typeof askForNotificationPermission === 'function') {
+            console.log("[SessionManager] جاري طلب إذن الإشعارات...");
             await askForNotificationPermission();
         }
         if (typeof setupFCM === 'function') {
+            console.log("[SessionManager] جاري استدعاء setupFCM لتهيئة الإشعارات...");
             setupFCM();
         }
         if (typeof checkImpersonationMode === 'function') {
