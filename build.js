@@ -205,7 +205,15 @@ async function build() {
             const content = fs.readFileSync(fullPath, 'utf8');
 
             try {
-                const obfuscatedResult = obfuscate(content, obfuscationOptions);
+                // Generate unique prefix to avoid collision of helper functions between files
+                const safePrefix = crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
+
+                const fileOptions = {
+                    ...obfuscationOptions,
+                    identifiersPrefix: safePrefix
+                };
+
+                const obfuscatedResult = obfuscate(content, fileOptions);
                 let obfuscatedCode = obfuscatedResult.getObfuscatedCode();
 
                 // Post-process to replace const/let with var to allow safe re-declaration in SPA environments
@@ -234,12 +242,20 @@ async function build() {
                 if (file.endsWith('.js')) {
                     console.log(`🔐 Obfuscating root file: ${file}`);
                     const content = fs.readFileSync(fullPath, 'utf8');
-                    const obfuscatedResult = obfuscate(content, obfuscationOptions);
+
+                    // Generate unique prefix
+                    const safePrefix = crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
+                    const fileOptions = {
+                        ...obfuscationOptions,
+                        identifiersPrefix: safePrefix
+                    };
+
+                    const obfuscatedResult = obfuscate(content, fileOptions);
                     let obfuscatedCode = obfuscatedResult.getObfuscatedCode();
 
                     // Post-process to replace const/let with var
                     obfuscatedCode = obfuscatedCode.replace(/\bconst\b/g, 'var').replace(/\blet\b/g, 'var');
-                    
+
                     fs.writeFileSync(path.join(OUTPUT_DIR, file), obfuscatedCode);
                 } else {
                     fs.copyFileSync(fullPath, path.join(OUTPUT_DIR, file));
