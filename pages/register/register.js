@@ -212,18 +212,30 @@ if (register_form) {
 
     // 2. Password Confirmation
     var { value: register_confirmedPassword } = await Swal.fire({
-      title: "تأكيد كلمة المرور",
+      customClass: {
+        popup: 'modern-confirm-pw-popup',
+        confirmButton: 'modern-swal-confirm',
+        cancelButton: 'modern-swal-cancel'
+      },
       html: `
-        <p>يرجى إعادة إدخال كلمة المرور للتأكيد</p>
-        <div class="register_password-container">
-          <input type="password" id="register_swal-confirm-password" class="swal2-input" placeholder="أعد إدخال كلمة المرور">
-          <i class="fa fa-eye register_toggle-password" id="register_swal-toggle-confirm-password" style="top: 60%;"></i>
+        <div class="confirm-pw-header">
+          <div class="confirm-pw-icon-wrapper">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 class="confirm-pw-title">تأكيد كلمة المرور</h3>
+        </div>
+        <div class="confirm-pw-body">
+          <p>يرجى إعادة إدخال كلمة المرور لضمان أمان حسابك</p>
+          <div class="modern-pw-input-group">
+            <input type="password" id="register_swal-confirm-password" placeholder="أعد إدخال كلمة المرور">
+            <i class="fa fa-eye modern-pw-toggle" id="register_swal-toggle-confirm-password"></i>
+          </div>
         </div>
       `,
       showCancelButton: true,
-      confirmButtonText: "تأكيد",
+      confirmButtonText: "تأكيد الحساب",
       cancelButtonText: "إلغاء",
-      customClass: { popup: 'fullscreen-swal' },
+      buttonsStyling: false,
       didOpen: () => {
         var confirmInput = document.getElementById("register_swal-confirm-password");
         var toggleIcon = document.getElementById("register_swal-toggle-confirm-password");
@@ -239,6 +251,10 @@ if (register_form) {
       },
       preConfirm: () => {
         var confirmValue = document.getElementById("register_swal-confirm-password").value;
+        if (!confirmValue) {
+          Swal.showValidationMessage("يرجى إدخال كلمة المرور");
+          return false;
+        }
         if (confirmValue !== register_password.value) {
           Swal.showValidationMessage("كلمات المرور غير متطابقة!");
           return false;

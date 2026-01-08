@@ -190,3 +190,93 @@
   min-height: 15px;
   /* Reserve space to prevent layout shifts */
 }
+
+/* Modern Confirm Password Popup Styling */
+.modern-confirm-pw-popup {
+  border-radius: 24px !important;
+  padding: 2rem !important;
+  background: var(--bg-color-white) !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  width: 90% !important;
+  max-width: 400px !important;
+}
+
+.confirm-pw-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.confirm-pw-icon-wrapper {
+  width: 60px;
+  height: 60px;
+  background: var(--primary-color-light);
+  color: var(--primary-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin: 0 auto 1rem;
+}
+
+.confirm-pw-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--dark-blue);
+  margin: 0;
+}
+
+.confirm-pw-body p {
+  color: var(--text-color-medium);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.modern-pw-input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.modern-pw-input-group input {
+  width: 100%;
+  padding: 14px 15px 14px 45px !important;
+  border: 2px solid var(--border-color-soft) !important;
+  border-radius: 12px !important;
+  font-size: 16px !important;
+  transition: all 0.3s ease !important;
+  background: #f8fafc !important;
+}
+
+.modern-pw-input-group input:focus {
+  border-color: var(--primary-color) !important;
+  background: #fff !important;
+  box-shadow: 0 0 0 4px var(--primary-color-light) !important;
+}
+
+.modern-pw-toggle {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--icon-color);
+  cursor: pointer;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.modern-pw-toggle:hover {
+  color: var(--primary-color);
+}
+
+@media screen and (max-width: 480px) {
+  .modern-confirm-pw-popup {
+    padding: 1.5rem !important;
+  }
+
+  .confirm-pw-icon-wrapper {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
