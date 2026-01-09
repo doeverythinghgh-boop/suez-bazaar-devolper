@@ -515,6 +515,29 @@ function categories_createProductElement(product, imgElement) {
         }
 
         productItem.appendChild(productName);
+
+        // Price Container
+        const priceContainer = document.createElement("div");
+        priceContainer.className = "categories_product_item__prices";
+        const currency = window.app_language === 'ar' ? 'ج.م' : 'EGP';
+
+        // Current Price
+        if (product.product_price) {
+            const priceSpan = document.createElement("span");
+            priceSpan.className = "categories_product_item__price";
+            priceSpan.textContent = `${product.product_price} ${currency}`;
+            priceContainer.appendChild(priceSpan);
+        }
+
+        // Original Price
+        if (product.original_price && Number(product.original_price) > Number(product.product_price)) {
+            const originalPriceSpan = document.createElement("span");
+            originalPriceSpan.className = "categories_product_item__original-price";
+            originalPriceSpan.textContent = `${product.original_price} ${currency}`;
+            priceContainer.appendChild(originalPriceSpan);
+        }
+
+        productItem.appendChild(priceContainer);
         return productItem;
     } catch (error) {
         console.error(
