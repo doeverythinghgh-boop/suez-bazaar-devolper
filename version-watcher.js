@@ -25,10 +25,24 @@ function updateVersion() {
 
     try {
         if (fs.existsSync(VERSION_FILE)) {
-            const content = fs.readFileSync(VERSION_FILE, 'utf8');
-            const data = JSON.parse(content);
+            const content = fs.readFileSync(VERSION_FILE, 'utf8').trim();
 
-            if (data.version) {
+            if (!content) {
+                console.warn("[Auto-Version] ⚠️ Version file is empty. Initializing...");
+                const initialData = { version: "1.0.0", notes: "0", lastUpdated: new Date().toISOString() };
+                fs.writeFileSync(VERSION_FILE, JSON.stringify(initialData, null, 2));
+                return;
+            }
+
+            let data;
+            try {
+                data = JSON.parse(content);
+            } catch (parseError) {
+                console.error("[Auto-Version] ❌ Failed to parse version.json. File might be corrupted.");
+                return;
+            }
+
+            if (data && data.version) {
                 const parts = data.version.split('.').map(Number);
                 if (parts.length === 3) {
                     const oldVersion = data.version;
