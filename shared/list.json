@@ -30,11 +30,11 @@
         {
           "id": 3,
           "title": {
-            "ar": "ملابس أطفال وحديثي الولادة",
-            "en": "Children's & Newborn Clothing"
+            "ar": "ملابس أطفال",
+            "en": "Children's Clothing"
           },
           "icon": "fas fa-child-reaching",
-          "image": "Children's & Newborn Clothing.webp"
+          "image": "Children's Clothing.webp"
         },
         {
           "id": 4,

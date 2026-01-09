@@ -262,14 +262,14 @@ This guide explains the logical engineering and aesthetic construction of the ca
 
 **Detailed explanation of values:**
 
-#### `bottom: -17px`
-**Reason:** Precise overlap with bottom container borders to prevent any white gaps.
+#### `bottom: -6px`
+**Reason:** Precise overlap with container top border.
 
-#### `height: 37px`
-**Reason:** Covering the fusion area between the item and the grid.
+#### `height: 15px`
+**Reason:** Covering the fusion area.
 
-#### `width: 82px`
-**Reason:** Sleek width fitting the new sizes.
+#### `width: 60px`
+**Reason:** Narrower bridge for better aesthetic.
 
 #### `z-index: 55`
 **Order:**
@@ -283,7 +283,27 @@ This guide explains the logical engineering and aesthetic construction of the ca
 
 ---
 
-### 2.4 Details Container
+### 2.4 Active Arrow for Main Category
+
+```css
+.categories_grid_item--active::before {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid var(--primary-color);
+    z-index: 70;
+}
+```
+
+**Function:** Downward pointing triangle to indicate the active main category.
+
+---
+
+### 2.5 Details Container
 
 ```css
 .categories_details_container {
@@ -628,8 +648,8 @@ The subcategory design has been updated to mimic the popular "Stories" style, fo
 
 ```css
 .categories_subcategory_item__image {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     object-fit: cover;              /* Fill circle without distortion */
     border-radius: 50%;             /* Full circle */
     border: 1px solid var(--border-color); /* Thin border matching main items */
@@ -653,8 +673,8 @@ If an image is unavailable, an icon is displayed inside a circle perfectly match
 
 ```css
 .categories_subcategory_item__icon {
-    width: 70px;
-    height: 70px;
+    width: 80px;
+    height: 80px;
     font-size: 1.8rem;
     color: var(--primary-color);
     background-color: var(--bg-color-light);
@@ -677,8 +697,8 @@ The text is separated into a dedicated `span` element for easy control:
 ```css
 .categories_subcategory_title {
     color: var(--primary-color);
-    font-size: 0.75rem;          /* Small size (12px) */
-    font-weight: 600;
+    font-size: 12px;             /* Match main category size */
+    font-weight: 500;            /* Match main category weight */
     text-align: center;
     line-height: 1.3;
     width: 100%;
