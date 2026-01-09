@@ -27,14 +27,14 @@
           "icon": "fas fa-user-tie",
           "image": "Men's Clothing.webp"
         },
-        {
+      {
           "id": 3,
           "title": {
-            "ar": "ملابس أطفال",
-            "en": "Children's Clothing"
+            "ar": "ملابس أطفال وحديثي الولادة",
+            "en": "Children's & Newborn Clothing"
           },
           "icon": "fas fa-child-reaching",
-          "image": "Children's Clothing.webp"
+          "image": "Children's & Newborn Clothing.webp"
         },
         {
           "id": 4,

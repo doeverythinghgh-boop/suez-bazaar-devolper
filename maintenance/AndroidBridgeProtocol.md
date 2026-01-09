@@ -19,7 +19,7 @@ These functions are called from within the JavaScript code to affect the Android
 | `onNotificationsEnabled`        | -                             | Inform Android of manual notification enablement.       | `notifications-actions.js` |
 | `onNotificationsDisabled`       | -                             | Inform Android of manual notification disablement.      | `notifications-actions.js` |
 | `onLanguageChanged`             | `lang` ('ar'/'en')            | Sync native app language with web language.             | `index.js`                 |
-| `checkForUpdates`               | -                             | Request check for smart app updates (via GitHub).       | `index.js`                 |
+| `checkForUpdates`               | -                             | Request check for **SILENT** smart app updates.         | `index.js`                 |
 | `sendNotificationsToTokensP2P`  | `tokensJson`, `title`, `body` | Send direct push notification from the device.          | `notificationTools.js`     |
 
 ### Function Details
@@ -38,8 +38,9 @@ These functions are called from within the JavaScript code to affect the Android
 - **Call**: `askForNotificationPermission` function in `notificationTools.js`.
 
 #### `checkForUpdates()`
-- **Purpose**: Triggers the internal **Smart Update Mechanism**.
-- **Logic**: The app connects to the GitHub repository, downloads `version.json`, compares it with the local version, and prepares to download only changed assets (HTML/JS/CSS).
+- **Purpose**: Triggers the internal **Silent Smart Update Mechanism**.
+- **Behavior**: The app checks GitHub for updates. If found, it downloads them immediately in the background without any UI dialogs or user interruption.
+- **Developer Tracking**: Progress is logged in Android Studio Logcat with the prefix `[Dev]`.
 - **Note**: This is independent of the Google Play Store update process.
 
 #### `sendNotificationsToTokensP2P(tokensJson, title, body)`
