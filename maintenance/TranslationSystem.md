@@ -121,7 +121,37 @@ Swal.fire({
 
 ---
 
-## 9. Preserving Preferences
+---
+
+## 10. Iframe Translation Bridge (Isolated Components)
+
+For components running inside an `iframe` (such as the `Location` module), which cannot directly access the global `window.appTranslations` of the parent window, a bridge mechanism is implemented:
+
+1.  **Bridge Function**: A specific logic is added to the iframe's HTML header to link its local `window.langu` to the parent window's function:
+    ```javascript
+    window.langu = (key) => {
+        if (window.parent && typeof window.parent.langu === 'function') {
+            return window.parent.langu(key);
+        }
+        return key; // Fallback to key if parent is not accessible
+    };
+    ```
+2.  **Manual Application**: Since the iframe has its own DOM life cycle, it must manually call its own translation application function (e.g., `applyLocationTranslations()`) upon `DOMContentLoaded`.
+
+---
+
+## 11. Offline Page Localization (`offline.html`)
+
+The offline page is a special case as it may need to work when the main application scripts or translation files cannot be fetched.
+
+1.  **Self-Contained Logic**: The page includes a mini-translation script that detects the language from `localStorage`.
+2.  **Dual-Stage Loading**:
+    *   **Attempt Fetch**: It first tries to fetch `lang/general.json` and apply translations dynamically.
+    *   **Hardcoded Fallback**: If the fetch fails (due to no internet), it uses hardcoded default translations embedded within the script to ensure the user always sees a readable message in their preferred language.
+
+---
+
+## 12. Preserving Preferences
 
 The system ensures the user's selected language remains even in the following cases:
 *   **Logout**: `SessionManager` saves the language before clearing data and resets it immediately to ensure the interface remains in the user's preferred language even after logout.

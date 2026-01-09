@@ -60,6 +60,12 @@ The map interface has been optimized to function as a **compact single window** 
 
 - **Small Attribution Font Size**: The map's attribution text (`leaflet-control-attribution`) has been scaled down to increase visible space.
 
+## Multi-language Support
+The location module is fully integrated with the project's translation system:
+1.  **Translation Bridge**: Since it runs in an `iframe`, it uses a specific bridge to access `window.parent.langu()` for its texts.
+2.  **Modular Keys**: All related texts are stored in `lang/location.json`, including map controls, GPS messages, and error alerts.
+3.  **Automatic Application**: The function `applyLocationTranslations()` is called upon loading to translate all elements with `data-lkey` attributes.
+
 ## WebView Compatibility (Android)
 
 The application is optimized for operation within a WebView in Android applications:
