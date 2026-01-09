@@ -151,14 +151,38 @@
     "ar": "فشل تحميل الإعدادات ⚠️",
     "en": "Failed to load settings ⚠️"
   },
-  "notif_label_purchase": { "ar": "شراء", "en": "Purchase" },
-  "notif_label_review": { "ar": "مراجعة", "en": "Review" },
-  "notif_label_cancelled": { "ar": "ملغي", "en": "Cancelled" },
-  "notif_label_confirmed": { "ar": "تأكيد", "en": "Confirmed" },
-  "notif_label_rejected": { "ar": "مرفوض", "en": "Rejected" },
-  "notif_label_shipped": { "ar": "شحن", "en": "Shipped" },
-  "notif_label_delivered": { "ar": "تسليم", "en": "Delivered" },
-  "notif_label_returned": { "ar": "مرتجع", "en": "Returned" },
+  "notif_label_purchase": {
+    "ar": "شراء",
+    "en": "Purchase"
+  },
+  "notif_label_review": {
+    "ar": "مراجعة",
+    "en": "Review"
+  },
+  "notif_label_cancelled": {
+    "ar": "ملغي",
+    "en": "Cancelled"
+  },
+  "notif_label_confirmed": {
+    "ar": "تأكيد",
+    "en": "Confirmed"
+  },
+  "notif_label_rejected": {
+    "ar": "مرفوض",
+    "en": "Rejected"
+  },
+  "notif_label_shipped": {
+    "ar": "شحن",
+    "en": "Shipped"
+  },
+  "notif_label_delivered": {
+    "ar": "تسليم",
+    "en": "Delivered"
+  },
+  "notif_label_returned": {
+    "ar": "مرتجع",
+    "en": "Returned"
+  },
   "notif_status_enabled": {
     "ar": "مفعل",
     "en": "Enabled"
@@ -166,5 +190,25 @@
   "notif_status_disabled": {
     "ar": "معطل",
     "en": "Disabled"
+  },
+  "notifications_delete_tooltip": {
+    "ar": "حذف الإشعار",
+    "en": "Delete Notification"
+  },
+  "notifications_retry_btn": {
+    "ar": "إعادة المحاولة",
+    "en": "Retry"
+  },
+  "notifications_sender_user": {
+    "ar": "مستخدم",
+    "en": "User"
+  },
+  "notifications_sender_you": {
+    "ar": "أنت",
+    "en": "You"
+  },
+  "notifications_status_tooltip": {
+    "ar": "حالة القراءة",
+    "en": "Read Status"
   }
 }

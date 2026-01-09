@@ -3,12 +3,10 @@
         "ar": "إضافة خدمة جديدة",
         "en": "Add New Service"
     },
-
     "add2_images_heading": {
         "ar": "صور الخدمة",
         "en": "Service Images"
     },
-
     "add2_image_hint": {
         "ar": "المطلوب: صورة واحدة للخدمة على الأقل. الدعم: jpg, png, webp.",
         "en": "Required: At least one service image. Supported: jpg, png, webp."
@@ -49,8 +47,6 @@
         "ar": "اضف الخدمة الآن",
         "en": "Add Service Now"
     },
-
-
     "add2_err_img_required": {
         "ar": "مطلوب صورة واحدة للخدمة على الأقل.",
         "en": "At least one service image is required."
@@ -67,7 +63,6 @@
         "ar": "رسالة مقدم الخدمة مطلوبة (على الأقل 10 أحرف).",
         "en": "Provider message is required (at least 10 chars)."
     },
-
     "add2_swal_adding_title": {
         "ar": "جاري إضافة الخدمة...",
         "en": "Adding Service..."
@@ -76,14 +71,16 @@
         "ar": "يرجى الانتظار بينما يتم رفع الصور.",
         "en": "Please wait while images are uploading."
     },
-
     "add2_swal_success_text": {
         "ar": "تم حفظ الخدمة وإرسالها للإدارة بنجاح لمراجعتها ونشرها.",
         "en": "Service saved and sent to admin for review/publish."
     },
-
     "add2_swal_error_text": {
         "ar": "حدث خطأ أثناء إضافة الخدمة. يرجى المحاولة مرة أخرى.",
         "en": "An error occurred while adding the service. Please try again."
+    },
+    "add2_swal_cancel_delete": {
+        "ar": "تراجع",
+        "en": "Go Back"
     }
 }

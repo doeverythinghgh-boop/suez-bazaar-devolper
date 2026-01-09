@@ -446,5 +446,21 @@
   "contact_details_title_phone": {
     "ar": "هاتف او واتس اب",
     "en": "Phone or WhatsApp"
+  },
+  "gen_btn_capture_photo": {
+    "ar": "التقاط صورة",
+    "en": "Capture Photo"
+  },
+  "gen_lbl_no_images": {
+    "ar": "لا توجد صور متاحة.",
+    "en": "No images available."
+  },
+  "gen_lbl_sending": {
+    "ar": "جاري الإرسال...",
+    "en": "Sending..."
+  },
+  "gen_lbl_unavailable": {
+    "ar": "غير متوفر",
+    "en": "Unavailable"
   }
 }

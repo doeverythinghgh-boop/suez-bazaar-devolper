@@ -7,12 +7,10 @@
         "ar": "صور المنتج",
         "en": "Product Images"
     },
-
     "edit_image_hint": {
         "ar": "المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp.",
         "en": "Required: At least one image. Supported: jpg, png, webp."
     },
-
     "edit_label_product_name": {
         "ar": "اسم المنتج",
         "en": "Product Name"
@@ -81,9 +79,6 @@
         "ar": "حفظ التعديلات",
         "en": "Save Changes"
     },
-
-
-
     "edit_swal_updating_title": {
         "ar": "جاري تحديث المنتج...",
         "en": "Updating Product..."
@@ -100,7 +95,6 @@
         "ar": "لم يتم إجراء أي تعديلات على بيانات المنتج.",
         "en": "No changes were made to the product data."
     },
-
     "edit_swal_success_text": {
         "ar": "تم تحديث المنتج بنجاح.",
         "en": "Product updated successfully."
@@ -109,7 +103,6 @@
         "ar": "فشل تحديث المنتج:",
         "en": "Failed to update product:"
     },
-
     "edit_err_img_required": {
         "ar": "مطلوب صورة واحدة للمنتج على الأقل.",
         "en": "At least one product image is required."
@@ -133,5 +126,9 @@
     "edit_err_price_required": {
         "ar": "يرجى إدخال سعر منتج صالح.",
         "en": "Please enter a valid product price."
+    },
+    "edit_err_compression": {
+        "ar": "فشل ضغط الصورة.",
+        "en": "Image compression failed."
     }
 }
