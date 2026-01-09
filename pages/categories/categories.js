@@ -192,14 +192,26 @@ function categories_toggleSubcategoriesGrid(gridContainer, mainCategory, clicked
             const items = Array.from(gridContainer.querySelectorAll(".categories_grid_item"));
             const clickedIndex = items.indexOf(clickedItem);
 
-            // Dynamically detect column count based on viewport width to match CSS media queries
-            const columns = window.innerWidth < 480 ? 3 : 4;
+            // Dynamically detect column count from computed CSS to ensure 100% accuracy with media queries
+            const gridStyle = window.getComputedStyle(gridContainer);
+            const gridTemplateColumns = gridStyle.getPropertyValue('grid-template-columns');
+            // split(' ') will give an array of calculated widths, e.g. ["200px", "200px", "200px"]
+            // filter(Boolean) handles cases where browser might return extra spaces
+            const columns = gridTemplateColumns.split(' ').filter(v => v.trim() !== '').length || 1;
+
+            console.log(`[Grid] Detected columns: ${columns} | Clicked index: ${clickedIndex}`);
 
             const rowIndex = Math.floor(clickedIndex / columns);
             const lastItemIndexInRow = Math.min(items.length - 1, (rowIndex * columns) + (columns - 1));
 
             const insertionTarget = items[lastItemIndexInRow];
-            insertionTarget.after(detailsContainer);
+
+            // Safety check: ensure we found a target
+            if (insertionTarget) {
+                insertionTarget.after(detailsContainer);
+            } else {
+                gridContainer.appendChild(detailsContainer);
+            }
         }
     } catch (error) {
         console.error("%c[categories_toggleSubcategoriesGrid] Error:", "color: red;", error);
