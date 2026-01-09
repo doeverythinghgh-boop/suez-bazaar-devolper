@@ -1,4 +1,60 @@
 {
+    "register_page_title": {
+        "ar": "إنشاء حساب جديد",
+        "en": "Create New Account"
+    },
+    "register_label_username": {
+        "ar": "الاسم",
+        "en": "Name"
+    },
+    "register_label_phone": {
+        "ar": "رقم الهاتف",
+        "en": "Phone Number"
+    },
+    "register_label_password": {
+        "ar": "كلمة المرور",
+        "en": "Password"
+    },
+    "register_form_hint": {
+        "ar": "يجب أن تتكون من 4 أحرف على الأقل لحماية حسابك.",
+        "en": "Must be at least 4 characters to protect your account."
+    },
+    "register_location_title": {
+        "ar": "الموقع على الخريطة",
+        "en": "Location on Map"
+    },
+    "register_label_address": {
+        "ar": "تفاصيل العنوان (مثل: الدور، علامة مميزة)",
+        "en": "Address Details (e.g. Floor, Landmark)"
+    },
+    "register_placeholder_address": {
+        "ar": "مثلاً: شارع السلام، الدور الثالث، بجوار مسجد القدس",
+        "en": "e.g. El Salam St, 3rd Floor, near El Qods Mosque"
+    },
+    "register_label_is_seller": {
+        "ar": "هل ترغب في عرض منتجاتك أو تقديم خدماتك؟",
+        "en": "Do you want to display products or offer services?"
+    },
+    "register_btn_submit": {
+        "ar": "إنشاء الحساب",
+        "en": "Create Account"
+    },
+    "register_login_question": {
+        "ar": "لديك حساب بالفعل؟",
+        "en": "Already have an account?"
+    },
+    "register_login_action": {
+        "ar": "سجل الدخول",
+        "en": "Login"
+    },
+    "register_error_unexpected": {
+        "ar": "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.",
+        "en": "An unexpected error occurred. Please try again."
+    },
+    "register_error_app": {
+        "ar": "حدث خطأ في التطبيق. يرجى المحاولة مرة أخرى.",
+        "en": "An application error occurred. Please try again."
+    },
     "register_seller_settings_title": {
         "ar": "إعدادات البائع",
         "en": "Seller Settings"

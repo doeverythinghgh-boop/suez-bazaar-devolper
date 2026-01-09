@@ -332,15 +332,15 @@ if (register_form) {
         });
 
       } else if (register_result && register_result.error) {
-        AuthUI.showError("خطأ", register_result.error);
+        AuthUI.showError(window.langu('gen_swal_error_title'), register_result.error);
         AuthUI.showFieldValidationMsg(register_phone, register_result.error);
       } else {
-        AuthUI.showError("خطأ", "حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.");
+        AuthUI.showError(window.langu('gen_swal_error_title'), window.langu('register_error_unexpected'));
       }
     } catch (error) {
       console.error(error);
       AuthUI.close();
-      AuthUI.showError("خطأ", "حدث خطأ في التطبيق. يرجى المحاولة مرة أخرى.");
+      AuthUI.showError(window.langu('gen_swal_error_title'), window.langu('register_error_app'));
     }
   });
 }

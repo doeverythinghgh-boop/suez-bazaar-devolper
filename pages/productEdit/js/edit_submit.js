@@ -28,6 +28,10 @@ function EDIT_initSubmitLogic() {
         const sellerMessageTextarea = document.getElementById('seller-message');
         const quantityInput = document.getElementById('product-quantity');
         const priceInput = document.getElementById('product-price');
+        const notesInput = document.getElementById('product-notes');
+        const originalPriceInput = document.getElementById('original-price');
+        const realPriceInput = document.getElementById('real-price');
+        const heavyLoadCheckbox = document.getElementById('heavy-load');
 
         // --- Validation ---
         console.log('[ProductEdit] Starting validation...');
@@ -134,9 +138,9 @@ function EDIT_initSubmitLogic() {
                 product_description: normalizeArabicText(descriptionTextarea.value.trim()),
                 product_price: parseFloat(priceInput.value) || 0,
                 product_quantity: parseInt(quantityInput.value, 10) || 0,
-                original_price: parseFloat(document.getElementById('original-price').value) || null,
-                realPrice: parseFloat(document.getElementById('real-price').value) || null,
-                heavyLoad: document.getElementById('heavy-load')?.checked ? 1 : 0,
+                original_price: parseFloat(originalPriceInput?.value) || null,
+                realPrice: parseFloat(realPriceInput?.value) || null,
+                heavyLoad: heavyLoadCheckbox?.checked ? 1 : 0,
                 user_message: normalizeArabicText(sellerMessageTextarea.value.trim()),
                 user_note: normalizeArabicText(notesInput.value.trim()),
                 ImageName: allImageNames.join(','),

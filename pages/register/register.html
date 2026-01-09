@@ -6,29 +6,33 @@
 
     <div class="register_container">
 
-      <h2>إنشاء حساب جديد</h2>
+      <h2 data-lkey="register_page_title">إنشاء حساب جديد</h2>
       <form id="register_form" novalidate>
         <div class="register_form-group">
-          <label for="register_username"><i class="fas fa-user"></i> الاسم</label>
+          <label for="register_username"><i class="fas fa-user"></i> <span
+              data-lkey="register_label_username">الاسم</span></label>
           <input type="text" id="register_username" name="username" required autocomplete="off" />
           <div id="register_username-error" class="register_error-message"></div>
         </div>
         <div class="register_form-group">
-          <label for="register_phone"><i class="fa fa-phone"></i> رقم الهاتف</label>
+          <label for="register_phone"><i class="fa fa-phone"></i> <span data-lkey="register_label_phone">رقم
+              الهاتف</span></label>
           <input type="tel" id="register_phone" name="phone" required autocomplete="tel" />
           <div id="register_phone-error" class="register_error-message"></div>
         </div>
         <div class="register_form-group">
-          <label for="register_password"><i class="fas fa-lock"></i> كلمة المرور</label>
+          <label for="register_password"><i class="fas fa-lock"></i> <span data-lkey="register_label_password">كلمة
+              المرور</span></label>
           <div class="register_password-container">
             <input type="password" id="register_password" name="password" required autocomplete="new-password" />
             <i class="fa fa-eye register_toggle-password" id="register_toggle-password-icon"></i>
           </div>
           <div id="register_password-error" class="register_error-message"></div>
-          <small class="register_form-hint">يجب أن تتكون من 4 أحرف على الأقل لحماية حسابك.</small>
+          <small class="register_form-hint" data-lkey="register_form_hint">يجب أن تتكون من 4 أحرف على الأقل لحماية
+            حسابك.</small>
         </div>
         <div class="register_form-group register_map-section">
-          <label id="register_location-title">الموقع على الخريطة</label>
+          <label id="register_location-title" data-lkey="register_location_title">الموقع على الخريطة</label>
           <div id="register_map-container" class="register_map-container">
             <iframe id="register_location-iframe" src="location/LOCATION.html?embedded=true&hideSave=true&v=initial"
               class="register_map-iframe"></iframe>
@@ -39,25 +43,31 @@
         </div>
 
         <div class="register_form-group">
-          <label for="register_address"><i class="fas fa-map-marker-alt"></i> تفاصيل العنوان (مثل: الدور، علامة
-            مميزة)</label>
+          <label for="register_address"><i class="fas fa-map-marker-alt"></i> <span
+              data-lkey="register_label_address">تفاصيل العنوان (مثل: الدور، علامة
+              مميزة)</span></label>
           <input type="text" id="register_address" name="address" required autocomplete="off"
-            placeholder="مثلاً: شارع السلام، الدور الثالث، بجوار مسجد القدس" />
+            placeholder="مثلاً: شارع السلام، الدور الثالث، بجوار مسجد القدس"
+            data-lkey-placeholder="register_placeholder_address" />
           <div id="register_address-error" class="register_error-message"></div>
         </div>
 
         <div class="register_seller-section" style="margin-bottom: 20px;">
           <button type="button" id="register_seller-options-btn" class="register_seller-btn"
             style="width: 100%; padding: 12px; background: #f0fdf4; border: 1px dashed #10b981; color: #10b981; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; transition: all 0.3s;">
-            <i class="fas fa-store"></i> هل ترغب في عرض منتجاتك أو تقديم خدماتك؟
+            <i class="fas fa-store"></i> <span data-lkey="register_label_is_seller">هل ترغب في عرض منتجاتك أو تقديم
+              خدماتك؟</span>
           </button>
           <input type="hidden" id="register_is-delevred" value="0" />
           <input type="hidden" id="register_limit-package" value="0" />
         </div>
 
-        <button type="submit" class="button register_btn">إنشاء الحساب</button>
+        <button type="submit" class="button register_btn" data-lkey="register_btn_submit">إنشاء الحساب</button>
         <div class="register_form-footer">
-          <a href="#" id="register_goToLoginLink">لديك حساب بالفعل؟ <strong>سجل الدخول</strong></a>
+          <a href="#" id="register_goToLoginLink">
+            <span data-lkey="register_login_question">لديك حساب بالفعل؟</span>
+            <strong data-lkey="register_login_action">سجل الدخول</strong>
+          </a>
         </div>
       </form>
     </div>

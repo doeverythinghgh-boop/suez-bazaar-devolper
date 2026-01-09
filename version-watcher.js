@@ -38,7 +38,11 @@ function updateVersion() {
             try {
                 data = JSON.parse(content);
             } catch (parseError) {
-                console.error("[Auto-Version] ❌ Failed to parse version.json. File might be corrupted.");
+                console.warn("[Auto-Version] ⚠️ Failed to parse version.json. Retrying in 500ms...");
+                setTimeout(() => {
+                    isUpdating = false;
+                    updateVersion();
+                }, 500);
                 return;
             }
 

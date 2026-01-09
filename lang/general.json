@@ -75,6 +75,22 @@
     "ar": "تنبيه",
     "en": "Notice"
   },
+  "gen_cam_error_title": {
+    "ar": "مشكلة في الكاميرا",
+    "en": "Camera Issue"
+  },
+  "gen_cam_error_text": {
+    "ar": "حاول فتح الكاميرا بطريقة أخرى",
+    "en": "Try opening camera another way"
+  },
+  "gen_cam_use_gallery": {
+    "ar": "اختر من المعرض",
+    "en": "Pick from Gallery"
+  },
+  "gen_btn_send_order": {
+    "ar": "إرسال الطلب",
+    "en": "Send Order"
+  },
   "page_title": {
     "ar": "Suez Bazaar",
     "en": "Suez Bazaar"
@@ -427,44 +443,8 @@
     "ar": "هل تريد حقاً حذف هذه الصورة؟",
     "en": "Do you really want to delete this image?"
   },
-  "gen_swal_success_title": {
-    "ar": "تم بنجاح!",
-    "en": "Success!"
-  },
-  "gen_swal_error_title": {
-    "ar": "خطأ!",
-    "en": "Error!"
-  },
-  "gen_cam_error_title": {
-    "ar": "مشكلة في الكاميرا",
-    "en": "Camera Issue"
-  },
-  "gen_cam_error_text": {
-    "ar": "حاول فتح الكاميرا بطريقة أخرى",
-    "en": "Try opening camera another way"
-  },
-  "gen_cam_use_gallery": {
-    "ar": "اختر من المعرض",
-    "en": "Pick from Gallery"
-  },
-  "gen_btn_send_order": {
-    "ar": "إرسال الطلب",
-    "en": "Send Order"
-  },
   "contact_details_title_phone": {
     "ar": "هاتف او واتس اب",
     "en": "Phone or WhatsApp"
-  },
-  "offline_title": {
-    "ar": "انقطع الاتصال",
-    "en": "No Connection"
-  },
-  "offline_desc": {
-    "ar": "يبدو أنك غير متصل بالإنترنت حالياً. يرجى التحقق من الشبكة والمحاولة مرة أخرى.",
-    "en": "It seems you are currently offline. Please check your network and try again."
-  },
-  "offline_retry": {
-    "ar": "إعادة المحاولة",
-    "en": "Retry"
   }
 }
