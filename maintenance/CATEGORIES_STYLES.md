@@ -755,7 +755,24 @@ Where `index` is the item's order in the array. This means the first item appear
 
 ## 7. Products Gallery
 
-### 7.1 Container
+### 7.1 Internal Wrapper (Frame)
+
+```css
+.categories_gallery_internal_wrapper {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin: 10px 15px 15px 15px;
+    background-color: var(--bg-color-light);
+    box-shadow: var(--shadow-soft);
+    overflow: hidden;
+}
+```
+
+**Function:** A frame that wraps the gallery controls and the product grid, providing visual separation from the subcategories.
+
+---
+
+### 7.2 Container
 
 ```css
 .categories_products_gallery_container {
@@ -778,7 +795,7 @@ Where `index` is the item's order in the array. This means the first item appear
 
 ---
 
-### 7.2 Product Item
+### 7.3 Product Item
 
 ```css
 .categories_product_item {
@@ -803,7 +820,7 @@ Where `index` is the item's order in the array. This means the first item appear
 
 ---
 
-### 7.3 Product Image
+### 7.4 Product Image
 
 ```css
 .categories_product_item__image {
@@ -818,7 +835,7 @@ Where `index` is the item's order in the array. This means the first item appear
 
 ---
 
-### 7.4 Product Name
+### 7.5 Product Name
 
 ```css
 .categories_product_item__name {
