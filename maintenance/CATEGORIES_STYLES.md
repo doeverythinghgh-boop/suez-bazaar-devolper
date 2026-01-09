@@ -759,11 +759,11 @@ Where `index` is the item's order in the array. This means the first item appear
 
 ```css
 .categories_gallery_internal_wrapper {
-    border: 1px solid var(--border-color);
+    border: 1px solid var(--border-color-active);
     border-radius: 12px;
-    margin: 10px 15px 15px 15px;
+    box-shadow: var(--shadow-focus);
+    margin: 0px 15px 15px 15px;
     background-color: var(--bg-color-light);
-    box-shadow: var(--shadow-soft);
     overflow: hidden;
 }
 ```
@@ -776,8 +776,8 @@ Where `index` is the item's order in the array. This means the first item appear
 
 ```css
 .categories_products_gallery_container {
-    padding: 15px;
-    max-height: 55vh;
+    padding: 0px;
+    max-height: 30vh;
     overflow-y: auto;
 }
 
@@ -789,7 +789,7 @@ Where `index` is the item's order in the array. This means the first item appear
 ```
 
 **Functions:**
-- **Max Height:** 55% of screen height
+- **Max Height:** 30% of screen height
 - **Overflow Y:** Vertical scroll
 - **Grid:** Automatic columns with a minimum of 110px
 
