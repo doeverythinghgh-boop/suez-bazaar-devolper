@@ -63,6 +63,18 @@
     "ar": "تمت العملية بنجاح",
     "en": "Operation Successful"
   },
+  "gen_swal_success_title": {
+    "ar": "نجاح",
+    "en": "Success"
+  },
+  "gen_swal_error_title": {
+    "ar": "خطأ",
+    "en": "Error"
+  },
+  "gen_swal_info_title": {
+    "ar": "تنبيه",
+    "en": "Notice"
+  },
   "page_title": {
     "ar": "Suez Bazaar",
     "en": "Suez Bazaar"
@@ -98,6 +110,18 @@
   "net_lost": {
     "ar": "انقطع الاتصال بالإنترنت.",
     "en": "Internet connection lost."
+  },
+  "offline_title": {
+    "ar": "انقطع الاتصال",
+    "en": "No Connection"
+  },
+  "offline_desc": {
+    "ar": "يبدو أنك غير متصل بالإنترنت حالياً. يرجى التحقق من الشبكة والمحاولة مرة أخرى.",
+    "en": "It seems you are currently offline. Please check your network and try again."
+  },
+  "offline_retry": {
+    "ar": "إعادة المحاولة",
+    "en": "Retry"
   },
   "net_weak_or_disconnected": {
     "ar": "اتصال الإنترنت ضعيف أو مقطوع",

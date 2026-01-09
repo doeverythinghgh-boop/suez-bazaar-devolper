@@ -145,6 +145,6 @@ add1_form.addEventListener('submit', async (e) => {
     } catch (error) {
         add1_setSubmitLoading(false);
         console.error('[Add1] Submission failed:', error);
-        Swal.fire(window.langu('gen_swal_error_title'), window.langu('gen_swal_error_title'), 'error');
+        Swal.fire(window.langu('gen_swal_error_title'), window.langu('add1_swal_error_text'), 'error');
     }
 });

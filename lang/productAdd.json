@@ -3,12 +3,10 @@
         "ar": "إضافة منتج جديد",
         "en": "Add New Product"
     },
-
     "add1_images_heading": {
         "ar": "صور المنتج",
         "en": "Product Images"
     },
-
     "add1_image_hint": {
         "ar": "المطلوب: صورة واحدة على الأقل. الدعم: jpg, png, webp.",
         "en": "Required: At least one image. Supported: jpg, png, webp."
@@ -81,7 +79,6 @@
         "ar": "حفظ ونشر المنتج الآن",
         "en": "Save and Publish Product Now"
     },
-
     "add1_err_img_required": {
         "ar": "مطلوب صورة واحدة للمنتج على الأقل.",
         "en": "At least one product image is required."
@@ -106,8 +103,6 @@
         "ar": "يرجى إدخال سعر منتج صالح.",
         "en": "Please enter a valid product price."
     },
-
-
     "add1_swal_adding_title": {
         "ar": "جاري إضافة المنتج...",
         "en": "Adding Product..."
@@ -116,7 +111,10 @@
         "ar": "يرجى الانتظار بينما يتم رفع الصور.",
         "en": "Please wait while images are uploading."
     },
-
+    "add1_swal_success_text": {
+        "ar": "تم حفظ المنتج وإرساله للإدارة بنجاح لمراجعته ونشره.",
+        "en": "Product saved and sent to admin successfully for review and publishing."
+    },
     "add1_swal_error_text": {
         "ar": "حدث خطأ أثناء إضافة المنتج. يرجى المحاولة مرة أخرى.",
         "en": "An error occurred while adding the product. Please try again."
