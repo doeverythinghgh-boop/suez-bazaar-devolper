@@ -137,7 +137,7 @@ function login_setupLoginForm() {
                    <div onclick="window.toggleAppLanguage();"
                         class="settings-list-item" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; background: rgba(0,0,0,0.03); border-radius: 12px; cursor: pointer;">
                       <span>
-                         <i class="fas fa-language" style="color: var(--primary-color); width: 20px;"></i> ${localStorage.getItem('app_language') === 'en' ? 'English' : 'اللغة العربية'}
+                         <i class="fas fa-language" style="color: var(--primary-color); width: 20px;"></i> ${localStorage.getItem('app_language') === 'en' ? window.langu('lang_english') : window.langu('lang_arabic')}
                       </span>
                       <div style="width: 36px; height: 20px; background: ${localStorage.getItem('app_language') === 'en' ? '#e5e5ea' : '#4cd964'}; border-radius: 20px; position: relative;">
                         <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${localStorage.getItem('app_language') === 'en' ? 'inset-inline-end' : 'inset-inline-start'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>

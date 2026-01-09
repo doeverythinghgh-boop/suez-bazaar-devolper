@@ -43,7 +43,7 @@ location_app.location_initMap = function () {
                 const button = L.DomUtil.create('a', 'recenter-button', container);
                 button.innerHTML = '<i class="fas fa-crosshairs"></i>';
                 button.href = '#';
-                button.title = 'توسيط الموقع المختار';
+                button.title = window.langu('location_recenter_title');
                 button.style.width = '30px';
                 button.style.height = '30px';
                 button.style.lineHeight = '30px';
@@ -77,7 +77,7 @@ location_app.location_initMap = function () {
         console.log('[Map] Leaflet map initialized and layers added.');
     } catch (error) {
         console.error('Failed to initialize map:', error);
-        throw new Error('تعذر تحميل الخريطة. تحقق من اتصال الإنترنت.');
+        throw new Error(window.langu('location_load_error'));
     }
 };
 
@@ -139,14 +139,14 @@ location_app.location_updateMarker = function (lat, lng) {
 
         this.location_marker = L.marker([lat, lng], {
             icon: location_customIcon,
-            title: 'الموقع المحدد',
-            alt: 'موقع المستخدم على الخريطة'
+            title: window.langu('location_marker_title'),
+            alt: window.langu('location_marker_alt')
         }).addTo(this.location_map);
 
         this.location_marker.bindPopup(`
-            <b id="location_popupTitle">الموقع المحدد</b><br>
-            <span id="location_popupLat">خط العرض: ${lat.toFixed(6)}</span><br>
-            <span id="location_popupLng">خط الطول: ${lng.toFixed(6)}</span>
+            <b id="location_popupTitle">${window.langu('location_marker_title')}</b><br>
+            <span id="location_popupLat">${window.langu('location_lat_label')}: ${lat.toFixed(6)}</span><br>
+            <span id="location_popupLng">${window.langu('location_lng_label')}: ${lng.toFixed(6)}</span>
         `);
 
     } catch (error) {
@@ -166,7 +166,7 @@ location_app.location_handleLocationSelection = async function (lat, lng) {
         if (this.location_isBusy) return;
 
         if (!this.location_isValidCoordinate(lat, lng)) {
-            this.location_showAlert('خطأ', 'إحداثيات غير صالحة', 'error');
+            this.location_showAlert(window.langu('location_error_title'), window.langu('location_invalid_coords'), 'error');
             return;
         }
 
@@ -174,12 +174,12 @@ location_app.location_handleLocationSelection = async function (lat, lng) {
 
         if (location_existingLocation) {
             const location_confirmation = await Swal.fire({
-                title: 'تعديل الموقع؟',
-                text: 'هل تريد استبدال الموقع المحفوظ بالموقع الجديد؟',
+                title: window.langu('location_edit_confirm_title'),
+                text: window.langu('location_edit_confirm_text'),
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonText: 'نعم، استبدل',
-                cancelButtonText: 'إلغاء',
+                confirmButtonText: window.langu('location_edit_replace'),
+                cancelButtonText: window.langu('location_reset_cancel'),
                 confirmButtonColor: '#2563eb',
                 cancelButtonColor: '#6b7280',
                 customClass: { popup: 'fullscreen-swal' }
@@ -205,7 +205,7 @@ location_app.location_handleLocationSelection = async function (lat, lng) {
 
     } catch (error) {
         console.error('Error in location selection:', error);
-        this.location_showAlert('خطأ', 'تعذر حفظ الموقع', 'error');
+        this.location_showAlert(window.langu('location_error_title'), window.langu('location_save_error'), 'error');
     }
 };
 

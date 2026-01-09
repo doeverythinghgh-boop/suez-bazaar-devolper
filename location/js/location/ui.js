@@ -44,7 +44,7 @@ location_app.location_showAlert = function (title, text, icon) {
         title: title,
         text: text,
         icon: icon,
-        confirmButtonText: 'حسناً',
+        confirmButtonText: window.langu('location_confirm_ok'),
         customClass: { popup: 'fullscreen-swal' }
     });
 };

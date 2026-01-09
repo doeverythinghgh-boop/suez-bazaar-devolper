@@ -13,7 +13,7 @@ function bootLocationApp() {
         if (typeof location_app !== 'undefined' && typeof location_app.init === 'function') {
             location_app.init();
         } else {
-            throw new Error('لم يتم تحميل وحدات التطبيق الأساسية بشكل صحيح.');
+            throw new Error(window.langu('location_critical_load_error'));
         }
     } catch (error) {
         console.error('Failed to initialize application bootstrapper:', error);
@@ -23,8 +23,8 @@ function bootLocationApp() {
         if (location_loadingOverlay) {
             location_loadingOverlay.innerHTML = `
                 <div id="location_errorContainer" style="text-align: center; padding: 20px; background: var(--bg-color-white); border-radius: 12px; box-shadow: var(--shadow-soft);">
-                    <h3 id="location_errorTitle" style="color: var(--danger-color); margin-bottom: 10px;">خطأ في التحميل</h3>
-                    <p id="location_errorText" style="color: var(--text-color-medium); margin-bottom: 20px;">حدث خطأ أثناء تشغيل التطبيق. يرجى المحاولة مرة أخرى.</p>
+                    <h3 id="location_errorTitle" style="color: var(--danger-color); margin-bottom: 10px;">${window.langu('location_critical_error_title')}</h3>
+                    <p id="location_errorText" style="color: var(--text-color-medium); margin-bottom: 20px;">${window.langu('location_critical_error_text')}</p>
                     <button id="location_reloadBtn" onclick="window.location.reload()" 
                             style="padding: 10px 24px; 
                                    background: #2563eb; 
@@ -34,7 +34,7 @@ function bootLocationApp() {
                                    cursor: pointer;
                                    font-weight: bold;
                                    transition: background 0.2s;">
-                        تحديث الصفحة
+                        ${window.langu('location_reload_btn')}
                     </button>
                 </div>
             `;

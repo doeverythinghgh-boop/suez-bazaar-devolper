@@ -1,0 +1,218 @@
+{
+    "location_title": {
+        "ar": "تحديد الموقع",
+        "en": "Select Location"
+    },
+    "location_alert_title": {
+        "ar": "تنبيه",
+        "en": "Notice"
+    },
+    "location_select_on_map_first": {
+        "ar": "يرجى تحديد موقع على الخريطة أولاً",
+        "en": "Please select a location on the map first"
+    },
+    "location_saved_title": {
+        "ar": "تم الحفظ",
+        "en": "Saved"
+    },
+    "location_saved_success": {
+        "ar": "تم حفظ الموقع وإرساله بنجاح",
+        "en": "Location saved and sent successfully"
+    },
+    "location_reset_confirm_title": {
+        "ar": "إعادة التعيين؟",
+        "en": "Reset Location?"
+    },
+    "location_reset_confirm_text": {
+        "ar": "سيتم حذف الموقع المحفوظ وإعادة التعيين إلى الإعدادات الافتراضية",
+        "en": "The saved location will be deleted and reset to defaults"
+    },
+    "location_reset_yes": {
+        "ar": "نعم، احذف",
+        "en": "Yes, Delete"
+    },
+    "location_reset_cancel": {
+        "ar": "إلغاء",
+        "en": "Cancel"
+    },
+    "location_reset_error": {
+        "ar": "تعذر إعادة التعيين",
+        "en": "Could not reset"
+    },
+    "location_no_data_title": {
+        "ar": "لا توجد بيانات",
+        "en": "No Data"
+    },
+    "location_no_location_saved": {
+        "ar": "لا يوجد موقع محفوظ لمشاركته",
+        "en": "No saved location to share"
+    },
+    "location_options_title": {
+        "ar": "خيارات الموقع",
+        "en": "Location Options"
+    },
+    "location_options_text": {
+        "ar": "ماذا تريد أن تفعل بالإحداثيات؟",
+        "en": "What do you want to do with the coordinates?"
+    },
+    "location_open_in_maps": {
+        "ar": "فتح في الخرائط",
+        "en": "Open in Maps"
+    },
+    "location_copy_coordinates": {
+        "ar": "نسخ الإحداثيات",
+        "en": "Copy Coordinates"
+    },
+    "location_copied_title": {
+        "ar": "تم النسخ",
+        "en": "Copied"
+    },
+    "location_copied_success": {
+        "ar": "تم نسخ الإحداثيات إلى الحافظة",
+        "en": "Coordinates copied to clipboard"
+    },
+    "location_error_title": {
+        "ar": "خطأ",
+        "en": "Error"
+    },
+    "location_unexpected_error": {
+        "ar": "حدث خطأ في معالجة طلبك",
+        "en": "An error occurred while processing your request"
+    },
+    "location_confirm_ok": {
+        "ar": "حسناً",
+        "en": "OK"
+    },
+    "location_loading_map": {
+        "ar": "جاري تحميل الخريطة...",
+        "en": "Loading map..."
+    },
+    "location_btn_save": {
+        "ar": "حفظ",
+        "en": "Save"
+    },
+    "location_btn_my_location": {
+        "ar": "موقعي",
+        "en": "My Location"
+    },
+    "location_btn_share": {
+        "ar": "مشاركة",
+        "en": "Share"
+    },
+    "location_btn_reset": {
+        "ar": "إعادة ضبط",
+        "en": "Reset"
+    },
+    "location_not_supported": {
+        "ar": "غير مدعوم",
+        "en": "Not Supported"
+    },
+    "location_browser_not_supported": {
+        "ar": "المتصفح الحالي لا يدعم خدمة تحديد الموقع",
+        "en": "This browser does not support geolocation services"
+    },
+    "location_busy_title": {
+        "ar": "جاري العمل",
+        "en": "In Progress"
+    },
+    "location_busy_text": {
+        "ar": "يتم الآن تحديد موقع آخر، الرجاء الانتظار",
+        "en": "Another location operation is in progress, please wait"
+    },
+    "location_finding_title": {
+        "ar": "جاري تحديد الموقع...",
+        "en": "Finding location..."
+    },
+    "location_allow_access": {
+        "ar": "يرجى السماح بالوصول إلى بيانات الموقع",
+        "en": "Please allow access to location data"
+    },
+    "location_error_gps_title": {
+        "ar": "خطأ في تحديد الموقع",
+        "en": "Location Discovery Error"
+    },
+    "location_error_denied": {
+        "ar": "تم رفض الإذن. الرجاء السماح بالوصول إلى الموقع في إعدادات المتصفح.",
+        "en": "Permission denied. Please allow location access in browser settings."
+    },
+    "location_error_unavailable": {
+        "ar": "الموقع غير متاح حالياً. تحقق من اتصال الإنترنت.",
+        "en": "Location is currently unavailable. Check your internet connection."
+    },
+    "location_error_timeout": {
+        "ar": "استغرقت العملية وقتاً طويلاً. حاول مرة أخرى.",
+        "en": "The operation timed out. Please try again."
+    },
+    "location_error_unknown": {
+        "ar": "حدث خطأ غير متوقع أثناء تحديد الموقع.",
+        "en": "An unexpected error occurred while finding location."
+    },
+    "location_init_error_title": {
+        "ar": "خطأ في التهيئة",
+        "en": "Initialization Error"
+    },
+    "location_init_error_text": {
+        "ar": "حدث خطأ أثناء تحميل التطبيق. يرجى تحديث الصفحة.",
+        "en": "An error occurred while loading the application. Please refresh the page."
+    },
+    "location_recenter_title": {
+        "ar": "توسيط الموقع المختار",
+        "en": "Recenter to Selected Location"
+    },
+    "location_load_error": {
+        "ar": "تعذر تحميل الخريطة. تحقق من اتصال الإنترنت.",
+        "en": "Could not load map. Check your internet connection."
+    },
+    "location_marker_title": {
+        "ar": "الموقع المحدد",
+        "en": "Selected Location"
+    },
+    "location_marker_alt": {
+        "ar": "موقع المستخدم على الخريطة",
+        "en": "User's location on the map"
+    },
+    "location_lat_label": {
+        "ar": "خط العرض",
+        "en": "Latitude"
+    },
+    "location_lng_label": {
+        "ar": "خط الطول",
+        "en": "Longitude"
+    },
+    "location_invalid_coords": {
+        "ar": "إحداثيات غير صالحة",
+        "en": "Invalid coordinates"
+    },
+    "location_edit_confirm_title": {
+        "ar": "تعديل الموقع؟",
+        "en": "Edit Location?"
+    },
+    "location_edit_confirm_text": {
+        "ar": "هل تريد استبدال الموقع المحفوظ بالموقع الجديد؟",
+        "en": "Do you want to replace the saved location with the new one?"
+    },
+    "location_edit_replace": {
+        "ar": "نعم، استبدل",
+        "en": "Yes, Replace"
+    },
+    "location_save_error": {
+        "ar": "تعذر حفظ الموقع",
+        "en": "Could not save location"
+    },
+    "location_critical_load_error": {
+        "ar": "لم يتم تحميل وحدات التطبيق الأساسية بشكل صحيح.",
+        "en": "Core application modules were not loaded correctly."
+    },
+    "location_critical_error_title": {
+        "ar": "خطأ في التحميل",
+        "en": "Load Error"
+    },
+    "location_critical_error_text": {
+        "ar": "حدث خطأ أثناء تشغيل التطبيق. يرجى المحاولة مرة أخرى.",
+        "en": "An error occurred while launching the application. Please try again."
+    },
+    "location_reload_btn": {
+        "ar": "تحديث الصفحة",
+        "en": "Refresh Page"
+    }
+}

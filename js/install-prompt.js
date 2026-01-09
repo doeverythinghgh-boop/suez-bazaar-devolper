@@ -190,7 +190,7 @@ window.triggerPWAInstall = async (platform = 'generic') => {
   if (platform === 'apple') {
     // Show instruction for iOS style (And anyone else clicking this)
     Swal.fire({
-      title: `<span style="font-size: 1.1rem; font-weight: 600;">لتنصيب البرنامج كتطبيق وب اتبع الخطوات الاتية في الفديو</span>`,
+      title: `<span style="font-size: 1.1rem; font-weight: 600;">${window.langu('install_ios_video_title')}</span>`,
       position: 'bottom',
       timer: 5000,
       timerProgressBar: true,

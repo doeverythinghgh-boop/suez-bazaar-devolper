@@ -16,13 +16,13 @@ location_app.getLocationByGPS = function () {
     return new Promise((resolve) => {
         try {
             if (!navigator.geolocation) {
-                this.location_showAlert('غير مدعوم', 'المتصفح الحالي لا يدعم خدمة تحديد الموقع', 'error');
+                this.location_showAlert(window.langu('location_not_supported'), window.langu('location_browser_not_supported'), 'error');
                 resolve();
                 return;
             }
 
             if (this.location_isBusy) {
-                this.location_showAlert('جاري العمل', 'يتم الآن تحديد موقع آخر، الرجاء الانتظار', 'info');
+                this.location_showAlert(window.langu('location_busy_title'), window.langu('location_busy_text'), 'info');
                 resolve();
                 return;
             }
@@ -32,9 +32,9 @@ location_app.getLocationByGPS = function () {
             this.location_map.dragging.disable();
 
             Swal.fire({
-                title: 'جاري تحديد الموقع...',
+                title: window.langu('location_finding_title'),
                 html: `
-                    <p style="margin-bottom: 20px;">يرجى السماح بالوصول إلى بيانات الموقع</p>
+                    <p style="margin-bottom: 20px;">${window.langu('location_allow_access')}</p>
                     <div class="swal2-loading" style="display: flex; justify-content: center; margin-bottom: 10px;">
                         <div class="swal2-loader" style="display: block;"></div>
                     </div>
@@ -42,7 +42,7 @@ location_app.getLocationByGPS = function () {
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 showCancelButton: true,
-                cancelButtonText: 'إلغاء',
+                cancelButtonText: window.langu('location_reset_cancel'),
                 showConfirmButton: false, // Hide confirm button during search
                 cancelButtonColor: '#d33',
                 customClass: { popup: 'location_fullscreen-swal' }
@@ -158,14 +158,14 @@ location_app.location_onGPSError = function (error, resolve) {
         }
 
         const location_errorMessages = {
-            1: 'تم رفض الإذن. الرجاء السماح بالوصول إلى الموقع في إعدادات المتصفح.',
-            2: 'الموقع غير متاح حالياً. تحقق من اتصال الإنترنت.',
-            3: 'استغرقت العملية وقتاً طويلاً. حاول مرة أخرى.',
-            0: 'حدث خطأ غير متوقع أثناء تحديد الموقع.'
+            1: window.langu('location_error_denied'),
+            2: window.langu('location_error_unavailable'),
+            3: window.langu('location_error_timeout'),
+            0: window.langu('location_error_unknown')
         };
 
         this.location_showAlert(
-            'خطأ في تحديد الموقع',
+            window.langu('location_error_gps_title'),
             location_errorMessages[error.code] || location_errorMessages[0],
             'error'
         );

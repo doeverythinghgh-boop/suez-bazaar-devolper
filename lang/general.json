@@ -23,6 +23,14 @@
     "ar": "طلبات",
     "en": "Orders"
   },
+  "lang_arabic": {
+    "ar": "اللغة العربية",
+    "en": "Arabic"
+  },
+  "lang_english": {
+    "ar": "الإنجليزية",
+    "en": "English"
+  },
   "alert_lang_change_title": {
     "ar": "تغيير اللغة",
     "en": "Language Change"
@@ -198,6 +206,10 @@
   "install_ios_desc": {
     "ar": "لتحميل التطبيق، يرجى اتباع الآتي:",
     "en": "To install the app, please follow these steps:"
+  },
+  "install_ios_video_title": {
+    "ar": "لتنصيب البرنامج كتطبيق وب اتبع الخطوات الاتية في الفيديو",
+    "en": "To install the app as a PWA, follow the steps in the video"
   },
   "install_ios_step_1": {
     "ar": "اضغط على زر <b>مشاركة</b> في الأسفل",
@@ -418,5 +430,17 @@
   "contact_details_title_phone": {
     "ar": "هاتف او واتس اب",
     "en": "Phone or WhatsApp"
+  },
+  "offline_title": {
+    "ar": "انقطع الاتصال",
+    "en": "No Connection"
+  },
+  "offline_desc": {
+    "ar": "يبدو أنك غير متصل بالإنترنت حالياً. يرجى التحقق من الشبكة والمحاولة مرة أخرى.",
+    "en": "It seems you are currently offline. Please check your network and try again."
+  },
+  "offline_retry": {
+    "ar": "إعادة المحاولة",
+    "en": "Retry"
   }
 }

@@ -39,6 +39,26 @@
                 }
             }
         })();
+
+        // Bridge for translation system
+        window.langu = function (key) {
+            if (window.parent && typeof window.parent.langu === 'function') {
+                return window.parent.langu(key);
+            }
+            return key;
+        };
+
+        // Function to apply translations to elements with data-lkey
+        window.applyLocationTranslations = function () {
+            document.querySelectorAll('[data-lkey]').forEach(el => {
+                const key = el.getAttribute('data-lkey');
+                el.textContent = window.langu(key);
+            });
+            document.querySelectorAll('[data-lkey-title]').forEach(el => {
+                const key = el.getAttribute('data-lkey-title');
+                el.setAttribute('title', window.langu(key));
+            });
+        };
     </script>
 </head>
 
@@ -51,7 +71,8 @@
     <!-- Loading overlay -->
     <div id="location_loadingOverlay" class="location_loading-overlay">
         <div id="location_spinner" class="location_spinner"></div>
-        <p id="location_loadingText" class="location_loading-text">جاري تحميل الخريطة...</p>
+        <p id="location_loadingText" class="location_loading-text" data-lkey="location_loading_map">جاري تحميل
+            الخريطة...</p>
     </div>
 
     <!-- Main map container -->
@@ -62,20 +83,20 @@
         <button id="location_saveBtn" class="location_btn location_btn-save"
             onclick="location_app.saveSelectedLocation()">
             <i class="fas fa-save"></i>
-            <span class="location_btn-text">حفظ</span>
+            <span class="location_btn-text" data-lkey="location_btn_save">حفظ</span>
         </button>
         <button id="location_gpsBtn" class="location_btn location_btn-gps" onclick="location_app.getLocationByGPS()">
             <i id="location_gpsIcon" class="fas fa-map-marker-alt"></i>
-            <span id="location_gpsText" class="location_btn-text">موقعي</span>
+            <span id="location_gpsText" class="location_btn-text" data-lkey="location_btn_my_location">موقعي</span>
         </button>
         <button id="location_shareBtn" class="location_btn location_btn-share"
             onclick="location_app.shareCoordinates()">
             <i id="location_shareIcon" class="fas fa-share-alt"></i>
-            <span id="location_shareText" class="location_btn-text">مشاركة</span>
+            <span id="location_shareText" class="location_btn-text" data-lkey="location_btn_share">مشاركة</span>
         </button>
         <button id="location_resetBtn" class="location_btn location_btn-reset" onclick="location_app.resetLocation()">
             <i id="location_resetIcon" class="fas fa-trash-alt"></i>
-            <span id="location_resetText" class="location_btn-text">إعادة ضبط</span>
+            <span id="location_resetText" class="location_btn-text" data-lkey="location_btn_reset">إعادة ضبط</span>
         </button>
     </div>
 
@@ -92,6 +113,12 @@
     <script src="js/location/utils.js"></script>
     <script src="js/location/core.js"></script>
     <script src="location_app.js"></script>
+    <script>
+        // Apply translations on load
+        window.addEventListener('load', () => {
+            window.applyLocationTranslations();
+        });
+    </script>
 </body>
 
 </html>

@@ -49,37 +49,37 @@ var register_limitPackageInput = document.getElementById("register_limit-package
 if (register_sellerOptionsBtn) {
   register_sellerOptionsBtn.addEventListener("click", async () => {
     var { value: formValues } = await Swal.fire({
-      title: "إعدادات البائع",
+      title: window.langu("register_seller_settings_title"),
       html: `
         <div style="font-family: 'Tajawal', sans-serif;">
           <div class="register-modal-section">
             <label class="register-modal-label">
-              <i class="fas fa-truck-moving" style="color: #10b981;"></i> هل لديك خدمة توصيل خاصة بك؟
+              <i class="fas fa-truck-moving" style="color: #10b981;"></i> ${window.langu("register_delivery_question")}
             </label>
             <select id="swal_is-delevred" class="swal2-input register-modal-input">
-              <option value="0" ${register_isDelevredInput.value == "0" ? "selected" : ""}>لا (الاعتماد على مناديب التطبيق)</option>
-              <option value="1" ${register_isDelevredInput.value == "1" ? "selected" : ""}>نعم (أقوم بالتوصيل بنفسي)</option>
+              <option value="0" ${register_isDelevredInput.value == "0" ? "selected" : ""}>${window.langu("register_delivery_no")}</option>
+              <option value="1" ${register_isDelevredInput.value == "1" ? "selected" : ""}>${window.langu("register_delivery_yes")}</option>
             </select>
           </div>
           <div class="register-modal-section" style="margin-bottom: 0;">
             <label class="register-modal-label">
-              <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> هل تضع حداً أدنى لطلبات الشراء؟
+              <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> ${window.langu("register_min_order_question")}
             </label>
             <select id="swal_has-limit" class="swal2-input register-modal-input">
-              <option value="no" ${register_limitPackageInput.value == "0" ? "selected" : ""}>لا يوجد حد أدنى</option>
-              <option value="yes" ${register_limitPackageInput.value != "0" ? "selected" : ""}>نعم، يوجد حد أدنى للطلب</option>
+              <option value="no" ${register_limitPackageInput.value == "0" ? "selected" : ""}>${window.langu("register_min_order_no")}</option>
+              <option value="yes" ${register_limitPackageInput.value != "0" ? "selected" : ""}>${window.langu("register_min_order_yes")}</option>
             </select>
             <div id="swal_limit-container" style="margin-top: 15px; display: ${register_limitPackageInput.value != "0" ? "block" : "none"};">
-              <label class="register-modal-sublabel">الحد الأدنى للطلب (ج.م):</label>
-              <input type="number" id="swal_limit-value" class="swal2-input register-modal-input" value="${register_limitPackageInput.value}" placeholder="مثلاً: 100">
+              <label class="register-modal-sublabel">${window.langu("register_min_order_value_label")}</label>
+              <input type="number" id="swal_limit-value" class="swal2-input register-modal-input" value="${register_limitPackageInput.value}" placeholder="${window.langu("register_min_order_placeholder")}">
             </div>
           </div>
         </div>
       `,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "حفظ الإعدادات",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: window.langu("register_save_settings_btn"),
+      cancelButtonText: window.langu("alert_cancel_btn"),
       customClass: {
         popup: 'modern-swal-popup',
         confirmButton: 'modern-swal-confirm',
@@ -98,7 +98,7 @@ if (register_sellerOptionsBtn) {
         var limitValue = document.getElementById("swal_limit-value").value;
 
         if (hasLimit === "yes" && (!limitValue || limitValue <= 0)) {
-          Swal.showValidationMessage("يرجى إدخال قيمة صحيحة للحد الأدنى");
+          Swal.showValidationMessage(window.langu("register_invalid_min_order"));
           return false;
         }
 
@@ -115,8 +115,8 @@ if (register_sellerOptionsBtn) {
 
       // Update UI feedback on the button
       var isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
-      var statusText = isSet ? " (تم ضبط الإعدادات ✅)" : " (لا توجد إعدادات خاصة)";
-      register_sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> خيارات البائع ${statusText}`;
+      var statusText = isSet ? ` ${window.langu("register_seller_options_set")}` : ` ${window.langu("register_seller_options_none")}`;
+      register_sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> ${window.langu("register_seller_options_btn")}${statusText}`;
       register_sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
       register_sellerOptionsBtn.style.borderStyle = isSet ? "solid" : "dashed";
     }
@@ -136,7 +136,7 @@ var handleRegisterMessage = (event) => {
 
     if (mapStatus) {
       mapStatus.style.color = "#10b981";
-      mapStatus.innerHTML = '<i class="fas fa-check-circle"></i> تم ربط الموقع بنجاح!';
+      mapStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${window.langu("register_map_success")}`;
       mapStatus.style.display = "block";
     }
     if (mapError) mapError.style.display = "none";
@@ -193,7 +193,7 @@ if (register_form) {
     var coordsValue = document.getElementById("register_coords")?.value || "";
     if (!coordsValue) {
       if (mapError) {
-        mapError.textContent = "يرجى تحديد موقعك على الخريطة أولاً لضمان سرعة التوصيل.";
+        mapError.textContent = window.langu("register_map_mandatory_error");
         mapError.style.display = "block";
         mapError.style.color = "#dc2626";
         mapError.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -222,19 +222,19 @@ if (register_form) {
           <div class="confirm-pw-icon-wrapper">
             <i class="fas fa-key"></i>
           </div>
-          <h3 class="confirm-pw-title">تأكيد الأمان</h3>
+          <h3 class="confirm-pw-title">${window.langu("register_confirm_identity_title")}</h3>
         </div>
         <div class="confirm-pw-body">
-          <p>أعد إدخال كلمة المرور للمتابعة</p>
+          <p>${window.langu("register_confirm_identity_text")}</p>
           <div class="modern-pw-input-group">
-            <input type="password" id="register_swal-confirm-password" placeholder="كلمة المرور">
+            <input type="password" id="register_swal-confirm-password" placeholder="${window.langu("register_password_placeholder")}">
             <i class="fa fa-eye modern-pw-toggle" id="register_swal-toggle-confirm-password"></i>
           </div>
         </div>
       `,
       showCancelButton: true,
-      confirmButtonText: "تأكيد الحساب",
-      cancelButtonText: "إلغاء",
+      confirmButtonText: window.langu("register_confirm_account_btn"),
+      cancelButtonText: window.langu("alert_cancel_btn"),
       buttonsStyling: false,
       didOpen: () => {
         var confirmInput = document.getElementById("register_swal-confirm-password");
@@ -252,11 +252,11 @@ if (register_form) {
       preConfirm: () => {
         var confirmValue = document.getElementById("register_swal-confirm-password").value;
         if (!confirmValue) {
-          Swal.showValidationMessage("يرجى إدخال كلمة المرور");
+          Swal.showValidationMessage(window.langu("register_error_no_password"));
           return false;
         }
         if (confirmValue !== register_password.value) {
-          Swal.showValidationMessage("كلمات المرور غير متطابقة!");
+          Swal.showValidationMessage(window.langu("register_error_password_mismatch"));
           return false;
         }
         return confirmValue;
@@ -280,7 +280,7 @@ if (register_form) {
     };
 
     // 4. Submit
-    AuthUI.showLoading("إنشاء حساب...");
+    AuthUI.showLoading(window.langu("register_creating_account"));
 
     try {
       var register_result = await addUser(register_newUser);
@@ -305,17 +305,17 @@ if (register_form) {
         // Success UI
         Swal.fire({
           icon: "success",
-          title: "تم إنشاء الحساب بنجاح!",
+          title: window.langu("register_success_title"),
           html: `
-            <p style="font-size: 1.1rem; color: #333;">أنت الآن جاهز لتجربة شراء فريدة!</p>
+            <p style="font-size: 1.1rem; color: #333;">${window.langu("register_success_subtitle")}</p>
             <div style="text-align: right; margin-top: 20px; padding-right: 15px; font-size: 1rem;">
-                <p style="margin-bottom: 10px;">🛍️ تصفح آلاف المنتجات بسهولة.</p>
-                <p style="margin-bottom: 10px;">💰 استمتع بخصومات وعروض حصرية.</p>
-                <p>✨ اكتشف ما هو جديد في سوق السويس.</p>
+                <p style="margin-bottom: 10px;">${window.langu("register_success_feature_1")}</p>
+                <p style="margin-bottom: 10px;">${window.langu("register_success_feature_2")}</p>
+                <p>${window.langu("register_success_feature_3")}</p>
             </div>
             `,
           allowOutsideClick: false,
-          confirmButtonText: "الانتقال إلى الصفحة الرئيسية",
+          confirmButtonText: window.langu("register_go_home_btn"),
           customClass: { popup: 'fullscreen-swal' }
         }).then((result) => {
           if (result.isConfirmed) {
@@ -413,7 +413,7 @@ function register_restoreSavedLocation() {
       var mapStatus = document.getElementById("register_map-status");
       if (mapStatus) {
         mapStatus.style.color = "#10b981";
-        mapStatus.innerHTML = '<i class="fas fa-check-circle"></i> تم استرجاع موقعك المحفوظ.';
+        mapStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${window.langu("register_map_restored")}`;
         mapStatus.style.display = "block";
       }
 

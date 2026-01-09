@@ -15,9 +15,9 @@
     display: grid;
     /* Responsive grid: min 3 items, max 5 items */
     grid-template-columns: repeat(5, 1fr);
-    column-gap: 12px;
-    row-gap: 20px;
-    padding: 0 10px;
+    column-gap: 8px;
+    row-gap: 15px;
+    padding: 0 8px;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -42,8 +42,8 @@
 
 .categories_cell_media {
     width: 100%;
-    max-width: 160px;
-    /* Allow items to grow up to 160px */
+    max-width: 200px;
+    /* High limit, actual size controlled by grid 1fr */
     aspect-ratio: 1 / 1;
     /* Keep it square */
     background-color: var(--bg-color-medium);
@@ -87,7 +87,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-    max-width: 160px;
+    max-width: 200px;
 }
 
 .categories_grid_item--active .categories_cell_content__text {
@@ -124,8 +124,8 @@
     /* Precision overlap with container top border */
     left: 50%;
     transform: translateX(-50%);
-    width: 80px;
-    /* Back to a narrower bridge for better aesthetic */
+    width: 90%;
+    /* Responsive bridge width matching new cell size */
     height: 15px;
     background-color: var(--bg-color-medium);
     border: none;
@@ -144,7 +144,7 @@
     border-right: 6px solid transparent;
     border-top: 6px solid var(--primary-color);
     z-index: 70;
-    animation: arrowBlink 1.5s infinite;
+    animation: arrowSpin 4s linear infinite;
 }
 
 
@@ -175,20 +175,16 @@
     justify-content: flex-start;
     padding: 15px;
     gap: 12px;
-    scrollbar-width: thin;
+    /* Hide scrollbar but keep functionality */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
 }
 
-/* Scrollbars */
+/* Hide scrollbar for Chrome, Safari and Opera */
 .categories_subcategories_container::-webkit-scrollbar {
-    height: 3px;
-}
-
-.categories_subcategories_container::-webkit-scrollbar-thumb {
-    background-color: var(--primary-color);
-    border-radius: 3px;
-    opacity: 0.7;
-    transform: translateX(-50%) scale(1.15);
-    /* Subtle scrollbar as requested before */
+    display: none;
 }
 
 /* Animations */
@@ -316,7 +312,7 @@
     border-right: 6px solid transparent;
     border-top: 6px solid var(--primary-color);
     /* Match active border */
-    animation: arrowBlink 1.5s infinite;
+    animation: arrowSpin 4s linear infinite;
 }
 
 
@@ -337,7 +333,7 @@
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    padding: 5px 10px;
+    padding: 10px 10px;
     background-color: transparent;
     margin-bottom: 0px;
 }
@@ -486,13 +482,12 @@
 @media (max-width: 479px) {
     .categories_grid {
         grid-template-columns: repeat(3, 1fr);
-        /* Strictly 3 items */
-        column-gap: 8px;
-        padding: 0 8px;
+        column-gap: 6px;
+        padding: 0 6px;
     }
 
     .categories_cell_media {
-        max-width: 110px;
+        max-width: 125px;
     }
 
     .categories_cell_content__text {
@@ -500,8 +495,8 @@
     }
 
     .categories_grid_item--active::after {
-        width: 60px;
-        height: 25px;
+        width: 80%;
+        height: 22px;
     }
 }
 
@@ -509,12 +504,11 @@
 @media (min-width: 480px) and (max-width: 767px) {
     .categories_grid {
         grid-template-columns: repeat(4, 1fr);
-        /* 4 items */
-        column-gap: 10px;
+        column-gap: 8px;
     }
 
     .categories_cell_media {
-        max-width: 130px;
+        max-width: 150px;
     }
 }
 
@@ -522,12 +516,11 @@
 @media (min-width: 768px) and (max-width: 991px) {
     .categories_grid {
         grid-template-columns: repeat(5, 1fr);
-        /* 5 items */
-        gap: 12px;
+        gap: 10px;
     }
 
     .categories_cell_media {
-        max-width: 140px;
+        max-width: 170px;
     }
 }
 
@@ -535,25 +528,20 @@
 @media (min-width: 992px) {
     .categories_grid {
         grid-template-columns: repeat(5, 1fr);
-        /* 5 items */
-        gap: 15px;
+        gap: 10px;
     }
 
     .categories_cell_media {
-        max-width: 160px;
+        max-width: 200px;
     }
 }
 
-@keyframes arrowBlink {
-
-    0%,
-    100% {
-        opacity: 1;
-        transform: translateX(-50%) scale(1);
+@keyframes arrowSpin {
+    from {
+        transform: translateX(-50%) rotateY(0deg);
     }
 
-    50% {
-        opacity: 0.7;
-        transform: translateX(-50%) scale(1.15);
+    to {
+        transform: translateX(-50%) rotateY(360deg);
     }
 }

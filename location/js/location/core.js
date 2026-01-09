@@ -66,6 +66,6 @@ location_app.init = function () {
         console.log('Location application initialized successfully');
     } catch (error) {
         console.error('Failed to initialize location application:', error);
-        this.location_showAlert('خطأ في التهيئة', 'حدث خطأ أثناء تحميل التطبيق. يرجى تحديث الصفحة.', 'error');
+        this.location_showAlert(window.langu('location_init_error_title'), window.langu('location_init_error_text'), 'error');
     }
 };

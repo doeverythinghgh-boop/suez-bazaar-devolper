@@ -41,7 +41,7 @@ location_app.closeLocationApp = function () {
 location_app.saveSelectedLocation = function () {
     const saved = this.location_getSavedLocation();
     if (!saved) {
-        this.location_showAlert('تنبيه', 'يرجى تحديد موقع على الخريطة أولاً', 'warning');
+        this.location_showAlert(window.langu('location_alert_title'), window.langu('location_select_on_map_first'), 'warning');
         return;
     }
 
@@ -54,7 +54,7 @@ location_app.saveSelectedLocation = function () {
         }, '*');
     }
 
-    this.location_showAlert('تم الحفظ', 'تم حفظ الموقع وإرساله بنجاح', 'success');
+    this.location_showAlert(window.langu('location_saved_title'), window.langu('location_saved_success'), 'success');
 };
 
 /**
@@ -65,12 +65,12 @@ location_app.saveSelectedLocation = function () {
 location_app.resetLocation = async function () {
     try {
         const location_confirmation = await Swal.fire({
-            title: 'إعادة التعيين؟',
-            text: 'سيتم حذف الموقع المحفوظ وإعادة التعيين إلى الإعدادات الافتراضية',
+            title: window.langu('location_reset_confirm_title'),
+            text: window.langu('location_reset_confirm_text'),
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'نعم، احذف',
-            cancelButtonText: 'إلغاء',
+            confirmButtonText: window.langu('location_reset_yes'),
+            cancelButtonText: window.langu('location_reset_cancel'),
             confirmButtonColor: '#dc2626',
             cancelButtonColor: '#6b7280',
             customClass: { popup: 'fullscreen-swal' }
@@ -99,7 +99,7 @@ location_app.resetLocation = async function () {
 
     } catch (error) {
         console.error('Error resetting location:', error);
-        this.location_showAlert('خطأ', 'تعذر إعادة التعيين', 'error');
+        this.location_showAlert(window.langu('location_error_title'), window.langu('location_reset_error'), 'error');
     }
 };
 
@@ -114,8 +114,8 @@ location_app.shareCoordinates = async function () {
 
         if (!location_saved) {
             this.location_showAlert(
-                'لا توجد بيانات',
-                'لا يوجد موقع محفوظ لمشاركته',
+                window.langu('location_no_data_title'),
+                window.langu('location_no_location_saved'),
                 'warning'
             );
             return;
@@ -125,14 +125,14 @@ location_app.shareCoordinates = async function () {
 
         // Ask user whether to copy or open in maps
         const location_choice = await Swal.fire({
-            title: 'خيارات الموقع',
-            text: 'ماذا تريد أن تفعل بالإحداثيات؟',
+            title: window.langu('location_options_title'),
+            text: window.langu('location_options_text'),
             icon: 'question',
             showCancelButton: true,
             showDenyButton: true,
-            confirmButtonText: 'فتح في الخرائط',
-            denyButtonText: 'نسخ الإحداثيات',
-            cancelButtonText: 'إلغاء',
+            confirmButtonText: window.langu('location_open_in_maps'),
+            denyButtonText: window.langu('location_copy_coordinates'),
+            cancelButtonText: window.langu('location_reset_cancel'),
             confirmButtonColor: '#2563eb',
             denyButtonColor: '#10b981',
             cancelButtonColor: '#6b7280',
@@ -155,7 +155,7 @@ location_app.shareCoordinates = async function () {
                 document.execCommand('copy');
                 document.body.removeChild(location_textArea);
             }
-            this.location_showAlert('تم النسخ', 'تم نسخ الإحداثيات إلى الحافظة', 'success');
+            this.location_showAlert(window.langu('location_copied_title'), window.langu('location_copied_success'), 'success');
         }
 
         // NEW: Always try to notify parent window if in an iframe
@@ -170,6 +170,6 @@ location_app.shareCoordinates = async function () {
 
     } catch (error) {
         console.error('Error in location options:', error);
-        this.location_showAlert('خطأ', 'حدث خطأ في معالجة طلبك', 'error');
+        this.location_showAlert(window.langu('location_error_title'), window.langu('location_unexpected_error'), 'error');
     }
 };

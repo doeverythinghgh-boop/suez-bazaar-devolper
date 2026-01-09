@@ -26,6 +26,19 @@
             text-align: center;
         }
 
+        /* ✅ GLOBAL: Hide all scrollbars while maintaining functionality */
+        * {
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE/Edge */
+        }
+
+        *::-webkit-scrollbar {
+            display: none;
+            /* Chrome, Safari, Opera */
+        }
+
         .card {
             background: white;
             padding: 40px;
@@ -96,6 +109,41 @@
             }
         }
     </style>
+    <script>
+        // Mini translation logic for offline page
+        function applyOfflineTranslations() {
+            const lang = localStorage.getItem('app_language') || 'ar';
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // Try to load general.json from cache/server
+            fetch('lang/general.json')
+                .then(r => r.json())
+                .then(data => {
+                    document.querySelectorAll('[data-lkey]').forEach(el => {
+                        const key = el.getAttribute('data-lkey');
+                        if (data[key]) {
+                            el.textContent = data[key][lang] || data[key]['ar'];
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.warn("Could not load translations for offline page, using defaults.", err);
+                    // Minimal fallback if fetch fails
+                    const fallbacks = {
+                        'ar': { 'offline_title': 'انقطع الاتصال', 'offline_desc': 'يبدو أنك غير متصل بالإنترنت حالياً. يرجى التحقق من الشبكة والمحاولة مرة أخرى.', 'offline_retry': 'إعادة المحاولة' },
+                        'en': { 'offline_title': 'No Connection', 'offline_desc': 'It seems you are currently offline. Please check your network and try again.', 'offline_retry': 'Retry' }
+                    };
+                    document.querySelectorAll('[data-lkey]').forEach(el => {
+                        const key = el.getAttribute('data-lkey');
+                        if (fallbacks[lang][key]) {
+                            el.textContent = fallbacks[lang][key];
+                        }
+                    });
+                });
+        }
+        window.addEventListener('DOMContentLoaded', applyOfflineTranslations);
+    </script>
 </head>
 
 <body>
@@ -107,9 +155,9 @@
                     d="M23.64 7c-.45-.34-4.93-4-11.64-4-1.5 0-2.89.19-4.15.48L18.18 13.8 23.64 7zm-6.6 8.22L3.27 1.44 2 2.72l2.05 2.06C1.91 5.17 1.5 5.68 1 6.27l11 13.73 4.35-5.43 3.54 3.54 1.27-1.27-6.52-6.52zM7 9.91c-.3.23-.57.49-.82.77L12 18.06l1.09-1.36-6.09-6.79z" />
             </svg>
         </div>
-        <h1>انقطع الاتصال</h1>
-        <p>يبدو أنك غير متصل بالإنترنت حالياً. يرجى التحقق من الشبكة والمحاولة مرة أخرى.</p>
-        <button onclick="window.location.reload()">إعادة المحاولة</button>
+        <h1 data-lkey="offline_title">انقطع الاتصال</h1>
+        <p data-lkey="offline_desc">يبدو أنك غير متصل بالإنترنت حالياً. يرجى التحقق من الشبكة والمحاولة مرة أخرى.</p>
+        <button onclick="window.location.reload()" data-lkey="offline_retry">إعادة المحاولة</button>
     </div>
 </body>
 
