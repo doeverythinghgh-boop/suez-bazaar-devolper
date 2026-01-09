@@ -42,8 +42,8 @@
 }
 
 .categories_cell_media {
-    width: 120px;
-    height: 120px;
+    width: 140px;
+    height: 140px;
     background-color: var(--bg-color-medium);
     border: 1px solid var(--border-color);
     border-radius: 12px;
@@ -85,7 +85,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 120px;
+    max-width: 140px;
 }
 
 .categories_grid_item--active .categories_cell_content__text {
@@ -122,7 +122,7 @@
     /* Precision overlap with container top border */
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
+    width: 80px;
     /* Back to a narrower bridge for better aesthetic */
     height: 15px;
     background-color: var(--bg-color-medium);
@@ -490,32 +490,31 @@
         padding: 0 10px;
     }
 
-    .categories_cell_media {
-        width: 85px;
-        height: 85px;
-    }
+    width: 95px;
+    height: 95px;
+}
 
-    .categories_cell_content__text {
-        font-size: 11px;
-        max-width: 85px;
-    }
+.categories_cell_content__text {
+    font-size: 11px;
+    max-width: 95px;
+}
 
-    .categories_cell_content__icon {
-        font-size: 1.5rem;
-    }
+.categories_cell_content__icon {
+    font-size: 1.5rem;
+}
 
-    .categories_grid_item--active::after {
-        width: 80px;
-        height: 32px;
-    }
+.categories_grid_item--active::after {
+    width: 80px;
+    height: 32px;
+}
 
-    .categories_product_item__image {
-        height: 100px;
-    }
+.categories_product_item__image {
+    height: 100px;
+}
 
-    .categories_product_item__name {
-        font-size: 12px;
-    }
+.categories_product_item__name {
+    font-size: 12px;
+}
 }
 
 /* Small Devices (Phones, 480px - 767px) */
@@ -528,13 +527,13 @@
     }
 
     .categories_cell_media {
-        width: 95px;
-        height: 95px;
+        width: 105px;
+        height: 105px;
     }
 
     .categories_cell_content__text {
         font-size: 11px;
-        max-width: 95px;
+        max-width: 105px;
     }
 
     .categories_grid_item--active::after {
@@ -555,13 +554,13 @@
     }
 
     .categories_cell_media {
-        width: 110px;
-        height: 110px;
+        width: 120px;
+        height: 120px;
     }
 
     .categories_cell_content__text {
         font-size: 12px;
-        max-width: 110px;
+        max-width: 120px;
     }
 
     .categories_grid_item--active::after {
@@ -578,12 +577,12 @@
     }
 
     .categories_cell_media {
-        width: 115px;
-        height: 115px;
+        width: 130px;
+        height: 130px;
     }
 
     .categories_cell_content__text {
-        max-width: 115px;
+        max-width: 130px;
     }
 }
 
@@ -595,8 +594,8 @@
     }
 
     .categories_cell_media {
-        width: 120px;
-        height: 120px;
+        width: 140px;
+        height: 140px;
     }
 }
 

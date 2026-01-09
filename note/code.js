@@ -5,7 +5,7 @@
  MEMORY[user_global] 
 
  node maintenance/device_bridge.js
- node run auto-version
+npm run auto-version
  node build.js
 
 
