@@ -1045,8 +1045,9 @@ height: 37px;                   /* In ::after */
 All images in main categories (`mainCategories`) and subcategories (`subCategories`) must strictly adhere to the following standards:
 
 1.  **Format:** WebP only (for performance optimization and size reduction).
-2.  **Dimensions:** Exactly 150px × 150px.
-3.  **Goal:** Uniform sizes and ensuring fast application loading.
+2.  **Dimensions:** Exactly **150px × 150px**.
+3.  **Optimization:** Images must be compressed to the **smallest possible file size** while maintaining the **highest possible quality**.
+4.  **Goal:** Uniform sizes and ensuring fast application loading.
 
 **⚠️ Warning:** Any image not adhering to these standards may lead to display distortion or slow loading.
 
