@@ -18,6 +18,21 @@ window.appCategoriesList = null;
  * @global
  */
 window.app_language = localStorage.getItem('app_language') || 'ar';
+window.appTranslations = {};
+
+/**
+ * @description Returns the translated text for a given key based on the current app language.
+ * @function langu
+ * @param {string} key - The translation key.
+ * @returns {string} - The translated text or the key itself if not found.
+ */
+window.langu = function (key) {
+  const lang = window.app_language || 'ar';
+  if (window.appTranslations && window.appTranslations[key]) {
+    return window.appTranslations[key][lang] || key;
+  }
+  return key;
+};
 
 /**
  * @description Fetches the application categories list from shared/list.json.

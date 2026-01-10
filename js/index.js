@@ -29,21 +29,6 @@ function showHomeIcon() {
 }
 
 // [Global translation variables and functions]
-window.appTranslations = {};
-
-/**
- * @description Returns the translated text for a given key based on the current app language.
- * @function langu
- * @param {string} key - The translation key.
- * @returns {string} - The translated text or the key itself if not found.
- */
-window.langu = function (key) {
-  const lang = window.app_language || 'ar';
-  if (window.appTranslations && window.appTranslations[key]) {
-    return window.appTranslations[key][lang] || key;
-  }
-  return key;
-};
 
 /**
  * @description Applies translations to all elements with data-lkey attribute and sets page direction.

@@ -238,11 +238,18 @@ async function setupFirebaseWeb(userId) {
     console.log("[Dev] 🌏 [Web FCM] بدء تهيئة FCM للويب...");
 
     try {
+        const isSecureContext = window.isSecureContext;
         console.log("[Dev] 🌏 [Web FCM] 🔍 بدء تشخيص الحالة: ", {
             online: navigator.onLine,
             protocol: location.protocol,
-            ua: navigator.userAgent
+            ua: navigator.userAgent,
+            secureContext: isSecureContext,
+            hostname: location.hostname
         });
+
+        if (!isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+            console.error("[Dev] 🌏 [Web FCM] ❌ تنبيه أمني: المتصفح لا يعتبر هذه البيئة آمنة (Insecure Context). FCM لن يعمل إلا على HTTPS أو localhost.");
+        }
 
         // فحص الاتصال بجوجل
         const googleAccess = await checkGoogleConnectivity();
@@ -315,7 +322,8 @@ async function setupFirebaseWeb(userId) {
         try {
             console.log("[Dev] 🌏 [Web FCM] 🚀 جاري استدعاء getToken...");
             const currentToken = await messaging.getToken({
-                vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY"
+                vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY",
+                serviceWorkerRegistration: swReg
             });
 
             if (currentToken) {
