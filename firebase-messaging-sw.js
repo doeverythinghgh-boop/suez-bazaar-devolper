@@ -91,8 +91,17 @@ messaging.onBackgroundMessage((payload) => {
     });
   }
 
+
   // عرض الإشعار
-  // ملاحظة: تم تعديل مسار الأيقونة ليتوافق مع مسار المشروع الحالي.
+  // إذا كان الإشعار يحتوي على كائن 'notification'، فإن المتصفح يعرضه تلقائيًا في الخلفية.
+  // نقوم بعرض الإشعار يدويًا فقط إذا كانت رسالة بيانات (Data Message) بحتة لا تحتوي على 'notification'.
+  if (payload.notification) {
+    console.log('[FCM SW] تم عرض الإشعار تلقائيًا بواسطة المتصفح (Notification Payload). تخطي العرض اليدوي لمنع التكرار.');
+    return Promise.resolve();
+  }
+
+  // إذا كانت رسالة بيانات فقط، نعرضها يدويًا
+  console.log('[FCM SW] عرض إشعار يدوي (Data Payload)...');
   return self.registration.showNotification(title, {
     body,
     icon: 'images/icons/icon-192x192.png',

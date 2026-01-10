@@ -76,7 +76,8 @@ const WebP2PNotification = (() => {
                     token: token,
                     notification: {
                         title: title,
-                        body: body
+                        body: body,
+                        icon: 'images/icons/icon-192x192.png'
                     },
                     data: {
                         title: title,
