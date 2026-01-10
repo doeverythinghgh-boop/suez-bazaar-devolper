@@ -42,7 +42,7 @@
 
 .categories_cell_media {
     width: 100%;
-    max-width: 200px;
+    max-width: 170px;
     /* High limit, actual size controlled by grid 1fr */
     aspect-ratio: 1 / 1;
     /* Keep it square */
@@ -87,7 +87,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     width: 100%;
-    max-width: 200px;
+    max-width: 170px;
 }
 
 .categories_grid_item--active .categories_cell_content__text {
@@ -487,7 +487,7 @@
     }
 
     .categories_cell_media {
-        max-width: 125px;
+        max-width: 110px;
     }
 
     .categories_cell_content__text {
@@ -508,7 +508,7 @@
     }
 
     .categories_cell_media {
-        max-width: 150px;
+        max-width: 130px;
     }
 }
 
@@ -520,7 +520,7 @@
     }
 
     .categories_cell_media {
-        max-width: 170px;
+        max-width: 145px;
     }
 }
 
@@ -532,7 +532,7 @@
     }
 
     .categories_cell_media {
-        max-width: 200px;
+        max-width: 170px;
     }
 }
 

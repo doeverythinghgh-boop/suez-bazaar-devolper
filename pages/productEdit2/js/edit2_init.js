@@ -51,15 +51,32 @@ async function initializeEditProductForm() {
     // Load existing images
     await EDIT2_loadExistingImages();
 
+    // Render category badges
+    if (typeof EDIT2_renderCategories === 'function') {
+        await EDIT2_renderCategories();
+    }
+
     console.log('%c[ProductForm] تم تهيئة نموذج تعديل الخدمة بنجاح.', 'color: green;');
 }
 
 // Global exposure for external calls if needed
 window.initializeEditProductForm = initializeEditProductForm;
 
-// Auto-initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-    if (typeof ProductStateManager !== 'undefined' && ProductStateManager.getCurrentProduct()) {
-        initializeEditProductForm();
+/**
+ * Auto-initialize mechanism for both direct script execution (SPA)
+ * and full page loads.
+ */
+(function () {
+    var runInit = function () {
+        if (typeof ProductStateManager !== 'undefined' && ProductStateManager.getCurrentProduct()) {
+            initializeEditProductForm();
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', runInit);
+    } else {
+        // DOM already ready, run immediately
+        runInit();
     }
-});
+})();
