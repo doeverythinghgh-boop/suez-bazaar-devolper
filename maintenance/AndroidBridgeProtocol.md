@@ -93,6 +93,7 @@ These functions are called from the Android code (Java/Kotlin) to interact with 
     - If the WebView is not ready (e.g., app in background or still loading), notifications are saved as a `StringSet` in `SharedPreferences` (`app_prefs`).
     - **Persistence**: Upon `onPageFinished` or `onResume`, the `NotificationHandler` checks for the existence of the `saveNotificationFromAndroid` JS function using a retry mechanism (`postDelayed`).
     - **Injection**: Once confirmed, it executes `evaluateJavascript` for each queued notification and clears the `SharedPreferences` storage.
+    - **Timing & Delivery**: Because the web app uses a **Startup Watchdog** (periodic checks for 30s) and **Debounced Updates**, it can reliably process background notifications even if they are injected during high-CPU startup phases or with significant loading delays (7+ seconds).
 - **Web Logic**: Parses JSON, extracts the `timestamp` (if provided by Android), and saves it to IndexedDB via `addNotificationLog`. This triggers the `notificationLogAdded` event for the Global Badge.
 
 ### `showNotificationsModal()`

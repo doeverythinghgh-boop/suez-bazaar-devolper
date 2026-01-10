@@ -64,9 +64,10 @@ Golden Rule: **"No one receives a notification about an action they performed th
     - **Persistence**: Incoming notifications are saved to native `SharedPreferences` if the WebView is not ready, then flushed upon startup.
 3. **Global Badge Logic (`notification-global.js`)**:
     - **Mechanism**: Purely driven by the `IndexedDB` status. It counts all notifications with `status === 'unread'`.
-    - **Persistence**: Unlike the previous logic, it **ignores** `lastOpenedTime` for the raw count, ensuring the badge accurately reflects the total unread count even after app restarts.
-    - **Reactive Updates**: Listens for the `notificationLogAdded` event to trigger real-time UI updates.
-    - **Initialization**: Sets up event listeners *before* the initial database count to ensure no startup messages are missed during the loading phase.
+    - **Debounce Protection**: Employs a **250ms debounce** on counter updates to handle rapid bursts of incoming notifications (common during Android startup flush), preventing overlapping DB transactions and Race Conditions.
+    - **Startup Watchdog**: Implements a **30-second Startup Watchdog** that performs a full database re-count every 5 seconds after the app is launched. This solves the issue of long loading delays (7+ seconds) where notifications might arrive before the UI is fully stable.
+    - **Early Listener Registration**: Event listeners are registered **synchronously** during script execution (before `DOMContentLoaded`) to ensure no bridge calls from Android are missed during the very first milliseconds of page loading.
+    - **Reactive Updates**: Listens for the `notificationLogAdded` and `notificationStatusUpdated` events to trigger real-time UI synchronization.
 4. **Foreground Stability**: The system uses `messaging.onMessage` in `notificationSetUp.js` (Web) or the Android Bridge (Native) to capture notifications, automatically saving them to IndexedDB via `addNotificationLog` with a preserved timestamp.
 5. **Registration Reliability**: Uses `messaging.useServiceWorker(swReg)` explicitly after the service worker is `Active` and before `getToken` to ensure a stable bridge.
 6. **Independence:** The notification system is completely separated from the core data saving logic.

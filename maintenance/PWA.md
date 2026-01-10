@@ -53,7 +53,7 @@ The application relies on different strategies depending on the request type to 
 - **Background Reception:** Handled in `firebase-messaging-sw.js` using `onBackgroundMessage`.
 - **IndexedDB Storage:** Every incoming notification is immediately saved in the `notificationsLog` store within the `bazaarAppDB` database via `addNotificationLog`.
 - **Background Persistence (Android)**: Notifications arriving while the app is closed/in background are persisted in native `SharedPreferences` and flushed to IndexedDB via the bridge upon the next foreground session or page load.
-- **Global Badge count**: The app maintains a persistent unread notification count that accurately reflects the state of the database, surviving app restarts and background sessions.
+- **Global Badge count**: The app maintains a persistent unread notification count that accurately reflects the state of the database. It uses a **Startup Watchdog** (periodic checks for 30s) and **Debounce Mechanism** (250ms) to ensure the count is consistent even after app restarts, high-latency startups (7s+), or rapid bursts of background messages.
 
 ---
 
