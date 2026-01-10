@@ -216,11 +216,13 @@ async function setupFirebaseWeb(userId) {
             return;
         }
 
+        // ربط الخدمة بـ Messaging (ضروري في v8)
+        messaging.useServiceWorker(swReg);
+
         // طلب التوكن من FCM
         console.log("[Dev] 🌏 [Web FCM] الخطوة 5: جاري طلب التوكن من سيرفرات Google FCM...");
         const currentToken = await messaging.getToken({
-            vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY",
-            serviceWorkerRegistration: swReg
+            vapidKey: "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY"
         });
 
         if (currentToken) {
