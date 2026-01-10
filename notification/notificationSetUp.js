@@ -196,7 +196,7 @@ async function setupFirebaseWeb(userId) {
             apiKey: "AIzaSyClapclT8_4UlPvM026gmZbYCiXaiBDUYk",
             authDomain: "suze-bazaar-notifications.firebaseapp.com",
             projectId: "suze-bazaar-notifications",
-            storageBucket: "suze-bazaar-notifications.firebasestorage.app",
+            storageBucket: "suze-bazaar-notifications.appspot.com",
             messagingSenderId: "983537000435",
             appId: "1:983537000435:web:92c2729c9aaf872764bc86",
             measurementId: "G-P8FMC3KR7M",
