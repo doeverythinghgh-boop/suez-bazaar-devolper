@@ -56,8 +56,13 @@ async function EDIT_loadExistingImages() {
     const imagesLoadingEl = dom.imagesLoading;
     const currentProduct = (typeof ProductStateManager !== 'undefined') ? ProductStateManager.getCurrentProduct() : null;
 
-    if (!currentProduct || !currentProduct.ImageName) {
+    // Helper to safely hide loader
+    const hideLoader = () => {
         if (imagesLoadingEl) imagesLoadingEl.style.display = 'none';
+    };
+
+    if (!currentProduct || !currentProduct.ImageName) {
+        hideLoader();
         return;
     }
 
@@ -66,9 +71,22 @@ async function EDIT_loadExistingImages() {
 
     console.log(`[ProductEdit] تحميل ${imageNames.length} صور موجودة`);
 
+    if (imageNames.length === 0) {
+        hideLoader();
+        return;
+    }
+
+    let loadedCount = 0;
+    const checkCompletion = () => {
+        loadedCount++;
+        if (loadedCount === imageNames.length) {
+            hideLoader();
+        }
+    };
+
     for (let i = 0; i < imageNames.length; i++) {
         const name = imageNames[i].trim();
-        if (!name) continue;
+        // Since we filtered, name exists. But paranoid check ok.
 
         const id = EDIT_genId();
         const imageUrl = EDIT_CLOUDFLARE_BASE_URL + name;
@@ -88,24 +106,16 @@ async function EDIT_loadExistingImages() {
         const img = new Image();
         img.onload = () => {
             EDIT_createPreviewItem(state, imageUrl);
-            if (i === imageNames.length - 1 && imagesLoadingEl) {
-                imagesLoadingEl.style.display = 'none';
-            }
+            checkCompletion();
         };
         img.onerror = () => {
             console.error(`فشل تحميل الصورة: ${name}`);
             state.status = 'error';
             EDIT_createPreviewItem(state, '');
             if (state._metaEl) state._metaEl.textContent = window.langu('gen_err_upload_failed');
-            if (i === imageNames.length - 1 && imagesLoadingEl) {
-                imagesLoadingEl.style.display = 'none';
-            }
+            checkCompletion();
         };
         img.src = imageUrl;
-    }
-
-    if (imageNames.length === 0 && imagesLoadingEl) {
-        imagesLoadingEl.style.display = 'none';
     }
 }
 

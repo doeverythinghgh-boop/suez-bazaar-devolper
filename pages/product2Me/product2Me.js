@@ -21,35 +21,55 @@
   /**
    * @function loadProducts
    * @description Fetches the user's products from server with optional filters.
+   *   Modified to fetch BOTH Approved (status=1) and Pending (status=0) products
+   *   because the API defaults to Approved-only if status is unspecified.
    * @param {object} [filters={}] - Optional filters object containing searchTerm, MainCategory, SubCategory
    */
   async function loadProducts(filters = {}) {
-    console.log("%c[Products] جارٍ تحميل المنتجات بالفلاتر:", "color: blue;", filters);
+    console.log("%c[Products] جارٍ تحميل المنتجات (المعتمدة والمعلقة) بالفلاتر:", "color: blue;", filters);
     // Show loading state
     if (productsGrid) productsGrid.innerHTML = "";
     if (loadingState) loadingState.style.display = "block";
     if (emptyState) emptyState.style.display = "none";
 
-    // Build URL params
-    const params = new URLSearchParams();
-    params.append("user_key", userSession.user_key || ""); // Filter by current user
+    // Build base URL params
+    const baseParams = new URLSearchParams();
+    baseParams.append("user_key", userSession.user_key || ""); // Filter by current user
 
     // Normalize Arabic text and use searchTerm
     if (filters.searchTerm) {
-      params.append("searchTerm", normalizeArabicText(filters.searchTerm));
+      baseParams.append("searchTerm", normalizeArabicText(filters.searchTerm));
     }
-    if (filters.MainCategory) params.append("MainCategory", filters.MainCategory);
-    if (filters.SubCategory) params.append("SubCategory", filters.SubCategory);
+    if (filters.MainCategory) baseParams.append("MainCategory", filters.MainCategory);
+    if (filters.SubCategory) baseParams.append("SubCategory", filters.SubCategory);
 
-    // Reuse existing API endpoint
-    const url = `${baseURL}/api/products?${params.toString()}`;
+    // Prepare two sets of params for parallel fetching
+    const paramsApproved = new URLSearchParams(baseParams);
+    paramsApproved.append("status", "1");
+
+    const paramsPending = new URLSearchParams(baseParams);
+    paramsPending.append("status", "0");
+
+    const urlApproved = `${baseURL}/api/products?${paramsApproved.toString()}`;
+    const urlPending = `${baseURL}/api/products?${paramsPending.toString()}`;
 
     try {
-      const response = await fetch(url);
-      if (!response.ok) throw new Error("فشل جلب المنتجات");
-      myProducts = await response.json();
+      // Execute both requests in parallel
+      const [resApproved, resPending] = await Promise.all([
+        fetch(urlApproved).then(r => r.ok ? r.json() : []),
+        fetch(urlPending).then(r => r.ok ? r.json() : [])
+      ]);
 
-      console.log(`%c[Products] تم تحميل ${myProducts ? myProducts.length : 0} منتجات`, "color: green;");
+      // Merge arrays
+      // Note: We might want to mark pending items visually, but for now just merging.
+      // API returns newest first usually. merging needs sorting.
+      myProducts = [...resPending, ...resApproved];
+
+      // Sort by ID desc (assuming higher ID = newer) to maintain chronological order
+      // or rely on created_at if available. ID is safer if created_at is string.
+      myProducts.sort((a, b) => b.id - a.id);
+
+      console.log(`%c[Products] تم تحميل إجمالي ${myProducts.length} منتج (موافقة: ${resApproved.length}, معلقة: ${resPending.length})`, "color: green;");
 
       // Check if no products found
       if (!myProducts || myProducts.length === 0) {
@@ -57,7 +77,7 @@
         return;
       }
 
-      // Render products (already filtered by server)
+      // Render products
       renderProducts(myProducts);
       if (loadingState) loadingState.style.display = "none";
 
@@ -132,12 +152,16 @@
         ? product.productName.substring(0, 15) + "..."
         : product.productName;
 
+    // Check approval status (assuming is_approved field exists, default to 1 if missing for safety)
+    const isApproved = (product.is_approved !== undefined) ? product.is_approved : 1;
+
     card.innerHTML = `
                   <div class="p2m-product-image">
                       ${imageUrl
         ? `<img src="${imageUrl}" alt="${product.productName}" loading="lazy" onerror="this.style.display='none'; this.parentElement.innerHTML='<i class=\\'fas fa-box\\'></i>';" />`
         : '<i class="fas fa-box"></i>'
       }
+                      ${isApproved == 0 ? '<div style="position:absolute; top:5px; right:5px; background:rgba(255, 193, 7, 0.9); color:black; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:bold;">قيد المراجعة</div>' : ''}
                   </div>
                   <div class="p2m-product-content">
                       <h3 class="p2m-product-name">${displayName}</h3>
@@ -286,8 +310,8 @@
           const option = document.createElement("option");
           option.value = category.id;
           const titleObj = category.title;
-          const displayTitle = typeof titleObj === 'object' ? 
-              (titleObj[window.app_language] || titleObj['ar']) : titleObj;
+          const displayTitle = typeof titleObj === 'object' ?
+            (titleObj[window.app_language] || titleObj['ar']) : titleObj;
           option.textContent = displayTitle;
           // Store subcategories in dataset
           option.dataset.subcategories = JSON.stringify(category.subcategories || []);
@@ -311,8 +335,8 @@
                   const subOption = document.createElement("option");
                   subOption.value = sub.id;
                   const subTitleObj = sub.title;
-                  const subDisplayTitle = typeof subTitleObj === 'object' ? 
-                      (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+                  const subDisplayTitle = typeof subTitleObj === 'object' ?
+                    (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
                   subOption.textContent = subDisplayTitle;
                   subCategoryFilter.appendChild(subOption);
                 });
