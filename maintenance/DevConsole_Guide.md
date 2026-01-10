@@ -16,6 +16,7 @@ The application includes a specialized on-screen console for real-time mobile de
     - **Native**: Only logs from the Android Kotlin code (like `UpdateManager`).
 3.  **Search & Filter**: Find specific errors or messages.
 4.  **One-Click Copy**: Copy filtered logs to clipboard.
+5.  **Hard Reset FCM**: Use the **"🔥 Reset FCM"** button to instantly clear Service Worker registrations, caches, and FCM tokens to solve persistent registration errors.
 
 ---
 

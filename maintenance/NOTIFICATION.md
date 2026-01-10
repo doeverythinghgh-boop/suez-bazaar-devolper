@@ -58,10 +58,10 @@ Golden Rule: **"No one receives a notification about an action they performed th
 ## 5. Technical and Performance Considerations
 
 1. **Lazy Loading:** The messages file is fetched only when a notification is first needed and stored in the cache to reduce data consumption.
-2. **P2P-Only Dispatch:** The system enforces a Peer-to-Peer (P2P) strategy. Notifications are sent directly from the client (Android Bridge or Web OAuth2) to the FCM v1 API, bypassing the central server entirely for high availability and low latency.
-3. **Optimized Batch Sending:**
-    - **Android**: Uses the native bridge `sendNotificationsToTokensP2P` which accepts a JSON array of tokens for efficient batch processing.
-    - **Web**: Uses `WebP2PNotification.sendBatch`, which executes parallel HTTP requests to the FCM endpoint.
+    - **Android**: Uses the native bridge `sendNotificationsToTokensP2P` which accepts a JSON array of tokens for efficient batch processing. The payload includes a `data` object for reliable background and foreground processing.
+    - **Web**: Uses `WebP2PNotification.sendBatch` (defined in `notification-p2p-web.js`), which executes parallel HTTP requests to the FCM v1 endpoint. It uses `jsrsasign` for client-side JWT signing.
+4. **Foreground Stability**: The system uses `messaging.onMessage` in `notificationSetUp.js` to capture notifications while the app is open, automatically saving them to IndexedDB via `addNotificationLog`.
+5. **Registration Reliability**: Uses `messaging.useServiceWorker(swReg)` explicitly after the service worker is `Active` and before `getToken` to ensure a stable bridge.
 4. **Independence:** The notification system is completely separated from the core data saving logic.
 5. **Hybrid Debugging:** The system includes detailed tracking of permissions, token sync, and notification delivery. In the on-device Dev Console, these native events are prefixed with **`[ANDROID]`** (e.g., `[ANDROID][NotificationHandler]`). They are also visible in the Chrome Remote Debugging console, simplifying the tracking of the full message lifecycle from source to destination.
 
@@ -109,6 +109,7 @@ The system allows users to have full control over receiving alerts on their devi
         - In **Android**: `window.Android.requestNotificationPermission()` is called to show the system permission request again.
     3. **Request and Sync:** If permission is available, `Notification.requestPermission()` is called, followed by `setupFCM()` to synchronize the token.
 - **When Disabling (`disableNotifications`):** Clears tokens, stops initialization, and changes texts immediately to reflect the disabled state.
+- **Troubleshooting Utility**: Includes `window.resetFCM()` for developers to perform a "Hard Reset", clearing all tokens, caches, and service worker registrations to resolve push service errors.
 
 ### C. Startup Integration (`index.js` & `sessionManager.js`)
 The application respects the user's decision at every startup; if the state is disabled in `localStorage` or permissions are not granted, `setupFCM()` is avoided entirely. In **Android**, if an FCM token already exists during login, `notifications_enabled` is automatically set to `'true'` to ensure immediate synchronization.

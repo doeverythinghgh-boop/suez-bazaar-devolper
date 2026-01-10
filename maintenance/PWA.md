@@ -12,7 +12,8 @@ This report provides a precise and comprehensive explanation of how PWA technolo
     - `display: standalone`: Ensures the application appears as an independent interface without the browser toolbar.
     - `start_url: /index.html`: The application's entry point.
     - `theme_color: #007bff`: The status bar color on phones.
-    - **Icons:** Includes icons in sizes (192x192) and (512x512) with `maskable` support for compatibility with various mobile platforms.
+    - `gcm_sender_id`: Included for legacy FCM support and browser registration stability.
+    - **Icons**: Includes icons in sizes (192x192) and (512x512) with support for modern browser standards.
 
 ### B. Main Service Worker (`sw.js`)
 The primary engine for network and cache management. It integrates notification logic with storage logic.
@@ -48,9 +49,9 @@ The application relies on different strategies depending on the request type to 
 ## 4. Notification System in PWA
 
 - **FCM Integration:** The application uses Firebase v8, which is compatible with Service Workers.
-- **Foreground Reception:** Handled in `notificationSetUp.js` to display immediate internal alerts.
+- **Foreground Reception:** Handled in `notificationSetUp.js` via `messaging.onMessage` to display immediate internal alerts and capture data payloads.
 - **Background Reception:** Handled in `firebase-messaging-sw.js` using `onBackgroundMessage`.
-- **IndexedDB Storage:** Every incoming notification is immediately saved in the `notificationsLog` store within the `bazaarAppDB` database.
+- **IndexedDB Storage:** Every incoming notification is immediately saved in the `notificationsLog` store within the `bazaarAppDB` database via `addNotificationLog`.
 
 ---
 
@@ -59,7 +60,8 @@ The application relies on different strategies depending on the request type to 
 1. Registration begins when `DOMContentLoaded` is triggered in `js/index.js`.
 2. `setupFCM()` is called, which decides whether to register for Web or Android.
 3. `navigator.serviceWorker.register` is used to activate `sw.js`.
-4. The application supports immediate updates via `skipWaiting()` and `clients.claim()` embedded in the Service Worker files.
+4. **Activation Wait**: The system explicitly waits for `navigator.serviceWorker.ready` and checks for the `Active` state before proceeding with Firebase initialization to prevent "No Active SW" errors.
+5. The application supports immediate updates via `skipWaiting()` and `clients.claim()` embedded in the Service Worker files.
 
 ---
 
@@ -121,8 +123,9 @@ For developers, these steps can be followed when PWA features fail:
 
 1. **Check Service Worker:** Via Chrome DevTools -> Application -> Service Workers. Ensure it is "Activated and Running".
 2. **Check Token Logs:** Ensure `fcm_token` (for Web) or `android_fcm_key` (for Android) appears in `localStorage`.
-3. **Network Errors:** If fetching `version.json` or `notification_config.json` fails due to connection issues, the application will rely on stored local copies.
-4. **Programming Tips Support:** If notifications do not appear, ensure that the `notifications_enabled` status in `localStorage` is not `false`.
+3. **Hard Reset FCM**: If registration fails repeatedly with `AbortError`, use the **"🔥 Reset FCM"** button in the Dev Console or call `window.resetFCM()` to wipe all data and start fresh.
+4. **Network Errors:** If fetching `version.json` or `notification_config.json` fails due to connection issues, the application will rely on stored local copies.
+5. **Programming Tips Support:** If notifications do not appear, ensure that the `notifications_enabled` status in `localStorage` is not `false`.
 
 ## 10. App Installation & Welcome Flow
 
