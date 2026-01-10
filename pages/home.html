@@ -57,6 +57,7 @@
       const versionResponse = await fetch(`version.json?v=${Date.now()}`);
       if (versionResponse.ok) {
         const versionData = await versionResponse.json();
+        console.log(`[Footer] Latest version info loaded: v${versionData.version}`);
         const footer = document.createElement('div');
         footer.id = 'app-footer';
         footer.style.cssText = 'text-align: center; padding: 10px; font-size: 0.7rem; color: #888; width: 100%; border-top: 1px solid #eee; margin-top: 10px; background-color: #fafafa; font-family: sans-serif;';

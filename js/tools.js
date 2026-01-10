@@ -256,12 +256,26 @@ async function checkAppVersionAndClearData() {
   const VERSION_STORAGE_KEY = 'app_version';
   try {
     // 1) Fetch latest version.json with cache busting
+    console.log(`[VersionCheck] Fetching version.json...`);
     const response = await fetch(`version.json?t=${Date.now()}`);
-    if (!response.ok) return;
+    if (!response.ok) {
+      console.error(`[VersionCheck] Failed to fetch version.json. Status: ${response.status}`);
+      return;
+    }
 
     const data = await response.json();
     const latestVersion = data.version;
     const storedVersion = localStorage.getItem(VERSION_STORAGE_KEY);
+
+    console.log(`[VersionCheck] Current Stored Version: ${storedVersion}`);
+    console.log(`[VersionCheck] Latest Available Version (from file): ${latestVersion}`);
+
+    // [Debug] Explicit check
+    if (storedVersion === latestVersion) {
+      console.log(`[VersionCheck] Versions match. No update needed.`);
+    } else {
+      console.warn(`[VersionCheck] VERSION MISMATCH! Triggering clean-up.`);
+    }
 
     // 2) If versions differ, perform aggressive cleanup (excluding localStorage and IndexedDB)
     if (storedVersion && latestVersion !== storedVersion) {
@@ -281,16 +295,20 @@ async function checkAppVersionAndClearData() {
 
       // C) Unregister ALL Service Workers (Crucial for immediate PWA update)
       if ('serviceWorker' in navigator) {
+        console.log('[VersionCheck] Checking for Service Workers...');
         const registrations = await navigator.serviceWorker.getRegistrations();
+        if (registrations.length === 0) console.log('[VersionCheck] No Service Workers found.');
         for (const registration of registrations) {
           await registration.unregister();
-          console.log('[VersionCheck] Service Worker unregistered.');
+          console.log(`[VersionCheck] Service Worker unregistered: ${registration.scope}`);
         }
       }
 
       // D) Clear ALL Cache Storage (The most important part for file updates)
       if ('caches' in window) {
+        console.log('[VersionCheck] Accessing Cache Storage...');
         const cacheNames = await caches.keys();
+        if (cacheNames.length === 0) console.log('[VersionCheck] No caches found to delete.');
         await Promise.all(cacheNames.map(name => {
           console.log(`[VersionCheck] Deleting cache: ${name}`);
           return caches.delete(name);
@@ -299,6 +317,7 @@ async function checkAppVersionAndClearData() {
 
       // Update stored version
       localStorage.setItem(VERSION_STORAGE_KEY, latestVersion);
+      console.log(`[VersionCheck] Updated local app_version to: ${latestVersion}`);
 
       // E) Force Reload from Server
       console.log("[VersionCheck] Cleanup complete. Forcing reload from server...");

@@ -178,6 +178,12 @@ async function loadIndexTranslations() {
  * @async
  */
 document.addEventListener("DOMContentLoaded", async () => {
+  // [Environment Check]
+  if (window.Android) {
+    console.log("📱 [Environment] Native Android Bridge Detected.");
+  } else {
+    console.log("🌐 [Environment] Standard Browser / PWA Detected.");
+  }
   // [Step -1.2] Fetch global categories list
   await fetchAppCategories();
 
