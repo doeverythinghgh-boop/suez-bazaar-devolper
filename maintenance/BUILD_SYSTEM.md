@@ -63,7 +63,7 @@ The old `dist` folder is deleted if it exists to ensure the resulting version is
 
 ### C. Assets Copying
 Vital folders containing CSS files, images, and external libraries are copied to the `dist` folder, excluding ignored folders (such as `function`, `api`, and `note`):
-- `assets/`: External libraries and fonts.
+- `assets/`: External libraries (SweetAlert2, Firebase, jsrsasign) and fonts.
 - `style/`: Core CSS files.
 - `images/`: Images and icons.
 - `notification/`: Notification system files.

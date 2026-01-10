@@ -198,7 +198,7 @@ This path manages two tables (`orders` and `order_items`) as a single atomic tra
 ### 📨 Send Notifications (`/api/send-notification`)
 
 > [!WARNING]
-> This path uses Node.js Runtime (not Edge) to support Firebase Admin SDK.
+> **Legacy / Fallback Only**: This path uses Node.js Runtime (not Edge) to support Firebase Admin SDK. It is now considered a fallback mechanism, as the system has transitioned to a 100% P2P architecture where clients send notifications directly to FCM.
 
 #### Required
 ```json

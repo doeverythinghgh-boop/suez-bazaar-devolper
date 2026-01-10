@@ -28,12 +28,12 @@ Exclusively responsible for receiving Push messages via Firebase in the backgrou
 
 The application relies on different strategies depending on the request type to achieve the best balance between speed and freshness:
 
-| File Type                       | Strategy Followed    | Behavior                                                        |
-| :------------------------------ | :------------------- | :------------------------------------------------------------ |
-| **HTML Pages (Navigation)**     | **Network First**    | Tries the network first, and in case of failure, opens `offline.html`. |
-| **Static Assets (CSS, JS, Fonts)** | **Cache First**      | Looks in the cache first for speed, and if not present, fetches and stores it. |
-| **Images (Images)**              | **Cache First**      | Images are cached to reduce data consumption and for immediate loading. |
-| **Dynamic Data (APIs)** | **Network Only**     | To ensure data accuracy and freshness (e.g., prices and orders). |
+| File Type                          | Strategy Followed | Behavior                                                                       |
+| :--------------------------------- | :---------------- | :----------------------------------------------------------------------------- |
+| **HTML Pages (Navigation)**        | **Network First** | Tries the network first, and in case of failure, opens `offline.html`.         |
+| **Static Assets (CSS, JS, Fonts)** | **Cache First**   | Looks in the cache first for speed, and if not present, fetches and stores it. |
+| **Images (Images)**                | **Cache First**   | Images are cached to reduce data consumption and for immediate loading.        |
+| **Dynamic Data (APIs)**            | **Network Only**  | To ensure data accuracy and freshness (e.g., prices and orders).               |
 
 ---
 
@@ -106,7 +106,14 @@ The application intelligently handles the two different execution environments:
 ### B. Web Browsers (Chrome, Safari, Edge)
 - Firebase v8 libraries are loaded dynamically when needed.
 - Permission is requested via `Notification.requestPermission()`.
-- **VAPID** keys are used to secure the notification sending process.
+- **VAPID** keys are used to secure the notification receiving process.
+
+### C. Direct Notification Sending (Web P2P) [NEW]
+The PWA can send notifications directly to recipients without a central server:
+- **Authentication**: Uses a local copy of `suzebazaar_notifications_firebase_adminsdk.json` to generate OAuth2 Access Tokens.
+- **Signing**: Uses the `jsrsasign` library (localized at `assets/libs/jsrsasign/`) for client-side JWT signing.
+- **API**: Communicates directly with the `https://fcm.googleapis.com/v1/projects/suze-bazaar-notifications/messages:send` endpoint.
+- **Module**: Handled by `notification-p2p-web.js`.
 
 ## 9. Troubleshooting
 

@@ -39,7 +39,7 @@ These functions are called from within the JavaScript code to affect the Android
 | `onNotificationsDisabled`       | Android | -                             | Inform Android of manual notification disablement.      | `notifications-actions.js` |
 | `onLanguageChanged`             | Android | `lang` ('ar'/'en')            | Sync native app language with web language.             | `index.js`                 |
 | `checkForUpdates`               | Android | -                             | Request check for **SILENT** smart app updates.         | `index.js`                 |
-| `sendNotificationsToTokensP2P`  | Android | `tokensJson`, `title`, `body` | Send direct push notification from the device (Admin).  | `notificationTools.js`     |
+| `sendNotificationsToTokensP2P`  | Android | `tokensJson`, `title`, `body` | Send direct push notifications from the device (Batch). | `notificationTools.js`     |
 | `getString`                     | Local.. | `key`                         | Get a localized string from the native Android bundles. | N/A                        |
 
 ### Function Details
@@ -72,8 +72,9 @@ These functions are called from within the JavaScript code to affect the Android
 - **Note**: This process is invisible to the user (no UI) unless errors occur.
 
 #### `sendNotificationsToTokensP2P(tokensJson, title, body)`
-- **Purpose**: Send direct push notifications from the device (likely for Admin panels).
-- **Native Behavior**: Uses bundled Firebase Admin SDK credentials to send a message via FCM v1 API.
+- **Purpose**: Send direct push notifications from the device to one or more recipients.
+- **Support**: High-performance batch sending via JSON array input.
+- **Native Behavior**: Parses `tokensJson`, obtains a scoped OAuth2 token using bundled Firebase Admin SDK credentials, and communicates directly with the FCM v1 API.
 
 #### `onLanguageChanged(lang)`
 - **Available on**: Both `window.Android` and `window.Localization`.

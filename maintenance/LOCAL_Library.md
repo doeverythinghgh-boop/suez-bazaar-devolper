@@ -31,6 +31,10 @@ Versions compatible with the Service Worker have been downloaded to ensure notif
   - `firebase-app-8.10.1.js`
   - `firebase-messaging-8.10.1.js`
 
+### jsrsasign (v10.5.25)
+- **Path**: `assets/libs/jsrsasign/jsrsasign-all-min.js`
+- **Usage**: Used for client-side JWT signing to enable P2P notification sending in the PWA.
+
 ## 3. Why Use Local Hosting?
 
 1. **Performance**: Reducing DNS Lookup and SSL Handshake time with external sites.
