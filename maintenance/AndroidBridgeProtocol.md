@@ -19,6 +19,10 @@ Before diving into the bridge functions, it is crucial to understand how the And
     *   It performs a **Granular Hash Comparison** between the local files and the remote files.
     *   **Crucial for Web Devs**: Only files with *changed* hashes are downloaded. If you update the code but not the hash in `version.json` (or vice versa), the update mechanism might fail or behave unpredictably.
     *   **Encoding**: The system handles URL decoding for Arabic filenames.
+3.  **Silent Localization Sync**:
+    *   The file `androidLang.json` in the web root is used to translate native-only strings (e.g., system dialogs).
+    *   Because it is included in the `version.json` manifest, any changes to this file on the web server are automatically downloaded to the device's physical storage.
+    *   The native `LocalizationManager` prefers the downloaded version over the bundled one, allowing for remote UI text updates without an APK reinstall.
 
 ---
 

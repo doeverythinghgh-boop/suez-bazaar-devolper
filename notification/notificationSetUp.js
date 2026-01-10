@@ -132,15 +132,15 @@ async function setupFirebaseAndroid(userId) {
             console.log("[Dev] 📱 [Android FCM] الخطوة 5: جاري مزامنة التوكن الجديد مع الخادم...");
             await sendTokenToServer(userId, newToken, "android");
             // تفعيل الإشعارات تلقائياً في الواجهة عند نجاح العملية لأول مرة
-            console.log("[Dev] 📱 [Android FCM] الخطوة 6: تفعيل الإشعارات تلقائياً في localStorage.");
+            console.log("[Dev] 📱 [Android FCM] الخطوة 6: تم تأكيد استلام التوكن ومزامنته. تفعيل الإشعارات في الواجهة.");
             localStorage.setItem('notifications_enabled', 'true');
         }, 10000); // timeout
 
     } else {
-        console.log("[Dev] 📱 [Android FCM] التوكن موجود محليًا مسبقاً، لا حاجة لطلب جديد.");
-        console.log("[Dev] 📱 [Android FCM] التوكن: ", existingToken.substring(0, 10) + "...");
+        console.log("[Current State] 📱 [Android FCM] التوكن موجود محليًا مسبقاً (Session Active).");
+        console.log("[FCM Bridge] 📱 [Android FCM] التوكن: ", existingToken.substring(0, 10) + "...");
         // ✅ إضافة: ضمان تفعيل الإشعارات في الواجهة عند وجود توكن مسبقاً (مفيد عند إعادة تسجيل الدخول)
-        console.log("[Dev] 📱 [Android FCM] تفعيل الإشعارات تلقائياً لوجود توكن مسبق.");
+        console.log("[FCM Bridge] 📱 [Android FCM] مزامنة الحالة: الإشعارات مفعلة.");
         localStorage.setItem('notifications_enabled', 'true');
     }
 }

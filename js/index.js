@@ -180,9 +180,15 @@ async function loadIndexTranslations() {
 document.addEventListener("DOMContentLoaded", async () => {
   // [Environment Check]
   if (window.Android) {
-    console.log("📱 [Environment] Native Android Bridge Detected.");
+    console.log("📱 [Bridge] Native Android Interface Detected.");
+    const bridgeMethods = [
+      typeof window.Android.onUserLoggedIn === 'function' ? '✅ Logic' : '❌ Logic',
+      typeof window.Android.onLanguageChanged === 'function' ? '✅ Lang' : '❌ Lang',
+      typeof window.Android.checkForUpdates === 'function' ? '✅ Update' : '❌ Update'
+    ];
+    console.log(`📱 [Bridge] Methods: [${bridgeMethods.join(" | ")}]`);
   } else {
-    console.log("🌐 [Environment] Standard Browser / PWA Detected.");
+    console.log("🌐 [Bridge] Standard Web / PWA Environment.");
   }
   // [Step -1.2] Fetch global categories list
   await fetchAppCategories();

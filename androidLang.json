@@ -1,0 +1,16 @@
+{
+    "ar": {
+        "update_dialog_title": "تحديث جديد متوفر",
+        "update_dialog_message": "يتوفر إصدار جديد من محتوى التطبيق. هل تريد التحديث الآن؟",
+        "update_dialog_ok": "تحديث الآن",
+        "update_dialog_ignore": "تجاهل",
+        "loading": "جاري التحميل..."
+    },
+    "en": {
+        "update_dialog_title": "New Update Available",
+        "update_dialog_message": "A new version of app content is available. Do you want to update now?",
+        "update_dialog_ok": "Update Now",
+        "update_dialog_ignore": "Ignore",
+        "loading": "Loading..."
+    }
+}
