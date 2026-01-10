@@ -134,7 +134,37 @@ node build.js
 
 ---
 
-## 8. Files Included in the Build
+---
+
+## 9. Image Optimization Utility (`optimize_image.js`)
+
+To ensure the best performance and maintain a consistent visual experience, the project includes a dedicated utility for processing category and product images.
+
+### A. Overview
+The `optimize_image.js` script (located in the root directory) automates the process of resizing and compressing images before they are added to the project.
+
+### B. Key Features
+- **Auto-WebP**: Converts any input format (JPG, PNG) to the optimized `.webp` format.
+- **Strict Sizing**: Forces images to exactly **150x150 pixels** using a smart-cover crop to maintain visual balance.
+- **High Compression**: Uses the `sharp` library to achieve the smallest possible file size while maintaining a high visual quality (80%).
+
+### C. Usage
+To optimize an image, run the following command from the project root:
+```bash
+node optimize_image.js <input_path> <output_path>
+```
+
+**Example**:
+```bash
+node optimize_image.js "C:\Downloads\my_pic.jpg" "images/categories/Fashion.webp"
+```
+
+### D. Requirements
+- **Sharp Library**: This tool requires the `sharp` package (`npm install sharp --save-dev`).
+
+---
+
+## 10. Files Included in the Build
 - All `.js` and `.html` files and assets (CSS, Images, Fonts).
 - **Digital Manifest**: `dist/version.json`.
 - **Exclusions**: `api/`, `note/`, `function/`, and `docs/` are excluded.

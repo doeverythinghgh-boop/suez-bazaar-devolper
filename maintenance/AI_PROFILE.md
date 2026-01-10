@@ -93,12 +93,3 @@ Because this project contains very specific rules (such as prohibiting Hover, us
 **Commitment:**
 Do not make any modifications until you confirm to yourself that you have fully absorbed the content of the `maintenance` folder. Ignoring this step is considered a total failure in performing the task.
 
-### 6. Connection & Environment Stability
-
-**Strong Communication Channels:**
-The Agent must work on creating and maintaining strong and stable communication channels with the host device. This includes:
-
-1.  **Preventing Interruption**: Extreme caution must be exercised to avoid any actions or commands that may lead to a hang, freeze, or crash of the working environment or the Agent itself during execution.
-2.  **Recognizing Settings (Connection Settings)**: Upon startup or connection, the Agent must immediately and easily recognize the device's connection settings (such as OS type, paths, available permissions) to ensure the compatibility of all subsequent operations.
-3.  **Device Bridge Tool**: The script `maintenance/device_bridge.js` is implemented to automate these checks. It should be executed to verify OS stability, directory permissions, and project scope before starting intensive tasks.
-4.  **Goal**: Ensure smooth and continuous operation without technical interruptions that hinder task completion, and provide a safe and stable working environment.

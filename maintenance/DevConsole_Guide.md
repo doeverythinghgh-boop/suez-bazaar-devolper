@@ -21,15 +21,9 @@ The application includes a specialized on-screen console for real-time mobile de
 
 ## 2. PC Synchronization & Advanced Tools
 
-### A. Automatic Inspector Opener (PC Script)
-To save time, run this command on your **PC** to open the inspection tab for your connected phone:
-```bash
-node maintenance/open_inspect.js
-```
-
-### B. Chrome Remote Debugging (Full Inspection)
+### A. Chrome Remote Debugging (Full Inspection)
 1.  **Connect Device**: Connect phone via USB with Debugging enabled.
-2.  **Inspect**: Run the script above OR go to `chrome://inspect/#devices`.
+2.  **Inspect**: Open Chrome and navigate to `chrome://inspect/#devices`.
 3.  **Result**: Full access to Network, Storage, and Elements.
     - **Note**: Native Android logs now appear directly in this console with the prefix `[Android]`.
 
