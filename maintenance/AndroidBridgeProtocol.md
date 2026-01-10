@@ -91,6 +91,11 @@ These functions are called from the Android code (Java/Kotlin) to interact with 
 - **Native Logic**: `NotificationHandler` waits for the page to load, then calls this function.
 - **Web Logic**: Opens the notification UI overlay.
 
+### `onNativeLog(type, message)` [NEW]
+- **Trigger**: Any native event log (Info, Log, Warn, Error).
+- **Native Logic**: `LogBridge.kt` sends all native logs to this JS callback.
+- **Web Logic**: `dev-console.js` receives the logs and displays them with the `[ANDROID]` prefix in the integrated console and forwards them to Chrome DevTools.
+
 ---
 
 ## 🔄 3. FCM Lifecycle (Full Loop)
@@ -141,7 +146,11 @@ The Android app reads/writes these specific keys:
       window.Android.functionName();
   }
   ```
-- **Logcat Filters**:
-  To see logs from the native side in Android Studio Logcat, filter for:
-  - `[FCM Android]`: Notification flow.
-  - `[Dev]`: General development logs (updates, file copy).
+- **Unified Logging**: 
+  The app uses a **Universal Logging Bridge**. All native logs are automatically piped to the Web Developer Console.
+  - **Filter**: In the integrated console, use the **"Native"** source toggle.
+  - **PC Debugging**: Native logs are also visible in the Chrome Remote Debugging console (`chrome://inspect/#devices`) with an `[Android]` prefix.
+- **Logcat Native Tags**:
+  - `LogBridge`: The core logging utility.
+  - `UpdateManager`: Update lifecycle.
+  - `FCM Android`: Notification reception.

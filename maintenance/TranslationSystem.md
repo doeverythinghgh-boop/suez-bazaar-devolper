@@ -156,3 +156,15 @@ The offline page is a special case as it may need to work when the main applicat
 The system ensures the user's selected language remains even in the following cases:
 *   **Logout**: `SessionManager` saves the language before clearing data and resets it immediately to ensure the interface remains in the user's preferred language even after logout.
 *   **Page Refresh**: The language is retrieved from `localStorage` as soon as the application starts and before any element is rendered.
+
+---
+
+## 13. Native Android Localization (`androidLang.json`)
+
+To ensure a seamless user experience, the native Android app container also synchronizes its language with the web's state.
+
+1.  **File Source**: The native app uses `androidLang.json` (located in the root/site folder) to translate native-only strings (e.g., "Preparing...", "Checking for updates", system dialogs).
+2.  **Synchronization Flow**:
+    *   **Bridge Call**: When the web app calls `window.Android.onLanguageChanged(lang)`, the native `LocalizationManager` is immediately updated.
+    *   **Silent Updates**: Since `androidLang.json` is part of the `version.json` file list, it is automatically updated on the device when translation changes are pushed to the GitHub repository.
+3.  **Fallback**: If the updated file is not on the filesystem, the app falls back to a bundled version in the APK's assets.

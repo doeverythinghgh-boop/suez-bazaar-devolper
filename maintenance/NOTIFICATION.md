@@ -60,7 +60,7 @@ Golden Rule: **"No one receives a notification about an action they performed th
 1. **Lazy Loading:** The messages file is fetched only when a notification is first needed and stored in the cache to reduce data consumption.
 2. **Parallel Dispatch:** `Promise.all` is used to send notifications to all parties simultaneously.
 3. **Independence:** The notification system is completely separated from the core data saving logic.
-4. **Dev Logs:** The system includes detailed tracking statements following the flow of activation operations, permissions, and token synchronization, clarifying system permission status (OS Permission) and the execution environment (Web vs Android). These logs are prefixed with `[Dev]` or `[FCM]` to aid developers in debugging.
+4. **Hybrid Debugging:** The system includes detailed tracking of permissions, token sync, and notification delivery. In the on-device Dev Console, these native events are prefixed with **`[ANDROID]`** (e.g., `[ANDROID][NotificationHandler]`). They are also visible in the Chrome Remote Debugging console, simplifying the tracking of the full message lifecycle from server to native code to web UI.
 
 ---
 
