@@ -54,7 +54,7 @@
         existingFooter.remove();
       }
 
-      const versionResponse = await fetch('version.json');
+      const versionResponse = await fetch(`version.json?v=${Date.now()}`);
       if (versionResponse.ok) {
         const versionData = await versionResponse.json();
         const footer = document.createElement('div');
