@@ -196,17 +196,57 @@
     color: var(--primary-color, #007bff);
 }
 
-.productView_add_to_cart_btn {
-    width: 100%;
-    padding: 15px;
-    font-size: 1.2rem;
-    font-weight: bold;
-    background: var(--primary-color, #007bff);
-    color: var(--bg-color-white, #fff);
+#productView_add_to_cart_btn {
+    width: max-content;
+    /* Make width fit content */
+    min-width: 160px;
+    /* Reduced from 200px */
+    /* Ensure a minimum clickable area */
+    max-width: 100%;
+    /* Prevent overflow on small screens */
+    margin: 0 auto;
+    /* Center the button */
+    padding: 12px 24px;
+    /* Reduced padding from 16px 32px */
+    background-color: var(--primary-color, #3498db);
+    /* Core identity blue */
+    color: #ffffff;
+    font-size: 1rem;
+    /* Reduced font size from 1.1rem */
+    /* Slightly reduced font size for elegance */
+    font-weight: 700;
+    font-family: 'Tajawal', sans-serif;
     border: none;
-    border-radius: 8px;
+    border-radius: 50px;
+    /* Pillow shape */
     cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.25);
+    /* Adjusted shadow */
+    /* Shadow matching #3498db */
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s, background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* Reduced gap */
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+#productView_add_to_cart_btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+}
+
+#productView_add_to_cart_btn i {
+    font-size: 1.3rem;
+}
+
+/* Fallback for class to ensure no conflicts if used elsewhere, but ID takes precedence */
+.productView_add_to_cart_btn {
+    /* Kept as base or for other buttons if any, though ID styling overrides specific instance */
 }
 
 /* Animation Keyframes */

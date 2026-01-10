@@ -361,3 +361,128 @@ body.dark-theme .install-modal-container .install-btn {
   border-color: var(--primary-color) !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
 }
+
+/* === 3. نافذة تسجيل الخروج (عصرية) === */
+.swal-modern-logout-popup {
+  border-radius: 24px !important;
+  padding: 2rem !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+  background-color: var(--bg-color-white) !important;
+  font-family: var(--font-primary, 'Tajawal', sans-serif) !important;
+}
+
+body.dark-theme .swal-modern-logout-popup {
+  background-color: var(--modal-item-bg, #1e1e1e) !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.swal-modern-logout-title {
+  font-size: 1.5rem !important;
+  font-weight: 800 !important;
+  color: var(--text-color-dark) !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.swal-modern-logout-text {
+  font-size: 1.1rem !important;
+  color: var(--text-color-medium) !important;
+  margin-bottom: 2rem !important;
+}
+
+/* أزرار عصرية */
+.swal-modern-logout-confirm {
+  background-color: var(--primary-color) !important;
+  /* لون أزرق مسطح */
+  color: #fff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 12px 30px !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  cursor: pointer !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s !important;
+  margin: 0 8px !important;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
+  /* ظل خفيف للزر */
+}
+
+.swal-modern-logout-confirm:active {
+  transform: scale(0.96) !important;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
+}
+
+.swal-modern-logout-confirm:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4) !important;
+}
+
+.swal-modern-logout-cancel {
+  background-color: transparent !important;
+  color: var(--text-color-medium) !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 10px 25px !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background-color 0.2s ease, color 0.2s ease !important;
+  margin: 0 8px !important;
+}
+
+body.dark-theme .swal-modern-logout-cancel {
+  border-color: #4b5563 !important;
+  color: #9ca3af !important;
+}
+
+.swal-modern-logout-cancel:active {
+  background-color: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+body.dark-theme .swal-modern-logout-cancel:active {
+  background-color: #374151 !important;
+  color: #fff !important;
+}
+
+/* أيقونة */
+.swal2-icon.swal2-warning {
+  border-color: #fbbf24 !important;
+  /* Amber-400 */
+  color: #fbbf24 !important;
+}
+
+/* تنسيق حاوية الأزرار لتكون في سطر واحد دائماً */
+.swal-modern-logout-popup .swal2-actions {
+  display: flex !important;
+  flex-direction: row-reverse !important;
+  /* عكس الترتيب ليكون "موافق" في البداية حسب اللغة */
+  flex-wrap: nowrap !important;
+  /* منع الالتفاف للسطر التالي */
+  justify-content: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin-top: 1.5rem !important;
+}
+
+/* تحسين استجابة الأزرار للشاشات الصغيرة */
+@media (max-width: 480px) {
+  .swal-modern-logout-popup {
+    padding: 1.5rem !important;
+    width: 90% !important;
+  }
+
+  .swal-modern-logout-confirm,
+  .swal-modern-logout-cancel {
+    padding: 10px 15px !important;
+    /* تقليل الهوامش الداخلية */
+    font-size: 0.9rem !important;
+    /* تصغير الخط قليلاً */
+    flex: 1 !important;
+    /* جعل الأزرار تأخذ مساحة متساوية */
+    margin: 0 !important;
+    /* إلغاء الهوامش الجانبية لأننا نستخدم gap */
+    white-space: nowrap !important;
+    /* منع التفاف النص داخل الزر */
+  }
+}

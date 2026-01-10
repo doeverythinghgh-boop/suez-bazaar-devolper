@@ -23,17 +23,20 @@ async function logout() {
     text: window.langu("logout_confirm_text"),
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
     confirmButtonText: window.langu("logout_confirm_btn"),
     cancelButtonText: window.langu("alert_cancel_btn"),
-    showLoaderOnConfirm: true, // Show loading icon when "Yes" is clicked.
-    // [Step 2] Use `preConfirm` to execute the async logout process.
-    // This ensures the popup stays open showing the loader until the process completes.
+    showLoaderOnConfirm: true,
+    customClass: {
+      popup: 'swal-modern-logout-popup',
+      title: 'swal-modern-logout-title',
+      htmlContainer: 'swal-modern-logout-text',
+      confirmButton: 'swal-modern-logout-confirm',
+      cancelButton: 'swal-modern-logout-cancel'
+    },
+    buttonsStyling: false, // تعطيل الستايل الافتراضي لاستخدام الكلاسات الخاصة بنا بالكامل
     preConfirm: async () => {
       await SessionManager.logout();
     },
-    // [Step 3] Prevent closing the popup by clicking outside during loading.
     allowOutsideClick: () => !Swal.isLoading(),
   });
 }
