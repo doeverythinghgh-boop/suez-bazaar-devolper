@@ -149,10 +149,22 @@ async function registerServiceWorker() {
 
         // الانتظار حتى يصبح Service Worker نشطاً تماماً
         // هذا يمنع خطأ "no active Service Worker" عند طلب التوكن
-        await navigator.serviceWorker.ready;
+        const registration = await navigator.serviceWorker.ready;
 
-        console.log("[SW] تم التسجيل بنجاح وهو جاهز.");
-        return reg;
+        // التأكد من أن هناك عامل خدمة نشط بالفعل
+        if (!registration.active) {
+            console.log("[SW] ⏳ الانتظار حتى يتحول الـ Service Worker إلى الحالة Active...");
+            await new Promise((resolve) => {
+                const checkActive = () => {
+                    if (registration.active) resolve();
+                    else setTimeout(checkActive, 100);
+                };
+                checkActive();
+            });
+        }
+
+        console.log("[SW] تم التسجيل بنجاح والحالة الآن: ", registration.active ? "Active" : "Unknown");
+        return registration;
     } catch (err) {
         console.error("[SW] فشل تسجيل Service Worker:", err);
         return false;
@@ -285,7 +297,7 @@ async function setupFirebaseWeb(userId) {
             apiKey: "AIzaSyClapclT8_4UlPvM026gmZbYCiXaiBDUYk",
             authDomain: "suze-bazaar-notifications.firebaseapp.com",
             projectId: "suze-bazaar-notifications",
-            storageBucket: "suze-bazaar-notifications.appspot.com",
+            storageBucket: "suze-bazaar-notifications.firebasestorage.app",
             messagingSenderId: "983537000435",
             appId: "1:983537000435:web:92c2729c9aaf872764bc86",
             measurementId: "G-P8FMC3KR7M",
@@ -297,12 +309,15 @@ async function setupFirebaseWeb(userId) {
         }
         const messaging = firebase.messaging();
 
-        // ربط الخدمة بـ Messaging (ضروري في v8) - يجب استدعاؤه مرة واحدة فقط
-        if (!isServiceWorkerUsed) {
-            console.log("[Dev] 🌏 [Web FCM] 🔗 ربط الـ Service Worker بـ Messaging...");
+        // ربط الخدمة بـ Messaging (ضروري في v8)
+        // ✅ إصلاح: التأكد من استدعاء useServiceWorker دائماً قبل الحصول على التوكن لضمان الارتباط
+        console.log("[Dev] 🌏 [Web FCM] 🔗 ربط الـ Service Worker بـ Messaging...");
+        try {
             messaging.useServiceWorker(swReg);
             isServiceWorkerUsed = true;
             console.log("[Dev] 🌏 [Web FCM] ✅ تم الربط.");
+        } catch (linkErr) {
+            console.warn("[Dev] 🌏 [Web FCM] ⚠️ تنبيه عند الربط (قد يكون مرتبطاً مسبقاً):", linkErr.message);
         }
 
         // طلب الإذن
@@ -315,9 +330,18 @@ async function setupFirebaseWeb(userId) {
         }
 
         // طلب التوكن من FCM مع تأخير بسيط لضمان استقرار الـ Push Service
-        console.log("[Dev] 🌏 [Web FCM] الخطوة 5: جاري طلب التوكن من سيرفرات Google FCM...");
-        console.log("[Dev] 🌏 [Web FCM] ⏳ جاري الانتظار 1 ثانية لضمان استقرار PushManager...");
-        await new Promise(r => setTimeout(r, 1000));
+        console.log("[Dev] 🌏 [Web FCM] الخطوة 5: جاري فحص حالة PushManager...");
+        try {
+            if (swReg.pushManager) {
+                const sub = await swReg.pushManager.getSubscription();
+                console.log("[Dev] 🌏 [Web FCM] 🔍PushManager: ", sub ? "مفعل ومسجل" : "غير مسجل حالياً (سيتم التسجيل عبر getToken)");
+            } else {
+                console.error("[Dev] 🌏 [Web FCM] ❌ PushManager غير مدعوم في هذا المتصفح!");
+            }
+        } catch (e) { console.warn("[Dev] 🌏 [Web FCM] فشل فحص PushManager:", e); }
+
+        console.log("[Dev] 🌏 [Web FCM] ⏳ جاري الانتظار 1.5 ثانية لضمان استقرار PushManager قبل getToken...");
+        await new Promise(r => setTimeout(r, 1500));
 
         try {
             console.log("[Dev] 🌏 [Web FCM] 🚀 جاري استدعاء getToken...");
