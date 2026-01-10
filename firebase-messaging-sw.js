@@ -107,7 +107,6 @@ messaging.onBackgroundMessage((payload) => {
  * @returns {void}
  */
 self.addEventListener('install', (event) => {
-  console.log('[FCM SW] 🛠️ حدث Install (جاري التثبيت)...');
   self.skipWaiting();
 });
 
@@ -120,6 +119,5 @@ self.addEventListener('install', (event) => {
  * @returns {void}
  */
 self.addEventListener('activate', (event) => {
-  console.log('[FCM SW] 🚀 حدث Activate (تم التفعيل والسيطرة)...');
   event.waitUntil(self.clients.claim());
 });

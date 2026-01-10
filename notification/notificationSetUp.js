@@ -276,7 +276,7 @@ async function setupFirebaseWeb(userId) {
             console.error("[Dev] 🌏 [Web FCM] ❌ فشل تسجيل الـ Service Worker - لا يمكن المتابعة.");
             return;
         }
-        console.log("[Dev] 🌏 [Web FCM] ✅ الـ Service Worker جاهز. الحالة: ", swReg.active ? "Active" : (swReg.installing ? "Installing" : "Waiting"));
+        console.log("[Dev] 🌏 [Web FCM] ✅ الـ Service Worker جاهز.");
 
         // استيراد Firebase ديناميكيًا
         if (!window.firebase) {
@@ -330,31 +330,13 @@ async function setupFirebaseWeb(userId) {
         }
 
         // طلب التوكن من FCM مع تأخير بسيط لضمان استقرار الـ Push Service
-        console.log("[Dev] 🌏 [Web FCM] 🔍 الخطوة 5.1: فحص حالة PushManager...");
-        try {
-            if (swReg.pushManager) {
-                const sub = await swReg.pushManager.getSubscription();
-                console.log("[Dev] 🌏 [Web FCM] 🔍 الخطوة 5.2: حالة الاشتراك الحالي: ", sub ? "مسجل مسبقاً" : "غير مسجل");
-            } else {
-                console.error("[Dev] 🌏 [Web FCM] ❌ الخطوة 5.2: PushManager غير مدعوم!");
-            }
-        } catch (e) { console.warn("[Dev] 🌏 [Web FCM] 🔍 خطأ في فحص PushManager:", e.message); }
-
-        console.log("[Dev] 🌏 [Web FCM] 🔍 الخطوة 5.3: التأكد من وجود Controller...");
-        if (!navigator.serviceWorker.controller) {
-            console.warn("[Dev] 🌏 [Web FCM] ⚠️ التحذير: الصفحة غير محكومة بـ Service Worker حالياً (navigator.serviceWorker.controller is null).");
-        } else {
-            console.log("[Dev] 🌏 [Web FCM] ✅ الصفحة محكومة بـ: ", navigator.serviceWorker.controller.scriptURL);
-        }
-
-        console.log("[Dev] 🌏 [Web FCM] ⏳ الخطوة 5.4: انتظار 1.5 ثانية للاستقرار...");
-        await new Promise(r => setTimeout(r, 1500));
+        console.log("[Dev] 🌏 [Web FCM] ⏳ جاري طلب التوكن من سيرفرات Google FCM...");
+        await new Promise(r => setTimeout(r, 1000));
 
         const VAPID_KEY = "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY";
-        console.log("[Dev] 🌏 [Web FCM] 🔍 الخطوة 5.5: VAPID Key المستخدم: ", VAPID_KEY);
 
         try {
-            console.log("[Dev] 🌏 [Web FCM] 🚀 الخطوة 6: استدعاء messaging.getToken...");
+            console.log("[Dev] 🌏 [Web FCM] 🚀 جاري استدعاء getToken...");
             const currentToken = await messaging.getToken({
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: swReg
@@ -414,26 +396,7 @@ async function setupFirebaseWeb(userId) {
                 console.warn("[Dev] 🌏 [Web FCM] ❓ تم الاتصال بنجاح ولكن Google أعاد توكن فارغ.");
             }
         } catch (tokenErr) {
-            console.error("[Dev] 🌏 [Web FCM] ❌ الخطوة 6: فشل getToken!");
-            console.error("[Dev] 🌏 [Web FCM] 🔍 تفاصيل الخطأ:", {
-                name: tokenErr.name,
-                message: tokenErr.message,
-                code: tokenErr.code
-            });
-
-            if (tokenErr.name === "AbortError" || tokenErr.message.includes("Registration failed")) {
-                console.log("[Dev] 🌏 [Web FCM] 🧪 اختبار تشخيصي (اختياري): محاولة الاشتراك اليدوي في PushManager...");
-                try {
-                    const rawSub = await swReg.pushManager.subscribe({
-                        userVisibleOnly: true,
-                        applicationServerKey: urlBase64ToUint8Array(VAPID_KEY)
-                    });
-                    console.log("[Dev] 🌏 [Web FCM] ✅ نجح الاشتراك اليدوي! المشكلة قد تكون في مكتبة Firebase نفسها.");
-                } catch (pushErr) {
-                    console.error("[Dev] 🌏 [Web FCM] ❌ فشل الاشتراك اليدوي أيضاً! المتصفح يرفض التسجيل تماماً.");
-                    console.error("[Dev] 🌏 [Web FCM] 🔍 الخطأ الخام من المتصفح:", pushErr.message);
-                }
-            }
+            console.error("[Dev] 🌏 [Web FCM] ❌ فشل الحصول على التوكن:", tokenErr.message);
             throw tokenErr;
         }
 
@@ -478,18 +441,4 @@ function waitForFcmKey(callback, timeout = 15000) {
 
         check();
     });
-}
-
-/**
- * @description يحول مفتاح VAPID من base64 إلى Uint8Array (مطلوب للاشتراك اليدوي).
- */
-function urlBase64ToUint8Array(base64String) {
-    const padding = '='.repeat((4 - base64String.length % 4) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-    const rawData = window.atob(base64);
-    const outputArray = new Uint8Array(rawData.length);
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i);
-    }
-    return outputArray;
 }
