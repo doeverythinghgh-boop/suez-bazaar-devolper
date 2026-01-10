@@ -209,6 +209,22 @@ async function sendNotification(token, title, body) {
         return { error: 'Invalid or missing token', tokenStatus: 'broken' };
     }
 
+    // [Enforcement] استخدام الجسر المباشر P2P
+    if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
+        console.log(`[FCM Bridge] 📱 إرسال إشعار مباشر (Android P2P) للتوكن: ${token.substring(0, 10)}...`);
+        try {
+            const tokensJsonString = JSON.stringify([token]);
+            window.Android.sendNotificationsToTokensP2P(tokensJsonString, title, body);
+            return { success: true, platform: 'android-p2p' };
+        } catch (e) {
+            console.error('[FCM Bridge] خطأ في إرسال Android P2P:', e);
+            return { error: e.message };
+        }
+    } else if (typeof WebP2PNotification !== 'undefined') {
+        console.log(`[FCM Bridge] 🌐 إرسال إشعار مباشر (Web P2P) للتوكن: ${token.substring(0, 10)}...`);
+        return await WebP2PNotification.send(token, title, body);
+    }
+
     try {
         return await apiFetch('/api/send-notification', {
             method: 'POST',
@@ -255,30 +271,38 @@ async function sendNotificationsToTokens(allTokens, title, body) {
         }).catch(e => console.error('[Notifications] فشل حفظ الإشعار المرسل:', e));
     }
 
-    // 2. تهيئة مصفوفة لتخزين وعود الإرسال
-    const notificationPromises = [];
-    console.log(`[Notifications] جاري تجهيز وعود الإرسال لـ ${allTokens.length} توكن فريد.`);
-
-    // استخدام حلقة for...of لإنشاء الوعود
-    for (const token of allTokens) {
-        // التأكد من أن التوكن ليس قيمة باطلة (null/undefined/empty string) قبل الإنشاء
-        if (token) {
-            if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
-                console.log(`notification send from android`);
-                // 1. تأكد من أن 'tokens' هي مصفوفة دائمًا.
-                var tokensArray = Array.isArray(token) ? token : [token];
-
-                // 2. حول المصفوفة إلى سلسلة JSON.
-                var tokensJsonString = JSON.stringify(tokensArray);
-
-                // استدعاء دالة Kotlin من خلال الجسر
-                window.Android.sendNotificationsToTokensP2P(tokensJsonString, title, body);
-                console.log(`[JS] تم استدعاء الدالة sendNotificationsToTokensP2P في Kotlin.`);
-            } else {
-                console.log(`notification send from server`);
-                notificationPromises.push(sendNotification(token, title, body));
+    // 2. معالجة الإرسال بناءً على البيئة (Android P2P vs Web P2P vs Server)
+    if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
+        console.log(`[FCM Bridge] 📱 إرسال جماعي مباشر (Android P2P) لـ ${allTokens.length} توكن.`);
+        try {
+            const validTokens = allTokens.filter(t => t && typeof t === 'string');
+            if (validTokens.length === 0) return;
+            const tokensJsonString = JSON.stringify(validTokens);
+            window.Android.sendNotificationsToTokensP2P(tokensJsonString, title, body);
+            return;
+        } catch (e) {
+            console.error('[FCM Bridge] خطأ في إرسال Android P2P Batch:', e);
+        }
+    } else if (typeof WebP2PNotification !== 'undefined') {
+        console.log(`[FCM Bridge] 🌐 إرسال جماعي مباشر (Web P2P) لـ ${allTokens.length} توكن.`);
+        try {
+            const validTokens = allTokens.filter(t => t && typeof t === 'string');
+            if (validTokens.length > 0) {
+                await WebP2PNotification.sendBatch(validTokens, title, body);
             }
-            // console.log(`[Notifications Debug] تم إنشاء وعد الإرسال للتوكن: ${token.substring(0, 10)}...`);
+            return;
+        } catch (e) {
+            console.error('[FCM Bridge] خطأ في إرسال Web P2P Batch:', e);
+        }
+    }
+
+    // [Web/PWA Fallback] تهيئة مصفوفة لتخزينوعود الإرسال للسيرفر
+    const notificationPromises = [];
+    console.log(`[Notifications] جاري تجهيز وعود الإرسال لـ ${allTokens.length} توكن (عبر السيرفر).`);
+
+    for (const token of allTokens) {
+        if (token) {
+            notificationPromises.push(sendNotification(token, title, body));
         } else {
             console.warn("[Notifications Debug] تم تجاهل توكن بقيمة باطلة (null/empty).");
         }
