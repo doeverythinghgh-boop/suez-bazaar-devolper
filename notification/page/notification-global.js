@@ -182,6 +182,11 @@ window.GLOBAL_NOTIFICATIONS = {
             this.updateNotificationBadge();
         }
 
+        // ✅ إضافة: تأكيد ظهور الشارة في الـ DOM بعد تأخير بسيط (لحل مشاكل التحميل البطيء للرئيسية)
+        if (!isPageVisible && (this.unreadCount > 0)) {
+            setTimeout(() => this.updateNotificationBadge(), 1000);
+        }
+
         // استدعاء الـ Callback إذا وجد
         if (typeof this.onCountUpdate === 'function') {
             try {
@@ -243,16 +248,25 @@ window.GLOBAL_NOTIFICATIONS = {
             // تحميل آخر وقت فتح
             this.lastOpenedTime = this.getLastOpenedTime();
 
-            // تحديث العداد الأولي فوراً
+            // تحديث العداد الأولي فوراً (محاولة مبكرة)
             await this.updateCounter();
 
-            // ✅ إضافة: تحديث أمان بعد ثانيتين لضمان التقاط أي إشعارات وصلت أثناء التحميل الأولي (مهم للأندرويد)
-            setTimeout(() => {
-                console.log('[Global] تشغيل تحديث الأمان التلقائي (Safety Catch)...');
+            // ✅ نظام "حارس البداية" (Startup Watchdog):
+            // بما أن التطبيق قد يستغرق أكثر من 7 ثوانٍ للوصول للرئيسية، 
+            // سنقوم بعمل تحديث دوري كل 5 ثوانٍ لمدة 30 ثانية لضمان دقة العداد
+            let checkCount = 0;
+            const watchdogInterval = setInterval(() => {
+                checkCount++;
+                console.log(`[Global] 🛡️ جولة تشغيل حارس البداية (${checkCount}/6)...`);
                 this.updateCounter();
-            }, 3000);
 
-            console.log('[Global] تم تهيئة نظام الإشعارات العالمي');
+                if (checkCount >= 6) {
+                    clearInterval(watchdogInterval);
+                    console.log('[Global] 🛡️ انتهت فترة مراقبة البداية بنجاح.');
+                }
+            }, 5000);
+
+            console.log('[Global] تم تهيئة نظام الإشعارات العالمي مع Watchdog');
         } catch (error) {
             console.error('[Global] خطأ في التهيئة:', error);
         }
