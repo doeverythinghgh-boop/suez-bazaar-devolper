@@ -92,8 +92,17 @@ const WebP2PNotification = (() => {
                     token: token,
                     notification: {
                         title: title,
-                        body: body,
-                        icon: 'images/icons/icon-192x192.png'
+                        body: body
+                    },
+                    webpush: {
+                        notification: {
+                            icon: 'images/icons/icon-192x192.png'
+                        }
+                    },
+                    android: {
+                        notification: {
+                            icon: 'stock_ticker_update_icon_name' // أو اسم أيقونة في resources الأندرويد، أو يمكن حذف هذا القسم إذا لم يكن ضرورياً
+                        }
                     },
                     data: {
                         title: title,
@@ -121,8 +130,16 @@ const WebP2PNotification = (() => {
                 return { error: result };
             }
         } catch (error) {
-            console.error('[Web P2P] خطأ حرج في الإرسال:', error);
-            return { error: error.message };
+            let errorMsg = error;
+            if (typeof error === 'object') {
+                try {
+                    errorMsg = JSON.stringify(error, Object.getOwnPropertyNames(error));
+                } catch (e) {
+                    errorMsg = 'Unserializable Error';
+                }
+            }
+            console.error(`[Web P2P] خطأ حرج في الإرسال: ${errorMsg}`);
+            return { error: errorMsg };
         }
     }
 
