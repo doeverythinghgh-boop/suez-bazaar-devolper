@@ -106,6 +106,14 @@
 
     // Native Bridge Listener
     window.onNativeLog = function (type, message) {
+        // 1. Send to original browser console (visible in PC Chrome Inspector)
+        var msgWithBadge = '[Android] ' + message;
+        if (type === 'error' && originalError) originalError.call(console, msgWithBadge);
+        else if (type === 'warn' && originalWarn) originalWarn.call(console, msgWithBadge);
+        else if (type === 'info' && originalInfo) originalInfo.call(console, msgWithBadge);
+        else if (originalLog) originalLog.call(console, msgWithBadge);
+
+        // 2. Add to on-screen overlay
         addLogToPanel(type, [message], true);
     };
 

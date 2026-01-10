@@ -31,6 +31,7 @@ node maintenance/open_inspect.js
 1.  **Connect Device**: Connect phone via USB with Debugging enabled.
 2.  **Inspect**: Run the script above OR go to `chrome://inspect/#devices`.
 3.  **Result**: Full access to Network, Storage, and Elements.
+    - **Note**: Native Android logs now appear directly in this console with the prefix `[Android]`.
 
 ### B. Android Native Logs (Logcat)
 If you need to see **Native Android Logs** (e.g., from `UpdateManager` or Firebase services):
