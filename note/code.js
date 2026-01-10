@@ -8,6 +8,7 @@
 npm run auto-version
  node build.js
 
+node maintenance/open_inspect.js
 
  * 
 يضمن حساب الهوامش الداخلية ضمن العرض الكلي للعنصر
