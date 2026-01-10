@@ -242,6 +242,35 @@ async function setupFirebaseWeb(userId) {
             } else {
                 console.warn("[FCM Web] تم إلغاء الإرسال للسيرفر: userId غير موجود.");
             }
+
+            // [جديد] الخطوة 8: الاستماع للإشعارات في المقدمة (Foreground)
+            // هذا المنطق يضمن استلام الإشعار وحفظه في DB حتى لو كان التطبيق مفتوحاً
+            messaging.onMessage((payload) => {
+                console.log('%c[FCM Web] 📩 تم استقبال رسالة في المقدمة (Foreground):', 'color: #00bcd4; font-weight: bold; font-size: 14px;', payload);
+
+                // استخراج البيانات (FCM v1 يضعها غالباً في payload.notification أو payload.data)
+                const { title, body } = payload.notification || payload.data || {};
+
+                if (title || body) {
+                    if (typeof addNotificationLog === 'function') {
+                        addNotificationLog({
+                            messageId: payload.messageId || `fg_${Date.now()}`,
+                            type: 'received',
+                            title: title,
+                            body: body,
+                            timestamp: new Date(),
+                            status: 'unread',
+                            relatedUser: { key: 'system', name: 'النظام' },
+                            payload: payload.data
+                        }).then(() => {
+                            console.log('[FCM Web] تم حفظ إشعار المقدمة في قاعدة البيانات.');
+                        }).catch(err => {
+                            console.error('[FCM Web] فشل حفظ إشعار المقدمة:', err);
+                        });
+                    }
+                }
+            });
+
             console.log("[Dev] 🌏 [Web FCM] تم الانتهاء من تهيئة الويب بنجاح.");
         } else {
             console.warn("[Dev] 🌏 [Web FCM] تم الاتصال ولكن لم يتم استلام أي توكن.");

@@ -77,6 +77,12 @@ const WebP2PNotification = (() => {
                     notification: {
                         title: title,
                         body: body
+                    },
+                    data: {
+                        title: title,
+                        body: body,
+                        messageId: `web_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+                        platform: 'web-p2p'
                     }
                 }
             };
