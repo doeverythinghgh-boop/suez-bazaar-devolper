@@ -169,58 +169,54 @@ function EDIT_initSubmitLogic() {
                     title: window.langu('edit_swal_no_changes_title'),
                     text: window.langu('edit_swal_no_changes_text'),
                     icon: 'info',
-                    Swal.fire({
-                        title: window.langu('edit_swal_no_changes_title'),
-                        text: window.langu('edit_swal_no_changes_text'),
-                        icon: 'info',
-                        showConfirmButton: true,
-                        confirmButtonText: 'موافق',
-                        didOpen: () => {
-                            Swal.hideLoading();
-                        }
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            mainLoader("pages/product2Me/product2Me.html", "index-myProducts-container", 0, undefined, "showHomeIcon", true);
-                        }
-                    });
-                    return;
-                }
+                    showConfirmButton: true,
+                    confirmButtonText: 'موافق',
+                    didOpen: () => {
+                        Swal.hideLoading();
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        mainLoader("pages/product2Me/product2Me.html", "index-myProducts-container", 0, undefined, "showHomeIcon", true);
+                    }
+                });
+                return;
+            }
 
             // 6. Send Update Request
             const dbResult = await updateProduct(productData);
-                if (dbResult && dbResult.error) throw new Error(dbResult.error);
+            if (dbResult && dbResult.error) throw new Error(dbResult.error);
 
-                // 7. Notify Admin
-                if (typeof notifyAdminOnItemUpdate === 'function') {
-                    await notifyAdminOnItemUpdate(productData);
-                }
-
-                // 8. Delete Removed Images
-                if (imagesToDelete.length > 0) {
-                    const deletePromises = imagesToDelete.map(name =>
-                        deleteFile2cf(name, (msg) => console.log('[CloudflareDelete]', msg)).catch(() => null)
-                    );
-                    await Promise.all(deletePromises);
-                }
-
-                Swal.fire({
-                    title: window.langu('gen_swal_success_title'), // Need to add this key or reuse
-                    text: window.langu('edit_swal_success_text'),
-                    icon: 'success',
-                    timer: 2000,
-                    showConfirmButton: false
-                }).then(() => {
-                    // Redirect to My Products page
-                    mainLoader("pages/product2Me/product2Me.html", "index-myProducts-container", 0, undefined, "showHomeIcon", true);
-                });
-
-            } catch (error) {
-                console.error('[ProductEdit] Update failed:', error);
-                Swal.fire({
-                    title: window.langu('gen_swal_error_title'),
-                    text: `${window.langu('edit_swal_update_failed_text')} ${error.message}`,
-                    icon: 'error'
-                });
+            // 7. Notify Admin
+            if (typeof notifyAdminOnItemUpdate === 'function') {
+                await notifyAdminOnItemUpdate(productData);
             }
-        };
-    }
+
+            // 8. Delete Removed Images
+            if (imagesToDelete.length > 0) {
+                const deletePromises = imagesToDelete.map(name =>
+                    deleteFile2cf(name, (msg) => console.log('[CloudflareDelete]', msg)).catch(() => null)
+                );
+                await Promise.all(deletePromises);
+            }
+
+            Swal.fire({
+                title: window.langu('gen_swal_success_title'), // Need to add this key or reuse
+                text: window.langu('edit_swal_success_text'),
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                // Redirect to My Products page
+                mainLoader("pages/product2Me/product2Me.html", "index-myProducts-container", 0, undefined, "showHomeIcon", true);
+            });
+
+        } catch (error) {
+            console.error('[ProductEdit] Update failed:', error);
+            Swal.fire({
+                title: window.langu('gen_swal_error_title'),
+                text: `${window.langu('edit_swal_update_failed_text')} ${error.message}`,
+                icon: 'error'
+            });
+        }
+    };
+}
