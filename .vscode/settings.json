@@ -3,5 +3,8 @@
     "search.exclude": {
         "**/note": true,
         "/note": true
-    }
+    },
+    "git.ignoredRepositories": [
+        "dist"
+    ]
 }
