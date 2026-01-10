@@ -330,7 +330,7 @@ async function checkAppVersionAndClearData() {
     // Save the time of check
     localStorage.setItem('last_version_check_time', Date.now());
   } catch (error) {
-    console.error("[VersionCheck] Error checking for updates:", error);
+    console.error(`[VersionCheck] Error checking for updates: ${error.message || error}`, error);
   }
 }
 
