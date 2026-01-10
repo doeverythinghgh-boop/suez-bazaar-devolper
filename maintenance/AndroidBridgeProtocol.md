@@ -61,7 +61,7 @@ These functions are called from within the JavaScript code to affect the Android
 #### `checkForUpdates()`
 - **Purpose**: Triggers the internal **Silent Smart Update Mechanism**.
 - **Native Behavior**:
-    1.  Fetches remote `version.json`.
+    1.  Fetches remote `version.json` using a timestamp cache-buster (`?v=...`) to ensure freshness from GitHub.
     2.  Compares `remoteHash` vs `localHash` for every file.
     3.  Downloads *only* changed files to internal storage.
     4.  Updates `local_manifest_json` upon success.
