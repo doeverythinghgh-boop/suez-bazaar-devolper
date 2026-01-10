@@ -100,8 +100,10 @@ const WebP2PNotification = (() => {
                         }
                     },
                     android: {
+                        priority: 'HIGH',
                         notification: {
-                            icon: 'stock_ticker_update_icon_name' // أو اسم أيقونة في resources الأندرويد، أو يمكن حذف هذا القسم إذا لم يكن ضرورياً
+                            icon: 'stock_ticker_update_icon_name',
+                            click_action: 'FLUTTER_NOTIFICATION_CLICK' // أو أي action يستخدمه Android Manifest لفتح النشاط
                         }
                     },
                     data: {
