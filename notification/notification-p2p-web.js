@@ -36,20 +36,36 @@ const WebP2PNotification = (() => {
             };
 
             // توقيع الـ JWT باستخدام مكتبة jsrsasign
+            console.log('[Web P2P Debug] Signing JWT...');
             const sHeader = JSON.stringify(header);
             const sPayload = JSON.stringify(payload);
             const privateKey = key.private_key;
 
-            const sJWT = KJUR.jws.JWS.sign("RS256", sHeader, sPayload, privateKey);
+            if (typeof KJUR === 'undefined') {
+                throw new Error('KJUR library (jsrsasign) is not loaded or undefined.');
+            }
 
+            const sJWT = KJUR.jws.JWS.sign("RS256", sHeader, sPayload, privateKey);
+            console.log('[Web P2P Debug] JWT Signed successfully. Length:', sJWT.length);
+
+            console.log('[Web P2P Debug] Requesting Access Token from Google...');
             const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=${sJWT}`
             });
 
+            console.log('[Web P2P Debug] Token Response Status:', tokenRes.status);
+
+            if (!tokenRes.ok) {
+                const errorText = await tokenRes.text();
+                console.error('[Web P2P Error] Token Request Failed:', errorText);
+                throw new Error(`Failed to fetch Access Token. Status: ${tokenRes.status}, Body: ${errorText}`);
+            }
+
             const tokenData = await tokenRes.json();
             if (tokenData.access_token) {
+                console.log('[Web P2P Debug] Access Token retrieved successfully.');
                 cachedAccessToken = tokenData.access_token;
                 tokenExpiry = Date.now() + (tokenData.expires_in * 1000);
                 return cachedAccessToken;

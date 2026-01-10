@@ -225,15 +225,9 @@ async function sendNotification(token, title, body) {
         return await WebP2PNotification.send(token, title, body);
     }
 
-    try {
-        return await apiFetch('/api/send-notification', {
-            method: 'POST',
-            body: { token, title, body },
-        });
-    } catch (error) {
-        console.error('[Notifications] خطأ في طلب إرسال الإشعار:', error);
-        return { error: error.message };
-    }
+    // [Enforcement] P2P Only Strategy (No Server Fallback)
+    console.warn('[FCM] Server-side fallback is DISABLED. Ensure WebP2P or Android Bridge is active.');
+    return { error: 'P2P Notification failed or not available. Server fallback is disabled.' };
 }
 /**
  * @async
@@ -290,59 +284,14 @@ async function sendNotificationsToTokens(allTokens, title, body) {
             if (validTokens.length > 0) {
                 await WebP2PNotification.sendBatch(validTokens, title, body);
             }
-            return;
         } catch (e) {
             console.error('[FCM Bridge] خطأ في إرسال Web P2P Batch:', e);
         }
+        return; // ✅ إنهاء الدالة هنا دائماً في بيئة الويب لمنع الإرسال المزدوج عبر السيرفر
     }
 
-    // [Web/PWA Fallback] تهيئة مصفوفة لتخزينوعود الإرسال للسيرفر
-    const notificationPromises = [];
-    console.log(`[Notifications] جاري تجهيز وعود الإرسال لـ ${allTokens.length} توكن (عبر السيرفر).`);
-
-    for (const token of allTokens) {
-        if (token) {
-            notificationPromises.push(sendNotification(token, title, body));
-        } else {
-            console.warn("[Notifications Debug] تم تجاهل توكن بقيمة باطلة (null/empty).");
-        }
-    }
-
-    console.log(`[Notifications] إجمالي عدد وعود الإرسال الجاهزة: ${notificationPromises.length}`);
-    console.log("[Notifications] استخدام Promise.all لإرسال جميع الإشعارات بالتوازي.");
-
-    // 3. إرسال جميع الإشعارات بالتوازي
-    try {
-        const results = await Promise.all(notificationPromises);
-
-        let successCount = 0;
-        let diffLog = [];
-
-        results.forEach((result, index) => {
-            const currentToken = allTokens[index] ? `...${allTokens[index].slice(-10)}` : 'N/A';
-            if (result && result.error) {
-                console.error(`[Notifications ERROR] إشعار رقم ${index + 1} فشل. التوكن: ${currentToken}. السبب:`, result.error);
-                if (result.code) console.error(`[Notifications ERROR] كود الخطأ: ${result.code}`);
-                diffLog.push({ index: index + 1, status: 'failed', error: result.error, token: currentToken });
-            } else {
-                successCount++;
-            }
-        });
-
-        if (diffLog.length > 0) {
-            console.warn(`[Notifications PARTIAL SUCCESS] تم إرسال ${successCount} بنجاح، وفشل ${diffLog.length}.`, diffLog);
-            // اختياري: إظهار تنبيه للمستخدم أو المطور إذا كان الفشل كلياً
-            if (successCount === 0) {
-                console.error("[Notifications FATAL] فشل إرسال جميع الإشعارات. راجع الخطأ أعلاه.");
-            }
-        } else {
-            console.log(`[Notifications SUCCESS] تم إرسال ${successCount} إشعار بنجاح. انتهت عملية الإشعار.`);
-        }
-
-    } catch (error) {
-        // تسجيل الأخطاء غير المتوقعة (مثل خطأ في Promise.all نفسه)
-        console.error("[Notifications ERROR] حدث خطأ غير متوقع أثناء إرسال الإشعارات.", error);
-    }
+    // [Enforcement] P2P Only Strategy (No Server Fallback)
+    console.warn('[Notifications] فشل إرسال P2P أو الخدمة غير متاحة. تم تعطيل الإرسال عبر السيرفر.');
 }
 /**
  * @returns {Promise<void>}

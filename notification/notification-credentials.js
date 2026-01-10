@@ -4,7 +4,7 @@
  * يتم تخزينها كمتغير JS للسماح للمبني (build.js) بتشفير المحتوى وإخفاء المفاتيح عن GitHub.
  */
 
-const FCM_ADMIN_SDK_KEY = {
+window.FCM_ADMIN_SDK_KEY = {
     "type": "service_account",
     "project_id": "suze-bazaar-notifications",
     "private_key_id": "d247ab66b9b5effc3b3258ca95c84ee236aad33a",
