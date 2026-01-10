@@ -12,6 +12,61 @@
 let isSettingUpFCM = false;
 let isServiceWorkerUsed = false;
 
+/**
+ * @description تفقد الاتصال بخدمات جوجل الأساسية
+ */
+async function checkGoogleConnectivity() {
+    try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const response = await fetch('https://www.gstatic.com/generate_204', {
+            mode: 'no-cors',
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return true;
+    } catch (e) {
+        console.error("[Dev] 🌏 [Web FCM] ❌ فشل الاتصال بخدمة gstatic.com - قد يكون هناك حجب للشبكة.");
+        return false;
+    }
+}
+
+/**
+ * @description أداة تنظيف شاملة لتهيئة FCM من الصفر (Hard Reset)
+ */
+window.resetFCM = async function () {
+    console.log("%c[FCM Tool] 🧹 بدء عملية التنظيف الشاملة (Hard Reset)...", "color: #ff9800; font-weight: bold;");
+    try {
+        // 1. مسح التوكنات
+        localStorage.removeItem("fcm_token");
+        localStorage.removeItem("notifications_enabled");
+        sessionStorage.removeItem("fcm_token_setup_done");
+
+        // 2. إلغاء تسجيل Service Workers
+        if ('serviceWorker' in navigator) {
+            const registrations = await navigator.serviceWorker.getRegistrations();
+            for (let registration of registrations) {
+                await registration.unregister();
+                console.log("[FCM Tool] تم إلغاء تسجيل: ", registration.scope);
+            }
+        }
+
+        // 3. مسح الكاش
+        if ('caches' in window) {
+            const keys = await caches.keys();
+            for (let key of keys) {
+                await caches.delete(key);
+                console.log("[FCM Tool] تم مسح الكاش: ", key);
+            }
+        }
+
+        alert("تم التنظيف بنجاح. سيتم إعادة تحميل الصفحة الآن.");
+        window.location.reload();
+    } catch (e) {
+        console.error("[FCM Tool] خطأ أثناء التنظيف:", e);
+    }
+};
+
 // ===============================
 //   FCM - Main Entry Point
 // ===============================
@@ -188,6 +243,12 @@ async function setupFirebaseWeb(userId) {
             protocol: location.protocol,
             ua: navigator.userAgent
         });
+
+        // فحص الاتصال بجوجل
+        const googleAccess = await checkGoogleConnectivity();
+        if (!googleAccess) {
+            console.warn("[Dev] 🌏 [Web FCM] ⚠️ تنبيه: لا يمكن الوصول لخدمات Google. قد يفشل getToken.");
+        }
 
         // تسجيل SW
         console.log("[Dev] 🌏 [Web FCM] الخطوة 1: تسجيل الـ Service Worker (registerServiceWorker)...");

@@ -143,6 +143,7 @@
             '<div>' +
             '<button id="dev-console-mode" title="Switch Mode">Mode: All</button>' +
             '<button id="dev-console-copy"><i class="fas fa-copy"></i></button>' +
+            '<button id="dev-console-reset-fcm" title="Hard Reset FCM" style="color: #ff9800;">🔥 Reset FCM</button>' +
             '<button id="dev-console-clear">Clear</button>' +
             '<button id="dev-console-close">X</button>' +
             '</div>' +
@@ -201,6 +202,15 @@
             navigator.clipboard.writeText(text).then(function () {
                 alert('Filtered logs copied to clipboard!');
             });
+        };
+        document.getElementById('dev-console-reset-fcm').onclick = function () {
+            if (confirm('سيتم مسح Service Workers والكاش والتوكنات. هل أنت متأكد؟')) {
+                if (typeof window.resetFCM === 'function') {
+                    window.resetFCM();
+                } else {
+                    alert('دالة resetFCM غير معرفة حالياً.');
+                }
+            }
         };
 
         modeToggleBtn = document.getElementById('dev-console-mode');
