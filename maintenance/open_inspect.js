@@ -15,7 +15,6 @@ function openInspect() {
     const url = 'chrome://inspect/#devices';
 
     if (os.platform() === 'win32') {
-        // We use 'start chrome' to specifically target Chrome if possible
         command = `start chrome "${url}"`;
     } else if (os.platform() === 'darwin') {
         command = `open -a "Google Chrome" "${url}"`;
@@ -25,10 +24,19 @@ function openInspect() {
 
     exec(command, (error) => {
         if (error) {
-            console.error('❌ Failed to open Chrome. Make sure Google Chrome is installed and in your PATH.');
-            console.log('Alternatively, manually open Chrome and go to: chrome://inspect/#devices');
+            console.error('❌ Failed to open Chrome automatically.');
+            console.log('\n💡 Please follow these steps manually:');
+            console.log('1. Open Google Chrome on your PC.');
+            console.log(`2. Copy and paste this URL into the address bar: ${url}`);
+            console.log('3. Your connected device should appear there.');
         } else {
-            console.log('✅ Chrome Inspector opened successfully.');
+            console.log('✅ Chrome Inspector command sent.');
+            console.log('\n--- 💡 Troubleshooting Profile Selector ---');
+            console.log('If you see "Who\'s using Chrome?":');
+            console.log('1. First, open your preferred Chrome profile manually.');
+            console.log('2. Then, run this script again (it will open a new tab in your active profile).');
+            console.log('---');
+            console.log(`If it still shows a search page/404, manually enter: ${url}`);
         }
     });
 }
