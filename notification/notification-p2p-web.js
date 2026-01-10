@@ -90,27 +90,22 @@ const WebP2PNotification = (() => {
             const message = {
                 message: {
                     token: token,
-                    notification: {
-                        title: title,
-                        body: body
+                    android: {
+                        priority: 'HIGH'
+                        // إزالة notification للتأكد من أن onMessageReceived تعمل وتشغل الصوت
                     },
                     webpush: {
-                        notification: {
-                            icon: 'images/icons/icon-192x192.png'
-                        }
-                    },
-                    android: {
-                        priority: 'HIGH',
-                        notification: {
-                            icon: 'stock_ticker_update_icon_name',
-                            click_action: 'FLUTTER_NOTIFICATION_CLICK' // أو أي action يستخدمه Android Manifest لفتح النشاط
+                        headers: {
+                            Urgency: "high"
                         }
                     },
                     data: {
                         title: title,
                         body: body,
                         messageId: `web_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
-                        platform: 'web-p2p'
+                        platform: 'web-p2p',
+                        // إضافة channelId في البيانات لكي يستخدمها الأندرويد إذا لزم الأمر
+                        channelId: 'bazaar_channel_v5'
                     }
                 }
             };
