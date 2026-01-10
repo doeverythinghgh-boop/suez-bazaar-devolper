@@ -1,4 +1,10 @@
-{
+/**
+ * @file notification/notification-credentials.js
+ * @description يحتوي على بيانات الصلاحيات الخاصة بـ Firebase Admin SDK.
+ * يتم تخزينها كمتغير JS للسماح للمبني (build.js) بتشفير المحتوى وإخفاء المفاتيح عن GitHub.
+ */
+
+const FCM_ADMIN_SDK_KEY = {
     "type": "service_account",
     "project_id": "suze-bazaar-notifications",
     "private_key_id": "d247ab66b9b5effc3b3258ca95c84ee236aad33a",
@@ -10,4 +16,4 @@
     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40suze-bazaar-notifications.iam.gserviceaccount.com",
     "universe_domain": "googleapis.com"
-}
+};

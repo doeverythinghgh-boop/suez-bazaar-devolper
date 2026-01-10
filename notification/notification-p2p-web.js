@@ -18,8 +18,12 @@ const WebP2PNotification = (() => {
         }
 
         try {
-            const response = await fetch('/notification/suzebazaar_notifications_firebase_adminsdk.json');
-            const key = await response.json();
+            // التحقق من وجود المتغير المشفّر
+            if (typeof FCM_ADMIN_SDK_KEY === 'undefined') {
+                throw new Error('FCM_ADMIN_SDK_KEY is not defined. Check if notification-credentials.js is loaded.');
+            }
+
+            const key = FCM_ADMIN_SDK_KEY;
 
             const header = { alg: 'RS256', typ: 'JWT' };
             const now = Math.floor(Date.now() / 1000);

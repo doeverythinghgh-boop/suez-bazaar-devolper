@@ -360,6 +360,8 @@ function deployToGit() {
         console.log('\n📦 Checking for changes to push to GitHub...');
 
         const gitCommands = [
+            'git fetch origin main',
+            'git reset --soft origin/main',
             'git add -f .',
             `git commit -m "Auto-build update: ${new Date().toISOString()}"`,
             'git push -f origin main'
