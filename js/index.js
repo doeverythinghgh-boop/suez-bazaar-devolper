@@ -72,87 +72,46 @@ window.applyAppTranslations = function () {
 };
 
 async function loadIndexTranslations() {
+  console.log('🔄 [Translations] Start loading translation files...');
   try {
-    // 1. Load General Translations
     const timestamp = Date.now();
-    const generalRes = await fetch(`lang/general.json?t=${timestamp}`);
-    const generalData = generalRes.ok ? await generalRes.json() : {};
+    const files = [
+      'general', 'index', 'login', 'user-dashboard', 'profile-modal',
+      'notifications', 'cart', 'sales-movement', 'product-view', 'search',
+      'productAdd', 'productEdit', 'productAdd2', 'productEdit2', 'productView2',
+      'register', 'location'
+    ];
 
-    // 2. Load Page-specific Translations (Index & Login)
-    const indexRes = await fetch(`lang/index.json?t=${timestamp}`);
-    const indexData = indexRes.ok ? await indexRes.json() : {};
+    // Create an array of fetch promises
+    const promises = files.map(file =>
+      fetch(`lang/${file}.json?t=${timestamp}`)
+        .then(response => {
+          if (!response.ok) {
+            console.warn(`⚠️ [Translations] Failed to load ${file}.json (Status: ${response.status})`);
+            return {};
+          }
+          return response.json();
+        })
+        .catch(error => {
+          console.error(`❌ [Translations] Error loading ${file}.json:`, error);
+          return {};
+        })
+    );
 
-    const loginRes = await fetch(`lang/login.json?t=${timestamp}`);
-    const loginData = loginRes.ok ? await loginRes.json() : {};
+    // Wait for all to complete
+    const results = await Promise.all(promises);
 
-    const dashboardRes = await fetch(`lang/user-dashboard.json?t=${timestamp}`);
-    const dashboardData = dashboardRes.ok ? await dashboardRes.json() : {};
+    // Merge results
+    window.appTranslations = {};
+    results.forEach(data => {
+      Object.assign(window.appTranslations, data);
+    });
 
-    const profileRes = await fetch(`lang/profile-modal.json?t=${timestamp}`);
-    const profileData = profileRes.ok ? await profileRes.json() : {};
-
-    const notificationsRes = await fetch(`lang/notifications.json?t=${timestamp}`);
-    const notificationsData = notificationsRes.ok ? await notificationsRes.json() : {};
-
-    const cartRes = await fetch(`lang/cart.json?t=${timestamp}`);
-    const cartData = cartRes.ok ? await cartRes.json() : {};
-
-    const salesMovementRes = await fetch(`lang/sales-movement.json?t=${timestamp}`);
-    const salesMovementData = salesMovementRes.ok ? await salesMovementRes.json() : {};
-
-    const productViewRes = await fetch(`lang/product-view.json?t=${timestamp}`);
-    const productViewData = productViewRes.ok ? await productViewRes.json() : {};
-
-    const searchRes = await fetch(`lang/search.json?t=${timestamp}`);
-    const searchData = searchRes.ok ? await searchRes.json() : {};
-
-    const productAddRes = await fetch(`lang/productAdd.json?t=${timestamp}`);
-    const productAddData = productAddRes.ok ? await productAddRes.json() : {};
-
-    const productEditRes = await fetch(`lang/productEdit.json?t=${timestamp}`);
-    const productEditData = productEditRes.ok ? await productEditRes.json() : {};
-
-    const productAdd2Res = await fetch(`lang/productAdd2.json?t=${timestamp}`);
-    const productAdd2Data = productAdd2Res.ok ? await productAdd2Res.json() : {};
-
-    const productEdit2Res = await fetch(`lang/productEdit2.json?t=${timestamp}`);
-    const productEdit2Data = productEdit2Res.ok ? await productEdit2Res.json() : {};
-
-    const productView2Res = await fetch(`lang/productView2.json?t=${timestamp}`);
-    const productView2Data = productView2Res.ok ? await productView2Res.json() : {};
-
-    const registerRes = await fetch(`lang/register.json?t=${timestamp}`);
-    const registerData = registerRes.ok ? await registerRes.json() : {};
-
-    const locationRes = await fetch(`lang/location.json?t=${timestamp}`);
-    const locationData = locationRes.ok ? await locationRes.json() : {};
-
-    // 3. Merge them
-    window.appTranslations = {
-      ...generalData,
-      ...indexData,
-      ...loginData,
-      ...dashboardData,
-      ...profileData,
-      ...notificationsData,
-      ...cartData,
-      ...salesMovementData,
-      ...productViewData,
-      ...searchData,
-      ...productAddData,
-      ...productEditData,
-      ...productAdd2Data,
-      ...productEdit2Data,
-      ...productView2Data,
-      ...registerData,
-      ...locationData
-    };
-
-    console.log('✅ تم تحميل ودمج الترجمات العامة والخاصة بصفحات البداية، الدخول، السلة، ولوحة التحكم.');
+    console.log('✅ [Translations] All translation files loaded and merged successfully.');
     if (window.applyAppTranslations) window.applyAppTranslations();
 
   } catch (e) {
-    console.error('❌ خطأ في تحميل ملفات الترجمة:', e);
+    console.error('❌ [Translations] Critical error during translation loading:', e);
   }
 }
 
