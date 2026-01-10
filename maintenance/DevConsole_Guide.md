@@ -33,7 +33,7 @@ If you need to see **Native Android Logs** (e.g., from `UpdateManager` or Fireba
 1.  Ensure you have **Android Studio** or **ADB** installed on your PC.
 2.  Open the terminal on your PC and run:
     ```bash
-    adb logcat -s "LogBridge" "UpdateManager" "FCM" "WebViewManager" "WebAppInterface"
+    adb logcat -s "LogBridge" "UpdateManager" "FCM Android" "WebViewManager" "NotificationHandler" "WebAppInterface"
     ```
 3.  This will pipe the native Android logs directly to your PC screen in real-time.
     - **Note**: These same logs are automatically piped to the on-device Dev Console with the `[ANDROID]` prefix.

@@ -173,13 +173,13 @@ function saveNotificationFromAndroid(notificationJson) {
         if (typeof addNotificationLog === 'function') {
             // [خطوة 3] إذا كانت دالة `addNotificationLog` متاحة، يتم استدعاؤها لحفظ الإشعار في IndexedDB.
             addNotificationLog({
-                messageId: notificationData.messageId || `android_${Date.now()}`, // ✅ جديد: استخدام المعرف الفريد أو إنشاء واحد
+                messageId: notificationData.messageId || `android_${Date.now()}`,
                 type: 'received',
                 title: title,
                 body: body,
-                timestamp: new Date(),
+                timestamp: notificationData.timestamp ? new Date(notificationData.timestamp) : new Date(),
                 status: 'unread',
-                relatedUser: { key: 'admin', name: 'الإدارة' }, // يمكن تحسينه لتمرير المرسل الفعلي
+                relatedUser: { key: 'admin', name: 'الإدارة' },
                 payload: notificationData,
             });
             console.log("[Auth] تم حفظ الإشعار من الأندرويد بنجاح في IndexedDB.");

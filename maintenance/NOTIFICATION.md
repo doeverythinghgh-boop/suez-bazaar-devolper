@@ -58,12 +58,19 @@ Golden Rule: **"No one receives a notification about an action they performed th
 ## 5. Technical and Performance Considerations
 
 1. **Lazy Loading:** The messages file is fetched only when a notification is first needed and stored in the cache to reduce data consumption.
-    - **Android**: Uses the native bridge `sendNotificationsToTokensP2P` which accepts a JSON array of tokens for efficient batch processing. The payload includes a `data` object for reliable background and foreground processing.
-    - **Web**: Uses `WebP2PNotification.sendBatch` (defined in `notification-p2p-web.js`), which executes parallel HTTP requests to the FCM v1 endpoint. It uses `jsrsasign` for client-side JWT signing.
-4. **Foreground Stability**: The system uses `messaging.onMessage` in `notificationSetUp.js` to capture notifications while the app is open, automatically saving them to IndexedDB via `addNotificationLog`.
+2. **Reliable Android Delivery**: 
+    - **Payload**: Uses **data-only FCM messages** with `priority: "HIGH"` to ensure the Android `onMessageReceived` is triggered even when the app is in the background or closed.
+    - **Channel ID**: Explicitly targets `bazaar_channel_v5` for system-level prioritization.
+    - **Persistence**: Incoming notifications are saved to native `SharedPreferences` if the WebView is not ready, then flushed upon startup.
+3. **Global Badge Logic (`notification-global.js`)**:
+    - **Mechanism**: Purely driven by the `IndexedDB` status. It counts all notifications with `status === 'unread'`.
+    - **Persistence**: Unlike the previous logic, it **ignores** `lastOpenedTime` for the raw count, ensuring the badge accurately reflects the total unread count even after app restarts.
+    - **Reactive Updates**: Listens for the `notificationLogAdded` event to trigger real-time UI updates.
+    - **Initialization**: Sets up event listeners *before* the initial database count to ensure no startup messages are missed during the loading phase.
+4. **Foreground Stability**: The system uses `messaging.onMessage` in `notificationSetUp.js` (Web) or the Android Bridge (Native) to capture notifications, automatically saving them to IndexedDB via `addNotificationLog` with a preserved timestamp.
 5. **Registration Reliability**: Uses `messaging.useServiceWorker(swReg)` explicitly after the service worker is `Active` and before `getToken` to ensure a stable bridge.
-4. **Independence:** The notification system is completely separated from the core data saving logic.
-5. **Hybrid Debugging:** The system includes detailed tracking of permissions, token sync, and notification delivery. In the on-device Dev Console, these native events are prefixed with **`[ANDROID]`** (e.g., `[ANDROID][NotificationHandler]`). They are also visible in the Chrome Remote Debugging console, simplifying the tracking of the full message lifecycle from source to destination.
+6. **Independence:** The notification system is completely separated from the core data saving logic.
+7. **Hybrid Debugging:** The system includes detailed tracking of permissions, token sync, and notification delivery. In the on-device Dev Console, these native events are prefixed with **`[ANDROID]`** (e.g., `[ANDROID][NotificationHandler]`). They are also visible in the Chrome Remote Debugging console, simplifying the tracking of the full message lifecycle from source to destination.
 
 ---
 
@@ -139,3 +146,5 @@ To ensure ease of maintenance, the notification page logic has been divided into
 ---
 > [!NOTE]
 > This control is performed at the device level. If a user disables or deletes on one phone, other devices linked to the same account will not be affected.
+
+*Last Updated: January 11, 2026*

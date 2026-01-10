@@ -87,9 +87,13 @@ These functions are called from within the JavaScript code to affect the Android
 These functions are called from the Android code (Java/Kotlin) to interact with the web interface.
 
 ### `saveNotificationFromAndroid(notificationJson)`
-- **Trigger**: Real-time arrival of an FCM message while the app is in the foreground.
-- **Native Logic**: `MainActivity` intercepts the `LocalBroadcast` and calls this JS function.
-- **Web Logic**: Parses JSON and saves to IndexedDB via `notificationTools.js`.
+- **Trigger**: Arrival of an FCM message (real-time) OR app startup (flushing background notifications).
+- **Native Logic**: 
+    - Incoming notifications are parsed from `remoteMessage.data`.
+    - If the WebView is not ready (e.g., app in background or still loading), notifications are saved as a `StringSet` in `SharedPreferences` (`app_prefs`).
+    - **Persistence**: Upon `onPageFinished` or `onResume`, the `NotificationHandler` checks for the existence of the `saveNotificationFromAndroid` JS function using a retry mechanism (`postDelayed`).
+    - **Injection**: Once confirmed, it executes `evaluateJavascript` for each queued notification and clears the `SharedPreferences` storage.
+- **Web Logic**: Parses JSON, extracts the `timestamp` (if provided by Android), and saves it to IndexedDB via `addNotificationLog`. This triggers the `notificationLogAdded` event for the Global Badge.
 
 ### `showNotificationsModal()`
 - **Trigger**: User clicks a system notification in the status bar.

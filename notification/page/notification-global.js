@@ -21,47 +21,58 @@ window.GLOBAL_NOTIFICATIONS = {
     lastOpenedTime: null,
 
     /**
+     * @description مؤقت لعملية تقليل مرات التحديث (Debounce)
+     * @type {number|null}
+     */
+    updateTimeout: null,
+
+    /**
      * @description Callback يتم استدعاؤه عند تحديث العداد
      * @type {Function|null}
      */
     onCountUpdate: null,
 
     /**
-     * @description تحديث العداد من IndexedDB
+     * @description تحديث العداد من IndexedDB (مع Debounce لضمان دقة العمليات الكبيرة)
      * @async
      * @returns {Promise<void>}
      */
     updateCounter: async function () {
-        try {
-            if (typeof getNotificationLogs !== 'function') {
-                console.warn('[Global] دالة getNotificationLogs غير متاحة');
-                return;
-            }
+        // إذا كان هناك تحديث منتظر، نقوم بمسحه لجدولة تحديث جديد
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
+        }
 
-            // جلب الإشعارات غير المقروءة
-            const allNotifications = await getNotificationLogs('all', 1000);
+        // جدولة التحديث بعد 250ms للسماح باستقرار المعاملات في قاعدة البيانات
+        this.updateTimeout = setTimeout(async () => {
+            try {
+                if (typeof getNotificationLogs !== 'function') {
+                    console.warn('[Global] دالة getNotificationLogs غير متاحة');
+                    return;
+                }
 
-            // حساب الإشعارات غير المقروءة
-            let count = 0;
-            const lastOpened = this.getLastOpenedTime();
+                // جلب الإشعارات غير المقروءة (1000 إشعار كحد أقصى)
+                const allNotifications = await getNotificationLogs('all', 1000);
 
-            for (const notification of allNotifications) {
-                if (notification.status === 'unread') {
-                    // إذا كان هناك وقت فتح، نتحقق إذا كان الإشعار بعد هذا الوقت
-                    if (!lastOpened || new Date(notification.timestamp) > lastOpened) {
+                // حساب الإشعارات غير المقروءة
+                let count = 0;
+                for (const notification of allNotifications) {
+                    if (notification.status === 'unread') {
                         count++;
                     }
                 }
+
+                this.unreadCount = count;
+                this.notifyCountUpdate();
+                this.updateBrowserTitle();
+
+                console.log(`[Global] ✅ تم تحديث العداد: ${this.unreadCount} إشعار غير مقروء (Debounced)`);
+            } catch (error) {
+                console.error('[Global] خطأ في تحديث العداد:', error);
+            } finally {
+                this.updateTimeout = null;
             }
-
-            this.unreadCount = count;
-            this.notifyCountUpdate();
-            this.updateBrowserTitle();
-
-            console.log(`[Global] تم تحديث العداد: ${this.unreadCount} إشعار غير مقروء`);
-        } catch (error) {
-            console.error('[Global] خطأ في تحديث العداد:', error);
-        }
+        }, 250);
     },
     /**
      * @throws {Error} - If there's an error fetching notifications from the database.
@@ -232,11 +243,14 @@ window.GLOBAL_NOTIFICATIONS = {
             // تحميل آخر وقت فتح
             this.lastOpenedTime = this.getLastOpenedTime();
 
-            // تحديث العداد
+            // تحديث العداد الأولي فوراً
             await this.updateCounter();
 
-            // الاستماع لأحداث الإشعارات الجديدة
-            this.setupEventListeners();
+            // ✅ إضافة: تحديث أمان بعد ثانيتين لضمان التقاط أي إشعارات وصلت أثناء التحميل الأولي (مهم للأندرويد)
+            setTimeout(() => {
+                console.log('[Global] تشغيل تحديث الأمان التلقائي (Safety Catch)...');
+                this.updateCounter();
+            }, 3000);
 
             console.log('[Global] تم تهيئة نظام الإشعارات العالمي');
         } catch (error) {
@@ -252,9 +266,15 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
+     * @description هل تم إعداد المستمعين؟
+     */
+    isListenersSetup: false,
+
+    /**
      * @description إعداد مستمعي الأحداث
      */
     setupEventListeners: function () {
+        if (this.isListenersSetup) return;
         try {
             // الاستماع لحدث إضافة إشعار جديد
             // الاستماع لحدث إضافة إشعار جديد
@@ -292,6 +312,8 @@ window.GLOBAL_NOTIFICATIONS = {
                     console.error('[Global] خطأ داخل مستمع notificationStatusUpdated:', innerError);
                 }
             });
+            this.isListenersSetup = true;
+            console.log('[Global] ✅ تم إعداد مستمعي أحداث الإشعارات');
         } catch (error) {
             console.error('[Global] خطأ في إعداد المستمعين:', error);
         }
@@ -382,6 +404,9 @@ window.GLOBAL_NOTIFICATIONS = {
  * This ensures the global notification system is set up as soon as possible.
  * @throws {Error} - If `GLOBAL_NOTIFICATIONS.init()` fails during execution.
  */
+// إعداد المستمعين فوراً (قبل DOMContentLoaded) لضمان التقاط أحداث الأندرويد المبكرة
+GLOBAL_NOTIFICATIONS.setupEventListeners();
+
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         GLOBAL_NOTIFICATIONS.init();

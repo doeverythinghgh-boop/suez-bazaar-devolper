@@ -149,8 +149,8 @@
     /* Update vertical position */
     right: -8px;
     /* Update horizontal position */
-    background-color: var(--accent-color);
-    /* Background color */
+    background-color: #dc3545;
+    color: #ffffff;
     border-radius: 50%;
     /* Make it circular */
     width: 18px;
