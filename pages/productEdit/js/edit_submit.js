@@ -168,7 +168,13 @@ function EDIT_initSubmitLogic() {
                 Swal.fire({
                     title: window.langu('edit_swal_no_changes_title'),
                     text: window.langu('edit_swal_no_changes_text'),
-                    icon: 'info'
+                    icon: 'info',
+                    showConfirmButton: true,
+                    confirmButtonText: 'موافق'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        mainLoader("pages/product2Me/product2Me.html", "index-myProducts-container", 0, undefined, "showHomeIcon", true);
+                    }
                 });
                 return;
             }
@@ -196,6 +202,9 @@ function EDIT_initSubmitLogic() {
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false
+            }).then(() => {
+                // Redirect to My Products page
+                mainLoader("pages/product2Me/product2Me.html", "index-myProducts-container", 0, undefined, "showHomeIcon", true);
             });
 
         } catch (error) {
