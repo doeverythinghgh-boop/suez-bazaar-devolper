@@ -388,6 +388,9 @@
   // Load category filters on page load
   loadCategoryFilters();
 
+  // Initial load of all user products
+  loadProducts();
+
   // Sort filter change event
   var sortFilter = document.getElementById("sort-filter");
   if (sortFilter) {
