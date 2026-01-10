@@ -249,6 +249,9 @@
       confirmButtonText: 'نعم، احذفه!',
       cancelButtonText: 'إلغاء',
       showLoaderOnConfirm: true,
+      didOpen: () => {
+        Swal.hideLoading();
+      },
       preConfirm: async () => {
         try {
           if (product.ImageName) {
