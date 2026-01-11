@@ -4,13 +4,27 @@
         "update_dialog_message": "يتوفر إصدار جديد من محتوى التطبيق. هل تريد التحديث الآن؟",
         "update_dialog_ok": "تحديث الآن",
         "update_dialog_ignore": "تجاهل",
-        "loading": "جاري التحميل..."
+        "loading": "جاري التحميل...",
+        "splash_slogan": "السويس بين إيديك",
+        "tagline_1": "بازار السويس... فرصة واحدة تجمع كل الفرص",
+        "tagline_2": "اكتشف آلاف المنتجات من موردين موثوقين في السويس",
+        "tagline_3": "تابع طلبك حتى باب منزلك",
+        "tagline_4": "عروض وخصومات حصرية من الموردين",
+        "tagline_5": "جودة مضمونة وتقييم شفاف من المشترين",
+        "tagline_6": "من المورد للمستهلك مباشرة جودة وسعر أفضل"
     },
     "en": {
         "update_dialog_title": "New Update Available",
         "update_dialog_message": "A new version of app content is available. Do you want to update now?",
         "update_dialog_ok": "Update Now",
         "update_dialog_ignore": "Ignore",
-        "loading": "Loading..."
+        "loading": "Loading...",
+        "splash_slogan": "Suez in your hands",
+        "tagline_1": "Suez Bazaar... One opportunity for all opportunities",
+        "tagline_2": "Discover thousands of products from trusted suppliers in Suez",
+        "tagline_3": "Track your order to your doorstep",
+        "tagline_4": "Exclusive offers and discounts from suppliers",
+        "tagline_5": "Guaranteed quality and transparent buyer reviews",
+        "tagline_6": "Directly from supplier to consumer - better quality and price"
     }
 }

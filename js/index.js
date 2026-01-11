@@ -151,6 +151,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   await loadIndexTranslations();
   window.applyAppTranslations(); // Initial translation application
 
+  // [Android Bridge] Sync splash slogans to Native Android for next run
+  if (typeof syncSplashSlogansToAndroid === 'function') {
+    syncSplashSlogansToAndroid();
+  }
+
   // Define Global Toggle Functions
   window.toggleAppTheme = function () {
     const isDark = document.body.classList.toggle('dark-theme');

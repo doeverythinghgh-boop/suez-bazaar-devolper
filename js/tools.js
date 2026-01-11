@@ -659,3 +659,26 @@ function generateSerial() {
   }
   return serial;
 }
+
+/**
+ * @description Synchronizes splash slogans (taglines) to Native Android environment.
+ *   This ensures that the next time the app starts, the splash screen will show the latest slogans from the web app.
+ * @function syncSplashSlogansToAndroid
+ */
+function syncSplashSlogansToAndroid() {
+  if (window.Localization && typeof window.Localization.updateSplashSlogans === 'function' && window.appTranslations) {
+    const slogans = { ar: {}, en: {} };
+    const keys = ['splash_slogan', 'tagline_1', 'tagline_2', 'tagline_3', 'tagline_4', 'tagline_5', 'tagline_6'];
+
+    keys.forEach(key => {
+      if (window.appTranslations[key]) {
+        slogans.ar[key] = window.appTranslations[key].ar || '';
+        slogans.en[key] = window.appTranslations[key].en || '';
+      }
+    });
+
+    const slogansJson = JSON.stringify(slogans);
+    console.log("📱 [Bridge] Syncing splash slogans to Native Android.");
+    window.Localization.updateSplashSlogans(slogansJson);
+  }
+}

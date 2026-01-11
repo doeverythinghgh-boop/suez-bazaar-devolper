@@ -23,8 +23,8 @@ To ensure instant notifications even during high server latency, the PWA can sen
 
 ## 4. Delivery Persistence & UI
 - **IndexedDB Logging**: Every incoming notification is saved to `notificationsLog` for offline browsing.
-- **Startup Watchdog**: A 30-second background process that ensures the unread badge count (ID: `notification-badge-count`) is accurate even if the app was closed during a message burst.
-- **Debounced Updates**: Badge updates are debounced (250ms) to maintain smooth UI performance.
+- **Signal-driven Sync**: Eliminated the legacy 30-second watchdog. Now, Android flushes all pending background notifications ONLY after receiving the `onWebAppReady` signal from the Web UI.
+- **Immediate Debounced Updates**: Badge updates are debounced (50ms) and can be forced immediately (`forceImmediate`) to ensure zero-flicker UI updates during bulk delivery.
 
-## 5. Android Bridge Synchronization
-Incoming native FCM messages are captured by the Android app and piped into the web context via `window.Android.saveNotificationFromAndroid`, ensuring a unified notification experience across all environments.
+## 5. Android Bridge Synchronization (Signal Protocol)
+Native Android flushes its `SharedPreferences` buffer into the web context via `saveNotificationFromAndroid` only when the Web App signals stability. Incoming live FCM messages are intelligently routed: if the Web view is stable, they are delivered instantly; otherwise, they wait for the next ready signal.

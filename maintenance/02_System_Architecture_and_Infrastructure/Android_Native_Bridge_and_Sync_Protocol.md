@@ -12,6 +12,11 @@ The native app injects the `Android` object into the web context, enabling two-w
 - `onLanguageChanged(lang)`: Syncs the application language with `androidLang.json`.
 - `onWebAppReady()`: Signal from Web indicating full stability, triggering immediate delivery of pending notifications.
 
+## 2. The Localization Interface (`window.Localization`)
+Used for maintaining high-quality native UI translations and system slogas.
+- `getString(key)`: Fetches a string from the native merging engine.
+- `updateSplashSlogans(json)`: (Signal-based) Web pushes the latest taglines and slogans to native storage. This ensures the native splash screen stays updated with the web's branding on every launch.
+
 ### Native to Web Callbacks:
 - `saveNotificationFromAndroid(data)`: Forwards incoming FCM messages to the web context. If the WebView isn't ready, the native app stores them in `SharedPreferences` and flushes them upon `onPageFinished`.
 - `onNativeLog(tag, msg)`: Pipes native Android Logcat messages into the web developer console (`[ANDROID]` prefix).
