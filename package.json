@@ -9,6 +9,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "docs": "jsdoc -r ./js -d ./docs",
+    "docs:dump": "node maintenance_consolidator.js --save",
+    "docs:print": "node maintenance_consolidator.js --print",
     "auto-version": "node version-watcher.js"
   },
   "repository": {

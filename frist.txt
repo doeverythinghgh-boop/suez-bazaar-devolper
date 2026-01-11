@@ -56,10 +56,10 @@ Read the following and execute it.
 - Always keep the conversation between us in Arabic only.
 - All created plans, reports, and Markdown (.md) files must be written in Arabic.
 ## maintenance
-All files inside the maintenance folder must be read in full and their contents analyzed to extract all documented information without losing any data, and it must be stored to create an internal model based on this information to define how to handle the project.
-All documented information must be preserved when updating the files inside the maintenance folder.
-Documentation may only be modified or updated to reflect changes made to the original code.
-No documented information may be deleted unless the corresponding code has been explicitly removed.
+Every file within the maintenance folder must be fully read and thoroughly analyzed to extract all documented information without losing any data. Use npm run docs:print to access the complete documentation. This information should then be used to build an internal model that guides how the project should be handled.
+All documented information must be preserved when updating files in the maintenance folder. Documentation may only be modified or updated to accurately reflect changes made to the actual code.
+No documented information may be deleted unless the corresponding code has been
+explicitly removed from the project.
 ## Final
 - If you understand and executed all of the above, write: "شكرا لافهامي هيكل المشروع"
 
