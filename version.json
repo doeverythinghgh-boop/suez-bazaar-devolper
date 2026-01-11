@@ -1,5 +1,5 @@
 {
-  "version": "1.13.2",
+  "version": "1.13.4",
   "notes": "Fix notification badge count persistence and Android startup sync.",
-  "lastUpdated": "2026-01-11T01:30:00.000Z"
+  "lastUpdated": "2026-01-11T06:55:00.017Z"
 }

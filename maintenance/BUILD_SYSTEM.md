@@ -134,6 +134,47 @@ node build.js
 
 ---
 
+## 8. PWA Icon Generator Utility (`generate_pwa_icons.js`)
+
+To streamline the creation of all required PWA icons from a single source image, the project includes a dedicated icon generation utility.
+
+### A. Overview
+The `generate_pwa_icons.js` script (located in the root directory) automatically generates all necessary PWA icons and favicon from one high-quality source image.
+
+### B. Generated Files
+- **`images/icons/icon-192x192.png`**: Standard resolution icon for PWA manifest.
+- **`images/icons/icon-512x512.png`**: High resolution icon for PWA manifest and splash screens.
+- **`favicon.png`**: 64x64 pixel browser favicon (saved in project root).
+
+### C. Key Features
+- **Smart Resizing**: Uses the `sharp` library with `fit: 'contain'` to preserve aspect ratio.
+- **Transparent Background**: Maintains transparency for PNG sources.
+- **Single Command**: Generates all required icons in one execution.
+
+### D. Usage
+To generate all PWA icons from a source image:
+```bash
+node generate_pwa_icons.js <input_path>
+```
+
+**Example**:
+```bash
+node generate_pwa_icons.js "C:\Downloads\app-logo.png"
+```
+
+**Important Note**: If using an existing icon as source (e.g., `icon-512x512.png`), create a temporary copy first to avoid conflicts:
+```bash
+Copy-Item "images\icons\icon-512x512.png" "images\icons\source-icon.png"
+node generate_pwa_icons.js "images\icons\source-icon.png"
+Remove-Item "images\icons\source-icon.png"
+```
+
+### E. Requirements
+- **Sharp Library**: This tool requires the `sharp` package:
+```bash
+npm install sharp --save-dev
+```
+
 ---
 
 ## 9. Image Optimization Utility (`optimize_image.js`)
