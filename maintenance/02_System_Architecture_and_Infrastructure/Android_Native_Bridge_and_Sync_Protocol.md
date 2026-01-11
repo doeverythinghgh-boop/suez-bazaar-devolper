@@ -18,7 +18,8 @@ Used for maintaining high-quality native UI translations and system slogas.
 - `updateSplashSlogans(json)`: (Signal-based) Web pushes the latest taglines and slogans to native storage. This ensures the native splash screen stays updated with the web's branding on every launch.
 
 ### Native to Web Callbacks:
-- `saveNotificationFromAndroid(data)`: Forwards incoming FCM messages to the web context. If the WebView isn't ready, the native app stores them in `SharedPreferences` and flushes them upon `onPageFinished`.
+- `saveNotificationFromAndroid(json)`: (Individual) Forwards a single incoming FCM message.
+- `saveNotificationBatchFromAndroid(jsonArray)`: (Batch Sync) Delivers multiple queued notifications at once, usually triggered after `onWebAppReady`. This prevents ID collisions and ensures counter accuracy during cold starts.
 - `onNativeLog(tag, msg)`: Pipes native Android Logcat messages into the web developer console (`[ANDROID]` prefix).
 
 ## 2. Silent Update Mechanism

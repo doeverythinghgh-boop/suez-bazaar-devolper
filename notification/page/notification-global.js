@@ -45,20 +45,14 @@ window.GLOBAL_NOTIFICATIONS = {
 
         const runUpdate = async () => {
             try {
-                if (typeof getNotificationLogs !== 'function') {
-                    console.warn('[Global] دالة getNotificationLogs غير متاحة');
-                    return;
-                }
-
-                // جلب الإشعارات غير المقروءة (1000 إشعار كحد أقصى)
-                const allNotifications = await getNotificationLogs('all', 1000);
-
-                // حساب الإشعارات غير المقروءة بدقة
+                // حساب الإشعارات غير المقروءة بدقة باستخدام الفهرس (أسرع وأدق)
                 let count = 0;
-                for (const notification of allNotifications) {
-                    if (notification.status === 'unread') {
-                        count++;
-                    }
+                if (typeof countUnreadNotifications === 'function') {
+                    count = await countUnreadNotifications();
+                } else {
+                    // Fallback في حالة عدم توفر الدالة الجديدة
+                    const allNotifications = await getNotificationLogs('all', 1000);
+                    count = allNotifications.filter(n => n.status === 'unread').length;
                 }
 
                 // تحديث القيم فقط إذا تغيرت أو إذا كان التحديث فورياً
@@ -98,11 +92,10 @@ window.GLOBAL_NOTIFICATIONS = {
     resetCounter: function () {
         try {
             this.setLastOpenedTime(new Date());
-            this.unreadCount = 0;
-            this.notifyCountUpdate();
-            this.updateBrowserTitle();
+            // ملاحظة: تم إزالة تصفير unreadCount يدوياً لضمان عدم الاختفاء إلا بعد تحميل الرسائل فعلياً وتعديلها في DB
+            this.updateCounter(true);
         } catch (error) {
-            console.error('[Global] خطأ في تصفير العداد:', error);
+            console.error('[Global] خطأ في تحديث وقت الفتح:', error);
         }
     },
     /**
@@ -170,27 +163,8 @@ window.GLOBAL_NOTIFICATIONS = {
      * @description إعلام Callback بتحديث العداد وتحديث شارة الإشعارات في الواجهة
      */
     notifyCountUpdate: function () {
-        // نتحقق مما إذا كانت صفحة الإشعارات معروضة حالياً
-        const notificationsContainer = document.getElementById('index-notifications-container');
-
-        // فحص أكثر دقة لمعرفة إذا كانت الصفحة مرئية
-        let isPageVisible = false;
-        if (notificationsContainer) {
-            const hasContent = notificationsContainer.innerHTML.trim() !== '';
-            const isDisplayed = notificationsContainer.offsetParent !== null ||
-                window.getComputedStyle(notificationsContainer).display !== 'none';
-            isPageVisible = hasContent && isDisplayed;
-            //console.log(`[Global] فحص ظهور صفحة الإشعارات: hasContent=${hasContent}, isDisplayed=${isDisplayed}, isPageVisible=${isPageVisible}`);
-        }
-
-        if (isPageVisible) {
-            // إذا كانت الصفحة مفتوحة، نُخفي الشارة بغض النظر عن العدد (لأن المستخدم يرى الإشعارات الآن)
-            const badge = document.getElementById('notifications-badge');
-            if (badge) badge.style.display = 'none';
-        } else {
-            // إذا كانت الصفحة مغلقة، نُحدث الشارة بناءً على العدد
-            this.updateNotificationBadge();
-        }
+        // تحديث الشارة بناءً على العدد الحقيقي دائماً (تختفي فقط عندما يصبح unreadCount = 0)
+        this.updateNotificationBadge();
 
         // استدعاء الـ Callback إذا وجد
         if (typeof this.onCountUpdate === 'function') {

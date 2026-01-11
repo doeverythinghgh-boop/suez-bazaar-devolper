@@ -1,5 +1,5 @@
 {
-  "version": "1.13.7",
-  "notes": "Fix notification badge count persistence and Android startup sync.",
+  "version": "1.13.9",
+  "notes": "Fix notification badge count accuracy and implement batch sync for cold starts.",
   "lastUpdated": "2026-01-11T07:32:02.387Z"
 }

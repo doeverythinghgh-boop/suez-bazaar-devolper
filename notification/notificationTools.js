@@ -158,38 +158,64 @@ async function shouldNotify(eventKey, role) {
  *   تقوم هذه الدالة باستلام بيانات إشعار كـ JSON string وحفظه في IndexedDB.
  * @function saveNotificationFromAndroid
  * @param {string} notificationJson - سلسلة JSON تحتوي على بيانات الإشعار (title, body).
- * @returns {void}
- * @throws {Error} - If `notificationJson` is not valid JSON or `addNotificationLog` is not available.
- * @see addNotificationLog
  */
 function saveNotificationFromAndroid(notificationJson) {
-    // [خطوة 1] تسجيل البيانات القادمة من الأندرويد لأغراض التصحيح.
-    console.log('%c[FCM Android] 📱 تم استقبال رسالة من تطبيق الأندرويد:', 'color: #ff9100; font-weight: bold; font-size: 14px;', notificationJson);
     try {
-        // [خطوة 2] محاولة تحليل سلسلة JSON إلى كائن JavaScript.
         const notificationData = JSON.parse(notificationJson);
-        const { title, body } = notificationData;
+        // تحويلها إلى مصفوفة واستخدام الدالة الموحدة الجديدة
+        saveNotificationBatchFromAndroid(JSON.stringify([notificationData]));
+    } catch (error) {
+        console.error("[Auth] خطأ في معالجة الإشعار المنفرد:", error);
+    }
+}
 
-        if (typeof addNotificationLog === 'function') {
-            // [خطوة 3] إذا كانت دالة `addNotificationLog` متاحة، يتم استدعاؤها لحفظ الإشعار في IndexedDB.
-            addNotificationLog({
-                messageId: notificationData.messageId || `android_${Date.now()}`,
+/**
+ * @description دالة مخصصة لاستلام حزمة من الإشعارات وحفظها دفعة واحدة.
+ *   تمنع هذه الدالة مشاكل السباق الزمني وفقدان البيانات عند التشغيل البارد.
+ * @function saveNotificationBatchFromAndroid
+ * @param {string} batchJson - سلسلة JSON تحتوي على مصفوفة من الإشعارات.
+ */
+function saveNotificationBatchFromAndroid(batchJson) {
+    console.log('%c[FCM Android] 📦 تم استقبال حزمة إشعارات:', 'color: #007bff; font-weight: bold; font-size: 14px;', batchJson);
+    try {
+        const notifications = JSON.parse(batchJson);
+        if (!Array.isArray(notifications)) return;
+
+        if (typeof addNotificationLog !== 'function') {
+            console.error("[Auth] addNotificationLog غير موجودة.");
+            return;
+        }
+
+        const promises = notifications.map(notif => {
+            // توليد معرف فريد حقاً في حالة غياب messageId
+            // نستخدم راندوم لمنع تضارب المعرفات الناتجة عن التشغيل في نفس الميلي ثانية
+            const uniqueSuffix = Math.random().toString(36).substring(2, 7);
+            const fallbackId = `android_${Date.now()}_${uniqueSuffix}`;
+
+            return addNotificationLog({
+                messageId: notif.messageId || fallbackId,
                 type: 'received',
-                title: title,
-                body: body,
-                timestamp: notificationData.timestamp ? new Date(notificationData.timestamp) : new Date(),
+                title: notif.title || 'Bazaar',
+                body: notif.body || '',
+                timestamp: notif.timestamp ? new Date(notif.timestamp) : new Date(),
                 status: 'unread',
                 relatedUser: { key: 'admin', name: 'الإدارة' },
-                payload: notificationData,
+                payload: notif,
             });
-            console.log("[Auth] تم حفظ الإشعار من الأندرويد بنجاح في IndexedDB.");
-        } else {
-            // [خطوة 4] إذا لم تكن الدالة موجودة، يتم تسجيل خطأ.
-            console.error("[Auth] الدالة addNotificationLog غير موجودة. تأكد من تحميل ملف notification-db-manager.js.");
-        }
+        });
+
+        // الانتظار حتى اكتمال الحفظ ثم تحديث العداد مرة واحدة
+        Promise.all(promises).then(() => {
+            console.log(`[FCM] ✅ تم حفظ ${notifications.length} إشعار بنجاح.`);
+            if (window.GLOBAL_NOTIFICATIONS) {
+                window.GLOBAL_NOTIFICATIONS.updateCounter(true);
+            }
+        }).catch(err => {
+            console.error("[FCM] خطأ في حفظ حزمة الإشعارات:", err);
+        });
+
     } catch (error) {
-        // [خطوة 5] في حالة حدوث أي خطأ أثناء التحليل أو الحفظ، يتم تسجيله.
-        console.error("[Auth] خطأ في معالجة الإشعار القادم من الأندرويد:", error);
+        console.error("[FCM] خطأ في تحليل حزمة الإشعارات:", error);
     }
 }
 

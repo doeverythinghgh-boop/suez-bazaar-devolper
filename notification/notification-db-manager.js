@@ -236,6 +236,31 @@ async function getNotificationLogs(type = 'all', limit = 50) {
 }
 
 /**
+ * @description يحسب عدد الإشعارات غير المقروءة في قاعدة البيانات باستخدام الفهرس.
+ *   هذه الدالة أسرع بكثير من جلب جميع السجلات وفلترتها.
+ * @function countUnreadNotifications
+ * @returns {Promise<number>} - وعد بـ عدد الإشعارات غير المقروءة.
+ */
+async function countUnreadNotifications() {
+  const db = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = db.transaction([NOTIFICATIONS_STORE], 'readonly');
+    const store = transaction.objectStore(NOTIFICATIONS_STORE);
+    const index = store.index('status');
+    const request = index.count(IDBKeyRange.only('unread'));
+
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+
+    request.onerror = (event) => {
+      console.error('[DB] فشل حساب الإشعارات غير المقروءة:', event.target.error);
+      reject(0);
+    };
+  });
+}
+
+/**
  * @description يمسح جميع السجلات من مخزن الإشعارات في IndexedDB.
  * @function clearNotificationLogs
  * @returns {Promise<void>} - وعد (Promise) يتم حله عند مسح جميع السجلات بنجاح.
