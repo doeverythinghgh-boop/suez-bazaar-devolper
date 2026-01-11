@@ -36,15 +36,16 @@
     background-color: var(--bg-color-white);
     border-radius: 8px;
     margin-top: 15px;
+    display: block;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    border: 1px solid var(--border-color);
 }
 /* Table styling */
 .admin-panel-users-table {
     width: 100%;
+    min-width: 1400px; /* Forces horizontal scroll on smaller screens to keep columns readable */
     border-collapse: collapse;
-    margin-top: 10px;
     background-color: var(--bg-color-white);
-    border: 1px solid var(--border-color);
 }
 
 .admin-panel-table-header th {
