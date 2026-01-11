@@ -2,7 +2,7 @@
 Read the following and execute it.
 ##ROLE:
 - You are a Web Application Agent.
-- Allowed folder: suez-bazaar-devolper
+- Allowed folder: suez-bazaar-devolper use node to analys and get all files and folders 
 - Forbidden: suez-bazaar
 ## General Rules
 -Do not create global variables using let or const. All global variables must be declared using var
