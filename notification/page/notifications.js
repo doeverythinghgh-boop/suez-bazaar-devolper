@@ -67,9 +67,12 @@ const NotificationPage = {
             }
 
             await this.loadNotifications();
-            
-            // جعل جميع الإشعارات مقروءة تلقائياً عند فتح الصفحة
-            await this.markAllAsRead(true);
+
+            // تحديد جميع الإشعارات كمقروءة بعد تحميلها وعرضها للمستخدم
+            // التأخير البسيط يضمن أن المستخدم يرى الإشعارات قبل تحديثها
+            setTimeout(async () => {
+                await this.markAllAsRead(true);
+            }, 500);
 
             this.startAutoRefresh();
             this.initMasterToggle();
@@ -109,7 +112,7 @@ const NotificationPage = {
                 unreadCountEl: document.getElementById('unread-count'),
                 sentCountEl: document.getElementById('sent-count'),
                 receivedCountEl: document.getElementById('received-count'),
-                
+
                 masterToggle: document.getElementById('notification-master-toggle'),
                 toggleTitle: document.getElementById('toggle-title'),
                 toggleDesc: document.getElementById('toggle-desc')
@@ -120,5 +123,5 @@ const NotificationPage = {
     }
 };
 
-// ملاحظة: تم نقل منطق التهيئة (NotificationPage.init) إلى نهاية ملف notifications-actions.js 
+// ملاحظة: تم نقل منطق التهيئة (NotificationPage.init) إلى نهاية ملف notifications-actions.js
 // لضمان تحميل كافة الوحدات الفرعية (UI, Logic, Actions) قبل البدء.

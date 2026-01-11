@@ -206,9 +206,11 @@ function saveNotificationBatchFromAndroid(batchJson) {
 
         // الانتظار حتى اكتمال الحفظ ثم تحديث العداد مرة واحدة
         Promise.all(promises).then(() => {
-            console.log(`[FCM] ✅ تم حفظ ${notifications.length} إشعار بنجاح.`);
+            console.log(`%c[FCM] ✅ تم حفظ ${notifications.length} إشعار بنجاح - تحديث العداد الآن`, 'color: #28a745; font-weight: bold;');
             if (window.GLOBAL_NOTIFICATIONS) {
                 window.GLOBAL_NOTIFICATIONS.updateCounter(true);
+            } else {
+                console.warn('[FCM] ⚠️ GLOBAL_NOTIFICATIONS غير متاح - لن يتم تحديث العداد');
             }
         }).catch(err => {
             console.error("[FCM] خطأ في حفظ حزمة الإشعارات:", err);

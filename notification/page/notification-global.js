@@ -58,6 +58,10 @@ window.GLOBAL_NOTIFICATIONS = {
                 // تحديث القيم فقط إذا تغيرت أو إذا كان التحديث فورياً
                 const hasChanged = this.unreadCount !== count;
                 this.unreadCount = count;
+
+                // سجل تفصيلي لتتبع المشكلة
+                console.log(`%c[Global] 🔔 تحديث العداد: ${this.unreadCount} إشعار غير مقروء`, 'color: #ff6b6b; font-weight: bold;');
+
                 this.notifyCountUpdate();
                 this.updateBrowserTitle();
 
@@ -195,8 +199,6 @@ window.GLOBAL_NOTIFICATIONS = {
                 return;
             }
 
-            //console.log(`[Global] تحديث الشارة: العدد = ${this.unreadCount}`);
-
             // تحديث المحتوى والعرض
             if (this.unreadCount > 0) {
                 badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
@@ -204,11 +206,11 @@ window.GLOBAL_NOTIFICATIONS = {
                 badge.style.display = 'flex';
                 // تأكيد اللون (احترازي)
                 badge.style.backgroundColor = '#dc3545';
-                //console.log(`[Global] ✅ تم إظهار الشارة بالعدد: ${badge.textContent}`);
+                console.log(`%c[Global] ✅ إظهار الشارة: ${badge.textContent}`, 'color: #28a745; font-weight: bold;');
             } else {
                 // إخفاء الشارة
                 badge.style.display = 'none';
-                //console.log('[Global] ⭕ تم إخفاء الشارة (العدد = 0)');
+                console.log('%c[Global] ⭕ إخفاء الشارة (العدد = 0)', 'color: #6c757d;');
             }
         } catch (error) {
             console.error('[Global] خطأ في تحديث الشارة:', error);

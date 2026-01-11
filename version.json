@@ -1,5 +1,5 @@
 {
-  "version": "1.13.10",
+  "version": "1.13.11",
   "notes": "Fix notification badge count accuracy and implement batch sync for cold starts.",
   "lastUpdated": "2026-01-11T07:32:02.387Z"
 }
