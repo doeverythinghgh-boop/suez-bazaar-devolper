@@ -104,8 +104,8 @@ async function setupFCM() {
         if (lastVersionCheck) {
             const timeSinceCheck = Date.now() - parseInt(lastVersionCheck);
             if (timeSinceCheck < 5000) { // Within 5 seconds of version check
-                console.log('%c[FCM] 🔄 Detected recent version update - performing fresh FCM setup', 
-                            'color: #ff9800; font-weight: bold;');
+                console.log('%c[FCM] 🔄 Detected recent version update - performing fresh FCM setup',
+                    'color: #ff9800; font-weight: bold;');
             }
         }
 
@@ -161,15 +161,22 @@ async function registerServiceWorker() {
         // هذا يمنع خطأ "no active Service Worker" عند طلب التوكن
         const registration = await navigator.serviceWorker.ready;
 
-        // التأكد من أن هناك عامل خدمة نشط بالفعل
+        // التأكد من وجود عامل خدمة نشط
         if (!registration.active) {
-            console.log("[SW] ⏳ الانتظار حتى يتحول الـ Service Worker إلى الحالة Active...");
+            console.log("[SW] ⏳ الانتظار البرمجي لنشاط الـ Service Worker...");
             await new Promise((resolve) => {
-                const checkActive = () => {
-                    if (registration.active) resolve();
-                    else setTimeout(checkActive, 100);
+                const onStateChange = () => {
+                    if (registration.active) {
+                        resolve();
+                    }
                 };
-                checkActive();
+                if (registration.installing) {
+                    registration.installing.addEventListener('statechange', onStateChange);
+                } else if (registration.waiting) {
+                    registration.waiting.addEventListener('statechange', onStateChange);
+                } else {
+                    resolve();
+                }
             });
         }
 
@@ -339,9 +346,8 @@ async function setupFirebaseWeb(userId) {
             return;
         }
 
-        // طلب التوكن من FCM مع تأخير بسيط لضمان استقرار الـ Push Service
-        console.log("[Dev] 🌏 [Web FCM] ⏳ جاري طلب التوكن من سيرفرات Google FCM...");
-        await new Promise(r => setTimeout(r, 1000));
+        // طلب التوكن من FCM فوراً (بدون انتظار أعمى)
+        console.log("[Dev] 🌏 [Web FCM] 🚀 جاري جلب التوكن من سيرفرات Google FCM...");
 
         const VAPID_KEY = "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY";
 
@@ -422,33 +428,46 @@ async function setupFirebaseWeb(userId) {
 // ===============================
 
 /**
- * @description تنتظر حتى يتم حفظ `android_fcm_key` في `localStorage` ثم تستدعي دالة رد الاتصال (callback).
- * @function waitForFcmKey
- * @param {function(string): void} callback - الدالة التي سيتم استدعاؤها مع مفتاح FCM بمجرد توفره.
- * @param {number} timeout - الوقت المحدد (في الميلي ثانية) قبل إلغاء الانتظار.
- * @returns {Promise<string>} - وعد (Promise) يُرجع مفتاح FCM بمجرد توفره.
- * @throws {Error} - في حالة انتهاء الوقت المحدد أو في حالة عدم وجود مفتاح FCM.
+ * @description كائن لتخزين الوعود المعلقة بانتظار توكن الأندرويد
  */
+window._fcmTokenResolvers = [];
+
+/**
+ * @description دالة يستدعيها تطبيق الأندرويد فور حصوله على التوكن
+ * @param {string} token 
+ */
+window.onAndroidFcmReceived = function (token) {
+    if (token) {
+        console.log("[Bridge] 📱 تم استلام التوكن من الأندرويد عبر الإشارة المباشرة");
+        localStorage.setItem("android_fcm_key", token);
+        // حل جميع الوعود المنتظرة
+        const resolvers = window._fcmTokenResolvers;
+        window._fcmTokenResolvers = [];
+        resolvers.forEach(resolve => resolve(token));
+    }
+};
+
 function waitForFcmKey(callback, timeout = 15000) {
     return new Promise((resolve, reject) => {
-        const start = Date.now();
+        const token = localStorage.getItem("android_fcm_key");
 
-        const check = () => {
-            const token = localStorage.getItem("android_fcm_key");
+        if (token) {
+            if (callback) callback(token);
+            return resolve(token);
+        }
 
-            if (token) {
-                callback(token);
-                return resolve(token);
+        // إضافة الوعد للقائمة المنتظرة
+        window._fcmTokenResolvers.push((t) => {
+            if (callback) callback(t);
+            resolve(t);
+        });
+
+        // تايم أوت للأمان فقط في حال فشل الأندرويد تماماً
+        setTimeout(() => {
+            if (!localStorage.getItem("android_fcm_key")) {
+                console.warn("[Android FCM] فشل استلام التوكن عبر الإشارة (Timeout)");
+                reject("timeout");
             }
-
-            if (Date.now() - start >= timeout) {
-                console.warn("[Android FCM] انتهى الوقت — لم يصل التوكن.");
-                return reject("timeout");
-            }
-
-            setTimeout(check, 300);
-        };
-
-        check();
+        }, timeout);
     });
 }

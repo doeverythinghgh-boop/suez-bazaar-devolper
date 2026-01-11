@@ -307,7 +307,7 @@ async function checkAppVersionAndClearData() {
       // D) Clear FCM Tokens (PWA Only - Not Android WebView)
       // This forces fresh FCM setup on next load for PWA users
       const isAndroidWebView = window.Android && typeof window.Android === 'object';
-      
+
       if (!isAndroidWebView) {
         // Only clear Web FCM token in PWA environment
         console.log('[VersionCheck] PWA environment detected - clearing Web FCM token to force re-initialization...');

@@ -37,14 +37,13 @@ window.GLOBAL_NOTIFICATIONS = {
      * @async
      * @returns {Promise<void>}
      */
-    updateCounter: async function () {
+    updateCounter: async function (forceImmediate = false) {
         // إذا كان هناك تحديث منتظر، نقوم بمسحه لجدولة تحديث جديد
         if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
         }
 
-        // جدولة التحديث بعد 250ms للسماح باستقرار المعاملات في قاعدة البيانات
-        this.updateTimeout = setTimeout(async () => {
+        const runUpdate = async () => {
             try {
                 if (typeof getNotificationLogs !== 'function') {
                     console.warn('[Global] دالة getNotificationLogs غير متاحة');
@@ -54,7 +53,7 @@ window.GLOBAL_NOTIFICATIONS = {
                 // جلب الإشعارات غير المقروءة (1000 إشعار كحد أقصى)
                 const allNotifications = await getNotificationLogs('all', 1000);
 
-                // حساب الإشعارات غير المقروءة
+                // حساب الإشعارات غير المقروءة بدقة
                 let count = 0;
                 for (const notification of allNotifications) {
                     if (notification.status === 'unread') {
@@ -62,17 +61,28 @@ window.GLOBAL_NOTIFICATIONS = {
                     }
                 }
 
+                // تحديث القيم فقط إذا تغيرت أو إذا كان التحديث فورياً
+                const hasChanged = this.unreadCount !== count;
                 this.unreadCount = count;
                 this.notifyCountUpdate();
                 this.updateBrowserTitle();
 
-                console.log(`[Global] ✅ تم تحديث العداد: ${this.unreadCount} إشعار غير مقروء (Debounced)`);
+                if (hasChanged || forceImmediate) {
+                    console.log(`[Global] ✅ تم مزامنة العداد: ${this.unreadCount} إشعار (Signal-based)`);
+                }
             } catch (error) {
                 console.error('[Global] خطأ في تحديث العداد:', error);
             } finally {
                 this.updateTimeout = null;
             }
-        }, 250);
+        };
+
+        if (forceImmediate) {
+            await runUpdate();
+        } else {
+            // Debounce خفيف جداً لتجميع العمليات المتتابعة (بدون انتظار أعمى)
+            this.updateTimeout = setTimeout(runUpdate, 50);
+        }
     },
     /**
      * @throws {Error} - If there's an error fetching notifications from the database.
@@ -182,11 +192,6 @@ window.GLOBAL_NOTIFICATIONS = {
             this.updateNotificationBadge();
         }
 
-        // ✅ إضافة: تأكيد ظهور الشارة في الـ DOM بعد تأخير بسيط (لحل مشاكل التحميل البطيء للرئيسية)
-        if (!isPageVisible && (this.unreadCount > 0)) {
-            setTimeout(() => this.updateNotificationBadge(), 1000);
-        }
-
         // استدعاء الـ Callback إذا وجد
         if (typeof this.onCountUpdate === 'function') {
             try {
@@ -248,25 +253,16 @@ window.GLOBAL_NOTIFICATIONS = {
             // تحميل آخر وقت فتح
             this.lastOpenedTime = this.getLastOpenedTime();
 
-            // تحديث العداد الأولي فوراً (محاولة مبكرة)
-            await this.updateCounter();
+            // تحديث العداد الأولي فوراً (بناءً على البيانات المحلية الحالية)
+            await this.updateCounter(true);
 
-            // ✅ نظام "حارس البداية" (Startup Watchdog):
-            // بما أن التطبيق قد يستغرق أكثر من 7 ثوانٍ للوصول للرئيسية، 
-            // سنقوم بعمل تحديث دوري كل 5 ثوانٍ لمدة 30 ثانية لضمان دقة العداد
-            let checkCount = 0;
-            const watchdogInterval = setInterval(() => {
-                checkCount++;
-                console.log(`[Global] 🛡️ جولة تشغيل حارس البداية (${checkCount}/6)...`);
-                this.updateCounter();
+            console.log('[Global] نظام الإشعارات جاهز - إرسال إشارة الاستقرار للأندرويد');
 
-                if (checkCount >= 6) {
-                    clearInterval(watchdogInterval);
-                    console.log('[Global] 🛡️ انتهت فترة مراقبة البداية بنجاح.');
-                }
-            }, 5000);
-
-            console.log('[Global] تم تهيئة نظام الإشعارات العالمي مع Watchdog');
+            // ✅ جديد: إخطار الأندرويد أن الواجهة جاهزة تماماً.
+            // الأندرويد الآن مسؤول عن دفع الإشعارات المعلقة فور استلام هذه الإشارة.
+            if (window.Android && typeof window.Android.onWebAppReady === 'function') {
+                window.Android.onWebAppReady();
+            }
         } catch (error) {
             console.error('[Global] خطأ في التهيئة:', error);
         }

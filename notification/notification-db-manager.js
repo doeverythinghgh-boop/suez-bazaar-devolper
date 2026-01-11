@@ -124,6 +124,10 @@ async function addNotificationLog(notificationData) {
         if (requestCheck.result) {
           // الإشعار موجود بالفعل، لا تقم بإضافته مرة أخرى
           console.warn(`[DB] تم تجاهل حفظ الإشعار المكرر (messageId: ${notificationData.messageId})`);
+          // ✅ إضافة: تحديث العداد العالمي في حالة التكرار لضمان المزامنة
+          if (typeof window !== 'undefined' && window.GLOBAL_NOTIFICATIONS) {
+            window.GLOBAL_NOTIFICATIONS.updateCounter();
+          }
           resolve(requestCheck.result.id); // إرجاع مفتاح السجل الموجود
         } else {
           // الإشعار غير موجود، قم بإضافته

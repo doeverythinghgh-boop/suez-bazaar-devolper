@@ -10,6 +10,7 @@ The native app injects the `Android` object into the web context, enabling two-w
 - `checkForUpdates()`: Triggers the native update manager.
 - `requestNotificationPermission()`: Launches system-level permission dialogs.
 - `onLanguageChanged(lang)`: Syncs the application language with `androidLang.json`.
+- `onWebAppReady()`: Signal from Web indicating full stability, triggering immediate delivery of pending notifications.
 
 ### Native to Web Callbacks:
 - `saveNotificationFromAndroid(data)`: Forwards incoming FCM messages to the web context. If the WebView isn't ready, the native app stores them in `SharedPreferences` and flushes them upon `onPageFinished`.
@@ -20,11 +21,12 @@ The native app injects the `Android` object into the web context, enabling two-w
 - **Version Control**: Relies on `version.json` for granular hash comparison.
 - **Conflict Prevention**: Uses a silent sync strategy that avoids blocking the user while updating background assets or translation files.
 
-## 3. FCM Lifecycle in Android
-1. WebView requests key from native.
+## 3. FCM Lifecycle in Android (Signal-based)
+1. Web requests FCM key via bridge.
 2. Native fetches/refreshes FCM token.
-3. Native calls back Web and saves key in `localStorage` under `android_fcm_key`.
-4. Web uses this key for all subsequent server-side targeting.
+3. Native calls `window.onAndroidFcmReceived(token)` to push the token directly to the Web promise.
+4. If Web isn't ready, Native falls back to injecting into `localStorage` under `android_fcm_key` as a recovery mechanism.
+5. Web uses this key for all subsequent server-side targeting.
 
 ## 4. Device Adjustments
 - **Geolocation**: Native Android intercepts `navigator.geolocation` requests for accuracy.

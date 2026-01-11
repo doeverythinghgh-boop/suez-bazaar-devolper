@@ -11,8 +11,8 @@
  * @throws {Error} - If there is a network error or the API response indicates failure.
  * @see baseURL
  * @see api/users
- * @see api/suppliers-deliveries
  */
+let allUsers_cache = []; // ✅ كاش محلي لتخزين جميع المستخدمين لغرض الفلترة
 async function getAllUsers_() {
     console.log('[getAllUsers_] بدء لجلب بيانات جميع المستخدمين...');
 
@@ -104,94 +104,124 @@ async function getAllUsers_() {
 }
 
 /**
- * @description Populates the users table with the fetched data.
- * @function populateUsersTable
+ * @description Populates the users dashboard with cards based on the provided data.
+ * @function renderUsersCards
  * @param {Array<object>} users - Array containing user objects.
  * @returns {void}
- * @throws {Error} - If DOM elements are not found or an error occurs during HTML manipulation.
- * @see showRelationsModal
- * @see loginAsUser
- * @see sendAdminNotification
  */
-function populateUsersTable(users) {
-    const tbody = document.getElementById('admin-panel-users-tbody');
-    if (!tbody) {
-        console.error('[populateUsersTable] لم يتم العثور على عنصر tbody للجدول.');
-        return;
-    }
+function renderUsersCards(users) {
+    const grid = document.getElementById('admin-panel-users-grid');
+    const countBadge = document.getElementById('users-count-badge');
 
-    tbody.innerHTML = '';
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    // Update badge count
+    if (countBadge) countBadge.innerText = users.length;
 
     if (!users || users.length === 0) {
-        const emptyRow = `<tr><td colspan="7" style="text-align: center; padding: 20px;">لا يوجد مستخدمون لعرضهم.</td></tr>`;
-        tbody.innerHTML = emptyRow;
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888;">لا يوجد مستخدمون يطابقون بحثك.</div>`;
         return;
     }
 
     users.forEach(user => {
-        const row = document.createElement('tr');
-        const tokenClass = user.hasFCMToken ? 'has-token-true' : 'has-token-false';
-        const tokenText = user.hasFCMToken ? 'نعم' : 'لا';
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.id = `user-card-${user.user_key}`;
 
-        let deliveryAction = '-';
-        if (user.isSeller && user.isDelivery) {
-            deliveryAction = `<button class="btn-delivery-status btn-role-both" onclick="showRelationsModal('${user.user_key}', '${user.username}')">مشترك</button>`;
-        } else if (user.isSeller) {
-            deliveryAction = `<button class="btn-delivery-status btn-role-seller" onclick="showRelationsModal('${user.user_key}', '${user.username}')">بائع</button>`;
-        } else if (user.isDelivery) {
-            deliveryAction = `<button class="btn-delivery-status btn-role-delivery" onclick="showRelationsModal('${user.user_key}', '${user.username}')">توصيل</button>`;
-        } else {
-            deliveryAction = `<button class="btn-delivery-status btn-role-manage" style="background-color: #6c757d;" onclick="showRelationsModal('${user.user_key}', '${user.username}')">إدارة</button>`;
-        }
+        const tokenStatusIcon = user.hasFCMToken
+            ? '<i class="fas fa-check-circle" style="color: var(--success-color);" title="لديه توكن"></i>'
+            : '<i class="fas fa-times-circle" style="color: var(--danger-color);" title="لا يوجد توكن"></i>';
 
-        const loginAction = `<button class="btn-delivery-status" style="background-color: #17a2b8;" onclick="loginAsUser('${user.user_key}')">دخول</button>`;
+        let roleBtnClass = 'btn-role-manage';
+        let roleText = 'إدارة الحساب';
+        if (user.isSeller && user.isDelivery) { roleBtnClass = 'btn-role-both'; roleText = 'بائع وموزع'; }
+        else if (user.isSeller) { roleBtnClass = 'btn-role-seller'; roleText = 'حساب بائع'; }
+        else if (user.isDelivery) { roleBtnClass = 'btn-role-delivery'; roleText = 'حساب موزع'; }
 
-        // ✅ New fields logic
-        const limitAction = `
-            <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
-                <input type="number" id="limit-input-${user.user_key}" value="${user.limitPackage}" style="padding: 5px; width: 70px; border: 1px solid #ccc; border-radius: 4px;">
-                <button class="btn-delivery-status" style="background-color: #28a745; color: #fff; padding: 5px 10px;" onclick="updateUserField('${user.user_key}', 'limitPackage')">
-                   <i class="fas fa-save"></i>
+        card.innerHTML = `
+            <div class="card-header">
+                <div class="user-info-main">
+                    <h3 class="copy-able" onclick="copyToClipboard('${user.username}')">${user.username || 'بدون اسم'}</h3>
+                    <span class="user-key-badge copy-able" onclick="copyToClipboard('${user.user_key}')">${user.user_key}</span>
+                </div>
+                <div class="token-status-icon">${tokenStatusIcon}</div>
+            </div>
+
+            <div class="card-body-details">
+                <div class="detail-item">
+                    <span class="detail-label">الهاتف</span>
+                    <span class="detail-value copy-able" onclick="copyToClipboard('${user.phone}')">${user.phone || '—'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">كلمة المرور</span>
+                    <span class="detail-value copy-able" onclick="copyToClipboard('${user.Password}')">${user.Password || '—'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">العنوان</span>
+                    <span class="detail-value copy-able" onclick="copyToClipboard('${user.Address}')">${user.Address || '—'}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">المنصة</span>
+                    <span class="detail-value">${user.tokenPlatform || 'None'}</span>
+                </div>
+            </div>
+
+            <div class="card-actions-row">
+                <!-- Role & Relations -->
+                <div class="card-action-group">
+                    <span class="group-title">الأدوار والعلاقات</span>
+                    <button class="btn-delivery-status ${roleBtnClass}" style="width: 100%" onclick="showRelationsModal('${user.user_key}', '${user.username}')">
+                        ${roleText}
+                    </button>
+                </div>
+
+                <!-- Package & Delivery Status -->
+                <div class="card-action-group">
+                    <span class="group-title">إعدادات التسليم</span>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div class="flex-actions">
+                            <input type="number" id="limit-input-${user.user_key}" value="${user.limitPackage}" class="input-small" placeholder="حد الباقة">
+                            <button class="btn-delivery-status" style="background-color: var(--success-color);" onclick="updateUserField('${user.user_key}', 'limitPackage')">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
+                        <div class="status-radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="isDelevred-${user.user_key}" value="1" ${user.isDelevred == 1 ? 'checked' : ''} onchange="updateUserField('${user.user_key}', 'isDelevred', this.value)"> نعم
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="isDelevred-${user.user_key}" value="0" ${user.isDelevred == 0 ? 'checked' : ''} onchange="updateUserField('${user.user_key}', 'isDelevred', this.value)"> لا
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fast Communication -->
+                <div class="card-action-group">
+                    <span class="group-title">رسائل ذكية</span>
+                    <div class="flex-actions">
+                        <input type="text" id="notify-input-${user.user_key}" placeholder="نص الإشعار..." class="input-small">
+                        <button class="btn-delivery-status" style="background-color: #ffc107; color: #000;" onclick="sendAdminNotification('${user.user_key}')">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Secure Login -->
+                <button class="btn-delivery-status" style="background-color: #17a2b8; width: 100%; font-weight: bold;" onclick="loginAsUser('${user.user_key}')">
+                    <i class="fas fa-sign-in-alt"></i> دخول بالحساب
                 </button>
             </div>
         `;
 
-        const deliveryStatusAction = `
-            <div style="display: flex; gap: 10px; justify-content: center; align-items: center;">
-                <label style="font-size: 0.8em; color: #333; cursor: pointer;">
-                    <input type="radio" name="isDelevred-${user.user_key}" value="1" ${user.isDelevred == 1 ? 'checked' : ''} onchange="updateUserField('${user.user_key}', 'isDelevred', this.value)"> نعم
-                </label>
-                <label style="font-size: 0.8em; color: #333; cursor: pointer;">
-                    <input type="radio" name="isDelevred-${user.user_key}" value="0" ${user.isDelevred == 0 ? 'checked' : ''} onchange="updateUserField('${user.user_key}', 'isDelevred', this.value)"> لا
-                </label>
-            </div>
-        `;
+        // Add selection listener
+        card.onclick = (e) => {
+            if (e.target.tagName === 'BUTTON' || e.target.closest('button') || e.target.tagName === 'INPUT') return;
+            selectUserCard(user.user_key, user.username);
+        };
 
-        // Input and Button for Notification
-        const notifyAction = `
-            <div style="display: flex; gap: 5px; justify-content: center; align-items: center;">
-                <input type="text" id="notify-input-${user.user_key}" placeholder="رسالة" style="padding: 5px; width: 100px; border: 1px solid #ccc; border-radius: 4px;">
-                <button class="btn-delivery-status" style="background-color: #ffc107; color: #000; padding: 5px 10px;" onclick="sendAdminNotification('${user.user_key}')">
-                   <i class="fas fa-paper-plane"></i>
-                </button>
-            </div>
-        `;
-
-        row.innerHTML = `
-            <td>${user.user_key || 'غير متوفر'}</td>
-            <td>${user.username || 'غير متوفر'}</td>
-            <td>${user.phone || 'غير متوفر'}</td>
-            <td>${user.Password || 'لا يوجد'}</td>
-            <td>${user.Address || 'غير متوفر'}</td>
-            <td class="${tokenClass}">${tokenText}</td>
-            <td>${user.tokenPlatform || 'N/A'}</td>
-            <td style="text-align: center;">${deliveryAction}</td>
-            <td style="text-align: center;">${limitAction}</td>
-            <td style="text-align: center;">${deliveryStatusAction}</td>
-            <td style="text-align: center;">${notifyAction}</td>
-            <td style="text-align: center;">${loginAction}</td>
-        `;
-        tbody.appendChild(row);
+        grid.appendChild(card);
     });
 }
 
@@ -211,74 +241,36 @@ function populateUsersTable(users) {
  */
 async function initializeAdminPanel() {
     const loader = document.getElementById('admin-panel-loader');
-    const tableContainer = document.getElementById('admin-panel-table-container');
+    const cardsContainer = document.getElementById('admin-panel-cards-container');
+    const searchBar = document.getElementById('admin-panel-search-bar');
     const errorContainer = document.createElement('div');
     errorContainer.className = 'admin-panel-error';
     errorContainer.style.textAlign = 'center'; errorContainer.style.padding = '20px'; errorContainer.style.color = 'var(--danger-color)';
 
     try {
         loader.style.display = 'flex';
-        tableContainer.style.display = 'none';
+        cardsContainer.style.display = 'none';
+        searchBar.style.display = 'none';
 
         const users = await getAllUsers_();
-        populateUsersTable(users);
+        allUsers_cache = users; // حفظ في الكاش لعملية البحث
+
+        renderUsersCards(users);
 
         loader.style.display = 'none';
-        tableContainer.style.display = 'block';
+        cardsContainer.style.display = 'block';
+        searchBar.style.display = 'flex';
+
+        // Setup Search Listeners
+        const searchInput = document.getElementById('admin-search-input');
+        const searchType = document.getElementById('admin-search-type');
+
+        if (searchInput) searchInput.oninput = handleAdminSearch;
+        if (searchType) searchType.onchange = handleAdminSearch;
 
         // ✅ Show broadcast section
         var broadcastSection = document.getElementById('admin-panel-broadcast-section');
         if (broadcastSection) broadcastSection.style.display = 'block';
-
-        // ✅ Add Click to Copy Feature
-        const tbody = document.getElementById('admin-panel-users-tbody');
-        if (tbody) {
-            tbody.onclick = function (e) {
-                const target = e.target;
-                if (target.tagName === 'BUTTON' || target.closest('button')) return;
-
-                const cell = target.closest('td');
-                if (!cell || cell.colSpan > 1) return;
-
-                // [Highlight Logic]
-                // 1. Remove 'selected-row' from all other rows
-                const allRows = tbody.querySelectorAll('tr');
-                allRows.forEach(row => row.classList.remove('selected-row'));
-
-                // 2. Add 'selected-row' to the clicked row
-                const clickedRow = target.closest('tr');
-                if (clickedRow) {
-                    clickedRow.classList.add('selected-row');
-
-                    // [Display Username in Title]
-                    const usernameCell = clickedRow.cells[1];
-                    const selectedUserDisplay = document.getElementById('selected-user-display');
-                    if (usernameCell && selectedUserDisplay) {
-                        selectedUserDisplay.innerText = `(${usernameCell.innerText})`;
-                    }
-                }
-
-                // [Copy Logic]
-
-                const textToCopy = cell.innerText.trim();
-                if (textToCopy && !['غير متوفر', 'لا يوجد', '-', 'N/A'].includes(textToCopy)) {
-                    navigator.clipboard.writeText(textToCopy).then(() => {
-                        const Toast = Swal.mixin({
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 2000,
-                            timerProgressBar: true,
-                            didOpen: (toast) => {
-                                toast.addEventListener('mouseenter', Swal.stopTimer);
-                                toast.addEventListener('mouseleave', Swal.resumeTimer);
-                            }
-                        });
-                        Toast.fire({ icon: 'success', title: 'تم النسخ: ' + textToCopy });
-                    }).catch(err => console.error('فشل النسخ', err));
-                }
-            };
-        }
 
     } catch (error) {
         console.error('[initializeAdminPanel] فشل تهيئة لوحة التحكم:', error);
@@ -288,6 +280,87 @@ async function initializeAdminPanel() {
         if (mainContainer) mainContainer.appendChild(errorContainer);
     }
 }
+
+/**
+ * @description Handles live search and filtering based on the search bar inputs.
+ * @function handleAdminSearch
+ */
+function handleAdminSearch() {
+    const query = document.getElementById('admin-search-input').value.toLowerCase().trim();
+    const type = document.getElementById('admin-search-type').value;
+
+    const filtered = allUsers_cache.filter(user => {
+        if (!query) return true;
+
+        if (type === 'all') {
+            return Object.values(user).some(val =>
+                String(val).toLowerCase().includes(query)
+            );
+        }
+
+        if (type === 'hasFCMToken') {
+            const hasToken = user.hasFCMToken ? 'نعم' : 'لا';
+            return hasToken.includes(query) || (query === 'yes' && user.hasFCMToken) || (query === 'no' && !user.hasFCMToken);
+        }
+
+        if (type === 'role') {
+            const roles = [];
+            if (user.isSeller) roles.push('بائع', 'seller');
+            if (user.isDelivery) roles.push('موزع', 'delivery');
+            if (roles.length === 0) roles.push('إدارة', 'manage', 'none');
+            return roles.some(r => r.includes(query));
+        }
+
+        if (type === 'isDelevred') {
+            const status = user.isDelevred == 1 ? 'نعم' : 'لا';
+            return status.includes(query);
+        }
+
+        const value = user[type];
+        return String(value || '').toLowerCase().includes(query);
+    });
+
+    renderUsersCards(filtered);
+}
+
+/**
+ * @description Manages visual selection of a user card.
+ * @function selectUserCard
+ */
+function selectUserCard(userKey, username) {
+    // 1. Clear previous selections
+    const allCards = document.querySelectorAll('.user-card');
+    allCards.forEach(c => c.classList.remove('selected-card'));
+
+    // 2. Add highlight to the active card
+    const activeCard = document.getElementById(`user-card-${userKey}`);
+    if (activeCard) activeCard.classList.add('selected-card');
+
+    // 3. Update title display
+    const selectedUserDisplay = document.getElementById('selected-user-display');
+    if (selectedUserDisplay) {
+        selectedUserDisplay.innerText = `(${username})`;
+    }
+}
+
+/**
+ * @description Helper to copy text to clipboard and show toast.
+ * @function copyToClipboard
+ */
+window.copyToClipboard = (text) => {
+    if (!text || ['غير متوفر', 'لا يوجد', '-', 'N/A', '—'].includes(text)) return;
+
+    navigator.clipboard.writeText(text).then(() => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true
+        });
+        Toast.fire({ icon: 'success', title: 'تم النسخ: ' + text });
+    }).catch(err => console.error('فشل النسخ', err));
+};
 
 /**
  * @function showRelationsModal
@@ -728,6 +801,13 @@ window.updateUserField = async (userKey, fieldName, value) => {
         var result = await response.json();
 
         if (response.ok) {
+            // ✅ تحديث الكاش المحلي لضمان دقة البحث فوراً دون إعادة التحميل
+            const cachedUser = allUsers_cache.find(u => u.user_key === userKey);
+            if (cachedUser) {
+                cachedUser[fieldName] = finalValue;
+                console.log(`[updateUserField] Updated cache for ${userKey}: ${fieldName} = ${finalValue}`);
+            }
+
             const Toast = Swal.mixin({
                 toast: true,
                 position: 'top-end',
