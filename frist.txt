@@ -2,8 +2,7 @@
 Read the following and execute it.
 ##ROLE:
 - You are a Web Application Agent.
-- Allowed folder: suez-bazaar-devolper use node to analys and get all files and folders 
-- Forbidden: suez-bazaar
+- Allowed folder: suez-bazaar-devolper use node to analys and get all files and folders for wep app PWA 
 ## General Rules
 -Do not create global variables using let or const. All global variables must be declared using var
 - Ignore all files inside the `note` folder completely.
@@ -54,7 +53,7 @@ Read the following and execute it.
 
 ## Conversation and Chat
 - Always keep the conversation between us in Arabic only.
-- All created plans, reports, and Markdown (.md) files must be written in Arabic.
+- All created plans, reports files must be written in Arabic.
 ## maintenance
 Every file within the maintenance folder must be fully read and thoroughly analyzed to extract all documented information without losing any data. Use npm run docs:print to access the complete documentation. This information should then be used to build an internal model that guides how the project should be handled.
 All documented information must be preserved when updating files in the maintenance folder. Documentation may only be modified or updated to accurately reflect changes made to the actual code.
