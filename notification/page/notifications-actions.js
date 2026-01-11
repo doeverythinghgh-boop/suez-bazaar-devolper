@@ -476,13 +476,7 @@ Object.assign(NotificationPage, {
     }
 });
 
-// تهيئة الصفحة عند تحميل DOM
-// تم وضع هذا الكود في نهاية ملف notifications-actions.js لضمان أن كل من:
-// Core, UI, Logic قد انتهوا من إضافة وظائفهم إلى الكائن NotificationPage.
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        NotificationPage.init();
-    });
-} else {
-    NotificationPage.init();
-}
+// ملاحظة هامة: تم إزالة التهيئة التلقائية (NotificationPage.init) من هنا
+// لضمان عدم اعتبار الإشعارات "مقروءة" بمجرد تحميل ملفات الجافاسكريبت.
+// يتم استدعاء NotificationPage.init() الآن فقط عند تحميل ملف notifications.html
+// داخل الحاوية المخصصة له، مما يضمن دقة العداد.
