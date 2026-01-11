@@ -311,6 +311,10 @@
     "ar": "اختر السوق الفرعي...",
     "en": "Select Sub-category..."
   },
+  "cat_validation_required": {
+    "ar": "يرجى اختيار الفئة الرئيسية والفرعية",
+    "en": "Please select both main and sub-category"
+  },
   "cat_empty_list_error": {
     "ar": "حدث خطأ أثناء تحميل الفئات.",
     "en": "An error occurred while loading categories."

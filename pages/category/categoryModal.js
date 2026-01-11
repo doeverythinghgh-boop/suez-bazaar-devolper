@@ -551,7 +551,7 @@ window.CategoryModal = (function () {
 
                     if (!mainId || !subId) {
                         if (validationMsg) {
-                            validationMsg.textContent = '⚠️ ' + window.langu('api_connection_failed').replace(':', '') + ' (Main/Sub)';
+                            validationMsg.textContent = '⚠️ ' + window.langu('cat_validation_required');
                         }
                         return;
                     }

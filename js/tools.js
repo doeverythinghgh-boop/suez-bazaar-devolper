@@ -304,7 +304,24 @@ async function checkAppVersionAndClearData() {
         }
       }
 
-      // D) Clear ALL Cache Storage (The most important part for file updates)
+      // D) Clear FCM Tokens (PWA Only - Not Android WebView)
+      // This forces fresh FCM setup on next load for PWA users
+      const isAndroidWebView = window.Android && typeof window.Android === 'object';
+      
+      if (!isAndroidWebView) {
+        // Only clear Web FCM token in PWA environment
+        console.log('[VersionCheck] PWA environment detected - clearing Web FCM token to force re-initialization...');
+        localStorage.removeItem('fcm_token');           // Web FCM token only
+        localStorage.removeItem('notifications_enabled'); // Notification state
+        console.log('[VersionCheck] Web FCM tokens cleared. Fresh FCM setup will be triggered on reload.');
+      } else {
+        // Android WebView - do NOT touch FCM tokens
+        console.log('[VersionCheck] Android WebView detected - preserving Android FCM tokens.');
+        // android_fcm_key will remain untouched
+      }
+      // Note: We do NOT clear IndexedDB to preserve notification history
+
+      // E) Clear ALL Cache Storage (The most important part for file updates)
       if ('caches' in window) {
         console.log('[VersionCheck] Accessing Cache Storage...');
         const cacheNames = await caches.keys();

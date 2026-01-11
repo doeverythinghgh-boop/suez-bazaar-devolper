@@ -81,6 +81,8 @@ Located in the `js/tools.js` file and works as follows:
 3. **Forced Update:** If a new version exists, the application:
     - Clears `sessionStorage` and cookies.
     - Unregisters all **Service Workers**.
+    - **FCM Reset (PWA Only):** If NOT in Android WebView, it clears `fcm_token` and `notifications_enabled` to force a fresh setup on next load.
+    - **Android Preservation:** Does NOT touch `android_fcm_key`, ensuring continuous service in the Android app.
     - Clears all cache files in the browser (**Cache Storage**).
     - Saves the new version and reloads the page from the server immediately.
 

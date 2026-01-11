@@ -99,6 +99,16 @@ async function setupFCM() {
         const currentUserId = userSession.user_key;
         console.log(`[Dev] 📡 [FCM] المستخدم موجود (user_key: ${currentUserId}).`);
 
+        // ✅ NEW: Check if this is a fresh setup after version change
+        const lastVersionCheck = localStorage.getItem('last_version_check_time');
+        if (lastVersionCheck) {
+            const timeSinceCheck = Date.now() - parseInt(lastVersionCheck);
+            if (timeSinceCheck < 5000) { // Within 5 seconds of version check
+                console.log('%c[FCM] 🔄 Detected recent version update - performing fresh FCM setup', 
+                            'color: #ff9800; font-weight: bold;');
+            }
+        }
+
         // أولوية التهيئة على أندرويد
         if (window.Android && typeof window.Android.onUserLoggedIn === "function") {
             console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة أندرويد (WebView).');
