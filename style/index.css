@@ -7,6 +7,10 @@
     overflow: hidden;
     /* Prevent scrollbars on the body */
     box-sizing: border-box;
+    
+    /* ✅ Keyboard Scrolling: Add scroll padding for input fields */
+    scroll-padding-top: 20px;
+    scroll-padding-bottom: 120px;
   }
 
   /* ✅ GLOBAL: Hide all scrollbars while maintaining functionality */
@@ -22,6 +26,27 @@
     /* Chrome, Safari, Opera */
   }
 
+  /* ✅ Keyboard Scrolling: Allow smooth pan and pinch zoom */
+  * {
+    touch-action: pan-y pinch-zoom;
+  }
+
+  /* ✅ Keyboard Scrolling: Input fields scroll margin */
+  input, textarea, select {
+    touch-action: manipulation;
+    scroll-margin-bottom: 120px;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    scroll-margin-bottom: 140px;
+  }
+
+  /* ✅ Keyboard Scrolling: Fixed elements during keyboard active */
+  .keyboard-active {
+    position: absolute !important;
+    transition: none;
+  }
+
   body {
     display: flex;
     flex-direction: column;
@@ -29,6 +54,10 @@
     background-color: var(--bg-color-light);
     color: var(--text-color-dark);
     transition: background-color 0.3s ease, color 0.3s ease;
+    
+    /* ✅ Keyboard Scrolling: iOS smooth scrolling */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
   }
 
   .add-product-modal__hidden-file {

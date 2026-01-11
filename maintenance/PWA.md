@@ -154,6 +154,127 @@ Whether the user chooses to install from the store or via the browser, they are 
 - The `pages/welcome.html` page is loaded and displayed in full screen (`fixed position`).
 - This page aims to introduce the user to Suez Bazaar features and thank them for joining.
 
+
+---
+
+## 11. Mobile Keyboard Scrolling Fix (PWA-Only)
+
+To ensure optimal user experience when interacting with input fields on mobile PWA, the project includes an advanced keyboard scrolling handler that automatically scrolls focused inputs into view.
+
+### A. The Problem
+When running the app as a PWA in Standalone mode on mobile devices, the page does not automatically scroll when the virtual keyboard appears, causing the active input field to be hidden behind the keyboard.
+
+### B. The Solution
+
+#### Viewport Optimization
+The viewport meta tag has been enhanced with:
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-content">
+```
+
+- `interactive-widget=resizes-content`: Forces the browser to update page dimensions when the keyboard appears
+- `viewport-fit=cover`: Supports modern screens with notches
+- `user-scalable=no`: Prevents zoom conflicts with scrolling
+
+#### Smart Scrolling System (`js/mobile-keyboard-handler.js`)
+
+**Key Features:**
+
+1. **PWA Environment Detection**
+   - Automatically detects if running in PWA mode (Standalone/Fullscreen)
+   - **Completely disabled in Android WebView** to avoid conflicts with native app behavior
+   - Uses `window.Android` detection and `display-mode` media query
+
+2. **Multi-Strategy Scrolling**
+   - Primary: `scrollIntoView` with smooth behavior and center positioning
+   - Fallback: Manual calculation with `window.scrollTo`
+   - Last resort: Simple `scrollIntoView(true)`
+
+3. **iOS-Specific Handling**
+   - Uses Visual Viewport API to monitor keyboard state
+   - Temporarily locks body height to prevent jumping
+   - Implements retry mechanism (100ms delay) for Safari
+   - Extra 50ms delay before initial scroll
+
+4. **Fixed Element Management**
+   - Auto-detects elements with `position: fixed`
+   - Temporarily converts them to `position: absolute` when keyboard is active
+   - Restores original positioning when keyboard closes
+   - Supports manual marking with `data-keyboard-fixed` attribute
+
+5. **Debouncing & Performance**
+   - 200ms debounce delay to prevent excessive scroll calls
+   - 350ms delay to allow keyboard to fully appear
+   - Event delegation for dynamically added inputs
+
+#### CSS Enhancements
+
+The following CSS improvements support smooth keyboard interaction:
+
+```css
+/* Scroll padding for input fields */
+html, body {
+  scroll-padding-top: 20px;
+  scroll-padding-bottom: 120px;
+}
+
+/* iOS smooth scrolling */
+body {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Touch action for smooth panning */
+* {
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Input field scroll margins */
+input, textarea, select {
+  touch-action: manipulation;
+  scroll-margin-bottom: 120px;
+}
+
+input:focus, textarea:focus, select:focus {
+  scroll-margin-bottom: 140px;
+}
+
+/* Fixed elements during keyboard */
+.keyboard-active {
+  position: absolute !important;
+  transition: none;
+}
+```
+
+### C. How It Works
+
+1. **On App Start:**
+   - Script checks if running in PWA mode
+   - If Android WebView detected → Script exits immediately ❌
+   - If PWA mode → Initializes handlers ✅
+
+2. **On Input Focus:**
+   - Temporarily disables fixed elements
+   - Waits 350ms for keyboard to appear
+   - Executes scroll with appropriate strategy
+   - Applies iOS-specific handling if needed
+
+3. **On Keyboard Close:**
+   - Restores fixed elements
+   - Resets iOS settings
+   - Cleans up state
+
+### D. Compatibility
+
+- ✅ Chrome/Edge Android (PWA)
+- ✅ Safari iOS (PWA)
+- ✅ Samsung Internet
+- ✅ Firefox Android
+- ❌ Android WebView (intentionally isolated)
+
+> [!IMPORTANT]
+> This solution **only runs in PWA mode** and does not interfere with the native Android WebView application.
+
 ---
 > [!TIP]
 > When testing PWA locally, it is preferred to use "Incognito" or "Guest" mode to avoid cache interference from previous sessions, and always remember to clear the cache from the "Application" tab when making radical changes to `sw.js`.
