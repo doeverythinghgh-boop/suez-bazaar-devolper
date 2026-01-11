@@ -12,25 +12,27 @@ const crypto = require('crypto');
 const CleanCSS = require('clean-css');
 const HTMLMinifier = require('html-minifier-terser');
 
-const cleanCSS = new CleanCSS({ level: 1 });
-
-const PROJECT_ROOT = __dirname;
-const OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
+var cleanCSS = new CleanCSS({ level: 1 });
+var PROJECT_ROOT = __dirname;
+var OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
 
 // 1. Configuration
-const EXCLUDED_DIRS = ['api', 'note', 'node_modules', 'dist', '.git', '.gemini', 'docs', 'function'];
-const EXCLUDED_FILES = ['build.js', 'package.json', 'package-lock.json', 'version-watcher.js'];
-const ASSETS_TO_COPY = ['assets', 'notification', 'shared', 'style', 'location', 'images', 'favicon.ico', 'manifest.json', 'js', 'pages', 'steper', 'lang', 'androidLang.json'];
+var EXCLUDED_DIRS = ['api', 'note', 'node_modules', 'dist', '.git', '.gemini', 'docs', 'function'];
+var EXCLUDED_FILES = ['build.js', 'package.json', 'package-lock.json', 'version-watcher.js'];
+var ASSETS_TO_COPY = ['assets', 'notification', 'shared', 'style', 'location', 'images', 'favicon.ico', 'manifest.json', 'js', 'pages', 'steper', 'lang', 'androidLang.json'];
 
 /**
  * Function to copy files and folders recursively
+ * @param {string} src - Source path
+ * @param {string} dest - Destination path
+ * @returns {void}
  */
 function copyRecursiveSync(src, dest) {
     if (!fs.existsSync(src)) return;
-    const stats = fs.statSync(src);
+    var stats = fs.statSync(src);
     if (stats.isDirectory()) {
         if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-        fs.readdirSync(src).forEach(childItemName => {
+        fs.readdirSync(src).forEach(function (childItemName) {
             copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
         });
     } else {
@@ -55,12 +57,15 @@ function copyRecursiveSync(src, dest) {
 
 /**
  * Function to find all JS files
+ * @param {string} dirPath - Directory path to scan
+ * @param {string[]} arrayOfFiles - Array to accumulate file paths
+ * @returns {string[]} - Array of JavaScript file paths
  */
 function getAllJSFiles(dirPath, arrayOfFiles = []) {
-    const files = fs.readdirSync(dirPath);
-    files.forEach(file => {
-        const fullPath = path.join(dirPath, file);
-        const relativePath = path.relative(PROJECT_ROOT, fullPath);
+    var files = fs.readdirSync(dirPath);
+    files.forEach(function (file) {
+        var fullPath = path.join(dirPath, file);
+        var relativePath = path.relative(PROJECT_ROOT, fullPath);
         if (fs.statSync(fullPath).isDirectory()) {
             if (!EXCLUDED_DIRS.includes(path.basename(fullPath))) {
                 getAllJSFiles(fullPath, arrayOfFiles);
@@ -77,12 +82,15 @@ function getAllJSFiles(dirPath, arrayOfFiles = []) {
 
 /**
  * Function to process HTML files with minification
+ * @param {string} dirPath - Directory path to scan
+ * @returns {Promise<void>}
  */
 async function processAllHTMLFiles(dirPath) {
-    const files = fs.readdirSync(dirPath);
-    for (const file of files) {
-        const fullPath = path.join(dirPath, file);
-        const relativePath = path.relative(PROJECT_ROOT, fullPath);
+    var files = fs.readdirSync(dirPath);
+    for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        var fullPath = path.join(dirPath, file);
+        var relativePath = path.relative(PROJECT_ROOT, fullPath);
 
         if (fs.statSync(fullPath).isDirectory()) {
             if (!EXCLUDED_DIRS.includes(path.basename(fullPath))) {
@@ -90,13 +98,13 @@ async function processAllHTMLFiles(dirPath) {
             }
         } else if (file.endsWith('.html')) {
             console.log(`📄 Minifying HTML file: ${relativePath}...`);
-            const targetPath = path.join(OUTPUT_DIR, relativePath);
-            const targetDir = path.dirname(targetPath);
+            var targetPath = path.join(OUTPUT_DIR, relativePath);
+            var targetDir = path.dirname(targetPath);
             if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
 
             try {
-                const content = fs.readFileSync(fullPath, 'utf8');
-                const minified = await HTMLMinifier.minify(content, {
+                var content = fs.readFileSync(fullPath, 'utf8');
+                var minified = await HTMLMinifier.minify(content, {
                     removeAttributeQuotes: false,
                     collapseWhitespace: true,
                     removeComments: true,
@@ -115,7 +123,7 @@ async function processAllHTMLFiles(dirPath) {
 /**
  * Obfuscation settings for each file
  */
-const obfuscationOptions = {
+var obfuscationOptions = {
     compact: true,
     controlFlowFlattening: true,
     controlFlowFlatteningThreshold: 0.75,
@@ -139,19 +147,20 @@ const obfuscationOptions = {
 
 /**
  * Automatically increments the patch version in the root version.json file.
+ * @returns {void}
  */
 function bumpVersion() {
-    const rootVersionFile = path.join(PROJECT_ROOT, 'version.json');
+    var rootVersionFile = path.join(PROJECT_ROOT, 'version.json');
     if (!fs.existsSync(rootVersionFile)) return;
 
     try {
-        const content = fs.readFileSync(rootVersionFile, 'utf8');
-        const data = JSON.parse(content);
+        var content = fs.readFileSync(rootVersionFile, 'utf8');
+        var data = JSON.parse(content);
 
         if (data.version) {
-            const parts = data.version.split('.').map(Number);
+            var parts = data.version.split('.').map(Number);
             if (parts.length === 3) {
-                const oldVersion = data.version;
+                var oldVersion = data.version;
                 parts[2]++; // Increment patch
                 data.version = parts.join('.');
                 // Update root version.json so the change is permanent in source
@@ -166,6 +175,7 @@ function bumpVersion() {
 
 /**
  * Main build process
+ * @returns {Promise<void>}
  */
 async function build() {
     console.log('🏗️ Starting project build with individual obfuscation...');
@@ -177,12 +187,13 @@ async function build() {
         if (fs.existsSync(OUTPUT_DIR)) {
             console.log('🧹 Cleaning old dist folder (preserving .git)...');
             // Read all files/dirs in dist
-            const files = fs.readdirSync(OUTPUT_DIR);
-            for (const file of files) {
+            var files = fs.readdirSync(OUTPUT_DIR);
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
                 // Skip .git folder
                 if (file === '.git') continue;
 
-                const curPath = path.join(OUTPUT_DIR, file);
+                var curPath = path.join(OUTPUT_DIR, file);
                 fs.rmSync(curPath, { recursive: true, force: true });
             }
         } else {
@@ -191,38 +202,38 @@ async function build() {
 
         // 1. Copy assets (Folders) except JS files which will be obfuscated
         console.log('🚚 Copying folders and assets...');
-        ASSETS_TO_COPY.forEach(asset => {
+        ASSETS_TO_COPY.forEach(function (asset) {
             copyRecursiveSync(path.join(PROJECT_ROOT, asset), path.join(OUTPUT_DIR, asset));
         });
 
         // 2. Process and obfuscate all JavaScript files
         console.log('🔐 Obfuscating JS files individually...');
-        const allJSFiles = getAllJSFiles(PROJECT_ROOT);
+        var allJSFiles = getAllJSFiles(PROJECT_ROOT);
 
-        allJSFiles.forEach(file => {
+        allJSFiles.forEach(function (file) {
             console.log(`   - Obfuscating: ${file}`);
-            const fullPath = path.join(PROJECT_ROOT, file);
-            const content = fs.readFileSync(fullPath, 'utf8');
+            var fullPath = path.join(PROJECT_ROOT, file);
+            var content = fs.readFileSync(fullPath, 'utf8');
 
             try {
                 // Generate unique prefix to avoid collision of helper functions between files
                 // Prefix with 'v' to ensure it starts with a letter (valid JS identifier)
-                const safePrefix = 'v' + crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
+                var safePrefix = 'v' + crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
 
-                const fileOptions = {
+                var fileOptions = {
                     ...obfuscationOptions,
                     identifiersPrefix: safePrefix
                 };
 
-                const obfuscatedResult = obfuscate(content, fileOptions);
-                let obfuscatedCode = obfuscatedResult.getObfuscatedCode();
+                var obfuscatedResult = obfuscate(content, fileOptions);
+                var obfuscatedCode = obfuscatedResult.getObfuscatedCode();
 
                 // Post-process to replace const/let with var to allow safe re-declaration in SPA environments
                 // This prevents "Identifier already declared" errors when navigating between pages.
                 obfuscatedCode = obfuscatedCode.replace(/\bconst\b/g, 'var').replace(/\blet\b/g, 'var');
 
-                const targetPath = path.join(OUTPUT_DIR, file);
-                const targetDir = path.dirname(targetPath);
+                var targetPath = path.join(OUTPUT_DIR, file);
+                var targetDir = path.dirname(targetPath);
 
                 if (!fs.existsSync(targetDir)) fs.mkdirSync(targetDir, { recursive: true });
                 fs.writeFileSync(targetPath, obfuscatedCode);
@@ -236,24 +247,24 @@ async function build() {
         await processAllHTMLFiles(PROJECT_ROOT);
 
         // 4. Copy individual root files
-        const rootFiles = ['favicon.ico', 'manifest.json', 'sw.js', 'firebase-messaging-sw.js', 'version.json', 'offline.html', 'privacy.html', 'delete-account.html'];
-        rootFiles.forEach(file => {
-            const fullPath = path.join(PROJECT_ROOT, file);
+        var rootFiles = ['favicon.ico', 'manifest.json', 'sw.js', 'firebase-messaging-sw.js', 'version.json', 'offline.html', 'privacy.html', 'delete-account.html'];
+        rootFiles.forEach(function (file) {
+            var fullPath = path.join(PROJECT_ROOT, file);
             if (fs.existsSync(fullPath)) {
                 if (file.endsWith('.js')) {
                     console.log(`🔐 Obfuscating root file: ${file}`);
-                    const content = fs.readFileSync(fullPath, 'utf8');
+                    var content = fs.readFileSync(fullPath, 'utf8');
 
                     // Generate unique prefix
                     // Prefix with 'v' to ensure it starts with a letter
-                    const safePrefix = 'v' + crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
-                    const fileOptions = {
+                    var safePrefix = 'v' + crypto.createHash('md5').update(file).digest('hex').substring(0, 4) + '_';
+                    var fileOptions = {
                         ...obfuscationOptions,
                         identifiersPrefix: safePrefix
                     };
 
-                    const obfuscatedResult = obfuscate(content, fileOptions);
-                    let obfuscatedCode = obfuscatedResult.getObfuscatedCode();
+                    var obfuscatedResult = obfuscate(content, fileOptions);
+                    var obfuscatedCode = obfuscatedResult.getObfuscatedCode();
 
                     // Post-process to replace const/let with var
                     obfuscatedCode = obfuscatedCode.replace(/\bconst\b/g, 'var').replace(/\blet\b/g, 'var');
@@ -275,6 +286,9 @@ async function build() {
         // 6. Auto deploy to GitHub
         await deployToGit();
 
+        // 7. Copy to Android assets folder
+        copyToAndroidAssets();
+
     } catch (error) {
         console.error('❌ Build process failed:', error);
         process.exit(1);
@@ -283,11 +297,12 @@ async function build() {
 
 /**
  * Function to generate SHA-256 hashes for all files in dist and update version.json
+ * @returns {void}
  */
 function generateFileHashes() {
-    const versionFilePath = path.join(OUTPUT_DIR, 'version.json');
-    let versionData = {};
-    const baseUrl = 'https://raw.githubusercontent.com/doeverythinghgh-boop/_bazaar/main/';
+    var versionFilePath = path.join(OUTPUT_DIR, 'version.json');
+    var versionData = {};
+    var baseUrl = 'https://raw.githubusercontent.com/doeverythinghgh-boop/_bazaar/main/';
 
     if (fs.existsSync(versionFilePath)) {
         try {
@@ -297,39 +312,43 @@ function generateFileHashes() {
         }
     }
 
-    const fileList = [];
+    var fileList = [];
 
+    /**
+     * Helper to scan directory recursively
+     * @param {string} dir - Directory to scan
+     */
     function scanDir(dir) {
-        const files = fs.readdirSync(dir);
-        files.forEach(file => {
+        var files = fs.readdirSync(dir);
+        files.forEach(function (file) {
             if (file === '.git' || file === 'version.json') return; // Skip .git and version.json itself
-            const fullPath = path.join(dir, file);
+            var fullPath = path.join(dir, file);
             // Handle files in dist
-            const fullPathInDist = fullPath;
+            var fullPathInDist = fullPath;
 
             if (fs.statSync(fullPathInDist).isDirectory()) {
                 scanDir(fullPathInDist);
             } else {
                 // IMPORTANT: Process ALL file types (encrypted/obfuscated or not).
                 // This ensures version.json is a comprehensive manifest of the release.
-                const relativePath = path.relative(OUTPUT_DIR, fullPathInDist).replace(/\\/g, '/');
+                var relativePath = path.relative(OUTPUT_DIR, fullPathInDist).replace(/\\/g, '/');
 
                 // Calculate hash of the ORIGINAL file in PROJECT_ROOT
-                const fullPathInSource = path.join(PROJECT_ROOT, relativePath);
-                let hashSum = crypto.createHash('sha256');
+                var fullPathInSource = path.join(PROJECT_ROOT, relativePath);
+                var hashSum = crypto.createHash('sha256');
 
                 if (fs.existsSync(fullPathInSource) && fs.statSync(fullPathInSource).isFile()) {
-                    const fileBuffer = fs.readFileSync(fullPathInSource);
+                    var fileBuffer = fs.readFileSync(fullPathInSource);
                     hashSum.update(fileBuffer);
                 } else {
                     // Fallback to dist file if original not found (should not happen usually)
                     console.warn(`⚠️ Original file not found for ${relativePath}, hashing dist file instead.`);
-                    const fileBuffer = fs.readFileSync(fullPathInDist);
+                    var fileBuffer = fs.readFileSync(fullPathInDist);
                     hashSum.update(fileBuffer);
                 }
 
-                const hex = hashSum.digest('hex');
-                const stats = fs.statSync(fullPathInDist);
+                var hex = hashSum.digest('hex');
+                var stats = fs.statSync(fullPathInDist);
 
                 fileList.push({
                     path: baseUrl + relativePath.split('/').map(encodeURIComponent).join('/'),
@@ -354,12 +373,13 @@ function generateFileHashes() {
 
 /**
  * Function to auto push changes to GitHub
+ * @returns {Promise<void>}
  */
 function deployToGit() {
-    return new Promise((resolve, reject) => {
+    return new Promise(function (resolve, reject) {
         console.log('\n📦 Checking for changes to push to GitHub...');
 
-        const gitCommands = [
+        var gitCommands = [
             'git fetch origin main',
             'git reset --soft origin/main',
             'git add -f .',
@@ -368,11 +388,12 @@ function deployToGit() {
         ];
 
         // Execute commands sequentially in dist directory
-        const executeCommands = async () => {
-            for (const cmd of gitCommands) {
+        var executeCommands = async function () {
+            for (var i = 0; i < gitCommands.length; i++) {
+                var cmd = gitCommands[i];
                 try {
-                    await new Promise((res, rej) => {
-                        exec(cmd, { cwd: OUTPUT_DIR }, (error, stdout, stderr) => {
+                    await new Promise(function (res, rej) {
+                        exec(cmd, { cwd: OUTPUT_DIR }, function (error, stdout, stderr) {
                             if (error) {
                                 // Ignore empty commit error
                                 if (cmd.includes('commit') && (stdout.includes('nothing to commit') || stderr.includes('nothing to commit'))) {
@@ -396,16 +417,68 @@ function deployToGit() {
         };
 
         executeCommands()
-            .then(() => {
+            .then(function () {
                 console.log('✅ Successfully pushed updates to GitHub!');
                 resolve();
             })
-            .catch((err) => {
+            .catch(function (err) {
                 console.error('❌ Failed to push to GitHub:', err);
                 // Don't fail the build if git push fails, just log it
                 resolve();
             });
     });
+}
+
+/**
+ * Function to copy dist files to Android assets folder
+ * @returns {void}
+ */
+function copyToAndroidAssets() {
+    console.log('\n📱 Copying files to Android assets folder...');
+
+    var androidAssetsPath = path.join(PROJECT_ROOT, '..', 'suez-bazaar', 'app', 'src', 'main', 'assets');
+
+    // Check if Android project exists
+    if (!fs.existsSync(androidAssetsPath)) {
+        console.warn('⚠️ Android assets folder not found. Skipping copy.');
+        console.warn(`   Expected path: ${androidAssetsPath}`);
+        return;
+    }
+
+    try {
+        // Clean existing assets (except .gitkeep if exists)
+        if (fs.existsSync(androidAssetsPath)) {
+            var files = fs.readdirSync(androidAssetsPath);
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (file === '.gitkeep') continue;
+                var curPath = path.join(androidAssetsPath, file);
+                fs.rmSync(curPath, { recursive: true, force: true });
+            }
+        }
+
+        // Copy all files from dist to Android assets
+        var filesToCopy = fs.readdirSync(OUTPUT_DIR);
+        for (var j = 0; j < filesToCopy.length; j++) {
+            var fileToCopy = filesToCopy[j];
+            // Skip .git folder
+            if (fileToCopy === '.git') continue;
+
+            var srcPath = path.join(OUTPUT_DIR, fileToCopy);
+            var destPath = path.join(androidAssetsPath, fileToCopy);
+
+            if (fs.statSync(srcPath).isDirectory()) {
+                copyRecursiveSync(srcPath, destPath);
+            } else {
+                fs.copyFileSync(srcPath, destPath);
+            }
+        }
+
+        console.log('✅ Successfully copied files to Android assets folder!');
+        console.log(`   Destination: ${androidAssetsPath}`);
+    } catch (error) {
+        console.error('❌ Failed to copy to Android assets:', error);
+    }
 }
 
 build();
