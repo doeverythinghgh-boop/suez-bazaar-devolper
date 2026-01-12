@@ -8,18 +8,22 @@
 
 .stepper-wrapper {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: flex-start;
-    gap: 0;
+    gap: var(--stepper-gap, 2rem);
     position: relative;
     padding: 20px;
     overflow-x: auto;
     scroll-behavior: smooth;
+    max-width: 100%;
 }
+
+
 
 /* عنصر الخطوة الفردي */
 .step-item {
-    flex: 1;
+    flex: 0 0 70px;
+    width: 70px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -28,31 +32,30 @@
     transition: all var(--transition-normal);
 }
 
-/* الخط الرابط بين الخطوات */
+
+/* السهم الواصل بين الخطوات (يشير لليسار في RTL) */
 .step-item:not(:last-child)::after {
     content: '';
     position: absolute;
     top: 27px;
-    /* محاذاة الخط مع منتصف الدائرة */
-    left: -50%;
-    /* الاتجاه لليسار بسبب RTL */
-    width: 100%;
-    height: 3px;
-    background: var(--border-light);
+    left: calc(100% + 5px);
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 5px 0 5px 8px;
+    border-color: transparent transparent transparent var(--border-light);
     z-index: -1;
     transition: all var(--transition-normal);
 }
 
-/* تلوين الخط عند اكتمال الخطوة */
+/* تلوين السهم عند اكتمال الخطوة */
 .step-item.completed:not(:last-child)::after {
-    background: linear-gradient(90deg, var(--color-confirmed) 0%, var(--color-confirmed) 100%);
-    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    border-color: transparent transparent transparent var(--color-confirmed);
 }
 
-/* تلوين الخط عند تفعيل الخطوة */
+/* تلوين السهم عند تفعيل الخطوة */
 .step-item.active:not(:last-child)::after {
-    background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary) 100%);
-    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    border-color: transparent transparent transparent var(--color-primary);
 }
 
 /* دائرة الخطوة */

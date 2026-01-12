@@ -13,10 +13,6 @@
         margin-bottom: 2rem;
     }
 
-    .step-item {
-        min-width: 80px;
-    }
-
     .step-circle {
         width: 48px;
         height: 48px;
@@ -39,29 +35,14 @@
         margin-bottom: 1.5rem;
     }
 
-    /* تحسين شريط التمرير */
-    .stepper-wrapper {
-        justify-content: flex-start;
-        /* مهم للتمرير */
-        padding: 20px;
-        gap: 0.5rem;
-    }
-
-    .step-item {
-        flex: 0 0 90px;
-        /* عرض ثابت لكل خطوة لضمان التمرير */
-        width: auto;
-    }
-
-    .step-item:not(:last-child)::after {
-        width: 100%;
-        left: -50%;
-    }
-
     .step-circle {
         width: 42px;
         height: 42px;
         font-size: 1rem;
+    }
+
+    .step-label {
+        font-size: 0.8rem;
     }
 }
 
@@ -114,12 +95,13 @@
 
 /* شاشات صغيرة جداً (مثل الساعات أو نوافذ iframe ضيقة للغاية) */
 @media (max-width: 320px) {
-    .step-item {
-        flex: 0 0 75px;
-    }
-
     .step-label {
         font-size: 0.6rem;
+    }
+
+    .step-circle {
+        width: 32px;
+        height: 32px;
     }
 }
 
