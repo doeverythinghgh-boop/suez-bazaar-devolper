@@ -336,28 +336,60 @@
     padding: 10px 10px;
     background-color: transparent;
     margin-bottom: 0px;
+    gap: 20px;
+    /* استخدام gap لضمان مسافة ثابتة في كلتا اللغتين */
 }
 
 /* Toggle Button - Floating Action Style */
 .categories_view_toggle {
-    background-color: var(--bg-color-white, #fff);
-    color: var(--primary-color);
-    border: 1px solid var(--border-color);
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    /* Circle */
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: var(--shadow-soft, 0 2px 8px rgba(0, 0, 0, 0.08));
+    box-shadow: var(--shadow-soft);
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    font-size: 1.1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: "Tajawal", sans-serif;
     outline: none;
+    min-height: 32px;
+    /* توحيد الارتفاع */
 }
 
 .categories_view_toggle:active {
+    transform: scale(0.95);
+}
+
+/* View All Button - Integrated Link Style */
+.categories_view_all_btn {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--shadow-soft);
+    transition: all 0.3s ease;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: "Tajawal", sans-serif;
+    min-height: 32px;
+    /* توحيد الارتفاع */
+}
+
+.categories_view_all_btn i {
+    font-size: 0.8rem;
+}
+
+.categories_view_all_btn:active {
     transform: scale(0.95);
 }
 

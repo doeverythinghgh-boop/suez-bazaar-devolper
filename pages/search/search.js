@@ -222,8 +222,8 @@ async function initSearchModal(containerId) {
         const option = document.createElement("option"); // NOSONAR
         option.value = category.id;
         const titleObj = category.title;
-        const displayTitle = typeof titleObj === 'object' ? 
-            (titleObj[window.app_language] || titleObj['ar']) : titleObj;
+        const displayTitle = typeof titleObj === 'object' ?
+          (titleObj[window.app_language] || titleObj['ar']) : titleObj;
 
         option.textContent = displayTitle;
         // Store subcategories in dataset
@@ -254,8 +254,8 @@ async function initSearchModal(containerId) {
               const subOption = document.createElement("option"); // NOSONAR
               subOption.value = sub.id;
               const subTitleObj = sub.title;
-              const subDisplayTitle = typeof subTitleObj === 'object' ? 
-                  (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+              const subDisplayTitle = typeof subTitleObj === 'object' ?
+                (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
 
               subOption.textContent = subDisplayTitle;
               subCategoryFilter.appendChild(subOption);
@@ -324,6 +324,42 @@ async function initSearchModal(containerId) {
     searchModalInput.value = pendingQuery;
     localStorage.removeItem('pendingSearchQuery'); // Clear to prevent loops
     setTimeout(() => performSearch(), 100); // Small delay to ensure everything is ready
+  }
+
+  // ✅ NEW: Handle incoming search request for specific categories from "View All" button
+  const pendingCatSearch = localStorage.getItem('pendingCategorySearch');
+  if (pendingCatSearch) {
+    try {
+      const { mainId, subId } = JSON.parse(pendingCatSearch);
+      console.log(`[SearchModal] اكتشاف بحث معلق لفئة من صفحة الفئات: Main=${mainId}, Sub=${subId}`);
+      localStorage.removeItem('pendingCategorySearch');
+
+      // Helper to Wait for categories to load into filters
+      const filterCheckInterval = setInterval(() => {
+        // If main filter has more than the default option
+        if (mainCategoryFilter && mainCategoryFilter.options.length > 1) {
+          clearInterval(filterCheckInterval);
+
+          mainCategoryFilter.value = mainId;
+          // Trigger change to populate subCategoryFilter
+          mainCategoryFilter.dispatchEvent(new Event('change'));
+
+          // Small delay to allow subcategories to render in DOM
+          setTimeout(() => {
+            if (subCategoryFilter) {
+              subCategoryFilter.value = subId;
+              console.log("[SearchModal] تفعيل البحث التلقائي للفئة المحددة.");
+              performSearch();
+            }
+          }, 150);
+        }
+      }, 50);
+
+      // Safety timeout after 3 seconds
+      setTimeout(() => clearInterval(filterCheckInterval), 3000);
+    } catch (e) {
+      console.error("[SearchModal] خطأ في معالجة البحث المعلق للفئات:", e);
+    }
   }
 
   // Developer message: Init complete

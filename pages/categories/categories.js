@@ -352,7 +352,7 @@ async function categories_showProductGalleryGrid(detailsContainer, mainCatId, su
         const subcategory = mainCategory ? mainCategory.subcategories.find(s => String(s.id) === String(subCatId)) : null;
 
         if (products && products.length > 0) {
-            await categories_renderProductGallery(galleryWrapper, products, subcategory);
+            await categories_renderProductGallery(galleryWrapper, products, subcategory, mainCatId);
         } else {
             galleryWrapper.innerHTML = `<p class="no-products-message" style="text-align:center; padding: 30px; color: var(--text-color-light); font-size: 0.9rem;">${window.langu('cat_no_products_message')}</p>`;
         }
@@ -379,9 +379,10 @@ function categories_removeInternalGallery() { }
  * @param {HTMLElement} galleryWrapper - The container to populate with gallery.
  * @param {Array<Object>} products - Array of products.
  * @param {Object} subcategory - Subcategory object for context.
+ * @param {string} mainCatId - Main category ID for search redirection.
  * @returns {Promise<void>}
  */
-async function categories_renderProductGallery(galleryWrapper, products, subcategory) {
+async function categories_renderProductGallery(galleryWrapper, products, subcategory, mainCatId) {
     try {
         console.log(
             `[Products] تم العثور على ${products.length} منتج للفئة "${subcategory ? subcategory.title[window.app_language] || subcategory.title['ar'] : ''}". جاري بناء المعرض...`
@@ -391,14 +392,23 @@ async function categories_renderProductGallery(galleryWrapper, products, subcate
         const controlsHeader = document.createElement("div");
         controlsHeader.className = "categories_gallery_controls";
 
+        // View All Button (Redirects to Search)
+        const viewAllBtn = document.createElement("button");
+        viewAllBtn.id = "categories_view_all_btn";
+        viewAllBtn.className = "categories_view_all_btn";
+        viewAllBtn.type = "button";
+        viewAllBtn.innerHTML = `<i class="fas fa-external-link-alt" style="margin-left: 5px;"></i> ${window.langu('cat_view_all_btn') || 'عرض الكل'}`;
+
         // Toggle Button
         const toggleBtn = document.createElement("button");
+        toggleBtn.id = "categories_view_toggle";
         toggleBtn.className = "categories_view_toggle";
         toggleBtn.type = "button";
         toggleBtn.title = window.langu('cat_view_toggle_title');
         // Now it starts as Grid, so icon should be "List" to toggle back
         toggleBtn.innerHTML = '<i class="fas fa-list"></i>';
 
+        controlsHeader.appendChild(viewAllBtn);
         controlsHeader.appendChild(toggleBtn);
 
         // 2. Create Gallery Container
@@ -418,6 +428,30 @@ async function categories_renderProductGallery(galleryWrapper, products, subcate
 
             // Switch Icon
             toggleBtn.innerHTML = isGrid ? '<i class="fas fa-list"></i>' : '<i class="fas fa-th"></i>';
+        });
+
+        // View All Logic
+        viewAllBtn.addEventListener('click', () => {
+            if (!subcategory || !mainCatId) return;
+
+            console.log(`[Categories] Redirecting to search with Main:${mainCatId}, Sub:${subcategory.id}`);
+
+            // Store search criteria
+            const searchData = {
+                mainId: mainCatId,
+                subId: subcategory.id,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('pendingCategorySearch', JSON.stringify(searchData));
+
+            // Trigger search button click in header
+            const searchNavBtn = document.getElementById('index-search-btn');
+            if (searchNavBtn) {
+                searchNavBtn.click();
+            } else {
+                // Fallback: direct loader call if button not found (though it should be there)
+                mainLoader("pages/search/search.html", "index-search-container", 0, undefined, "showHomeIcon", true);
+            }
         });
 
         for (const product of products) {

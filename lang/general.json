@@ -327,6 +327,10 @@
     "ar": "تبديل العرض (شبكة / قائمة)",
     "en": "Toggle View (Grid / List)"
   },
+  "cat_view_all_btn": {
+    "ar": "عرض الكل",
+    "en": "View All"
+  },
   "cat_no_products_message": {
     "ar": "لا توجد منتجات في هذه الفئة حالياً.",
     "en": "No products found in this category currently."
