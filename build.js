@@ -531,11 +531,15 @@ function copyToAndroidAssets() {
 
     var androidAssetsPath = path.join(PROJECT_ROOT, '..', 'suez-bazaar-android', 'app', 'src', 'main', 'assets');
 
-    // Check if Android project exists
+    // Ensure Android assets folder exists
     if (!fs.existsSync(androidAssetsPath)) {
-        console.warn('⚠️ Android assets folder not found. Skipping copy.');
-        console.warn(`   Expected path: ${androidAssetsPath}`);
-        return;
+        console.log('🚀 Android assets folder missing. Creating it...');
+        try {
+            fs.mkdirSync(androidAssetsPath, { recursive: true });
+        } catch (err) {
+            console.error('❌ Failed to create Android assets folder:', err.message);
+            return;
+        }
     }
 
     try {
