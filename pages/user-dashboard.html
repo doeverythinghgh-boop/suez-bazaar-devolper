@@ -14,8 +14,32 @@
         font-size: clamp(24px, 5vw, 32px);
         /* Responsive font size */
         font-weight: 700;
-        margin-bottom: 40px;
+        margin-bottom: 20px;
+        /* تقليل الهامش السفلي لترك مسافة للزر */
         animation: fadeInDown 0.5s ease-out;
+    }
+
+    .dash-featured-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        /* تقليل الهامش للاقتراب من الإطار التالي */
+        animation: fadeInUp 0.5s ease-out;
+    }
+
+    .dash-seller-frame {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        /* مسافة جيدة بين الزرين */
+        padding: 20px;
+        border: 1px solid var(--border-color, #ddd);
+        border-radius: 16px;
+        margin: 0 auto 40px auto;
+        max-width: fit-content;
+        background-color: var(--bg-color-medium);
+        box-shadow: var(--shadow-soft);
+        animation: fadeInUp 0.6s ease-out;
     }
 
     /* --- Action Buttons Grid --- */
@@ -61,12 +85,12 @@
     }
 
     /* Floating Contact & Settings Buttons */
-    #index-settings-btn {
+    #index-settings-btn,
+    #dash-logout-btn-alt {
         position: fixed;
         bottom: 25px;
         width: 42px;
         height: 42px;
-        background-color: var(--primary-color, #007bff);
         color: white;
         border: none;
         border-radius: 50%;
@@ -80,21 +104,27 @@
         padding: 0;
     }
 
-
-
     #index-settings-btn {
+        background-color: var(--primary-color, #007bff);
         right: 25px;
     }
 
-    #index-settings-btn i {
+    #dash-logout-btn-alt {
+        background-color: var(--danger-color, #dc3545);
+        right: 80px;
+        /* موضع بجوار الإعدادات */
+    }
+
+    #index-settings-btn i,
+    #dash-logout-btn-alt i {
         font-size: 18px;
         color: white;
         margin: 0;
     }
 
-    #index-settings-btn:active {
+    #index-settings-btn:active,
+    #dash-logout-btn-alt:active {
         transform: scale(0.9);
-        background-color: var(--dark-blue, #03478f);
     }
 </style>
 
@@ -111,19 +141,16 @@
 
 
 <h2 id="dash-welcome-message"></h2>
-<!-- Main container for buttons split into buttons groups -->
-<!-- ✅ EDIT: Grid container for all buttons -->
-<div id="dash-action-buttons" class="dash-action-buttons">
-    <!-- General User buttons -->
-    <button id="dash-edit-profile-btn" class="dash-button">
-        <i class="fas fa-user-cog"></i> <span data-lkey="dash_edit_profile">تعديل البيانات</span>
-    </button>
 
+<!-- ✅ NEW: Featured action button centered below welcome message -->
+<div class="dash-featured-container">
     <button id="index-gifts-btn" class="dash-button">
         <i class="fas fa-gift"></i> <span data-lkey="dash_gifts">هدايا</span>
     </button>
+</div>
 
-    <!-- Admin/Seller buttons -->
+<!-- ✅ NEW: Centered frame for Seller actions -->
+<div class="dash-seller-frame">
     <button id="dash-add-product-btn" class="dash-button">
         <i class="fas fa-plus"></i> <span data-lkey="dash_add_product">إضافة منتج</span>
     </button>
@@ -131,20 +158,23 @@
     <button id="dash-view-my-products-btn" class="dash-button">
         <i class="fas fa-archive"></i> <span data-lkey="dash_my_products">منتجاتي</span>
     </button>
+</div>
 
+<!-- Main container for remaining dashboard buttons -->
+<div id="dash-action-buttons" class="dash-action-buttons">
     <button id="dash-admin-panel-btn" class="dash-button">
         <i class="fas fa-user-shield"></i> <span data-lkey="dash_admin_panel">لوحة المسؤول</span>
-    </button>
-
-    <!-- Logout button -->
-    <button id="dash-logout-btn-alt" class="dash-button">
-        <i class="fas fa-sign-out-alt"></i> <span data-lkey="dash_logout">تسجيل الخروج</span>
     </button>
 </div>
 
 <!-- Settings button -->
 <button id="index-settings-btn" data-lkey-title="dash_settings_title" title="الإعدادات">
     <i class="fas fa-cog"></i>
+</button>
+
+<!-- Logout button moved to floating next to settings -->
+<button id="dash-logout-btn-alt" data-lkey-title="dash_logout" title="تسجيل الخروج">
+    <i class="fas fa-sign-out-alt"></i>
 </button>
 
 <!-- Support button moved to absolute bottom right -->

@@ -362,85 +362,91 @@ body.dark-theme .install-modal-container .install-btn {
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
 }
 
-/* === 3. نافذة تسجيل الخروج (عصرية) === */
-.swal-modern-logout-popup {
-  border-radius: 24px !important;
-  padding: 2rem !important;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15) !important;
+/* === 3. نافذة "المودرن ميني" الموحدة (Universal Modern Mini) === */
+.swal-modern-mini-popup {
+  border-radius: 12px !important;
+  padding: 1rem !important;
+  /* تقليل الحشو لأقصى درجة */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
   background-color: var(--bg-color-white) !important;
   font-family: var(--font-primary, 'Tajawal', sans-serif) !important;
+  width: auto !important;
+  max-width: 300px !important;
+  /* تقليل حجم النافذة */
 }
 
-body.dark-theme .swal-modern-logout-popup {
+body.dark-theme .swal-modern-mini-popup {
   background-color: var(--modal-item-bg, #1e1e1e) !important;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 
-.swal-modern-logout-title {
-  font-size: 1.5rem !important;
-  font-weight: 800 !important;
+.swal-modern-mini-title {
+  font-size: 1.1rem !important;
+  /* تصغير الخط */
+  font-weight: 700 !important;
   color: var(--text-color-dark) !important;
-  margin-bottom: 0.5rem !important;
+  margin-bottom: 0.3rem !important;
 }
 
-.swal-modern-logout-text {
-  font-size: 1.1rem !important;
+.swal-modern-mini-text {
+  font-size: 0.9rem !important;
+  /* تصغير الخط */
   color: var(--text-color-medium) !important;
-  margin-bottom: 2rem !important;
+  margin-bottom: 1rem !important;
 }
 
 /* أزرار عصرية */
-.swal-modern-logout-confirm {
+.swal-modern-mini-confirm {
   background-color: var(--primary-color) !important;
-  /* لون أزرق مسطح */
   color: #fff !important;
   border: none !important;
-  border-radius: 12px !important;
-  padding: 12px 30px !important;
-  font-size: 1rem !important;
+  border-radius: 8px !important;
+  padding: 8px 20px !important;
+  /* تقليل الحشو */
+  font-size: 0.9rem !important;
   font-weight: 700 !important;
   cursor: pointer !important;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s !important;
-  margin: 0 8px !important;
-  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3) !important;
-  /* ظل خفيف للزر */
+  margin: 0 4px !important;
+  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2) !important;
 }
 
-.swal-modern-logout-confirm:active {
+.swal-modern-mini-confirm:active {
   transform: scale(0.96) !important;
   box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
 }
 
-.swal-modern-logout-confirm:focus {
+.swal-modern-mini-confirm:focus {
   outline: none !important;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4) !important;
 }
 
-.swal-modern-logout-cancel {
+.swal-modern-mini-cancel {
   background-color: transparent !important;
   color: var(--text-color-medium) !important;
-  border: 2px solid #e5e7eb !important;
-  border-radius: 12px !important;
-  padding: 10px 25px !important;
-  font-size: 1rem !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 7px 18px !important;
+  /* تقليل الحشو */
+  font-size: 0.9rem !important;
   font-weight: 600 !important;
   cursor: pointer !important;
   transition: background-color 0.2s ease, color 0.2s ease !important;
-  margin: 0 8px !important;
+  margin: 0 4px !important;
 }
 
-body.dark-theme .swal-modern-logout-cancel {
+body.dark-theme .swal-modern-mini-cancel {
   border-color: #4b5563 !important;
   color: #9ca3af !important;
 }
 
-.swal-modern-logout-cancel:active {
+.swal-modern-mini-cancel:active {
   background-color: #f3f4f6 !important;
   color: #1f2937 !important;
 }
 
-body.dark-theme .swal-modern-logout-cancel:active {
+body.dark-theme .swal-modern-mini-cancel:active {
   background-color: #374151 !important;
   color: #fff !important;
 }
@@ -453,27 +459,33 @@ body.dark-theme .swal-modern-logout-cancel:active {
 }
 
 /* تنسيق حاوية الأزرار لتكون في سطر واحد دائماً */
-.swal-modern-logout-popup .swal2-actions {
+.swal-modern-mini-popup .swal2-actions {
   display: flex !important;
   flex-direction: row-reverse !important;
-  /* عكس الترتيب ليكون "موافق" في البداية حسب اللغة */
   flex-wrap: nowrap !important;
-  /* منع الالتفاف للسطر التالي */
   justify-content: center !important;
-  gap: 12px !important;
+  gap: 8px !important;
   width: 100% !important;
-  margin-top: 1.5rem !important;
+  margin-top: 0.8rem !important;
+  /* تقليل الهامش العلوي */
+}
+
+/* إخفاء شريط التقدم الزمني والعناصر غير الضرورية */
+.swal-modern-mini-popup .swal2-timer-progress-bar-container,
+.swal-modern-mini-popup .swal2-timer-progress-bar,
+.swal-modern-mini-popup .swal2-icon {
+  display: none !important;
 }
 
 /* تحسين استجابة الأزرار للشاشات الصغيرة */
 @media (max-width: 480px) {
-  .swal-modern-logout-popup {
-    padding: 1.5rem !important;
+  .swal-modern-mini-popup {
+    padding: 1rem !important;
     width: 90% !important;
   }
 
-  .swal-modern-logout-confirm,
-  .swal-modern-logout-cancel {
+  .swal-modern-mini-confirm,
+  .swal-modern-mini-cancel {
     padding: 10px 15px !important;
     /* تقليل الهوامش الداخلية */
     font-size: 0.9rem !important;

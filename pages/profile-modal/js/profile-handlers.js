@@ -79,7 +79,7 @@ async function profileHandleSellerOptions() {
                 <div class="swal-profile-container">
                     <div class="swal-profile-section">
                         <label class="swal-profile-label">
-                            <i class="fas fa-truck-moving" style="color: #10b981;"></i> ${window.langu("profile_delivery_question")}
+                            ${window.langu("profile_delivery_question")}
                         </label>
                         <select id="swal-profile_is-delevred" class="swal2-input swal-profile-input">
                             <option value="0" ${currentIsDelevred == "0" ? "selected" : ""}>${window.langu("profile_delivery_no")}</option>
@@ -88,7 +88,7 @@ async function profileHandleSellerOptions() {
                     </div>
                     <div class="swal-profile-section">
                         <label class="swal-profile-label">
-                            <i class="fas fa-hand-holding-usd" style="color: #10b981;"></i> ${window.langu("profile_min_order_question")}
+                            ${window.langu("profile_min_order_question")}
                         </label>
                         <select id="swal-profile_has-limit" class="swal2-input swal-profile-input">
                             <option value="no" ${currentLimitPackage == "0" ? "selected" : ""}>${window.langu("profile_min_order_no")}</option>
@@ -105,10 +105,13 @@ async function profileHandleSellerOptions() {
             showCancelButton: true,
             confirmButtonText: window.langu("profile_save_settings_btn"),
             cancelButtonText: window.langu("alert_cancel_btn"),
+            buttonsStyling: false,
             customClass: {
-                popup: 'modern-swal-popup',
-                confirmButton: 'modern-swal-confirm',
-                cancelButton: 'modern-swal-cancel'
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm',
+                cancelButton: 'swal-modern-mini-cancel'
             },
             didOpen: () => {
                 const hasLimitSelect = document.getElementById("swal-profile_has-limit");
@@ -263,11 +266,17 @@ async function profileHandleAccountDeletion() {
     const confirmation = await Swal.fire({
         title: window.langu("profile_delete_confirm_title"),
         text: window.langu("profile_delete_confirm_text"),
-        icon: "warning",
         showCancelButton: true,
         confirmButtonText: window.langu("profile_delete_yes"),
         cancelButtonText: window.langu("alert_cancel_btn"),
-        confirmButtonColor: "#d33"
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm',
+            cancelButton: 'swal-modern-mini-cancel'
+        }
     });
 
     if (!confirmation.isConfirmed) return;

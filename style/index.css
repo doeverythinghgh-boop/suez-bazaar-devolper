@@ -7,7 +7,7 @@
     overflow: hidden;
     /* Prevent scrollbars on the body */
     box-sizing: border-box;
-    
+
     /* ✅ Keyboard Scrolling: Add scroll padding for input fields */
     scroll-padding-top: 20px;
     scroll-padding-bottom: 120px;
@@ -32,12 +32,16 @@
   }
 
   /* ✅ Keyboard Scrolling: Input fields scroll margin */
-  input, textarea, select {
+  input,
+  textarea,
+  select {
     touch-action: manipulation;
     scroll-margin-bottom: 120px;
   }
 
-  input:focus, textarea:focus, select:focus {
+  input:focus,
+  textarea:focus,
+  select:focus {
     scroll-margin-bottom: 140px;
   }
 
@@ -54,7 +58,7 @@
     background-color: var(--bg-color-light);
     color: var(--text-color-dark);
     transition: background-color 0.3s ease, color 0.3s ease;
-    
+
     /* ✅ Keyboard Scrolling: iOS smooth scrolling */
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-y: contain;
@@ -275,57 +279,4 @@
   .fullscreen-swal .swal2-popup {
     padding: 0 !important;
     border-radius: 15px !important;
-  }
-
-  /* Modern Seller Options Swal Styling */
-  .modern-swal-popup {
-    border-radius: 20px !important;
-    padding: 1.5rem !important;
-    font-family: 'Tajawal', sans-serif !important;
-    box-shadow: var(--shadow-interactive) !important;
-    max-width: 450px !important;
-    width: 90% !important;
-    background: var(--modal-bg) !important;
-  }
-
-  .modern-swal-confirm {
-    background-color: var(--primary-color) !important;
-    border-radius: 10px !important;
-    padding: 12px 30px !important;
-    font-weight: 600 !important;
-    order: 1 !important;
-    color: #fff !important;
-  }
-
-  .modern-swal-cancel {
-    background-color: transparent !important;
-    color: var(--text-color-medium) !important;
-    border: 1px solid var(--border-color) !important;
-    border-radius: 10px !important;
-    padding: 12px 30px !important;
-    order: 2 !important;
-  }
-
-  .modern-swal-popup .swal2-title {
-    color: var(--dark-blue) !important;
-    font-weight: 800 !important;
-    margin-bottom: 20px !important;
-  }
-
-  @media screen and (max-width: 480px) {
-    .modern-swal-popup {
-      padding: 1rem !important;
-      width: 95% !important;
-    }
-
-    .modern-swal-confirm,
-    .modern-swal-cancel {
-      width: 100% !important;
-      margin: 5px 0 !important;
-    }
-
-    .swal2-actions {
-      flex-direction: column !important;
-      width: 100% !important;
-    }
   }

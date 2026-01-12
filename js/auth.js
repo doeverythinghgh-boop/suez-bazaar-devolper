@@ -21,17 +21,16 @@ async function logout() {
   Swal.fire({
     title: window.langu("logout_confirm_title"),
     text: window.langu("logout_confirm_text"),
-    icon: "warning",
     showCancelButton: true,
     confirmButtonText: window.langu("logout_confirm_btn"),
     cancelButtonText: window.langu("alert_cancel_btn"),
     showLoaderOnConfirm: true,
     customClass: {
-      popup: 'swal-modern-logout-popup',
-      title: 'swal-modern-logout-title',
-      htmlContainer: 'swal-modern-logout-text',
-      confirmButton: 'swal-modern-logout-confirm',
-      cancelButton: 'swal-modern-logout-cancel'
+      popup: 'swal-modern-mini-popup',
+      title: 'swal-modern-mini-title',
+      htmlContainer: 'swal-modern-mini-text',
+      confirmButton: 'swal-modern-mini-confirm',
+      cancelButton: 'swal-modern-mini-cancel'
     },
     buttonsStyling: false, // تعطيل الستايل الافتراضي لاستخدام الكلاسات الخاصة بنا بالكامل
     preConfirm: async () => {

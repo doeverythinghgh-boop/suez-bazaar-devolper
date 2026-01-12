@@ -142,7 +142,6 @@ function updateViewForLoggedInUser() {
   if (SessionManager.isGuest()) {
     // [Step 3.1] Hide buttons
     [
-      "dash-edit-profile-btn",
       "dash-admin-panel-btn",
       "dash-view-sales-movement-btn",
       "dash-add-product-btn",
@@ -219,20 +218,6 @@ function updateViewForLoggedInUser() {
         if (typeof logout === "function") logout();
       });
     }
-
-    const editProfileBtn = document.getElementById("dash-edit-profile-btn");
-    if (editProfileBtn) {
-      editProfileBtn.addEventListener("click", () =>
-        mainLoader(
-          "pages/profile-modal/profile-modal.html",
-          "index-user-container",
-          0,
-          undefined,
-          "showHomeIcon",
-          true
-        )
-      );
-    }
   }
 
   // [Step 6] Bind Settings Button (Available for all)
@@ -261,7 +246,7 @@ function updateViewForLoggedInUser() {
               </div>
 
               <!-- Profile Settings -->
-              <div onclick="document.getElementById('dash-edit-profile-btn') && document.getElementById('dash-edit-profile-btn').click(); Swal.close();" 
+              <div onclick="mainLoader('pages/profile-modal/profile-modal.html', 'index-user-container', 0, undefined, 'showHomeIcon', true); Swal.close();" 
                    class="settings-action-item">
                 <i class="fas fa-user-cog" style="color: var(--primary-color);"></i>
                 <span>${window.langu("dash_profile_tab")}</span>
