@@ -68,7 +68,42 @@ async function ensureWorkspace() {
             });
         }
     }
+
+    // 4. Create Workspace File if missing
+    createWorkspaceFile();
+
     console.log('✨ Workspace check complete.\n');
+}
+
+/**
+ * Creates the VS Code workspace file in the parent directory if it doesn't exist.
+ * @returns {void}
+ */
+function createWorkspaceFile() {
+    var workspaceFilePath = path.join(PROJECT_ROOT, '..', 'suez-bazaar-devolper.code-workspace');
+
+    if (fs.existsSync(workspaceFilePath)) {
+        return;
+    }
+
+    console.log('📝 Creating Workspace file...');
+    var workspaceContent = {
+        folders: WORKSPACE_CONFIG.map(repo => ({
+            name: repo.name,
+            path: repo.name // Using relative paths since the file is in the parent dir
+        })),
+        settings: {
+            "liveServer.settings.port": 5504,
+            "liveServer.settings.multiRootWorkspaceName": "suez-bazaar-devolper"
+        }
+    };
+
+    try {
+        fs.writeFileSync(workspaceFilePath, JSON.stringify(workspaceContent, null, 4));
+        console.log(`   ✅ Workspace file created at: ${workspaceFilePath}`);
+    } catch (err) {
+        console.warn('   ⚠️ Failed to create workspace file:', err.message);
+    }
 }
 
 // 1. Configuration
