@@ -89,12 +89,17 @@ function EDIT_removeImage(id) {
     Swal.fire({
         title: window.langu('gen_swal_title_confirm'),
         text: window.langu('gen_swal_remove_text'),
-        icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
         confirmButtonText: window.langu('gen_swal_btn_yes_delete'),
-        cancelButtonText: window.langu('gen_swal_btn_cancel')
+        cancelButtonText: window.langu('gen_swal_btn_cancel'),
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm',
+            cancelButton: 'swal-modern-mini-cancel'
+        }
     }).then((result) => {
         if (result.isConfirmed) {
             const idx = EDIT_images.findIndex(i => i.id === id);
@@ -241,17 +246,16 @@ function EDIT_attachEventListeners() {
                 Swal.fire({
                     title: window.langu('gen_swal_discard_title'),
                     text: window.langu('gen_swal_discard_text'),
-                    icon: 'warning',
-                    iconColor: '#f39c12',
                     showCancelButton: true,
-                    confirmButtonColor: '#e74c3c',
-                    cancelButtonColor: '#bdc3c7',
                     confirmButtonText: `<i class="fas fa-trash-alt"></i> ${window.langu('gen_swal_btn_yes_discard')}`,
                     cancelButtonText: window.langu('gen_swal_btn_back'),
-                    background: '#ffffff',
+                    buttonsStyling: false,
                     customClass: {
-                        title: 'swal-modern-title',
-                        popup: 'swal-modern-popup'
+                        popup: 'swal-modern-mini-popup',
+                        title: 'swal-modern-mini-title',
+                        htmlContainer: 'swal-modern-mini-text',
+                        confirmButton: 'swal-modern-mini-confirm',
+                        cancelButton: 'swal-modern-mini-cancel'
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {

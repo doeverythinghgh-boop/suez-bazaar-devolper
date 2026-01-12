@@ -202,13 +202,17 @@ Object.assign(NotificationPage, {
             const result = await Swal.fire({
                 title: window.langu('notifications_delete_confirm_title'),
                 text: window.langu('notifications_delete_confirm_text'),
-                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm',
+                    cancelButton: 'swal-modern-mini-cancel'
+                },
                 confirmButtonText: window.langu('alert_confirm_yes'),
-                cancelButtonText: window.langu('alert_cancel_btn'),
-                customClass: { popup: 'fullscreen-swal' }
+                cancelButtonText: window.langu('alert_cancel_btn')
             });
 
             if (result.isConfirmed) {
@@ -237,11 +241,17 @@ Object.assign(NotificationPage, {
         if (!silent) {
             const result = await Swal.fire({
                 title: window.langu('notifications_mark_all_read_confirm'),
-                icon: 'question',
                 showCancelButton: true,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm',
+                    cancelButton: 'swal-modern-mini-cancel'
+                },
                 confirmButtonText: window.langu('alert_confirm_yes'),
-                cancelButtonText: window.langu('alert_cancel_btn'),
-                customClass: { popup: 'fullscreen-swal' }
+                cancelButtonText: window.langu('alert_cancel_btn')
             });
             if (!result.isConfirmed) return;
         }
@@ -346,20 +356,32 @@ Object.assign(NotificationPage, {
                         console.log('[Dev] ⚙️ الخطوة 1-A: بيئة أندرويد - جاري استدعاء طلب إذن النظام (OS Permission Request)...');
                         window.Android.requestNotificationPermission();
                         Swal.fire({
-                            icon: 'info',
                             title: window.langu('notifications_sys_permission_required'),
                             text: window.langu('notifications_sys_permission_text'),
-                            confirmButtonText: window.langu('alert_confirm_btn')
+                            confirmButtonText: window.langu('alert_confirm_btn'),
+                            buttonsStyling: false,
+                            customClass: {
+                                popup: 'swal-modern-mini-popup',
+                                title: 'swal-modern-mini-title',
+                                htmlContainer: 'swal-modern-mini-text',
+                                confirmButton: 'swal-modern-mini-confirm'
+                            }
                         });
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
                     } else {
                         console.log('[Dev] ⚙️ الخطوة 1-B: بيئة ويب - لا يمكن طلب الإذن برمجياً بعد الرفض.');
                         Swal.fire({
-                            icon: 'warning',
                             title: window.langu('notifications_blocked_title'),
                             html: window.langu('notifications_blocked_text'),
-                            confirmButtonText: window.langu('alert_confirm_btn')
+                            confirmButtonText: window.langu('alert_confirm_btn'),
+                            buttonsStyling: false,
+                            customClass: {
+                                popup: 'swal-modern-mini-popup',
+                                title: 'swal-modern-mini-title',
+                                htmlContainer: 'swal-modern-mini-text',
+                                confirmButton: 'swal-modern-mini-confirm'
+                            }
                         });
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
@@ -396,11 +418,16 @@ Object.assign(NotificationPage, {
                 localStorage.setItem('notifications_enabled', 'true');
                 this.updateToggleUI(true);
                 Swal.fire({
-                    icon: 'success',
                     title: window.langu('notifications_enabled_success'),
                     text: window.langu('notifications_enabled_desc'),
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'swal-modern-mini-popup',
+                        title: 'swal-modern-mini-title',
+                        htmlContainer: 'swal-modern-mini-text'
+                    }
                 });
             } else {
                 throw new Error('نظام الإشعارات غير متوفر حالياً');
@@ -409,9 +436,16 @@ Object.assign(NotificationPage, {
             console.error('[Notifications Action] فشل التفعيل:', error);
             console.log('[Dev] ❌ فشل التفعيل في مكان ما.');
             Swal.fire({
-                icon: 'error',
                 title: window.langu('failed_operation_title'),
-                text: error.message || window.langu('unexpected_error')
+                text: error.message || window.langu('unexpected_error'),
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
             });
             if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
         }
@@ -427,10 +461,15 @@ Object.assign(NotificationPage, {
             const result = await Swal.fire({
                 title: window.langu('notifications_disable_confirm_title'),
                 text: window.langu('notifications_disable_confirm_text'),
-                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm',
+                    cancelButton: 'swal-modern-mini-cancel'
+                },
                 confirmButtonText: window.langu('logout_confirm_btn'),
                 cancelButtonText: window.langu('alert_cancel_btn')
             });
@@ -460,11 +499,16 @@ Object.assign(NotificationPage, {
                 localStorage.removeItem('fcm_token');
                 localStorage.removeItem('android_fcm_key');
                 Swal.fire({
-                    icon: 'success',
                     title: window.langu('notifications_disabled_success'),
                     text: window.langu('notifications_disabled_desc'),
                     timer: 2000,
-                    showConfirmButton: false
+                    showConfirmButton: false,
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'swal-modern-mini-popup',
+                        title: 'swal-modern-mini-title',
+                        htmlContainer: 'swal-modern-mini-text'
+                    }
                 });
                 console.log('[Dev] 🛑 تم الانتهاء من التعطيل بنجاح.');
             } else {

@@ -30,7 +30,13 @@ function handleAdminPanelClick() {
       showDenyButton: false,
       showCancelButton: true,
       cancelButtonText: window.langu("alert_cancel_btn"),
-      icon: "question",
+      buttonsStyling: false,
+      customClass: {
+        popup: 'swal-modern-mini-popup',
+        title: 'swal-modern-mini-title',
+        htmlContainer: 'swal-modern-mini-text',
+        cancelButton: 'swal-modern-mini-cancel'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         mainLoader(

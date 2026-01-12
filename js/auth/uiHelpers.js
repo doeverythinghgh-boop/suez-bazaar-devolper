@@ -19,7 +19,12 @@ const AuthUI = {
             didOpen: () => {
                 Swal.showLoading();
             },
-            customClass: { popup: 'fullscreen-swal' },
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text'
+            },
+            buttonsStyling: false
         });
     },
 
@@ -40,11 +45,16 @@ const AuthUI = {
      */
     showSuccess: (title, text = "") => {
         return Swal.fire({
-            icon: "success",
             title: title,
             html: text, // using html to allow rich text if needed
             confirmButtonText: window.langu("alert_confirm_btn"),
-            customClass: { popup: 'fullscreen-swal' },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
         });
     },
 
@@ -56,11 +66,16 @@ const AuthUI = {
      */
     showError: (title, text) => {
         Swal.fire({
-            icon: "error",
             title: title,
             text: text,
             confirmButtonText: window.langu("alert_confirm_btn"),
-            customClass: { popup: 'fullscreen-swal' },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
         });
     },
 
@@ -105,7 +120,14 @@ const AuthUI = {
             input: "password",
             inputPlaceholder: window.langu("auth_enter_password_placeholder"),
             inputAttributes: { autocapitalize: "off", autocorrect: "off" },
-            customClass: { popup: 'fullscreen-swal' },
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm',
+                cancelButton: 'swal-modern-mini-cancel'
+            },
+            buttonsStyling: false,
             showCancelButton: true,
             confirmButtonText: window.langu("auth_confirm_btn"),
             cancelButtonText: window.langu("alert_cancel_btn"),

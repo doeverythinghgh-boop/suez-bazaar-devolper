@@ -34,8 +34,8 @@ location_app.getLocationByGPS = function () {
             Swal.fire({
                 title: window.langu('location_finding_title'),
                 html: `
-                    <p style="margin-bottom: 20px;">${window.langu('location_allow_access')}</p>
-                    <div class="swal2-loading" style="display: flex; justify-content: center; margin-bottom: 10px;">
+                    <p style="margin-bottom: 12px;">${window.langu('location_allow_access')}</p>
+                    <div class="swal2-loading" style="display: flex; justify-content: center; margin-bottom: 8px;">
                         <div class="swal2-loader" style="display: block;"></div>
                     </div>
                 `,

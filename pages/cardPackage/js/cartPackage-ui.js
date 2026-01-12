@@ -279,10 +279,16 @@ async function cartPage_updateCartSummary() {
 function showDeliveryDetails(deliveryResult) {
     if (!deliveryResult || !deliveryResult.costBreakdown) {
         Swal.fire({
-            icon: 'error',
-            title: 'خطأ',
-            text: 'لا توجد تفاصيل متاحة للعرض.',
-            confirmButtonText: 'موافق'
+            title: window.langu('alert_error_title') || 'خطأ',
+            text: window.langu('cart_no_details') || 'لا توجد تفاصيل متاحة للعرض.',
+            confirmButtonText: window.langu('alert_confirm_btn'),
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
         });
         return;
     }
@@ -540,12 +546,14 @@ function showDeliveryDetails(deliveryResult) {
 
     Swal.fire({
         html: detailsHTML,
-        width: '600px',
         confirmButtonText: window.langu('alert_confirm_btn'),
-        confirmButtonColor: 'var(--primary-color)',
         showCloseButton: true,
+        buttonsStyling: false,
         customClass: {
-            popup: 'delivery-details-popup'
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm'
         }
     });
 }

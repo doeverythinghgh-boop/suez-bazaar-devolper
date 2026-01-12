@@ -86,10 +86,16 @@ function addToCart(product, quantity, note = "") {
     window.userSession.user_key === product.seller_key
   ) {
     window.Swal.fire({
-      icon: "error",
       title: window.langu('cart_error_own_product_title'),
       text: window.langu('cart_error_own_product_text'),
       confirmButtonText: window.langu('alert_confirm_btn'),
+      buttonsStyling: false,
+      customClass: {
+        popup: 'swal-modern-mini-popup',
+        title: 'swal-modern-mini-title',
+        htmlContainer: 'swal-modern-mini-text',
+        confirmButton: 'swal-modern-mini-confirm'
+      }
     });
     containerGoBack();
     return false;
@@ -121,10 +127,16 @@ function addToCart(product, quantity, note = "") {
   saveCart(cart);
 
   window.Swal.fire({
-    icon: "success",
     title: window.langu('cart_added_success').replace('{name}', product.productName),
     text: window.langu('cart_added_desc'),
     confirmButtonText: window.langu('alert_confirm_btn'),
+    buttonsStyling: false,
+    customClass: {
+      popup: 'swal-modern-mini-popup',
+      title: 'swal-modern-mini-title',
+      htmlContainer: 'swal-modern-mini-text',
+      confirmButton: 'swal-modern-mini-confirm'
+    }
   }).then((result) => {
     if (result.isConfirmed) {
       containerGoBack();

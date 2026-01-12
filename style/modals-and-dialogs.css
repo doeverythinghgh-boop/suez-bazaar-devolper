@@ -324,7 +324,7 @@ body.dark-theme .install-modal-container .install-btn {
   background: var(--modal-item-bg, #f8fafc);
   padding: 15px;
   border-radius: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   border: 1px solid var(--modal-item-border, #e2e8f0);
 }
 
@@ -364,138 +364,143 @@ body.dark-theme .install-modal-container .install-btn {
 
 /* === 3. نافذة "المودرن ميني" الموحدة (Universal Modern Mini) === */
 .swal-modern-mini-popup {
-  border-radius: 12px !important;
-  padding: 1rem !important;
-  /* تقليل الحشو لأقصى درجة */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 24px !important;
+  /* زوايا دائرية بالكامل للحاوية */
+  padding: 0.8rem 0.5rem !important;
+  /* زيادة الحشو قليلاً */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12) !important;
   background-color: var(--bg-color-white) !important;
   font-family: var(--font-primary, 'Tajawal', sans-serif) !important;
   width: auto !important;
-  max-width: 300px !important;
-  /* تقليل حجم النافذة */
+  max-width: 320px !important;
+  /* زيادة العرض لاستيعاب 3 أزرار مع النص العربي */
 }
 
 body.dark-theme .swal-modern-mini-popup {
   background-color: var(--modal-item-bg, #1e1e1e) !important;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 .swal-modern-mini-title {
   font-size: 1.1rem !important;
-  /* تصغير الخط */
-  font-weight: 700 !important;
-  color: #1e3a8a !important;
-  /* لون أزرق ملكي جذاب */
-  margin-bottom: 0.3rem !important;
+  font-weight: 800 !important;
+  color: #1f2937 !important;
+  /* لون داكن جداً للعنوان */
+  margin-bottom: 0.5rem !important;
+  line-height: 1.3 !important;
+}
+
+body.dark-theme .swal-modern-mini-title {
+  color: #f3f4f6 !important;
 }
 
 .swal-modern-mini-text {
-  font-size: 0.9rem !important;
-  /* تصغير الخط */
-  color: var(--text-color-medium) !important;
-  margin-bottom: 1rem !important;
+  font-size: 0.95rem !important;
+  color: #6b7280 !important;
+  /* رمادي متوسط */
+  margin-bottom: 1.5rem !important;
+  /* مسافة أكبر قبل الأزرار */
+  line-height: 1.5 !important;
 }
 
-/* أزرار عصرية */
+body.dark-theme .swal-modern-mini-text {
+  color: #9ca3af !important;
+}
+
+/* تحسين حقول الإدخال داخل المودرن ميني */
+.swal-modern-mini-popup input,
+.swal-modern-mini-popup select,
+.swal-modern-mini-popup textarea {
+  line-height: 1 !important;
+  height: auto !important;
+  min-height: auto !important;
+  padding: 8px 8px !important;
+  font-size: 0.9rem !important;
+  margin-top: 5px !important;
+  margin-bottom: 5px !important;
+  box-shadow: none !important;
+  /* إزالة أي ظل افتراضي قد يزيد الارتفاع */
+}
+
+/* أزرار الكبسولة (Pill Shaped Buttons) */
 .swal-modern-mini-confirm {
   background-color: var(--primary-color) !important;
   color: #fff !important;
   border: none !important;
-  border-radius: 8px !important;
-  padding: 8px 20px !important;
-  /* تقليل الحشو */
+  border-radius: 50px !important;
+  /* شكل الكبسولة */
+  padding: 10px 20px !important;
+  /* تقليل الحشو الجانبي لمنع التكدس */
   font-size: 0.9rem !important;
   font-weight: 700 !important;
   cursor: pointer !important;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s !important;
-  margin: 0 4px !important;
-  box-shadow: 0 4px 10px rgba(59, 130, 246, 0.2) !important;
+  transition: opacity 0.2s ease !important;
+  margin: 0 !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+  /* ظل خفيف للزر الأساسي */
+  flex: 1 1 auto !important;
+  /* مرونة كاملة للنمو والانكماش */
+  min-width: 90px !important;
+  /* أقل عرض مسموح به */
 }
 
 .swal-modern-mini-confirm:active {
-  transform: scale(0.96) !important;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.2) !important;
-}
-
-.swal-modern-mini-confirm:focus {
-  outline: none !important;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.4) !important;
+  opacity: 0.9 !important;
+  transform: scale(0.97) !important;
+  box-shadow: none !important;
 }
 
 .swal-modern-mini-cancel {
-  background-color: transparent !important;
-  color: var(--text-color-medium) !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 8px !important;
-  padding: 7px 18px !important;
-  /* تقليل الحشو */
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
+  /* نص داكن للتباين */
+  border: none !important;
+  border-radius: 50px !important;
+  /* شكل الكبسولة */
+  padding: 10px 20px !important;
   font-size: 0.9rem !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   cursor: pointer !important;
-  transition: background-color 0.2s ease, color 0.2s ease !important;
-  margin: 0 4px !important;
+  transition: background-color 0.2s ease !important;
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  min-width: 90px !important;
 }
 
 body.dark-theme .swal-modern-mini-cancel {
-  border-color: #4b5563 !important;
-  color: #9ca3af !important;
+  background-color: #374151 !important;
+  color: #e5e7eb !important;
 }
 
 .swal-modern-mini-cancel:active {
-  background-color: #f3f4f6 !important;
-  color: #1f2937 !important;
+  background-color: #e5e7eb !important;
 }
 
 body.dark-theme .swal-modern-mini-cancel:active {
-  background-color: #374151 !important;
-  color: #fff !important;
+  background-color: #4b5563 !important;
 }
 
-/* أيقونة */
-.swal2-icon.swal2-warning {
-  border-color: #fbbf24 !important;
-  /* Amber-400 */
-  color: #fbbf24 !important;
-}
-
-/* تنسيق حاوية الأزرار لتكون في سطر واحد دائماً */
+/* تخطيط الأزرار - Fix Overflow */
 .swal-modern-mini-popup .swal2-actions {
   display: flex !important;
   flex-direction: row-reverse !important;
-  flex-wrap: nowrap !important;
+  flex-wrap: wrap !important;
+  /* السماح بالالتفاف عند ضيق المساحة */
   justify-content: center !important;
-  gap: 8px !important;
+  gap: 10px !important;
+  /* تقليل الفجوة قليلاً */
+  row-gap: 10px !important;
+  /* مسافة رأسية في حالة الالتفاف */
   width: 100% !important;
-  margin-top: 0.8rem !important;
-  /* تقليل الهامش العلوي */
+  margin-top: 0 !important;
+  padding: 0 !important;
 }
 
-/* إخفاء شريط التقدم الزمني والعناصر غير الضرورية */
+/* إخفاء العناصر غير الضرورية */
 .swal-modern-mini-popup .swal2-timer-progress-bar-container,
 .swal-modern-mini-popup .swal2-timer-progress-bar,
-.swal-modern-mini-popup .swal2-icon {
+.swal-modern-mini-popup .swal2-icon,
+.swal-modern-mini-popup .swal2-close {
   display: none !important;
-}
-
-/* تحسين استجابة الأزرار للشاشات الصغيرة */
-@media (max-width: 480px) {
-  .swal-modern-mini-popup {
-    padding: 1rem !important;
-    width: 90% !important;
-  }
-
-  .swal-modern-mini-confirm,
-  .swal-modern-mini-cancel {
-    padding: 10px 15px !important;
-    /* تقليل الهوامش الداخلية */
-    font-size: 0.9rem !important;
-    /* تصغير الخط قليلاً */
-    flex: 1 !important;
-    /* جعل الأزرار تأخذ مساحة متساوية */
-    margin: 0 !important;
-    /* إلغاء الهوامش الجانبية لأننا نستخدم gap */
-    white-space: nowrap !important;
-    /* منع التفاف النص داخل الزر */
-  }
 }

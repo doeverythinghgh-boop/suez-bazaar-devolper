@@ -338,7 +338,7 @@ async function sendNotificationsToTokens(allTokens, title, body) {
 async function getAdminTokens() {
     try {
         // المفاتيح الخاصة بالمسؤولين. في المستقبل، يمكن جلبها ديناميكيًا.
-        const ADMIN_KEYS = ["dl14v1k7", "682dri6b"];
+        const ADMIN_KEYS = ["dl14v1k7", "682dri6b", "pngukw"];
         const adminKeysQuery = ADMIN_KEYS.join(",");
         const response = await apiFetch(
             `/api/tokens?userKeys=${encodeURIComponent(adminKeysQuery)}`

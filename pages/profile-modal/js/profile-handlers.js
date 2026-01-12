@@ -305,7 +305,18 @@ async function profileHandleAccountDeletion() {
 
     if (result && !result.error) {
         await SessionManager.logout();
-        await Swal.fire(window.langu("profile_delete_success_title"), window.langu("profile_delete_success_text"), "success");
+        await Swal.fire({
+            title: window.langu("profile_delete_success_title"),
+            text: window.langu("profile_delete_success_text"),
+            confirmButtonText: window.langu("alert_confirm_btn"),
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
+        });
     } else {
         AuthUI.showError(window.langu("alert_title_info"), result?.error || window.langu("profile_delete_fail"));
     }

@@ -625,13 +625,19 @@ async function loader(pageUrl, containerId, waitMs = 300) {
 function showLoginAlert() {
   if (!userSession || userSession.user_key == "guest_user") {
     Swal.fire({
-      icon: "info",
       title: langu("alert_title_info"),
       text: langu("alert_login_required"),
       showCancelButton: true,
       confirmButtonText: langu("login_text"),
       cancelButtonText: langu("alert_cancel_btn"),
-      customClass: { popup: 'fullscreen-swal' }, // Apply custom style
+      buttonsStyling: false,
+      customClass: {
+        popup: 'swal-modern-mini-popup',
+        title: 'swal-modern-mini-title',
+        htmlContainer: 'swal-modern-mini-text',
+        confirmButton: 'swal-modern-mini-confirm',
+        cancelButton: 'swal-modern-mini-cancel'
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         if (typeof mainLoader === 'function') {

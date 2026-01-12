@@ -20,12 +20,31 @@ To maintain a consistent, premium, and functional experience across all devices 
 - **SweetAlert2 (Swal)**: All alerts and confirmations must use the stylized SweetAlert2 library.
 - **Consistent Icons**: Use FontAwesome icons consistently. Icons should be paired with text inside `<span>` tags for proper localization merging.
 
-## 6. Mandatory "Modern Mini" Modal Spec
-All small confirmation alerts and simple notification modals must strictly adhere to the **Modern Mini Spec** to ensure a non-intrusive and premium feel.
+## 6. Modern Mini Modal Spec (Strict Reference Implementation)
+Any "Modern Mini" modal MUST adhere to the following visual traits (based on "Pill Design" reference):
 
-### Logic & Localization
-- **Mandatory Icon Removal**: Icons (`icon`) must be removed entirely for a clean, non-intrusive look.
-- **Optional Timer**: Timer progress bars remain optional based on the specific use case.
+-   **Container**:
+    -   `max-width`: **320px** (Mobile Safe Safe).
+    -   `padding`: Balanced (`1.5rem 1rem`).
+    -   `border-radius`: **24px** (Soft curvature).
+    -   No borders in light mode.
+-   **Typography**:
+    -   **Title**: Dark/Almost Black (`#1f2937`). **NO BLUE TITLES**. Bold weight (800).
+    -   **Body**: Medium Gray (`#6b7280`).
+-   **Form Elements (Inputs/Selects)**:
+    -   `line-height`: **1** (Strict).
+    -   `height`: **auto** (No fixed heights).
+    -   `padding`: Compact.
+-   **Buttons (Pill Design)**:
+    -   **Shape**: Fully Rounded / Pill Shape (`border-radius: 50px`).
+    -   **Primary**: Solid Color (Primary Blue), Light Shadow.
+    -   **Secondary (Cancel)**: **Ghost Style** (Light Gray Background `#f3f4f6`, Dark Text). **NO OUTLINE BUTTONS**.
+    -   **Layout**: `flex-wrap: wrap`. Actions MUST wrap if content exceeds width. `row-gap: 10px`.
+-   **Content Overflow Protection**:
+    -   **NEVER** force `flex-wrap: nowrap` on actions.
+    -   If 3 buttons are used, they must be allowed to stack vertically on small screens.
+-   **Dark Mode**:
+    -   Must map Light Gray backgrounds to Dark Gray (`#374151`) and Text to White/Light Gray.
 - **Dark Mode Support**: Must fully respect the project's Dark Mode system, ensuring contrast and visibility are maintained.
 - **Custom Styling**: Always use `buttonsStyling: false` to force custom CSS classes.
 - **Translation**: All text (title, content, buttons) must be fetched via `window.langu(key)`.

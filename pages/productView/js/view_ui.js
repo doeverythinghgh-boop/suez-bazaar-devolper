@@ -114,10 +114,16 @@ function productView_setupQuantityControls(productData, dom) {
                 selectedQuantityInput.value = currentVal + 1;
                 productView_updateTotalPrice(pricePerItem, dom);
             } else {
-                Swal.fire({ 
-                    icon: 'warning', 
-                    text: window.langu("pv_max_quantity_reached"), 
-                    confirmButtonText: window.langu("alert_confirm_btn") 
+                Swal.fire({
+                    text: window.langu("pv_max_quantity_reached"),
+                    confirmButtonText: window.langu("alert_confirm_btn"),
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'swal-modern-mini-popup',
+                        title: 'swal-modern-mini-title',
+                        htmlContainer: 'swal-modern-mini-text',
+                        confirmButton: 'swal-modern-mini-confirm'
+                    }
                 });
             }
         };

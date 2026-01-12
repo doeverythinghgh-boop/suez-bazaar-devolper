@@ -18,7 +18,18 @@ async function sendOrder2Excution() {
         const cart = getCart();
         // 3. Check Cart
         if (cart.length === 0) {
-            Swal.fire(window.langu('cart_empty_checkout_title'), window.langu('cart_empty_checkout_text'), "info");
+            Swal.fire({
+                title: window.langu('cart_empty_checkout_title'),
+                text: window.langu('cart_empty_checkout_text'),
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
+            });
             return;
         }
 
@@ -45,7 +56,13 @@ async function sendOrder2Excution() {
                         .replace('{limit}', group.limit.toFixed(2))
                         .replace('{total}', group.total.toFixed(2))
                         .replace(/{currency}/g, window.langu('cart_currency')),
-                    icon: "warning",
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'swal-modern-mini-popup',
+                        title: 'swal-modern-mini-title',
+                        htmlContainer: 'swal-modern-mini-text',
+                        confirmButton: 'swal-modern-mini-confirm'
+                    },
                     confirmButtonText: window.langu('alert_confirm_btn')
                 });
                 return; // Stop execution
@@ -82,7 +99,14 @@ async function sendOrder2Excution() {
             text: window.langu('cart_total_confirm')
                 .replace('{amount}', totalAmount.toFixed(2))
                 .replace('{currency}', window.langu('cart_currency')),
-            icon: "question",
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm',
+                cancelButton: 'swal-modern-mini-cancel'
+            },
             showCancelButton: true,
             confirmButtonText: window.langu('alert_confirm_yes'),
             cancelButtonText: window.langu('alert_cancel_btn'),
@@ -119,7 +143,13 @@ async function sendOrder2Excution() {
             await Swal.fire({
                 title: window.langu('cart_checkout_success_title'),
                 text: window.langu('cart_order_id').replace('{id}', createdOrderKey),
-                icon: "success",
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                },
                 confirmButtonText: window.langu('cart_success_ok')
             });
 

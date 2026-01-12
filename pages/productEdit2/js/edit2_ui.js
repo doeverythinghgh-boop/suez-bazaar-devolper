@@ -69,10 +69,15 @@ function EDIT2_removeImage(id) {
     Swal.fire({
         title: window.langu('gen_swal_title_confirm'),
         text: window.langu('gen_swal_remove_text'),
-        icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm',
+            cancelButton: 'swal-modern-mini-cancel'
+        },
         confirmButtonText: window.langu('gen_swal_btn_yes_delete'),
         cancelButtonText: window.langu('gen_swal_btn_cancel')
     }).then((result) => {
@@ -168,18 +173,17 @@ if (edit2_btnDiscard) {
             Swal.fire({
                 title: window.langu('gen_swal_discard_title'),
                 text: window.langu('gen_swal_discard_text'),
-                icon: 'warning',
-                iconColor: '#f39c12',
                 showCancelButton: true,
-                confirmButtonColor: '#e74c3c',
-                cancelButtonColor: '#bdc3c7',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm',
+                    cancelButton: 'swal-modern-mini-cancel'
+                },
                 confirmButtonText: `<i class="fas fa-trash-alt"></i> ${window.langu('gen_swal_btn_yes_discard')}`,
                 cancelButtonText: window.langu('gen_swal_btn_back'),
-                // background: '#ffffff', // REMOVED for Dark Mode
-                customClass: {
-                    title: 'swal-modern-title',
-                    popup: 'swal-modern-popup'
-                }
             }).then((result) => {
                 if (result.isConfirmed) {
                     if (window.ProductStateManager) {

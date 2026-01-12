@@ -9,13 +9,35 @@ async function pv2_sendOrder() {
         const note = dom.note.value.trim();
 
         if (pv2_orderImages.length === 0 && !note) {
-            Swal.fire(window.langu('alert_title_info'), window.langu('view2_warn_no_content'), 'warning');
+            Swal.fire({
+                title: window.langu('alert_title_info'),
+                text: window.langu('view2_warn_no_content'),
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
+            });
             return;
         }
 
         const productData = (typeof ProductStateManager !== 'undefined') ? ProductStateManager.getCurrentProduct() : null;
         if (!productData) {
-            Swal.fire(window.langu('gen_swal_error_title'), window.langu('view2_err_no_product'), 'error');
+            Swal.fire({
+                title: window.langu('gen_swal_error_title'),
+                text: window.langu('view2_err_no_product'),
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
+            });
             return;
         }
 
@@ -27,7 +49,13 @@ async function pv2_sendOrder() {
             title: window.langu('gen_lbl_sending'),
             html: window.langu('view2_swal_sending_text'),
             allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
+            didOpen: () => Swal.showLoading(),
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text'
+            }
         });
 
         try {
@@ -74,13 +102,34 @@ async function pv2_sendOrder() {
                 handlePurchaseNotifications(finalOrderForNotify).catch(err => console.error('[PV2] Notification error:', err));
             }
 
-            Swal.fire({ icon: 'success', title: window.langu('gen_swal_success_title'), confirmButtonText: window.langu('alert_confirm_btn') }).then(() => {
+            Swal.fire({
+                title: window.langu('gen_swal_success_title'),
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
+            }).then(() => {
                 mainLoader("./pages/home.html", "index-home-container", 0, undefined, "hiddenHomeIcon", false);
             });
 
         } catch (error) {
             console.error(error);
-            Swal.fire({ icon: 'error', title: window.langu('gen_swal_error_title'), text: error.message });
+            Swal.fire({
+                title: window.langu('gen_swal_error_title'),
+                text: error.message,
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
+            });
         }
     }
 }

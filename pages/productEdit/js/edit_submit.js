@@ -91,6 +91,12 @@ function EDIT_initSubmitLogic() {
             didOpen: () => {
                 Swal.showLoading();
             },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text'
+            }
         });
 
         try {
@@ -168,11 +174,17 @@ function EDIT_initSubmitLogic() {
                 Swal.fire({
                     title: window.langu('edit_swal_no_changes_title'),
                     text: window.langu('edit_swal_no_changes_text'),
-                    icon: 'info',
                     showConfirmButton: true,
                     confirmButtonText: 'موافق',
                     didOpen: () => {
                         Swal.hideLoading();
+                    },
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'swal-modern-mini-popup',
+                        title: 'swal-modern-mini-title',
+                        htmlContainer: 'swal-modern-mini-text',
+                        confirmButton: 'swal-modern-mini-confirm'
                     }
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -200,11 +212,16 @@ function EDIT_initSubmitLogic() {
             }
 
             Swal.fire({
-                title: window.langu('gen_swal_success_title'), // Need to add this key or reuse
+                title: window.langu('gen_swal_success_title'),
                 text: window.langu('edit_swal_success_text'),
-                icon: 'success',
                 timer: 2000,
-                showConfirmButton: false
+                showConfirmButton: false,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text'
+                }
             }).then(() => {
                 // Redirect to My Products page
                 mainLoader("pages/product2Me/product2Me.html", "index-myProducts-container", 0, undefined, "showHomeIcon", true);
@@ -215,7 +232,14 @@ function EDIT_initSubmitLogic() {
             Swal.fire({
                 title: window.langu('gen_swal_error_title'),
                 text: `${window.langu('edit_swal_update_failed_text')} ${error.message}`,
-                icon: 'error'
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
             });
         }
     };

@@ -75,7 +75,13 @@ function handleStepActivationAttempt(checkboxElement, controlData, ordersData) {
                 text: validation.errorMessage,
 
                 confirmButtonText: window.langu('alert_confirm_btn'),
-                customClass: { popup: "fullscreen-swal" },
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                },
             });
             checkboxElement.checked = false;
             return;
@@ -88,11 +94,16 @@ function handleStepActivationAttempt(checkboxElement, controlData, ordersData) {
         text: window.langu('stepper_activation_confirm_text'),
 
         showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
         confirmButtonText: window.langu('stepper_activation_confirm_btn'),
         cancelButtonText: window.langu('alert_cancel_btn'),
-        customClass: { popup: "fullscreen-swal" },
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm',
+            cancelButton: 'swal-modern-mini-cancel'
+        },
     }).then((result) => {
         if (result.isConfirmed) {
             executeStepActivation(currentStep, controlData, ordersData);

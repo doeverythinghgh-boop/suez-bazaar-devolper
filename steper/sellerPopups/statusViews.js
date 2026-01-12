@@ -24,7 +24,13 @@ export function showSellerRejectedProductsAlert(data, ordersData) {
             title: window.langu('stepper_rejected_products_title'),
             html: `<div id="seller-rejected-container">${htmlContent}</div>`,
             confirmButtonText: window.langu('alert_confirm_btn'),
-            customClass: { popup: "fullscreen-swal" },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            },
             didOpen: () => attachLogButtonListeners()
         });
     } catch (error) {
@@ -51,7 +57,13 @@ export function showSellerDeliveryConfirmationAlert(data, ordersData) {
                 title: window.langu('stepper_no_delivered_products'),
                 text: window.langu('stepper_no_delivered_desc'),
                 confirmButtonText: window.langu('alert_close_btn'),
-                customClass: { popup: "fullscreen-swal" },
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                },
             });
             return;
         }
@@ -70,7 +82,13 @@ export function showSellerDeliveryConfirmationAlert(data, ordersData) {
                     ${checkboxesHtml}
                    </div>`,
             confirmButtonText: window.langu('alert_close_btn'),
-            customClass: { popup: "fullscreen-swal" },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            },
             didOpen: () => {
                 attachLogButtonListeners();
                 // Disable all inputs to make it read-only
@@ -102,7 +120,13 @@ export function showSellerReturnedProductsAlert(data, ordersData) {
             title: window.langu('stepper_returned_products_title'),
             html: `<div id="seller-returned-container">${htmlContent}</div>`,
             confirmButtonText: window.langu('alert_close_btn'),
-            customClass: { popup: "fullscreen-swal" },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            },
             didOpen: () => {
                 attachLogButtonListeners();
             }

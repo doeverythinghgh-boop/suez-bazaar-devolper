@@ -58,14 +58,31 @@ function pv2_createPreview(file, previewsEl) {
  */
 async function pv2_handleFiles(files, dom) {
     if (pv2_orderImages.length + files.length > PV2_MAX_ORDER_IMAGES) {
-        Swal.fire(window.langu('alert_title_info'), window.langu('gen_err_max_files', { n: PV2_MAX_ORDER_IMAGES }), 'warning');
+        Swal.fire({
+            title: window.langu('alert_title_info'),
+            text: window.langu('gen_err_max_files', { n: PV2_MAX_ORDER_IMAGES }),
+            confirmButtonText: window.langu('alert_confirm_btn'),
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
+        });
         return;
     }
 
     Swal.fire({
         title: window.langu('gen_lbl_processing'),
         didOpen: () => Swal.showLoading(),
-        allowOutsideClick: false
+        allowOutsideClick: false,
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text'
+        }
     });
 
     for (const file of files) {

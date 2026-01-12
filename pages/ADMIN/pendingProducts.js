@@ -20,7 +20,7 @@ var pageSize = 10;
  */
 async function fetchAllData() {
     console.log("جاري جلب جميع البيانات الأساسية...");
-    
+
     // Reset offsets
     publishedOffset = 0;
     pendingOffset = 0;
@@ -251,11 +251,17 @@ async function updateStatus(key, name, newStatus) {
     const confirm = await Swal.fire({
         title: `تأكيد ${actionName}`,
         text: `هل أنت متأكد من ${actionName} المنتج "${name}"؟`,
-        icon: 'question',
         showCancelButton: true,
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm',
+            cancelButton: 'swal-modern-mini-cancel'
+        },
         confirmButtonText: 'نعم',
-        cancelButtonText: 'لا',
-        confirmButtonColor: color
+        cancelButtonText: 'لا'
     });
 
     if (!confirm.isConfirmed) return;
@@ -271,18 +277,34 @@ async function updateStatus(key, name, newStatus) {
         if (!res.ok) throw new Error('فشل التحديث');
 
         Swal.fire({
-            icon: 'success',
             title: 'تم بنجاح',
             text: `تمت عملية ${actionName} بنجاح`,
             timer: 1500,
-            showConfirmButton: false
+            showConfirmButton: false,
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text'
+            }
         });
 
         // Refresh Both Lists
         fetchAllData();
 
     } catch (e) {
-        Swal.fire('Error', e.message, 'error');
+        Swal.fire({
+            title: 'Error',
+            text: e.message,
+            confirmButtonText: 'OK',
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
+        });
     }
 }
 
@@ -304,10 +326,16 @@ async function deleteProduct(key, name, imageNamesStr) {
     const confirm = await Swal.fire({
         title: 'حذف المنتج',
         text: `هل أنت متأكد من حذف "${name}" نهائياً؟ سيتم حذف جميع الصور المرتبطة أيضاً من السحابة.`,
-        icon: 'warning',
         showCancelButton: true,
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm',
+            cancelButton: 'swal-modern-mini-cancel'
+        },
         confirmButtonText: 'نعم، احذف نهائياً',
-        confirmButtonColor: '#dc3545',
         cancelButtonText: 'إلغاء',
         showLoaderOnConfirm: true,
         preConfirm: async () => {
@@ -338,11 +366,16 @@ async function deleteProduct(key, name, imageNamesStr) {
 
     if (confirm.isConfirmed) {
         Swal.fire({
-            icon: 'success',
             title: 'تم الحذف',
             text: 'تم حذف المنتج والصور بنجاح',
             timer: 1500,
-            showConfirmButton: false
+            showConfirmButton: false,
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text'
+            }
         });
 
         fetchAllData();
@@ -398,7 +431,7 @@ window.adminPreviewProduct = previewProduct;
 // Auto-initialize if any of the target containers are present in the DOM
 if (document.getElementById('pending-list-container') || document.getElementById('published-list-container')) {
     console.log("[Admin] جاري تشغيل سكربت المنتجات المعلقة تلقائياً...");
-    
+
     // Initial fetch (only resets offsets, won't load anything because sections are closed)
     fetchAllData();
 
@@ -430,7 +463,7 @@ if (document.getElementById('pending-list-container') || document.getElementById
             loadMorePendingBtn.disabled = true;
             const originalIcon = loadMorePendingBtn.querySelector('i');
             const originalText = loadMorePendingBtn.querySelector('span');
-            
+
             if (originalIcon) originalIcon.className = 'fas fa-spinner fa-spin';
             if (originalText) originalText.innerText = 'جاري التحميل...';
 
@@ -473,7 +506,7 @@ if (document.getElementById('pending-list-container') || document.getElementById
             loadMoreBtn.disabled = true;
             const originalIcon = loadMoreBtn.querySelector('i');
             const originalText = loadMoreBtn.querySelector('span');
-            
+
             if (originalIcon) originalIcon.className = 'fas fa-spinner fa-spin';
             if (originalText) originalText.innerText = 'جاري التحميل...';
 

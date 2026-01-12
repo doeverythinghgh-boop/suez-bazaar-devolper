@@ -75,9 +75,14 @@ export function handleConfirmationSave(data, ordersData) {
         showCancelButton: true,
         confirmButtonText: window.langu('shipping_confirm_save_btn'),
         cancelButtonText: window.langu('alert_cancel_btn'),
-        confirmButtonColor: '#28a745',
-        cancelButtonColor: '#6c757d',
-        customClass: { popup: 'fullscreen-swal' },
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm',
+            cancelButton: 'swal-modern-mini-cancel'
+        },
         allowOutsideClick: false
     }).then(async (result) => {
         if (result.isConfirmed) {
@@ -100,7 +105,13 @@ export function handleConfirmationSave(data, ordersData) {
                     title: window.langu('shipping_saving_title'),
                     text: window.langu('conf_saving_text'),
                     allowOutsideClick: false,
-                    didOpen: () => Swal.showLoading()
+                    didOpen: () => Swal.showLoading(),
+                    buttonsStyling: false,
+                    customClass: {
+                        popup: 'swal-modern-mini-popup',
+                        title: 'swal-modern-mini-title',
+                        htmlContainer: 'swal-modern-mini-text'
+                    }
                 });
 
                 try {
@@ -119,7 +130,13 @@ export function handleConfirmationSave(data, ordersData) {
                         title: window.langu('shipping_save_success_title'),
                         text: window.langu('conf_save_success_text'),
                         timer: 1500,
-                        showConfirmButton: false
+                        showConfirmButton: false,
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'swal-modern-mini-popup',
+                            title: 'swal-modern-mini-title',
+                            htmlContainer: 'swal-modern-mini-text'
+                        }
                     }).then(() => {
                         updateCurrentStepFromState(data, ordersData);
 
@@ -168,7 +185,14 @@ export function handleConfirmationSave(data, ordersData) {
                     Swal.fire({
                         title: window.langu('stepper_save_fail_title'),
                         text: window.langu('shipping_save_fail_text'),
-                        confirmButtonText: window.langu('alert_confirm_btn')
+                        confirmButtonText: window.langu('alert_confirm_btn'),
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'swal-modern-mini-popup',
+                            title: 'swal-modern-mini-title',
+                            htmlContainer: 'swal-modern-mini-text',
+                            confirmButton: 'swal-modern-mini-confirm'
+                        }
                     });
                 }
             } else {
@@ -216,7 +240,14 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
             showCancelButton: true,
             focusConfirm: false,
             allowOutsideClick: true,
-            customClass: { popup: "fullscreen-swal" },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm',
+                cancelButton: 'swal-modern-mini-cancel'
+            },
             didOpen: () => {
                 attachLogButtonListeners();
 

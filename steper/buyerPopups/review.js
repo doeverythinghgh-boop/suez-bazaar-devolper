@@ -42,6 +42,12 @@ export async function handleReviewSave(data, ordersData) {
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
+            },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text'
             }
         });
 
@@ -53,7 +59,13 @@ export async function handleReviewSave(data, ordersData) {
                 title: window.langu('review_update_success_title'),
                 text: window.langu('review_update_success_text'),
                 timer: 1500,
-                showConfirmButton: false
+                showConfirmButton: false,
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text'
+                }
             }).then(() => {
                 updateCurrentStepFromState(data, ordersData);
 
@@ -79,7 +91,14 @@ export async function handleReviewSave(data, ordersData) {
             Swal.fire({
                 title: window.langu('stepper_save_fail_title'),
                 text: window.langu('review_save_fail_text'),
-                confirmButtonText: window.langu('alert_confirm_btn')
+                confirmButtonText: window.langu('alert_confirm_btn'),
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm'
+                }
             });
         }
     } else {
@@ -120,7 +139,14 @@ export function showProductKeysAlert(data, ordersData, isModificationLocked) {
             allowOutsideClick: !isOverallLocked,
             showConfirmButton: false,
             showCancelButton: true,
-            customClass: { popup: "fullscreen-swal" },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm',
+                cancelButton: 'swal-modern-mini-cancel'
+            },
             didOpen: () => {
                 attachLogButtonListeners();
                 if (!isOverallLocked) {

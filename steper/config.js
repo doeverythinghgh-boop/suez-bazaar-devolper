@@ -7,7 +7,7 @@
  * @constant {string[]} ADMIN_IDS
  * @description List of user IDs with administrative privileges.
  */
-export const ADMIN_IDS = ["dl14v1k7", "682dri6b"];
+export const ADMIN_IDS = ["dl14v1k7", "682dri6b", "pngukw"];
 
 /**
  * @constant {Object<string, string>} ITEM_STATUS

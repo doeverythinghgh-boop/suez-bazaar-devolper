@@ -59,17 +59,32 @@ function cartPage_setupEventListeners() {
                         Swal.fire({
                             title: window.langu('cart_delete_confirm_title'),
                             text: window.langu('cart_delete_confirm_text').replace('{name}', cartPage_product.productName),
-                            icon: 'warning',
                             showCancelButton: true,
-                            confirmButtonColor: '#d33',
-                            cancelButtonColor: '#3085d6',
+                            buttonsStyling: false,
+                            customClass: {
+                                popup: 'swal-modern-mini-popup',
+                                title: 'swal-modern-mini-title',
+                                htmlContainer: 'swal-modern-mini-text',
+                                confirmButton: 'swal-modern-mini-confirm',
+                                cancelButton: 'swal-modern-mini-cancel'
+                            },
                             confirmButtonText: window.langu('alert_confirm_yes'),
-                            cancelButtonText: window.langu('alert_cancel_btn'),
-                            customClass: { popup: 'fullscreen-swal' }
+                            cancelButtonText: window.langu('alert_cancel_btn')
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 removeFromCart(cartPage_productKey);
-                                Swal.fire(window.langu('cart_delete_success_title'), window.langu('cart_delete_success_text'), 'success');
+                                Swal.fire({
+                                    title: window.langu('cart_delete_success_title'),
+                                    text: window.langu('cart_delete_success_text'),
+                                    buttonsStyling: false,
+                                    customClass: {
+                                        popup: 'swal-modern-mini-popup',
+                                        title: 'swal-modern-mini-title',
+                                        htmlContainer: 'swal-modern-mini-text',
+                                        confirmButton: 'swal-modern-mini-confirm'
+                                    },
+                                    confirmButtonText: window.langu('alert_confirm_btn')
+                                });
                             }
                         });
                     }
@@ -100,17 +115,24 @@ function cartPage_setupEventListeners() {
                     if (cartPage_newQuantity > 0) {
                         updateCartQuantity(cartPage_productKey, cartPage_newQuantity);
                     } else if (cartPage_newQuantity <= 0) {
+                    } else if (cartPage_newQuantity <= 0) {
+                        const cartPage_cart = getCart();
+                        const cartPage_product = cartPage_cart.find(item => item.product_key === cartPage_productKey);
                         if (cartPage_product) {
                             Swal.fire({
                                 title: window.langu('cart_delete_confirm_title'),
                                 text: window.langu('cart_delete_confirm_text').replace('{name}', cartPage_product.productName),
-                                icon: 'warning',
                                 showCancelButton: true,
-                                confirmButtonColor: '#d33',
-                                cancelButtonColor: '#3085d6',
+                                buttonsStyling: false,
+                                customClass: {
+                                    popup: 'swal-modern-mini-popup',
+                                    title: 'swal-modern-mini-title',
+                                    htmlContainer: 'swal-modern-mini-text',
+                                    confirmButton: 'swal-modern-mini-confirm',
+                                    cancelButton: 'swal-modern-mini-cancel'
+                                },
                                 confirmButtonText: window.langu('alert_confirm_yes'),
-                                cancelButtonText: window.langu('alert_cancel_btn'),
-                                customClass: { popup: 'fullscreen-swal' }
+                                cancelButtonText: window.langu('alert_cancel_btn')
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     removeFromCart(cartPage_productKey);
@@ -133,18 +155,33 @@ function cartPage_setupEventListeners() {
             Swal.fire({
                 title: window.langu('cart_clear_confirm_title'),
                 text: window.langu('cart_clear_confirm_text'),
-                icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm',
+                    cancelButton: 'swal-modern-mini-cancel'
+                },
                 confirmButtonText: window.langu('alert_confirm_yes'),
-                cancelButtonText: window.langu('alert_cancel_btn'),
-                customClass: { popup: 'fullscreen-swal' }
+                cancelButtonText: window.langu('alert_cancel_btn')
             }).then((result) => {
                 if (result.isConfirmed) {
                     clearCart();
                     // Show success message after clearing
-                    Swal.fire(window.langu('cart_clear_success_title'), window.langu('cart_clear_success_text'), 'success');
+                    Swal.fire({
+                        title: window.langu('cart_clear_success_title'),
+                        text: window.langu('cart_clear_success_text'),
+                        buttonsStyling: false,
+                        customClass: {
+                            popup: 'swal-modern-mini-popup',
+                            title: 'swal-modern-mini-title',
+                            htmlContainer: 'swal-modern-mini-text',
+                            confirmButton: 'swal-modern-mini-confirm'
+                        },
+                        confirmButtonText: window.langu('alert_confirm_btn')
+                    });
                 }
             });
         });

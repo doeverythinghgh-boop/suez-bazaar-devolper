@@ -80,10 +80,13 @@ if (register_sellerOptionsBtn) {
       showCancelButton: true,
       confirmButtonText: window.langu("register_save_settings_btn"),
       cancelButtonText: window.langu("alert_cancel_btn"),
+      buttonsStyling: false,
       customClass: {
-        popup: 'modern-swal-popup',
-        confirmButton: 'modern-swal-confirm',
-        cancelButton: 'modern-swal-cancel'
+        popup: 'swal-modern-mini-popup',
+        title: 'swal-modern-mini-title',
+        htmlContainer: 'swal-modern-mini-text',
+        confirmButton: 'swal-modern-mini-confirm',
+        cancelButton: 'swal-modern-mini-cancel'
       },
       didOpen: () => {
         var hasLimitSelect = document.getElementById("swal_has-limit");
@@ -213,9 +216,11 @@ if (register_form) {
     // 2. Password Confirmation
     var { value: register_confirmedPassword } = await Swal.fire({
       customClass: {
-        popup: 'modern-confirm-pw-popup',
-        confirmButton: 'modern-swal-confirm',
-        cancelButton: 'modern-swal-cancel'
+        popup: 'swal-modern-mini-popup',
+        title: 'swal-modern-mini-title',
+        htmlContainer: 'swal-modern-mini-text',
+        confirmButton: 'swal-modern-mini-confirm',
+        cancelButton: 'swal-modern-mini-cancel'
       },
       html: `
         <div class="confirm-pw-header">
@@ -304,7 +309,6 @@ if (register_form) {
 
         // Success UI
         Swal.fire({
-          icon: "success",
           title: window.langu("register_success_title"),
           html: `
             <p style="font-size: 1.1rem; color: #333;">${window.langu("register_success_subtitle")}</p>
@@ -316,7 +320,13 @@ if (register_form) {
             `,
           allowOutsideClick: false,
           confirmButtonText: window.langu("register_go_home_btn"),
-          customClass: { popup: 'fullscreen-swal' }
+          buttonsStyling: false,
+          customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm'
+          }
         }).then((result) => {
           if (result.isConfirmed) {
             mainLoader(

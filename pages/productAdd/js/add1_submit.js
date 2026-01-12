@@ -79,6 +79,12 @@ add1_form.addEventListener('submit', async (e) => {
             text: window.langu('add1_swal_uploading_text'),
             allowOutsideClick: false,
             didOpen: () => { Swal.showLoading(); },
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text'
+            }
         });
 
         const productSerial = generateSerial();
@@ -125,7 +131,18 @@ add1_form.addEventListener('submit', async (e) => {
         }
 
         console.log('%c[Add1] تم حفظ المنتج بنجاح.', 'color: green; font-weight: bold;');
-        Swal.fire(window.langu('gen_swal_success_title'), window.langu('add1_swal_success_text'), 'success').then(() => {
+        Swal.fire({
+            title: window.langu('gen_swal_success_title'),
+            text: window.langu('add1_swal_success_text'),
+            confirmButtonText: window.langu('alert_confirm_btn'),
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
+        }).then(() => {
             add1_setSubmitLoading(false);
             add1_form.reset();
             add1_previewsEl.innerHTML = '';
@@ -145,6 +162,17 @@ add1_form.addEventListener('submit', async (e) => {
     } catch (error) {
         add1_setSubmitLoading(false);
         console.error('[Add1] Submission failed:', error);
-        Swal.fire(window.langu('gen_swal_error_title'), window.langu('add1_swal_error_text'), 'error');
+        Swal.fire({
+            title: window.langu('gen_swal_error_title'),
+            text: window.langu('add1_swal_error_text'),
+            confirmButtonText: window.langu('alert_confirm_btn'),
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm'
+            }
+        });
     }
 });

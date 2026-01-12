@@ -49,14 +49,14 @@
         window.addEventListener('DOMContentLoaded', applyTheme);
 
         // Localization Fallback for iFrame
-        window.langu = function(key) {
+        window.langu = function (key) {
             if (window.parent && typeof window.parent.langu === 'function') {
                 return window.parent.langu(key);
             }
-            return key; 
+            return key;
         };
 
-        window.applyAppTranslations = function() {
+        window.applyAppTranslations = function () {
             document.querySelectorAll('[data-lkey]').forEach(el => {
                 const key = el.getAttribute('data-lkey');
                 el.textContent = window.langu(key);
@@ -172,7 +172,8 @@
                     <div class="input-with-button">
                         <input type="number" id="orderValueInput" class="order-value-input" step="0.01"
                             placeholder="0.00">
-                        <button id="orderValueSaveBtn" class="order-save-btn" data-lkey-title="stepper_save_value" title="حفظ القيمة">
+                        <button id="orderValueSaveBtn" class="order-save-btn" data-lkey-title="stepper_save_value"
+                            title="حفظ القيمة">
                             <i class="fas fa-save"></i>
                         </button>
                     </div>
@@ -346,7 +347,18 @@
                             if (!canEditAmount) return;
                             const newAmount = Number(valueInput.value);
                             if (isNaN(newAmount) || newAmount < 0) {
-                                Swal.fire({ icon: 'error', title: window.langu('stepper_error_title'), text: window.langu('stepper_invalid_number') });
+                                Swal.fire({
+                                    title: window.langu('stepper_error_title'),
+                                    text: window.langu('stepper_invalid_number'),
+                                    confirmButtonText: window.langu('alert_confirm_btn'),
+                                    buttonsStyling: false,
+                                    customClass: {
+                                        popup: 'swal-modern-mini-popup',
+                                        title: 'swal-modern-mini-title',
+                                        htmlContainer: 'swal-modern-mini-text',
+                                        confirmButton: 'swal-modern-mini-confirm'
+                                    }
+                                });
                                 valueInput.value = order.total_amount;
                                 return;
                             }
@@ -355,12 +367,17 @@
                             const result = await Swal.fire({
                                 title: window.langu('stepper_confirm_title'),
                                 text: window.langu('stepper_confirm_save_text').replace('{amount}', newAmount),
-                                icon: 'warning',
                                 showCancelButton: true,
-                                confirmButtonColor: 'var(--color-primary)',
-                                cancelButtonColor: '#d33',
                                 confirmButtonText: window.langu('alert_confirm_yes'),
-                                cancelButtonText: window.langu('alert_cancel_btn')
+                                cancelButtonText: window.langu('alert_cancel_btn'),
+                                buttonsStyling: false,
+                                customClass: {
+                                    popup: 'swal-modern-mini-popup',
+                                    title: 'swal-modern-mini-title',
+                                    htmlContainer: 'swal-modern-mini-text',
+                                    confirmButton: 'swal-modern-mini-confirm',
+                                    cancelButton: 'swal-modern-mini-cancel'
+                                }
                             });
 
                             if (result.isConfirmed) {
@@ -374,14 +391,30 @@
                                     order.total_amount = newAmount;
 
                                     Swal.fire({
-                                        icon: 'success',
                                         title: window.langu('stepper_save_success_title'),
                                         text: window.langu('stepper_save_success_text'),
                                         timer: 1500,
-                                        showConfirmButton: false
+                                        showConfirmButton: false,
+                                        buttonsStyling: false,
+                                        customClass: {
+                                            popup: 'swal-modern-mini-popup',
+                                            title: 'swal-modern-mini-title',
+                                            htmlContainer: 'swal-modern-mini-text'
+                                        }
                                     });
                                 } catch (err) {
-                                    Swal.fire({ icon: 'error', title: window.langu('stepper_save_fail_title'), text: err.message });
+                                    Swal.fire({
+                                        title: window.langu('stepper_save_fail_title'),
+                                        text: err.message,
+                                        confirmButtonText: window.langu('alert_confirm_btn'),
+                                        buttonsStyling: false,
+                                        customClass: {
+                                            popup: 'swal-modern-mini-popup',
+                                            title: 'swal-modern-mini-title',
+                                            htmlContainer: 'swal-modern-mini-text',
+                                            confirmButton: 'swal-modern-mini-confirm'
+                                        }
+                                    });
                                     valueInput.value = order.total_amount;
                                 } finally {
                                     saveBtn.disabled = false;

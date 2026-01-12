@@ -240,14 +240,19 @@
     const product = myProducts.find((p) => p.id === productId);
     console.log("%c[Products] حذف المنتج:", "color: red;", product);
     Swal.fire({
-      title: 'هل أنت متأكد؟',
-      text: `سيتم حذف المنتج "${product.productName}" بشكل نهائي. لا يمكن التراجع عن هذا الإجراء.`,
-      icon: 'warning',
+      title: window.langu('gen_swal_title_confirm'),
+      text: window.langu('gen_swal_remove_text').replace('{name}', product.productName),
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'نعم، احذفه!',
-      cancelButtonText: 'إلغاء',
+      buttonsStyling: false,
+      customClass: {
+        popup: 'swal-modern-mini-popup',
+        title: 'swal-modern-mini-title',
+        htmlContainer: 'swal-modern-mini-text',
+        confirmButton: 'swal-modern-mini-confirm',
+        cancelButton: 'swal-modern-mini-cancel'
+      },
+      confirmButtonText: window.langu('gen_swal_btn_yes_delete'),
+      cancelButtonText: window.langu('gen_swal_btn_cancel'),
       showLoaderOnConfirm: true,
       didOpen: () => {
         Swal.hideLoading();
@@ -283,7 +288,18 @@
         // Reload display
         loadProducts();
 
-        Swal.fire("تم الحذف!", "تم حذف المنتج بنجاح", "success");
+        Swal.fire({
+          title: window.langu('gen_swal_success_title'), // Using generic success title
+          text: window.langu('gen_swal_delete_success'), // Assuming this key exists or making a safe fallback
+          buttonsStyling: false,
+          customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm'
+          },
+          confirmButtonText: window.langu('alert_confirm_btn')
+        });
 
       }
     });

@@ -44,4 +44,4 @@ window.baseURL = window.allowedHosts.includes(location.hostname) ? window.VERCEL
  * @type {string[]}
  * @const
  */
-const ADMIN_IDS = ["dl14v1k7", "682dri6b"];
+const ADMIN_IDS = ["dl14v1k7", "682dri6b", "pngukw"];
