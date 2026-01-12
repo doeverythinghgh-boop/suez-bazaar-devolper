@@ -536,11 +536,10 @@ async function askForNotificationPermission() {
         // التحقق من وجود الكائن 'Android' للتأكد من أن الكود يعمل داخل تطبيق أندرويد
         if (
             window.Android &&
+            // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.requestNotificationPermission.
             typeof window.Android.requestNotificationPermission === "function"
         ) {
-            console.log(
-                "استدعاء الدالة الأصلية لطلب إذن الإشعارات..."
-            );
+            console.log("[Dev] 📱 [Android FCM] الخطوة 1: طلب الإذن من نظام أندرويد...");
             window.Android.requestNotificationPermission();
         } else {
             console.log("واجهة Android غير متاحة.");

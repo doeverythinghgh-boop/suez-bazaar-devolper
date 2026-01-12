@@ -341,6 +341,7 @@ Object.assign(NotificationPage, {
                 console.log(`[Dev] ⚙️ الخطوة 1: فحص إذن المتصفح/النظام (System Permission). الحالة الحالية: ${currentPermission}`);
                 if (currentPermission === 'denied') {
                     console.warn('[Dev] 🚫 إذن النظام مرفوض مسبقاً (Blocked at System Level)');
+                    // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.requestNotificationPermission.
                     if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
                         console.log('[Dev] ⚙️ الخطوة 1-A: بيئة أندرويد - جاري استدعاء طلب إذن النظام (OS Permission Request)...');
                         window.Android.requestNotificationPermission();

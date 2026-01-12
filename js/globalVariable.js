@@ -21,6 +21,8 @@ window.app_language = localStorage.getItem('app_language') || 'ar';
 window.appTranslations = {};
 
 /**
+ * [!IMPORTANT] BRIDGE-DEPENDENT: Any change to key structure here MUST be coordinated 
+ * with Android's LocalizationManager.getString().
  * @description Returns the translated text for a given key based on the current app language.
  * @function langu
  * @param {string} key - The translation key.

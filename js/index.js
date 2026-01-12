@@ -176,6 +176,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     console.log(`[اللغة] تم تغيير اللغة إلى: ${newLang === 'ar' ? 'العربية' : 'الإنجليزية'}`);
 
     // [Android Bridge] Sync language change with native app
+    // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.onLanguageChanged.
     if (window.Android && typeof window.Android.onLanguageChanged === 'function') {
       window.Android.onLanguageChanged(newLang);
     }
@@ -382,6 +383,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
   function handleHomeButtonClick() {
     // Check for Android interface and update function.
+    // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.checkForUpdates.
     if (window.Android && typeof window.Android.checkForUpdates === "function") {
       window.Android.checkForUpdates();
     }

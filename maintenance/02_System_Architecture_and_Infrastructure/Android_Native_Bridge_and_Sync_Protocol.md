@@ -1,6 +1,10 @@
 # Android Native Bridge and Sync Protocol
 
-Bazaar utilizes a dedicated bridge to communicate with the native Android application, providing features beyond standard web capabilities.
+> [!CAUTION]
+> **CRITICAL SYNCHRONIZATION WARNING**
+> These bridge functions are the backbone of the Hybrid architecture. Any modification, renaming, or deletion of functions that interact with `window.Android` or `window.Localization` MUST be coordinated simultaneously with the Android project (`suez-bazaar`). Fail to do so will result in broken native features and potential app instability. IF YOU CANNOT SYNC BOTH PROJECTS, STOP MODIFICATION IMMEDIATELY.
+
+The Suez Bazaar application follows a **Hybrid Architecture**, where a native Android shell hosts a WebView for the web front-end. To ensure a seamless experience, a stable communication bridge and synchronization protocol are implemented.
 
 ## 1. The Javascript Interface (`window.Android`)
 The native app injects the `Android` object into the web context, enabling two-way communication.
@@ -42,3 +46,31 @@ Used for maintaining high-quality native UI translations and system slogas.
 ## 5. Security & Stability
 - **ProGuard Rules**: Critical `@JavascriptInterface` methods are protected from obfuscation to maintain bridge naming integrity.
 - **LogBridge**: A unified logging system that allows remote debugging of on-device native events via Chrome Remote Inspect.
+
+---
+
+## 6. Standards for New Bridge Implementations
+To maintain the integrity of the Hybrid Bridge, all new functions must follow these standards:
+
+### A. Web-to-Native Coordination
+1.  **Sync-Requirement**: Never implement a bridge call (`window.Android.X`) unless the corresponding method exists in the Android Kotlin code.
+2.  **Safety Checks**: Always wrap bridge calls in a check to ensure the environment is ready:
+    ```javascript
+    if (window.Android && typeof window.Android.newFunction === 'function') {
+        window.Android.newFunction(params);
+    }
+    ```
+3.  **JSDoc Documentation**: Every function calling the bridge must have a mandatory JSDoc warning:
+    ```javascript
+    /**
+     * [!IMPORTANT] BRIDGE CALL: Coordinate with Android WebAppInterface.kt.
+     */
+    ```
+
+### B. Protection from Obfuscation
+The web build system (`build.js`) uses `javascript-obfuscator`. To ensure the bridge remains functional:
+1.  **Global Scope**: Never use `let` or `const` in the global scope for bridge-related variables; use `var`.
+2.  **Global Preservation**: The build script is configured with `renameGlobals: false`. Do not change this setting as it ensures `window.Android` calls remain literal and traceable.
+
+### C. Maintenance Updates
+- Any new bridge interaction must be documented in this file (`Android_Native_Bridge_and_Sync_Protocol.md`) under the relevant section.

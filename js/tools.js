@@ -661,6 +661,8 @@ function generateSerial() {
 }
 
 /**
+ * [!IMPORTANT] BRIDGE-DEPENDENT: Any change to the slogans object structure MUST 
+ * be coordinated with Android's LocalizationManager.updateSplashSlogans().
  * @description Synchronizes splash slogans (taglines) to Native Android environment.
  *   This ensures that the next time the app starts, the splash screen will show the latest slogans from the web app.
  * @function syncSplashSlogansToAndroid

@@ -236,6 +236,7 @@ window.GLOBAL_NOTIFICATIONS = {
 
             // ✅ جديد: إخطار الأندرويد أن الواجهة جاهزة تماماً.
             // الأندرويد الآن مسؤول عن دفع الإشعارات المعلقة فور استلام هذه الإشارة.
+            // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.onWebAppReady.
             if (window.Android && typeof window.Android.onWebAppReady === 'function') {
                 window.Android.onWebAppReady();
             }

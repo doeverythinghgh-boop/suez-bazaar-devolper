@@ -217,6 +217,7 @@ async function setupFirebaseAndroid(userId) {
 
         // طلب التوكن من WebView
         try {
+            // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.onUserLoggedIn.
             console.log(`[Dev] 📱 [Android FCM] جاري استدعاء window.Android.onUserLoggedIn للمستخدم: ${userId}`);
             window.Android.onUserLoggedIn(userId);
         } catch (e) {
