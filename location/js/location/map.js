@@ -26,6 +26,7 @@ location_app.location_initMap = function () {
             center: location_startCoords,
             zoom: location_startZoom,
             tap: false,
+            doubleClickZoom: false, // Disabled to allow dblclick for location selection
             zoomControl: true,
             attributionControl: true
         });
@@ -37,22 +38,21 @@ location_app.location_initMap = function () {
 
         // Add Recenter Control
         const recenterControl = L.Control.extend({
-            options: { position: 'topleft' }, // Changed to topleft to be with zoom controls
+            options: { position: 'topleft' },
             onAdd: function (map) {
-                const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+                const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-recenter');
                 const button = L.DomUtil.create('a', 'recenter-button', container);
                 button.innerHTML = '<i class="fas fa-crosshairs"></i>';
                 button.href = '#';
                 button.title = window.langu('location_recenter_title');
-                button.style.width = '30px';
-                button.style.height = '30px';
-                button.style.lineHeight = '30px';
-                button.style.backgroundColor = '#fff';
-                button.style.textAlign = 'center';
-                button.style.display = 'block';
+
+                // Styles are now handled by location_styles.css using .leaflet-control-recenter class
 
                 L.DomEvent.on(button, 'click', L.DomEvent.stop)
-                    .on(button, 'click', function () {
+                    .on(button, 'click', function (e) {
+                        L.DomEvent.stopPropagation(e);
+                        L.DomEvent.preventDefault(e);
+
                         if (location_app.location_marker) {
                             const latlng = location_app.location_marker.getLatLng();
                             map.flyTo(latlng, map.getZoom());

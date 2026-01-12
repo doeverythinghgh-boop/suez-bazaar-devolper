@@ -261,19 +261,19 @@ body {
 
 /* Move Leaflet controls to the right (RTL support) */
 .leaflet-right {
-    right: 0;
+    right: 10px;
     left: auto;
 }
 
 .leaflet-left {
-    left: auto;
-    right: 10px;
-    /* Adjust distance from right edge */
+    left: 10px;
+    right: auto;
 }
 
 /* Specific position for zoom control if it's in leaflet-left */
-.leaflet-top.leaflet-left {
-    top: 50%;
+.leaflet-top.leaflet-left,
+.leaflet-top.leaflet-right {
+    top: 50% !important;
     transform: translateY(-50%);
 }
 
