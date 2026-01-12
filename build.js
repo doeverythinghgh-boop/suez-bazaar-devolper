@@ -14,7 +14,62 @@ const HTMLMinifier = require('html-minifier-terser');
 
 var cleanCSS = new CleanCSS({ level: 1 });
 var PROJECT_ROOT = __dirname;
-var OUTPUT_DIR = path.join(PROJECT_ROOT, 'dist');
+var OUTPUT_DIR = path.join(PROJECT_ROOT, '..', '_bazaar');
+
+// 1.1 Workspace Configuration
+var WORKSPACE_CONFIG = [
+    {
+        name: 'suez-bazaar-devolper',
+        url: 'https://github.com/doeverythinghgh-boop/suez-bazaar-devolper.git',
+        path: PROJECT_ROOT
+    },
+    {
+        name: 'suez-bazaar',
+        url: 'https://github.com/doeverythinghgh-boop/suez-bazaar.git',
+        path: path.join(PROJECT_ROOT, '..', 'suez-bazaar')
+    },
+    {
+        name: '_bazaar',
+        url: 'https://github.com/doeverythinghgh-boop/_bazaar.git',
+        path: path.join(PROJECT_ROOT, '..', '_bazaar')
+    }
+];
+
+/**
+ * Ensures all workspace folders exist, are git repositories, and are synchronized.
+ * @returns {Promise<void>}
+ */
+async function ensureWorkspace() {
+    console.log('🔍 Checking Workspace integrity...');
+    for (const repo of WORKSPACE_CONFIG) {
+        console.log(`📂 Checking: ${repo.name}...`);
+
+        // 1. Check if directory exists
+        if (!fs.existsSync(repo.path)) {
+            console.log(`   🚀 Directory missing. Cloning ${repo.name}...`);
+            await new Promise((resolve, reject) => {
+                exec(`git clone ${repo.url} "${repo.path}"`, (error) => {
+                    if (error) return reject(new Error(`Failed to clone ${repo.name}: ${error.message}`));
+                    resolve();
+                });
+            });
+        }
+
+        // 2. Check if it's a git repository
+        const gitPath = path.join(repo.path, '.git');
+        if (!fs.existsSync(gitPath)) {
+            console.log(`   🔧 Not a git repository. Initializing ${repo.name}...`);
+            await new Promise((resolve, reject) => {
+                const setupCmd = `git init && git remote add origin ${repo.url}`;
+                exec(setupCmd, { cwd: repo.path }, (error) => {
+                    if (error) return reject(new Error(`Failed to init git in ${repo.name}: ${error.message}`));
+                    resolve();
+                });
+            });
+        }
+    }
+    console.log('✨ Workspace check complete.\n');
+}
 
 // 1. Configuration
 var EXCLUDED_DIRS = ['api', 'note', 'node_modules', 'dist', '.git', '.gemini', 'docs', 'function'];
@@ -180,7 +235,10 @@ function bumpVersion() {
 async function build() {
     console.log('🏗️ Starting project build with individual obfuscation...');
 
-    // 0. Bump version in root before copying
+    // 0. Ensure Workspace is set up and synced
+    await ensureWorkspace();
+
+    // 0.1 Bump version in root before copying
     bumpVersion();
 
     try {
