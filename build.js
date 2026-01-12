@@ -14,7 +14,7 @@ const HTMLMinifier = require('html-minifier-terser');
 
 var cleanCSS = new CleanCSS({ level: 1 });
 var PROJECT_ROOT = __dirname;
-var OUTPUT_DIR = path.join(PROJECT_ROOT, '..', '_bazaar');
+var OUTPUT_DIR = path.join(PROJECT_ROOT, '..', 'suez-bazaar-publish');
 
 // 1.1 Workspace Configuration
 var WORKSPACE_CONFIG = [
@@ -24,14 +24,14 @@ var WORKSPACE_CONFIG = [
         path: PROJECT_ROOT
     },
     {
-        name: 'suez-bazaar',
-        url: 'https://github.com/doeverythinghgh-boop/suez-bazaar.git',
-        path: path.join(PROJECT_ROOT, '..', 'suez-bazaar')
+        name: 'suez-bazaar-android',
+        url: 'https://github.com/doeverythinghgh-boop/suez-bazaar.git', // Keeping original URL unless you want to rename it on GitHub too
+        path: path.join(PROJECT_ROOT, '..', 'suez-bazaar-android')
     },
     {
         name: '_bazaar',
         url: 'https://github.com/doeverythinghgh-boop/_bazaar.git',
-        path: path.join(PROJECT_ROOT, '..', '_bazaar')
+        path: path.join(PROJECT_ROOT, '..', 'suez-bazaar-publish')
     }
 ];
 
@@ -529,7 +529,7 @@ function deployToGit() {
 function copyToAndroidAssets() {
     console.log('\n📱 Copying files to Android assets folder...');
 
-    var androidAssetsPath = path.join(PROJECT_ROOT, '..', 'suez-bazaar', 'app', 'src', 'main', 'assets');
+    var androidAssetsPath = path.join(PROJECT_ROOT, '..', 'suez-bazaar-android', 'app', 'src', 'main', 'assets');
 
     // Check if Android project exists
     if (!fs.existsSync(androidAssetsPath)) {
