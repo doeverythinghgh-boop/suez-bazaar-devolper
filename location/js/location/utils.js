@@ -67,13 +67,17 @@ location_app.resetLocation = async function () {
         const location_confirmation = await Swal.fire({
             title: window.langu('location_reset_confirm_title'),
             text: window.langu('location_reset_confirm_text'),
-            icon: 'warning',
             showCancelButton: true,
             confirmButtonText: window.langu('location_reset_yes'),
             cancelButtonText: window.langu('location_reset_cancel'),
-            confirmButtonColor: '#dc2626',
-            cancelButtonColor: '#6b7280',
-            customClass: { popup: 'fullscreen-swal' }
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm', // Warning/Danger action can share the primary style or we rely on text
+                cancelButton: 'swal-modern-mini-cancel'
+            }
         });
 
         if (!location_confirmation.isConfirmed) return;
@@ -127,16 +131,20 @@ location_app.shareCoordinates = async function () {
         const location_choice = await Swal.fire({
             title: window.langu('location_options_title'),
             text: window.langu('location_options_text'),
-            icon: 'question',
             showCancelButton: true,
             showDenyButton: true,
             confirmButtonText: window.langu('location_open_in_maps'),
             denyButtonText: window.langu('location_copy_coordinates'),
             cancelButtonText: window.langu('location_reset_cancel'),
-            confirmButtonColor: '#2563eb',
-            denyButtonColor: '#10b981',
-            cancelButtonColor: '#6b7280',
-            customClass: { popup: 'fullscreen-swal' }
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-modern-mini-popup',
+                title: 'swal-modern-mini-title',
+                htmlContainer: 'swal-modern-mini-text',
+                confirmButton: 'swal-modern-mini-confirm',
+                denyButton: 'swal-modern-mini-confirm', // Use same style for alternative positive action
+                cancelButton: 'swal-modern-mini-cancel'
+            }
         });
 
         if (location_choice.isConfirmed) {

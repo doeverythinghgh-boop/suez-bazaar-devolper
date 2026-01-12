@@ -78,7 +78,7 @@ async function profileHandleSellerOptions() {
             html: `
                 <div class="swal-profile-container">
                     <div class="swal-profile-section">
-                        <label class="swal-profile-label">
+                        <label class="swal-profile-label" style="color: #059669;">
                             ${window.langu("profile_delivery_question")}
                         </label>
                         <select id="swal-profile_is-delevred" class="swal2-input swal-profile-input">
@@ -86,8 +86,8 @@ async function profileHandleSellerOptions() {
                             <option value="1" ${currentIsDelevred == "1" ? "selected" : ""}>${window.langu("profile_delivery_yes")}</option>
                         </select>
                     </div>
-                    <div class="swal-profile-section">
-                        <label class="swal-profile-label">
+                    <div class="swal-profile-section" style="border-top: 1px dashed #e2e8f0; padding-top: 15px;">
+                        <label class="swal-profile-label" style="color: #2563eb;">
                             ${window.langu("profile_min_order_question")}
                         </label>
                         <select id="swal-profile_has-limit" class="swal2-input swal-profile-input">
@@ -95,7 +95,7 @@ async function profileHandleSellerOptions() {
                             <option value="yes" ${currentLimitPackage != "0" ? "selected" : ""}>${window.langu("profile_min_order_yes")}</option>
                         </select>
                         <div id="swal-profile_limit-container" style="margin-top: 15px; display: ${currentLimitPackage != "0" ? "block" : "none"};">
-                            <label class="swal-profile-label-sub">${window.langu("profile_min_order_value_label")}</label>
+                            <label class="swal-profile-label-sub" style="color: #64748b;">${window.langu("profile_min_order_value_label")}</label>
                             <input type="number" id="swal-profile_limit-value" class="swal2-input swal-profile-input" value="${currentLimitPackage}" placeholder="${window.langu("profile_min_order_placeholder")}">
                         </div>
                     </div>

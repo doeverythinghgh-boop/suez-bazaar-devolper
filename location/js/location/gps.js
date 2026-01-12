@@ -44,8 +44,13 @@ location_app.getLocationByGPS = function () {
                 showCancelButton: true,
                 cancelButtonText: window.langu('location_reset_cancel'),
                 showConfirmButton: false, // Hide confirm button during search
-                cancelButtonColor: '#d33',
-                customClass: { popup: 'location_fullscreen-swal' }
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    cancelButton: 'swal-modern-mini-cancel'
+                }
             }).then((result) => {
                 if (result.isDismissed || result.dismiss === Swal.DismissReason.cancel) {
                     console.log("[GPS] User cancelled location retrieval.");

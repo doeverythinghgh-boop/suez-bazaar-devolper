@@ -43,8 +43,13 @@ location_app.location_showAlert = function (title, text, icon) {
     return Swal.fire({
         title: title,
         text: text,
-        icon: icon,
         confirmButtonText: window.langu('location_confirm_ok'),
-        customClass: { popup: 'fullscreen-swal' }
+        buttonsStyling: false,
+        customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            htmlContainer: 'swal-modern-mini-text',
+            confirmButton: 'swal-modern-mini-confirm'
+        }
     });
 };

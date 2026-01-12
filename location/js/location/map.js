@@ -176,13 +176,17 @@ location_app.location_handleLocationSelection = async function (lat, lng) {
             const location_confirmation = await Swal.fire({
                 title: window.langu('location_edit_confirm_title'),
                 text: window.langu('location_edit_confirm_text'),
-                icon: 'question',
                 showCancelButton: true,
                 confirmButtonText: window.langu('location_edit_replace'),
                 cancelButtonText: window.langu('location_reset_cancel'),
-                confirmButtonColor: '#2563eb',
-                cancelButtonColor: '#6b7280',
-                customClass: { popup: 'fullscreen-swal' }
+                buttonsStyling: false,
+                customClass: {
+                    popup: 'swal-modern-mini-popup',
+                    title: 'swal-modern-mini-title',
+                    htmlContainer: 'swal-modern-mini-text',
+                    confirmButton: 'swal-modern-mini-confirm',
+                    cancelButton: 'swal-modern-mini-cancel'
+                }
             });
 
             if (!location_confirmation.isConfirmed) return;

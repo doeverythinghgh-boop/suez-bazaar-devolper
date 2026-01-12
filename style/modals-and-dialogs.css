@@ -385,7 +385,8 @@ body.dark-theme .swal-modern-mini-popup {
   font-size: 1.1rem !important;
   /* تصغير الخط */
   font-weight: 700 !important;
-  color: var(--text-color-dark) !important;
+  color: #1e3a8a !important;
+  /* لون أزرق ملكي جذاب */
   margin-bottom: 0.3rem !important;
 }
 
