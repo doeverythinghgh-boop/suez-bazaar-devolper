@@ -440,11 +440,11 @@ function createRelationsListHtml(list, currentUserKey, currentRoleContext) {
                 <div>
                     <strong style="display: block;">${item.username || 'بدون اسم'}</strong>
                     <small style="color: #666;">${item.userKey}</small>
-                    <span style="font-size: 0.8em; padding: 2px 5px; border-radius: 3px; background: ${item.isActive ? '#d4edda' : '#f8d7da'}; color: ${item.isActive ? '#155724' : '#721c24'}; margin-right: 5px;">${item.isActive ? 'نشط' : 'غير نشط'}</span>
+                    <span class="status-badge ${item.isActive ? 'status-active' : 'status-inactive'}">${item.isActive ? 'نشط' : 'غير نشط'}</span>
                 </div>
                 <div>
                     <button onclick="handleToggleRelation('${sellerKey}', '${deliveryKey}', ${!item.isActive}, '${currentUserKey}')" 
-                            style="padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; background-color: ${item.isActive ? '#dc3545' : '#28a745'}; color: white; margin-left: 5px;">
+                            class="action-btn ${item.isActive ? 'btn-danger' : 'btn-success'}">
                         ${actionBtnText}
                     </button>
                 </div>

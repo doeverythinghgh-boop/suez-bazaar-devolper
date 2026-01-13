@@ -12,7 +12,7 @@
      */
     .pending-products-container {
         padding: 20px;
-        background: #fff;
+        background: var(--bg-color-white);
         border-radius: 8px;
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         text-align: right;
@@ -318,7 +318,7 @@
         .pending-products-table tr {
             border: 1px solid #ccc;
             margin-bottom: 15px;
-            background: #fff;
+            background: var(--bg-color-white);
             border-radius: 8px;
             padding: 10px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
@@ -399,7 +399,7 @@
                     <div class="loader"></div>
                 </div>
             </div>
-            
+
             <!-- Load More Section for Pending -->
             <div class="load-more-container" id="load-more-pending-container" style="display: none;">
                 <button id="btn-load-more-pending" class="btn-load-more" style="background-color: #d39e00;">
@@ -419,11 +419,11 @@
         <div id="published-list-container" style="display: none; margin-top: 15px;">
             <!-- Table will be injected here -->
             <div id="published-table-wrapper">
-                 <div class="loader-container">
+                <div class="loader-container">
                     <div class="loader"></div>
                 </div>
             </div>
-            
+
             <!-- Load More Section -->
             <div class="load-more-container" id="load-more-published-container" style="display: none;">
                 <button id="btn-load-more-published" class="btn-load-more">

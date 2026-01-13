@@ -39,9 +39,17 @@ body.dark-theme .leaflet-control-recenter a:hover {
     background-color: #3d3d3d;
 }
 
-body.dark-theme .location_btn-close {
-    background: #2d2d2d;
+
+
+body.dark-theme .leaflet-bar a,
+body.dark-theme .leaflet-control-layers-toggle {
+    background-color: #2d2d2d;
     color: #fff;
+    border-color: #444;
+}
+
+body.dark-theme .leaflet-bar a:hover {
+    background-color: #3d3d3d;
 }
 
 /* ✅ GLOBAL: Hide all scrollbars while maintaining functionality */

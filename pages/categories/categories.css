@@ -577,3 +577,45 @@
         transform: translateX(-50%) rotateY(360deg);
     }
 }
+
+/* =========================================
+   Dark Mode Support (Categories)
+   ========================================= */
+body.dark-theme .categories_details_container {
+    background-color: var(--bg-color-medium);
+    /* Use darker bg */
+    border-color: #444;
+}
+
+body.dark-theme .categories_product_item {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .categories_product_item__image {
+    background-color: #2d2d2d;
+    /* Or transparent if images are PNGs */
+}
+
+body.dark-theme .categories_product_item__name {
+    color: #eee;
+}
+
+body.dark-theme .categories_gallery_internal_wrapper {
+    background-color: #2d2d2d;
+    border-color: #555;
+}
+
+body.dark-theme .categories_subcategory_title {
+    color: #ddd;
+}
+
+body.dark-theme .categories_cell_media {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .categories_grid_item--active .categories_cell_media {
+    background-color: var(--bg-color-medium);
+    border-color: #444;
+}

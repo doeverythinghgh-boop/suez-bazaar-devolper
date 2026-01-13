@@ -639,3 +639,72 @@
 .salesMovement_refreshIcon i {
     color: #667eea;
 }
+
+/* =========================================
+   Dark Mode Support (Sales Movement)
+   ========================================= */
+body.dark-theme .salesMovement_container {
+    background: #1e1e1e;
+    border-color: #444;
+}
+
+body.dark-theme .salesMovement_radioLabel {
+    color: #ddd;
+}
+
+body.dark-theme .salesMovement_radioLabel i {
+    color: #ddd;
+}
+
+body.dark-theme .salesMovement_orderCard {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .salesMovement_cardTitle,
+body.dark-theme .salesMovement_cardInfo span:last-child {
+    color: #eee;
+}
+
+body.dark-theme .salesMovement_cardHeader {
+    border-bottom-color: #444;
+}
+
+body.dark-theme .salesMovement_modalContent {
+    background: #1e1e1e;
+    color: #fff;
+}
+
+body.dark-theme .salesMovement_modalTitle {
+    color: #fff;
+    border-bottom-color: #667eea;
+}
+
+body.dark-theme .salesMovement_modalSectionTitle {
+    color: #667eea;
+}
+
+body.dark-theme .salesMovement_modalInfo {
+    background: #2d2d2d;
+}
+
+body.dark-theme .salesMovement_modalInfoLabel {
+    color: #aaa;
+}
+
+body.dark-theme .salesMovement_modalInfoValue {
+    color: #fff;
+}
+
+body.dark-theme .salesMovement_productItem {
+    background: #2d2d2d;
+    border-left-color: #667eea;
+}
+
+body.dark-theme .salesMovement_productName {
+    color: #fff;
+}
+
+body.dark-theme .salesMovement_productDetails {
+    color: #ccc;
+}

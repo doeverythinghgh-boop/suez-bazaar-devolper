@@ -402,3 +402,60 @@
         font-size: 14px;
     }
 }
+
+/* =========================================
+   Dark Mode Support (Product Add 2)
+   ========================================= */
+body.dark-theme .add2_product_modal {
+    background-color: #1e1e1e;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .add2_product_modal__title {
+    color: #fff;
+    border-bottom-color: #444;
+}
+
+body.dark-theme .add2_product_modal__label {
+    color: #ddd;
+}
+
+body.dark-theme .add2_product_modal__input,
+body.dark-theme .add2_product_modal__textarea,
+body.dark-theme .add2_product_modal__select {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-theme .add2_product_modal__image_uploader {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .add2_product_modal__image_uploader:active {
+    background-color: #333;
+}
+
+body.dark-theme .add2_btn_back {
+    background-color: #333;
+    color: #ddd;
+}
+
+body.dark-theme .add2_btn_ghost {
+    color: #ccc;
+    border-color: #555;
+}
+
+body.dark-theme .add2_product_modal__hint,
+body.dark-theme .add2_product_modal__char_counter {
+    color: #aaa;
+}
+
+body.dark-theme .add2_camera_modal_content {
+    background-color: #2d2d2d;
+}
+
+body.dark-theme .add2_close_button {
+    color: #ddd;
+}

@@ -349,3 +349,43 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* =========================================
+   Dark Mode Support (Product 2 Me)
+   ========================================= */
+body.dark-theme .p2m-product-card {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+body.dark-theme .p2m-product-name {
+  color: #eee;
+}
+
+body.dark-theme .p2m-btn {
+  color: #ccc;
+  border-color: #555;
+  background: transparent;
+}
+
+body.dark-theme .p2m-input-container {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+body.dark-theme .p2m-input-container input {
+  color: #fff;
+}
+
+body.dark-theme .p2m-form-input,
+body.dark-theme .p2m-form-select {
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #fff;
+}
+
+body.dark-theme .p2m-loading-state,
+body.dark-theme .p2m-empty-state {
+  background-color: #2d2d2d;
+  color: #ccc;
+}

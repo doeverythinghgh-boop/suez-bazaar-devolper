@@ -512,7 +512,7 @@ function showDeliveryDetails(deliveryResult) {
                     ${ratingCost !== 0 ? `
                     <div class="delivery-row-detail">
                         <span class="delivery-label">${ratingCost > 0 ? 'رسوم إضافية' : 'خصم'} (${(driverRatingFactor * 100).toFixed(0)}%):</span>
-                        <span style="font-weight: bold; color: ${ratingCost > 0 ? '#f44336' : '#4caf50'};">${ratingCost > 0 ? '+' : ''}${ratingCost.toFixed(2)} ${currency}</span>
+                        <span style="font-weight: bold;" class="${ratingCost > 0 ? 'text-danger' : 'text-success'}">${ratingCost > 0 ? '+' : ''}${ratingCost.toFixed(2)} ${currency}</span>
                     </div>
                     ` : ''}
                 </div>

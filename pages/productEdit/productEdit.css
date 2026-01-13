@@ -396,3 +396,60 @@
         /* Always visible on mobile for easier access */
     }
 }
+
+/* =========================================
+   Dark Mode Support (Product Edit)
+   ========================================= */
+body.dark-theme .edit-product-modal {
+    background-color: var(--modal-bg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .edit-product-modal__title {
+    color: #fff;
+    border-bottom-color: #444;
+}
+
+body.dark-theme .edit-product-modal__label {
+    color: #ddd;
+}
+
+body.dark-theme .edit-product-modal__input,
+body.dark-theme .edit-product-modal__textarea,
+body.dark-theme .edit-product-modal__select {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-theme .edit-product-modal__input:focus,
+body.dark-theme .edit-product-modal__textarea:focus,
+body.dark-theme .edit-product-modal__select:focus {
+    border-color: #e67e22;
+    background-color: #333;
+}
+
+body.dark-theme .edit-product-modal__image-uploader {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .edit-product-modal__image-uploader:hover {
+    background-color: #333;
+}
+
+body.dark-theme .edit-product-modal__hint {
+    color: #aaa;
+}
+
+body.dark-theme .edit-product-modal__char-counter {
+    color: #aaa;
+}
+
+body.dark-theme .edit-product-modal__loading {
+    color: #ccc;
+}
+
+body.dark-theme .camera-modal-content {
+    background-color: #2d2d2d;
+}

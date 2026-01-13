@@ -144,8 +144,12 @@ async function profileHandleSellerOptions() {
             // Update UI feedback on the button
             const isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
             els.sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> ${window.langu("profile_seller_options_btn")} ${isSet ? window.langu("profile_seller_options_set") : ""}`;
-            els.sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
-            els.sellerOptionsBtn.style.color = isSet ? "#065f46" : "#166534"; // Ensure text readability
+
+            // Use data attribute for styling hook
+            els.sellerOptionsBtn.setAttribute('data-status', isSet ? 'set' : 'none');
+            // Remove hardcoded inline styles
+            els.sellerOptionsBtn.style.background = '';
+            els.sellerOptionsBtn.style.color = '';
         }
     } catch (error) {
         console.error("Error in profileHandleSellerOptions:", error);

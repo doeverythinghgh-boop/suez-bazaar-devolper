@@ -504,3 +504,23 @@ body.dark-theme .swal-modern-mini-cancel:active {
 .swal-modern-mini-popup .swal2-close {
   display: none !important;
 }
+
+/* =========================================
+   Dark Mode Support (Additional Modal Elements)
+   ========================================= */
+body.dark-theme .cart-item {
+  border-bottom-color: #444;
+}
+
+body.dark-theme .users-admin-modal-header {
+  border-bottom-color: #444;
+}
+
+body.dark-theme .users-admin-modal-content {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+body.dark-theme .users-admin-modal-header h2 {
+  color: #fff;
+}

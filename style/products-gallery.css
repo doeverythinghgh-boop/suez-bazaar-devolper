@@ -5,30 +5,49 @@
 
 /* صف معرض المنتجات الذي يظهر تحت الفئات الفرعية */
 .products-gallery-row td {
-  height: 15vh; /* تحديد ارتفاع ثابت للصف */
-  padding: 0px; /* إضافة حشو داخلي للخلية */
+  height: 15vh;
+  /* تحديد ارتفاع ثابت للصف */
+  padding: 0px;
+  /* إضافة حشو داخلي للخلية */
   background-color: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   border: 1px solid #e9ecef;
-  vertical-align: top; /* محاذاة المحتوى للأعلى */
+  vertical-align: top;
+  /* محاذاة المحتوى للأعلى */
 }
 
 /* === تنسيقات معرض المنتجات الأفقي (المستخدم في الصفحة الرئيسية) === */
 .gallery-container {
-  display: flex; /* تفعيل نظام Flexbox للعرض الأفقي */
-  overflow-x: auto; /* إضافة شريط تمرير أفقي عند الحاجة */
-  overflow-y: hidden; /* إخفاء شريط التمرير العمودي */
-  gap: 15px; /* مسافة بين عناصر المنتجات */
-  white-space: nowrap; /* منع الصور من النزول لسطر جديد */
-  padding: 15px; /* حشو داخلي للمعرض */
-  -webkit-overflow-scrolling: touch; /* لتحسين التمرير على أجهزة اللمس */
+  display: flex;
+  /* تفعيل نظام Flexbox للعرض الأفقي */
+  overflow-x: auto;
+  /* إضافة شريط تمرير أفقي عند الحاجة */
+  overflow-y: hidden;
+  /* إخفاء شريط التمرير العمودي */
+  gap: 15px;
+  /* مسافة بين عناصر المنتجات */
+  white-space: nowrap;
+  /* منع الصور من النزول لسطر جديد */
+  padding: 15px;
+  /* حشو داخلي للمعرض */
+  -webkit-overflow-scrolling: touch;
+  /* لتحسين التمرير على أجهزة اللمس */
 }
 
 /* تنسيق شريط التمرير ليكون أنعم */
-.gallery-container::-webkit-scrollbar { height: 6px; }
-.gallery-container::-webkit-scrollbar-track { background: transparent; }
-.gallery-container::-webkit-scrollbar-thumb { background-color: #d1d9e6; border-radius: 10px; }
+.gallery-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.gallery-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gallery-container::-webkit-scrollbar-thumb {
+  background-color: #d1d9e6;
+  border-radius: 10px;
+}
 
 /* تصميم بطاقة المنتج في المعرض الأفقي */
 .product-item {
@@ -36,39 +55,79 @@
   text-align: center;
   background-color: #fff;
   line-height: 1;
-  border-radius: 12px; /* زيادة دائرية الحواف */
+  border-radius: 12px;
+  /* زيادة دائرية الحواف */
   overflow: hidden;
-  border: 1px solid #b0b7bc; /* إضافة إطار ناعم */
-  box-shadow: 0px 0px 6px 0px #9eafba; /* ظل أكثر نعومة */
-  transition: transform 0.3s ease, box-shadow 0.3s ease; /* انتقال أكثر سلاسة */
-  display: flex; /* جديد: استخدام flex لتنظيم المحتوى */
-  flex-direction: column; /* جديد: ترتيب المحتوى عمودياً */
+  border: 1px solid #b0b7bc;
+  /* إضافة إطار ناعم */
+  box-shadow: 0px 0px 6px 0px #9eafba;
+  /* ظل أكثر نعومة */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* انتقال أكثر سلاسة */
+  display: flex;
+  /* جديد: استخدام flex لتنظيم المحتوى */
+  flex-direction: column;
+  /* جديد: ترتيب المحتوى عمودياً */
   background-color: transparent;
 }
 
 /* صورة المنتج داخل البطاقة */
 .product-item img {
   width: 100%;
-  height: 12vh; /* نفس ارتفاع الحاوية للحفاظ على الشكل */
-  object-fit: cover; /* ضمان ملء الصورة للمساحة دون تشويه */
+  height: 12vh;
+  /* نفس ارتفاع الحاوية للحفاظ على الشكل */
+  object-fit: cover;
+  /* ضمان ملء الصورة للمساحة دون تشويه */
   display: block;
 }
 
 /* تحديد أبعاد بطاقة المنتج في المعرض الأفقي */
 .gallery-container .product-item {
-  width: 12vh; /* عرض ثابت لجعل العنصر مربع الشكل */
-  flex-shrink: 0; /* منع العنصر من التقلص */
+  width: 12vh;
+  /* عرض ثابت لجعل العنصر مربع الشكل */
+  flex-shrink: 0;
+  /* منع العنصر من التقلص */
 }
 
 /* ✅ جديد: اسم المنتج أسفل الصورة في المعرض */
 .product-name {
   font-family: "Tajawal", sans-serif;
-  font-size: 0.75rem; /* حجم خط صغير ومناسب للبطاقة */
-  color: #333; /* لون نص داكن للوضوح */
-  padding: 8px 5px; /* حشو داخلي بسيط */
-  margin: 0; /* إزالة الهوامش الافتراضية */
-  font-weight: 600; /* وزن خط متوسط */
-  white-space: nowrap; /* منع النص من النزول لسطر جديد */
-  overflow: hidden; /* إخفاء النص الزائد */
-  text-overflow: ellipsis; /* إضافة "..." للنص الطويل */
+  font-size: 0.75rem;
+  /* حجم خط صغير ومناسب للبطاقة */
+  color: #333;
+  /* لون نص داكن للوضوح */
+  padding: 8px 5px;
+  /* حشو داخلي بسيط */
+  margin: 0;
+  /* إزالة الهوامش الافتراضية */
+  font-weight: 600;
+  /* وزن خط متوسط */
+  white-space: nowrap;
+  /* منع النص من النزول لسطر جديد */
+  overflow: hidden;
+  /* إخفاء النص الزائد */
+  text-overflow: ellipsis;
+  /* إضافة "..." للنص الطويل */
+}
+
+/* =========================================
+   Dark Mode Support (Products Gallery)
+   ========================================= */
+body.dark-theme .products-gallery-row td {
+  background-color: #1e1e1e;
+  border-color: #444;
+}
+
+body.dark-theme .product-item {
+  background-color: #2d2d2d;
+  border-color: #444;
+  box-shadow: 0 0 6px 0px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .product-name {
+  color: #eee;
+}
+
+body.dark-theme .gallery-container::-webkit-scrollbar-thumb {
+  background-color: #555;
 }

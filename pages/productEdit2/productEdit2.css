@@ -388,3 +388,63 @@
         /* Always visible on mobile for easier access */
     }
 }
+
+/* =========================================
+   Dark Mode Support (Product Edit 2)
+   ========================================= */
+body.dark-theme .edit-product-modal {
+    background-color: #1e1e1e;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-theme .edit-product-modal__title {
+    color: #fff;
+    border-bottom-color: #444;
+}
+
+body.dark-theme .edit-product-modal__label {
+    color: #ddd;
+}
+
+body.dark-theme .edit-product-modal__input,
+body.dark-theme .edit-product-modal__textarea,
+body.dark-theme .edit-product-modal__select {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-theme .edit-product-modal__image-uploader {
+    background-color: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .edit-product-modal__image-uploader:hover {
+    background-color: #333;
+}
+
+body.dark-theme .btn-ghost {
+    color: #ccc;
+    border-color: #555;
+    background: transparent;
+}
+
+body.dark-theme .edit-product-modal__hint {
+    color: #aaa;
+}
+
+body.dark-theme .edit-product-modal__char-counter {
+    color: #aaa;
+}
+
+body.dark-theme .edit-product-modal__loading {
+    color: #ccc;
+}
+
+body.dark-theme .camera-modal-content {
+    background-color: #2d2d2d;
+}
+
+body.dark-theme .close-button {
+    color: #ddd;
+}

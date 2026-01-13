@@ -13,11 +13,43 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 5000; /* To ensure it's on top of everything */
+  z-index: 5000;
+  /* To ensure it's on top of everything */
   text-align: center;
   flex-direction: column;
   padding: 20px;
 }
-.offline-content i { font-size: 4rem; color: var(--danger-color); margin-bottom: 1.5rem; }
-.offline-content h2 { font-size: 1.8rem; color: var(--text-color-medium); margin-bottom: 1rem; }
-.offline-content p { font-size: 1rem; color: var(--text-color-light); margin-bottom: 2rem; }
+
+.offline-content i {
+  font-size: 4rem;
+  color: var(--danger-color);
+  margin-bottom: 1.5rem;
+}
+
+.offline-content h2 {
+  font-size: 1.8rem;
+  color: var(--text-color-medium);
+  margin-bottom: 1rem;
+}
+
+.offline-content p {
+  font-size: 1rem;
+  color: var(--text-color-light);
+  margin-bottom: 2rem;
+}
+
+/* =========================================
+   Dark Mode Support (Offline Container)
+   ========================================= */
+body.dark-theme .offline-container {
+  background-color: #1e1e1e;
+  color: #fff;
+}
+
+body.dark-theme .offline-content h2 {
+  color: #fff;
+}
+
+body.dark-theme .offline-content p {
+  color: #aaa;
+}

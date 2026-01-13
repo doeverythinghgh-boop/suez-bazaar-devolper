@@ -216,7 +216,8 @@
 .switch {
     position: relative;
     display: inline-block;
-    width: 44px; /* ✅ تعديل الحجم ليكون أكثر تناسقاً */
+    width: 44px;
+    /* ✅ تعديل الحجم ليكون أكثر تناسقاً */
     height: 22px;
 }
 
@@ -233,10 +234,12 @@
     right: 0;
     left: 0;
     bottom: 0;
-    background-color: #ccc; /* ✅ لون صلب كبديل */
+    background-color: #ccc;
+    /* ✅ لون صلب كبديل */
     transition: .4s;
     border-radius: 34px;
-    border: 1px solid #bbb; /* ✅ إضافة برواز خفيف لضمان الظهور */
+    border: 1px solid #bbb;
+    /* ✅ إضافة برواز خفيف لضمان الظهور */
 }
 
 .slider:before {
@@ -249,16 +252,18 @@
     background-color: white;
     transition: .4s;
     border-radius: 50%;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-input:checked + .slider {
-    background-color: #28a745; /* ✅ أخضر صلب للتفعيل */
+input:checked+.slider {
+    background-color: #28a745;
+    /* ✅ أخضر صلب للتفعيل */
     border-color: #218838;
 }
 
-input:checked + .slider:before {
-    transform: translateX(-22px); /* ✅ تعديل المسافة بناءً على العرض الجديد */
+input:checked+.slider:before {
+    transform: translateX(-22px);
+    /* ✅ تعديل المسافة بناءً على العرض الجديد */
 }
 
 /* --- إعدادات الإشعارات --- */
@@ -477,7 +482,8 @@ input:checked + .slider:before {
     align-items: center;
     justify-content: center;
     transition: color 0.2s, transform 0.2s;
-    margin-right: 4px; /* مسافة بسيطة عن ايقونة القراءة */
+    margin-right: 4px;
+    /* مسافة بسيطة عن ايقونة القراءة */
 }
 
 .delete-notification-btn:active {
@@ -703,4 +709,79 @@ input:checked + .slider:before {
     .notification-actions {
         align-self: flex-end;
     }
+}
+
+/* =========================================
+   Dark Mode Support (Notifications)
+   ========================================= */
+body.dark-theme .notifications-container {
+    background: #1e1e1e;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .controls-bar {
+    background: #2d2d2d;
+    border-bottom-color: #444;
+}
+
+body.dark-theme .controls-group {
+    background: #333;
+    border-color: #555;
+    color: #ccc;
+}
+
+body.dark-theme .controls-group select,
+body.dark-theme .controls-group input {
+    color: #fff;
+}
+
+body.dark-theme .notifications-list {
+    background-color: #121212;
+}
+
+body.dark-theme .date-divider span {
+    background-color: #333;
+    color: #ccc;
+}
+
+body.dark-theme .notification-item {
+    color: #eee;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .notification-item.received {
+    background-color: #2d2d2d;
+}
+
+body.dark-theme .notification-item.received::before {
+    border-top-color: #2d2d2d;
+}
+
+body.dark-theme .notification-item.sent {
+    background-color: #056162;
+    /* Dark Green for Sent */
+}
+
+body.dark-theme .notification-item.sent::before {
+    border-top-color: #056162;
+}
+
+body.dark-theme .sender-name {
+    color: #667eea;
+}
+
+body.dark-theme .notification-time {
+    color: #aaa;
+}
+
+body.dark-theme .notifications-settings {
+    background-color: #2d2d2d;
+}
+
+body.dark-theme .settings-info h3 {
+    color: #fff;
+}
+
+body.dark-theme .settings-info p {
+    color: #aaa;
 }

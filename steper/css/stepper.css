@@ -112,6 +112,21 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* =========================================
+   Dark Mode Support (Stepper)
+   ========================================= */
+body.dark-theme .step-circle {
+    background: linear-gradient(135deg, #2d2d2d 0%, #1e1e1e 100%);
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-theme .step-item:not(:first-child)::before {
+    border-right-color: #444;
+    /* Default arrow color in dark mode */
+}
+
+
 .step-circle i {
     font-size: 1.3rem;
 }

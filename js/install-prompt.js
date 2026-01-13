@@ -173,7 +173,7 @@ function showCustomInstallModal() {
       showCloseButton: false,
       allowOutsideClick: false,
       allowEscapeKey: false,
-      background: '#fff',
+      background: 'var(--modal-bg, #fff)',
       didOpen: () => {
         // REMOVED: User requested to show always.
         // localStorage.setItem('installPromptShown_v1', 'true');
@@ -281,7 +281,7 @@ function showIOSVideoPage() {
 
   // Create full-screen video container (centered)
   const videoHtml = `
-    <div id="ios-video-wrapper" style="position: fixed; top: 50%; left: 50%; width: 80vw; height: 80vh; background: #fff; z-index: 100000; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+    <div id="ios-video-wrapper" style="position: fixed; top: 50%; left: 50%; width: 80vw; height: 80vh; background: var(--modal-bg, #fff); z-index: 100000; display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
       <video autoplay loop muted playsinline aria-label="iOS Installation Guide" style="width: 100%; height: 100%; object-fit: contain; outline: none; border: none;">
         <source src="images/ios.mp4" type="video/mp4">
         Your browser does not support the video tag.

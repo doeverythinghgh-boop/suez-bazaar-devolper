@@ -9,6 +9,7 @@
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -20,6 +21,7 @@
     opacity: 0;
     transform: scale(0.5);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -31,6 +33,7 @@
     opacity: 0;
     transform: translateY(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -44,30 +47,36 @@
 
 #product-modal-image {
   animation: zoomInEffect 0.5s ease-out 0.1s forwards;
-  opacity: 0; /* Start hidden */
+  opacity: 0;
+  /* Start hidden */
 }
 
 #product-modal-image-details {
   animation: slideInFromTop 0.5s ease-out 0.2s forwards;
-  opacity: 0; /* Start hidden */
+  opacity: 0;
+  /* Start hidden */
 }
 
 /* Staggered animation for details */
-#product-modal-image-details > * {
+#product-modal-image-details>* {
   animation: slideInFromTop 0.5s ease-out forwards;
-  opacity: 0; /* Start hidden */
+  opacity: 0;
+  /* Start hidden */
 }
 
-#product-modal-image-details > *:nth-child(1) {
+#product-modal-image-details>*:nth-child(1) {
   animation-delay: 0.3s;
 }
-#product-modal-image-details > *:nth-child(2) {
+
+#product-modal-image-details>*:nth-child(2) {
   animation-delay: 0.4s;
 }
-#product-modal-image-details > *:nth-child(3) {
+
+#product-modal-image-details>*:nth-child(3) {
   animation-delay: 0.5s;
 }
-#product-modal-image-details > *:nth-child(4) {
+
+#product-modal-image-details>*:nth-child(4) {
   animation-delay: 0.6s;
 }
 
@@ -82,32 +91,42 @@
   border-radius: 8px;
   padding: 15px;
   margin-top: 15px;
-  border-right: 4px solid #3498db; /* تغيير جهة الحد */
+  border-right: 4px solid #3498db;
+  /* تغيير جهة الحد */
 }
+
 .product-description h4,
 .seller-message h4 {
   margin-top: 0;
   color: #2c3e50;
 }
+
 /* جعل أيقونات الأقسام زرقاء */
 .product-description h4 i,
 .seller-message h4 i {
   color: #3498db;
-  margin-left: 8px; /* تغيير جهة الهامش */
+  margin-left: 8px;
+  /* تغيير جهة الهامش */
 }
 
 /* أنماط لمعرض الصور في المودال */
 .product-modal-image-container {
   width: 100%;
-  position: relative; /* ضروري لتحديد موضع الصور داخل الحاوية */
-  overflow: hidden; /* إخفاء الصور أثناء انزلاقها خارج الحدود */
+  position: relative;
+  /* ضروري لتحديد موضع الصور داخل الحاوية */
+  overflow: hidden;
+  /* إخفاء الصور أثناء انزلاقها خارج الحدود */
   margin-bottom: 15px;
 }
+
 #product-modal-image {
-  max-height: 400px; /* تحديد ارتفاع أقصى */
+  max-height: 400px;
+  /* تحديد ارتفاع أقصى */
   border-radius: 8px;
-  background-color: #f0f0f0; /* خلفية للصورة */
+  background-color: #f0f0f0;
+  /* خلفية للصورة */
 }
+
 .product-modal-thumbnails {
   display: flex;
   gap: 10px;
@@ -115,6 +134,7 @@
   margin-top: 10px;
   flex-wrap: wrap;
 }
+
 .product-modal-thumbnails img {
   width: 60px;
   height: 60px;
@@ -124,9 +144,11 @@
   border: 2px solid transparent;
   transition: border-color 0.3s;
 }
+
 /* ضمان ظهور رسالة التأكيد فوق نافذة تفاصيل المنتج */
 .swal2-container {
-  z-index: 3000 !important; /* استخدام قيمة z-index عالية جدًا */
+  z-index: 3000 !important;
+  /* استخدام قيمة z-index عالية جدًا */
 }
 
 /* تنسيق السعر قبل الخصم المشطوب */
@@ -141,30 +163,44 @@
 .quantity-selector {
   display: flex;
   justify-content: center;
-  align-items: center; /* محاذاة عمودية للعناصر */
-  gap: 12px; /* مسافة بين العناصر */
-  margin: 1rem 0; /* إضافة هوامش علوية وسفلية */
+  align-items: center;
+  /* محاذاة عمودية للعناصر */
+  gap: 12px;
+  /* مسافة بين العناصر */
+  margin: 1rem 0;
+  /* إضافة هوامش علوية وسفلية */
 }
 
 /* تحسين تصميم أزرار الكمية */
 .quantity-selector .quantity-btn {
-  background-color: #eaf5ff; /* خلفية زرقاء فاتحة */
+  background-color: #eaf5ff;
+  /* خلفية زرقاء فاتحة */
   border: 1px solid #9bc1eb;
-  color: #007bff; /* لون أزرق للأيقونة */
+  color: #007bff;
+  /* لون أزرق للأيقونة */
   box-shadow: 0 2px 4px rgba(0, 123, 255, 0.1);
 }
 
 /* تحسين تصميم حقل إدخال الكمية */
 #product-modal-selected-quantity {
-  border: none; /* إزالة الحدود التقليدية */
-  background-color: #f0f8ff; /* خلفية متناسقة */
-  color: #03478f; /* لون نص أزرق داكن */
-  border-radius: 8px; /* حواف دائرية */
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06); /* ظل داخلي ناعم */
-  width: 60px; /* زيادة العرض قليلاً */
-  height: 40px; /* توحيد الارتفاع مع الأزرار */
-  font-size: 18px; /* تكبير حجم الخط */
-  text-align: center; /* توسيط النص داخل الحقل */
+  border: none;
+  /* إزالة الحدود التقليدية */
+  background-color: #f0f8ff;
+  /* خلفية متناسقة */
+  color: #03478f;
+  /* لون نص أزرق داكن */
+  border-radius: 8px;
+  /* حواف دائرية */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06);
+  /* ظل داخلي ناعم */
+  width: 60px;
+  /* زيادة العرض قليلاً */
+  height: 40px;
+  /* توحيد الارتفاع مع الأزرار */
+  font-size: 18px;
+  /* تكبير حجم الخط */
+  text-align: center;
+  /* توسيط النص داخل الحقل */
 }
 
 /* تنسيق حاوية السعر الإجمالي */
@@ -172,7 +208,8 @@
   text-align: center;
   margin: 1rem 0;
   padding: 1rem;
-  background-color: #f0f8ff; /* لون أزرق فاتح جدًا */
+  background-color: #f0f8ff;
+  /* لون أزرق فاتح جدًا */
   border-radius: 8px;
   border: 1px solid #e0eefd;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
@@ -186,30 +223,75 @@
 #product-modal-total-price {
   font-size: 1.5rem;
   font-weight: bold;
-  color: #007bff; /* لون أزرق مميز */
+  color: #007bff;
+  /* لون أزرق مميز */
   margin-right: 8px;
 }
 
 /* تحسين تصميم زر "إضافة إلى السلة" */
 .add-to-cart-btn {
-  width: 100%; /* عرض كامل */
+  width: 100%;
+  /* عرض كامل */
   padding: 15px;
   font-size: 1.2rem;
   font-weight: bold;
   color: #fff;
-  background: linear-gradient(45deg, #007bff, #0056b3); /* خلفية متدرجة */
+  background: linear-gradient(45deg, #007bff, #0056b3);
+  /* خلفية متدرجة */
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
-  display: flex; /* لتوسيط المحتوى */
+  display: flex;
+  /* لتوسيط المحتوى */
   align-items: center;
   justify-content: center;
-  gap: 10px; /* مسافة بين الأيقونة والنص */
+  gap: 10px;
+  /* مسافة بين الأيقونة والنص */
 }
 
 .add-to-cart-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* =========================================
+   Dark Mode Support (Show Product Modal)
+   ========================================= */
+body.dark-theme .product-description,
+body.dark-theme .seller-message {
+  background-color: #2d2d2d;
+  color: #ddd;
+  border-color: #3498db;
+}
+
+body.dark-theme .product-description h4,
+body.dark-theme .seller-message h4 {
+  color: #fff;
+}
+
+body.dark-theme #product-modal-image {
+  background-color: #333;
+}
+
+body.dark-theme .quantity-selector .quantity-btn {
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #3498db;
+}
+
+body.dark-theme #product-modal-selected-quantity {
+  background-color: #1e1e1e;
+  color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+body.dark-theme .total-price-container {
+  background-color: #2d2d2d;
+  border-color: #444;
+}
+
+body.dark-theme #product-modal-total-price-label {
+  color: #ccc;
 }

@@ -339,3 +339,30 @@ CSS: User Profile Styles
         align-items: stretch;
     }
 }
+
+/* =========================================
+   Dynamic Status Styles (JS Hook)
+   ========================================= */
+.profile-seller-btn[data-status="set"] {
+    background-color: #d1fae5;
+    border-style: solid;
+    color: #065f46;
+}
+
+.profile-seller-btn[data-status="none"] {
+    background-color: #f0fdf4;
+    border-style: dashed;
+    color: #166534;
+}
+
+body.dark-theme .profile-seller-btn[data-status="set"] {
+    background-color: #064e3b;
+    color: #a7f3d0;
+    border-color: #059669;
+}
+
+body.dark-theme .profile-seller-btn[data-status="none"] {
+    background-color: #2d2d2d;
+    color: #9ca3af;
+    border-color: #4b5563;
+}

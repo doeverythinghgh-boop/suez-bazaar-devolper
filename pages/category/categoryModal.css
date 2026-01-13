@@ -160,3 +160,32 @@
         font-size: 1.3rem;
     }
 }
+
+/* =========================================
+   Dark Mode Support (Category Modal)
+   ========================================= */
+body.dark-theme .category-modal-content {
+    background-color: var(--modal-bg);
+    /* #1e1e1e */
+}
+
+body.dark-theme .category-modal-title,
+body.dark-theme .category-select-group label {
+    color: #fff;
+}
+
+body.dark-theme .category-modal-select {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-theme .category-modal-select:disabled {
+    background-color: #333;
+    color: #888;
+}
+
+body.dark-theme .category-modal-btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}

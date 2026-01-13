@@ -117,10 +117,14 @@ if (register_sellerOptionsBtn) {
       register_limitPackageInput.value = formValues.limitPackage;
 
       // Update UI feedback on the button
-      var isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
-      var statusText = isSet ? ` ${window.langu("register_seller_options_set")}` : ` ${window.langu("register_seller_options_none")}`;
+      const isSet = (formValues.isDelevred === 1 || formValues.limitPackage > 0);
+      const statusText = isSet ? ` ${window.langu("register_seller_options_set")}` : ` ${window.langu("register_seller_options_none")}`;
       register_sellerOptionsBtn.innerHTML = `<i class="fas fa-store"></i> ${window.langu("register_seller_options_btn")}${statusText}`;
-      register_sellerOptionsBtn.style.background = isSet ? "#d1fae5" : "#f0fdf4";
+
+      // Remove hardcoded colors, use a data attribute or class
+      register_sellerOptionsBtn.setAttribute('data-status', isSet ? 'set' : 'none');
+      // Legacy style cleanup if present
+      register_sellerOptionsBtn.style.background = '';
       register_sellerOptionsBtn.style.borderStyle = isSet ? "solid" : "dashed";
     }
   });
@@ -138,7 +142,9 @@ var handleRegisterMessage = (event) => {
     if (coordsInput) coordsInput.value = coords;
 
     if (mapStatus) {
-      mapStatus.style.color = "#10b981";
+      // Use class for success color instead of hardcoded hex
+      mapStatus.classList.add('status-success');
+      mapStatus.style.color = ''; // clear inline
       mapStatus.innerHTML = `<i class="fas fa-check-circle"></i> ${window.langu("register_map_success")}`;
       mapStatus.style.display = "block";
     }

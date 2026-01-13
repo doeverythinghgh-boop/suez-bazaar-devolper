@@ -605,3 +605,79 @@
         padding: 20px;
     }
 }
+
+/* =========================================
+   Dark Mode Support (Cart Page)
+   ========================================= */
+body.dark-theme .cartPage_cart-item,
+body.dark-theme .cartPage_cart-summary {
+    background: #1e1e1e;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    border-color: #444;
+}
+
+body.dark-theme .cartPage_cart-item td {
+    border-bottom-color: #444;
+}
+
+body.dark-theme .cartPage_cart-item-title,
+body.dark-theme .cartPage_cart-summary h2,
+body.dark-theme .cartPage_summary-row {
+    color: #fff;
+    border-bottom-color: #444;
+}
+
+body.dark-theme .cartPage_quantity-controls,
+body.dark-theme .cartPage_note-text {
+    background-color: #2d2d2d;
+}
+
+body.dark-theme .cartPage_quantity-btn {
+    background-color: #333;
+    color: #eee;
+}
+
+body.dark-theme .cartPage_quantity-input {
+    color: #fff;
+}
+
+body.dark-theme .cartPage_cart-item-image {
+    background-color: #2d2d2d;
+}
+
+body.dark-theme .cartPage_note-modal-content {
+    background: #1e1e1e;
+    color: #fff;
+}
+
+body.dark-theme .cartPage_note-modal-header {
+    border-bottom-color: #444;
+}
+
+body.dark-theme .cartPage_note-modal-header h3 {
+    color: #fff;
+}
+
+body.dark-theme .cartPage_note-modal-body textarea {
+    background-color: #2d2d2d;
+    border-color: #444;
+    color: #fff;
+}
+
+body.dark-theme .cartPage_cancel-note-btn,
+body.dark-theme .cartPage_close-modal {
+    background: #333;
+    color: #ddd;
+}
+
+body.dark-theme .cartPage_empty-cart {
+    background: #1e1e1e;
+}
+
+body.dark-theme .cartPage_empty-cart h2 {
+    color: #eee;
+}
+
+body.dark-theme .cartPage_empty-cart-icon {
+    color: #444;
+}

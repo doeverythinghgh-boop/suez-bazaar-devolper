@@ -122,3 +122,29 @@
   background-color: rgba(0, 0, 0, 0.5);
   transform: translateY(-50%) scale(0.95);
 }
+
+/* =========================================
+   Dark Mode Support (Advertisement)
+   ========================================= */
+body.dark-theme #advertisement-section {
+  background: #1e1e1e;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .ad-slider-nav {
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+body.dark-theme .ad-slider-dot {
+  background-color: #555;
+  border-color: #777;
+}
+
+body.dark-theme .ad-slider-dot.active {
+  background-color: #fff;
+}
+
+body.dark-theme .no-ads-message {
+  color: #aaa;
+}

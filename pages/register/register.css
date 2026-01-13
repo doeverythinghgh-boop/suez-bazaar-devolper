@@ -310,3 +310,71 @@
     max-width: 310px !important;
   }
 }
+
+/* =========================================
+   Dark Mode Support (Register Page)
+   ========================================= */
+body.dark-theme .modern-confirm-pw-popup {
+  background: var(--bg-color-white) !important;
+  /* Should be redefined by global var or override */
+}
+
+/* Specific Override for Popup in Dark Mode */
+body.dark-theme .modern-confirm-pw-popup {
+  background: #1e1e1e !important;
+}
+
+body.dark-theme .confirm-pw-icon-wrapper {
+  background: #2d2d2d;
+  color: #ccc;
+}
+
+body.dark-theme .modern-pw-input-group input {
+  background: #2d2d2d !important;
+  border-color: #444 !important;
+  color: #fff !important;
+}
+
+body.dark-theme .modern-swal-cancel {
+  background-color: #2d2d2d !important;
+  color: #ccc !important;
+}
+
+body.dark-theme .register_container h2,
+body.dark-theme .register_form-group label {
+  color: #fff;
+}
+
+body.dark-theme .register_form-group input {
+  background-color: #2d2d2d;
+  border-color: #444;
+  color: #fff;
+}
+
+/* =========================================
+   Dynamic Status Styles (JS Hook)
+   ========================================= */
+#register_seller-options-btn[data-status="set"] {
+  background-color: #d1fae5;
+  border-style: solid;
+  color: #065f46;
+}
+
+#register_seller-options-btn[data-status="none"] {
+  background-color: #f0fdf4;
+  border-style: dashed;
+  color: #166534;
+}
+
+body.dark-theme #register_seller-options-btn[data-status="set"] {
+  background-color: #064e3b;
+  /* Dark Green */
+  color: #a7f3d0;
+  border-color: #059669;
+}
+
+body.dark-theme #register_seller-options-btn[data-status="none"] {
+  background-color: #2d2d2d;
+  color: #9ca3af;
+  border-color: #4b5563;
+}

@@ -515,3 +515,58 @@ body.dark-theme .detail-label {
 body.dark-theme .radio-option {
     color: #eee;
 }
+
+/* Status Badges & Dynamic Buttons */
+.status-badge {
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 5px;
+    font-weight: bold;
+}
+
+.status-active {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.status-inactive {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+body.dark-theme .status-active {
+    background-color: #14532d;
+    color: #bbf7d0;
+}
+
+body.dark-theme .status-inactive {
+    background-color: #7f1d1d;
+    color: #fecaca;
+}
+
+.action-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    color: white;
+    margin-left: 5px;
+    transition: background-color 0.2s;
+}
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+.btn-success {
+    background-color: #28a745;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
