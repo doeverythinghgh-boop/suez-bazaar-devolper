@@ -135,3 +135,16 @@ body.dark-theme label,
 body.dark-theme .form-group label {
   color: #fff;
 }
+
+/* === 5. Global Scrollbar Management (Hidden but Functional) === */
+* {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+}
+
+*::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Opera */
+}
