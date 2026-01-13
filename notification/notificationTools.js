@@ -10,12 +10,12 @@
  * @param {string} role ('buyer' | 'admin' | 'seller' | 'delivery')
  * @returns {Promise<boolean>}
  */
-let cachedDefaultConfig = null;
+var cachedDefaultConfig = null;
 /**
  * @type {object|null}
  * @description Cache for the notification messages loaded from `notification_messages.json`.
  */
-let notificationMessages = null;
+var notificationMessages = null;
 
 /**
  * @description جلب رابط الملف من R2 (دالة احتياطية في حال غياب cloudFileManager.js)

@@ -22,6 +22,8 @@
     <script src="../js/globalVariable.js"></script>
     <script src="../notification/notificationSetUp.js"></script>
     <script src="../notification/notificationTools.js"></script>
+    <script src="../notification/notification-credentials.js"></script>
+    <script src="../notification/notification-p2p-web.js"></script>
     <script src="../notification/notification-db-manager.js"></script>
 
     <!-- Auth Infrastructure (If needed) -->
@@ -56,7 +58,16 @@
         // Localization Fallback for iFrame
         window.langu = function (key) {
             if (window.parent && typeof window.parent.langu === 'function') {
-                return window.parent.langu(key);
+                const translation = window.parent.langu(key);
+                // If the parent returns the key itself, it means the key is missing
+                if (translation === key) {
+                    // Provide a local fallback or return the key safely
+                    const fallbacks = {
+                        'loading_text': 'جاري التحميل...'
+                    };
+                    return fallbacks[key] || key;
+                }
+                return translation;
             }
             return key;
         };
@@ -76,13 +87,85 @@
             });
         };
         window.addEventListener('DOMContentLoaded', window.applyAppTranslations);
+
+        /**
+         * Hides the application loading overlay.
+         */
+        window.hideAppLoader = function () {
+            const loader = document.getElementById('app-loader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 400);
+            }
+        };
     </script>
+
+    <style>
+        /* Modern App Loader */
+        #app-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-primary, #ffffff);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.4s ease;
+        }
+
+        .loader-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--color-primary, #667eea);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        .loader-text {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1rem;
+            color: var(--text-primary, #2d3748);
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        body.dark-theme #app-loader {
+            background: #1a202c;
+        }
+
+        body.dark-theme .loader-text {
+            color: #edf2f7;
+        }
+    </style>
 
     <script src="./main.js" type="module" id="main-script"></script>
     <script src="./dynamicGap.js" id="dynamic-gap-script"></script>
 </head>
 
 <body id="body-content">
+    <!-- App Loading Overlay -->
+    <div id="app-loader">
+        <div class="loader-spinner"></div>
+        <div class="loader-text" id="app-loader-text">جاري التحميل...</div>
+    </div>
+
     <div class="step_container" id="main-container">
         <!-- عرض معلومات المستخدم الحالي (تم نقله إلى عنوان المتصفح) -->
         <main id="main-content">
@@ -226,36 +309,51 @@
     ];
 
     document.addEventListener('DOMContentLoaded', () => {
-        let initRetries = 0; // ✅ Move to top to avoid Temporal Dead Zone ReferenceError
-        // 1. Data Bridging: Fetch data from parent window if available
-        if (window.parent && window.parent.globalStepperAppData && window.initializeStepperData) {
-            console.log("🔗 [StepperOnly] Found parent data, bridging...");
-            const parentData = window.parent.globalStepperAppData;
+        let initRetries = 0;
+        let dataBridgeRetries = 0;
 
-            // Bridge baseURL to internal window object for dataFetchers.js
-            window.globalStepperAppData = {
-                baseURL: parentData.baseURL
-            };
+        // 1. Data Bridging with Retry Logic
+        function triggerDataBridge() {
+            if (window.parent && window.parent.globalStepperAppData && window.initializeStepperData) {
+                console.log("🔗 [StepperOnly] Found parent data, bridging...");
+                const parentData = window.parent.globalStepperAppData;
 
-            const control = {
-                baseURL: parentData.baseURL, // Also add to control
-                currentUser: {
-                    idUser: parentData.idUser,
-                    type: "unknown"
-                },
-                steps: DEFAULT_STEPS,
-                users: DEFAULT_USERS
-            };
-            const orders = parentData.ordersData || [];
+                window.globalStepperAppData = {
+                    baseURL: parentData.baseURL
+                };
 
-            // Inject data into the app
-            window.initializeStepperData(control, orders);
+                const control = {
+                    baseURL: parentData.baseURL,
+                    currentUser: {
+                        idUser: parentData.idUser,
+                        type: "unknown"
+                    },
+                    steps: DEFAULT_STEPS,
+                    users: DEFAULT_USERS
+                };
+                const orders = parentData.ordersData || [];
 
-            // ✅ استدعاء فوري بعد الحقن لضمان الموثوقية
-            console.log("🛠️ [StepperOnly] Data injected, performing UI checks...");
-            initPhotoLink();
-        } else {
-            console.warn("⚠️ [StepperOnly] No parent data found or initializeStepperData missing.");
+                window.initializeStepperData(control, orders);
+                console.log("🛠️ [StepperOnly] Data injected successfully.");
+                initPhotoLink();
+            } else {
+                dataBridgeRetries++;
+                if (dataBridgeRetries < 20) { // Try for 2 seconds (100ms interval)
+                    setTimeout(triggerDataBridge, 100);
+                } else {
+                    console.warn("⚠️ [StepperOnly] Initialization timeout: parent data or initializeStepperData missing.");
+                    // Emergency hide after timeout if something is fatally wrong but we want the UI visible
+                    setTimeout(window.hideAppLoader, 1000);
+                }
+            }
+        }
+
+        triggerDataBridge();
+
+        // Update loader text with translation if available
+        const loaderText = document.getElementById('app-loader-text');
+        if (loaderText) {
+            loaderText.textContent = window.langu('loading_text');
         }
 
         // 2. Auto-Scroll Tutorial (New)

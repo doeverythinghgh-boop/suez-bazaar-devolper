@@ -102,8 +102,7 @@ function initStickyGap() {
         });
     }
 
-    // Safety Net
-    setInterval(calculateStepperGap, 2000);
+    // Safety Net removed as Observers are efficient
 }
 
 if (document.readyState === 'loading') {

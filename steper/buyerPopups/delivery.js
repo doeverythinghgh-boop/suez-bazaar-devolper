@@ -123,8 +123,7 @@ export async function handleDeliverySave(data, ordersData) {
                     if (ordersData && ordersData.length > 0) {
                         const orderKey = ordersData[0].order_key;
                         const userId = data.currentUser.idUser;
-                        await saveDeliveryLock(orderKey, true, ordersData, userId);
-                        console.log('[BuyerPopups] Delivery permanently locked for order:', orderKey, 'User:', userId);
+                        await saveShippingLock(orderKey, true, ordersData, userId);
                     }
 
                     Swal.fire({
@@ -143,16 +142,20 @@ export async function handleDeliverySave(data, ordersData) {
 
                         // [Notifications] Dispatch Notifications
                         if (typeof window.notifyOnStepActivation === 'function') {
-                            const metadata = extractNotificationMetadata(ordersData, data);
                             const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                             const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
+
+                            // [Reliability] Filter out current user from notifications
+                            const actingUserId = String(data.currentUser.idUser);
+                            const sellersToNotify = relevantSellers.filter(s => String(s) !== actingUserId);
+                            const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
 
                             window.notifyOnStepActivation({
                                 stepId: 'step-delivered',
                                 stepName: window.langu('deliv_notify_received'),
                                 ...metadata,
-                                sellerKeys: relevantSellers,
-                                deliveryKeys: relevantDelivery
+                                sellerKeys: sellersToNotify,
+                                deliveryKeys: deliveryToNotify
                             });
                         }
                     });
@@ -217,8 +220,6 @@ export function showDeliveryConfirmationAlert(data, ordersData) {
 
         // Determine if editing is allowed
         const canEdit = userType === 'admin' || !isLocked;
-
-        console.log(`[BuyerPopups] Opening delivery | User: ${userType} | Locked: ${isLocked} | CanEdit: ${canEdit}`);
 
         const userDetails = getUserDetailsForDelivery(productsToDeliver, ordersData);
         const userInfoHtml = generateDeliveryUserInfoHtml(userDetails);

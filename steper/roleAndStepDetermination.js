@@ -17,12 +17,8 @@ import { ADMIN_IDS, ITEM_STATUS } from "./config.js";
  */
 export function determineUserType(userId, ordersData, controlData) {
     try {
-        // Ensure we are working with a string ID, even if an object was passed
         const effectiveUserId = (userId && typeof userId === 'object') ? userId.idUser : userId;
         const userIdStr = String(effectiveUserId || '');
-
-        console.log(`[RoleDetermination] Checking role for: ${userIdStr} (Original type: ${typeof userId})`);
-        console.log(`[RoleDetermination] Orders count: ${ordersData ? ordersData.length : 0}`);
 
         if (ADMIN_IDS.includes(userIdStr)) return "admin";
 
@@ -36,36 +32,28 @@ export function determineUserType(userId, ordersData, controlData) {
         }
 
         for (const order of ordersData) {
-            console.log(`[RoleDetermination] Order ${order.order_key}: user_key=${order.user_key}`);
             if (String(order.user_key) === userIdStr) {
-                console.log(`[RoleDetermination] Match found: User is BUYER for order ${order.order_key}`);
                 isBuyer = true;
             }
 
             if (!order.order_items || !Array.isArray(order.order_items)) {
-                console.warn(`[RoleDetermination] Order ${order.order_key} has no items or order_items is invalid`);
                 continue;
             }
 
             for (const item of order.order_items) {
-                console.log(`[RoleDetermination] Item ${item.product_key}: seller_key=${item.seller_key}`);
                 if (String(item.seller_key) === userIdStr) {
-                    console.log(`[RoleDetermination] Match found: User is SELLER for item ${item.product_key}`);
                     isSeller = true;
                 }
 
-                // --- فحص الـ Courier بشكل يدعم عدة منصات وتنسيقات ---
+                // --- Courier Check Supporting Multiple Formats ---
                 const deliveryField = item.supplier_delivery;
                 if (deliveryField) {
-                    // تحويل إلى مصفوفة للتعامل الموحد
                     const deliveries = Array.isArray(deliveryField) ? deliveryField : [deliveryField];
 
                     if (deliveries.some(d => {
-                        // استخراج المعرف سواء كان الكائن {delivery_key: '...'} أو كان المعرف نصاً مباشراً
                         const dKey = (d && typeof d === 'object') ? d.delivery_key : d;
                         return String(dKey || '') === userIdStr;
                     })) {
-                        console.log(`[RoleDetermination] Match found: User is COURIER for item ${item.product_key}`);
                         isCourier = true;
                     }
                 }
@@ -81,7 +69,6 @@ export function determineUserType(userId, ordersData, controlData) {
         if (isBuyer) return "buyer";
         if (isCourier) return "courier";
 
-        console.error(`Fatal Error: No role found for user ID '${userId}'.`);
         return null;
     } catch (error) {
         console.error("Error in determineUserType:", error);

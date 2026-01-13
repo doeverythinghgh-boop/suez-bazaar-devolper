@@ -56,7 +56,7 @@ export function getConfirmationProducts(ordersData, sellerId, userType) {
 
     const sellerOwnedProducts = ordersData.flatMap((order) =>
         order.order_items
-            .filter((item) => userType === "admin" || item.seller_key == sellerId)
+            .filter((item) => userType === "admin" || String(item.seller_key) === String(sellerId))
             .map((item) => {
                 return {
                     product_key: item.product_key,
@@ -86,12 +86,12 @@ export function getRejectedProducts(ordersData, sellerId, userType) {
 
     let associatedSellerIds = [];
     if (userType === 'courier') {
-        const courierId = sellerId; // sellerId param acts as userId in the caller context
-        associatedSellerIds = ordersData.flatMap(order => 
+        const courierId = String(sellerId); // sellerId param acts as userId in the caller context
+        associatedSellerIds = ordersData.flatMap(order =>
             order.order_items.filter(item => {
                 const dKey = item.supplier_delivery?.delivery_key;
-                if (Array.isArray(dKey)) return dKey.includes(courierId);
-                return dKey === courierId;
+                if (Array.isArray(dKey)) return dKey.map(String).includes(courierId);
+                return String(dKey) === courierId;
             }).map(item => item.seller_key)
         );
     }
@@ -100,8 +100,8 @@ export function getRejectedProducts(ordersData, sellerId, userType) {
         order.order_items.filter(item => {
             let isOwner = false;
             if (userType === 'admin') isOwner = true;
-            else if (userType === 'seller') isOwner = item.seller_key == sellerId;
-            else if (userType === 'buyer') isOwner = order.user_key == sellerId; 
+            else if (userType === 'seller') isOwner = String(item.seller_key) === String(sellerId);
+            else if (userType === 'buyer') isOwner = String(order.user_key) === String(sellerId);
             else if (userType === 'courier') {
                 isOwner = associatedSellerIds.includes(item.seller_key);
             }
@@ -125,7 +125,7 @@ export function getShippableProducts(ordersData, sellerId, userType) {
 
     return ordersData.flatMap((order) =>
         order.order_items
-            .filter((item) => userType === "admin" || (userType === "seller" && item.seller_key === sellerId) || (userType === "courier") || (userType === "buyer"))
+            .filter((item) => userType === "admin" || (userType === "seller" && String(item.seller_key) === String(sellerId)) || (userType === "courier") || (userType === "buyer"))
             .filter((item) => {
                 const status = loadItemStatus(item.product_key);
                 return status === ITEM_STATUS.CONFIRMED || status === ITEM_STATUS.SHIPPED || status === ITEM_STATUS.DELIVERED;

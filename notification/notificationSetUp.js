@@ -9,8 +9,8 @@
 // ===============================
 //   Global State & Locks
 // ===============================
-let isSettingUpFCM = false;
-let isServiceWorkerUsed = false;
+var isSettingUpFCM = false;
+var isServiceWorkerUsed = false;
 
 /**
  * @description تفقد الاتصال بخدمات جوجل الأساسية
@@ -413,12 +413,22 @@ async function setupFirebaseWeb(userId) {
                 console.warn("[Dev] 🌏 [Web FCM] ❓ تم الاتصال بنجاح ولكن Google أعاد توكن فارغ.");
             }
         } catch (tokenErr) {
-            console.error("[Dev] 🌏 [Web FCM] ❌ فشل الحصول على التوكن:", tokenErr.message);
-            throw tokenErr;
+            // Ignore push service error as requested
+            if (tokenErr.message && tokenErr.message.includes("push service error")) {
+                console.warn("[Dev] 🌏 [Web FCM] ⚠️ تم تجاهل خطأ متكرر في خدمة الدفع (Push Service Error).");
+            } else {
+                console.error("[Dev] 🌏 [Web FCM] ❌ فشل الحصول على التوكن:", tokenErr.message);
+                throw tokenErr;
+            }
         }
 
     } catch (err) {
-        console.error("[FCM Web] 💥 خطأ غير متوقع في setupFirebaseWeb:", err);
+        // Ignore AbortError: Registration failed - push service error
+        if (err.message && err.message.includes("push service error")) {
+            console.warn("[FCM Web] ⚠️ تم تجاهل خطأ AbortError المتوقع لخدمة الدفع.");
+        } else {
+            console.error("[FCM Web] 💥 خطأ غير متوقع في setupFirebaseWeb:", err);
+        }
     }
 }
 

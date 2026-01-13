@@ -13,8 +13,6 @@ import { updateServerItemStatus } from "./dataFetchers.js";
  * Sets up the global state structure.
  */
 export function initializeState() {
-    console.log("🚀 [State] Initializing (In-Memory Only - Server Synced)...");
-
     // Initialize default structure if needed
     const state = {
         items: {},
@@ -118,7 +116,6 @@ export async function saveStepDate(stepId, dateStr) {
         const specialKey = `__date_${stepId}__`;
 
         try {
-            console.log(`[State] Syncing Date: ${specialKey} = ${dateStr}`);
             await updateServerItemStatus(orderKey, specialKey, dateStr);
         } catch (e) {
             console.error(`[State] Failed to sync date for ${stepId}`, e);
@@ -169,7 +166,6 @@ export async function saveItemStatus(productKey, status) {
         };
 
         // Also update the ordersData array in memory to keep it fresh
-        console.log(`[State] ✅ Status saved and synced: ${productKey} = ${status}`);
 
     } catch (e) {
         console.error(`[State] ❌ Failed to save status for ${productKey}:`, e);

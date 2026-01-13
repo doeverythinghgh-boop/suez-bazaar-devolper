@@ -149,7 +149,7 @@ export function extractRelevantSellerKeys(updates, ordersData) {
         if (order.order_items && Array.isArray(order.order_items)) {
             order.order_items.forEach(item => {
                 // If this item is in our updates list, collect its seller_key
-                if (updateKeys.includes(item.item_key)) {
+                if (updateKeys.includes(item.product_key)) {
                     if (item.seller_key) {
                         sellerKeysSet.add(item.seller_key);
                     }
@@ -177,7 +177,7 @@ export function extractRelevantDeliveryKeys(updates, ordersData) {
     ordersData.forEach(order => {
         if (order.order_items && Array.isArray(order.order_items)) {
             order.order_items.forEach(item => {
-                if (updateKeys.includes(item.item_key)) {
+                if (updateKeys.includes(item.product_key)) {
                     if (item.supplier_delivery && item.supplier_delivery.delivery_key) {
                         const dKey = item.supplier_delivery.delivery_key;
                         if (Array.isArray(dKey)) {

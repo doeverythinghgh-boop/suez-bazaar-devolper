@@ -4,7 +4,7 @@
  *   تتعامل مع توليد JWT، جلب الـ Access Token من جوجل، والإرسال لـ FCM v1.
  */
 
-const WebP2PNotification = (() => {
+var WebP2PNotification = (() => {
     let cachedAccessToken = null;
     let tokenExpiry = 0;
 

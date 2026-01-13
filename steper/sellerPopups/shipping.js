@@ -147,8 +147,8 @@ export async function handleShippingSave(data, ordersData) {
                         const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
 
                         // Filter out current user
-                        const actingUserId = data.currentUser.idUser;
-                        const deliveryToNotify = relevantDelivery.filter(d => d !== actingUserId);
+                        const actingUserId = String(data.currentUser.idUser);
+                        const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
 
                         // [Notifications] Dispatch Notifications (Buyer + Relevant Delivery)
                         const notificationPromises = [];

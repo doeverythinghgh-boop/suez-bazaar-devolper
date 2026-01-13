@@ -55,8 +55,6 @@ function handleStepClick(stepId, controlData, ordersData, isBuyerLocked) {
     const userType = controlData.currentUser.type;
     const isAllowed = isStepAllowedForCurrentUser(stepId, controlData);
 
-    console.log(`[StepClick] Clicked: ${stepId}, User: ${userType}, Allowed: ${isAllowed}`);
-
     if (!isAllowed) {
         showUnauthorizedAlert();
         return;

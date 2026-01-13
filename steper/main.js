@@ -65,8 +65,19 @@ async function initApp() {
 
     } catch (error) {
         console.error("❌ [Main] Initialization Failed:", error);
+    } finally {
+        if (typeof window.hideAppLoader === 'function') {
+            window.hideAppLoader();
+        }
     }
 }
+
+// Safety fallback: Hide loader after 5 seconds regardless of state
+setTimeout(() => {
+    if (typeof window.hideAppLoader === 'function') {
+        window.hideAppLoader();
+    }
+}, 5000);
 
 document.addEventListener("DOMContentLoaded", () => {
     // Wait for config/data injection before starting

@@ -8,26 +8,26 @@
  * @type {string}
  * @const
  */
-const DB_NAME = 'bazaarAppDB';
+var DB_NAME = 'bazaarAppDB';
 /**
  * @description إصدار قاعدة البيانات IndexedDB. يتم زيادته عند الحاجة لتشغيل `onupgradeneeded`.
  * @type {number}
  * @const
  */
-const DB_VERSION = 3; // ✅ إصلاح نهائي: زيادة الإصدار لإجبار المتصفح على تشغيل onupgradeneeded
+var DB_VERSION = 3; // ✅ إصلاح نهائي: زيادة الإصدار لإجبار المتصفح على تشغيل onupgradeneeded
 /**
  * @description اسم مخزن الكائنات (Object Store) الخاص بسجلات الإشعارات داخل قاعدة البيانات.
  * @type {string}
  * @const
  */
-const NOTIFICATIONS_STORE = 'notificationsLog';
+var NOTIFICATIONS_STORE = 'notificationsLog';
 
-let db;
+var db;
 /**
  * @type {IDBDatabase}
  * @description The IndexedDB database instance.
  */
-let dbPromise; // ✅ جديد: متغير لتخزين الوعد الخاص بتهيئة قاعدة البيانات
+var dbPromise; // ✅ جديد: متغير لتخزين الوعد الخاص بتهيئة قاعدة البيانات
 
 /**
  * @description يفتح أو ينشئ قاعدة بيانات IndexedDB ويهيئ مخازن الكائنات (Object Stores) اللازمة.

@@ -8,7 +8,7 @@
  * @namespace NotificationPage
  * @description الكائن الرئيسي المسؤول عن إدارة صفحة الإشعارات
  */
-const NotificationPage = {
+var NotificationPage = {
     /**
      * @description البيانات الحالية للصفحة
      */

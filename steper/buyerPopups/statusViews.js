@@ -221,8 +221,14 @@ export async function showCourierConfirmedProductsAlert(data, ordersData) {
         // Try using window.apiFetch which is available from network.js in stepper-only.html
         if (typeof window.apiFetch === 'function') {
             Swal.showLoading();
-            if (typeof baseURL === 'undefined' && data.baseURL) {
-                window.baseURL = data.baseURL;
+
+            // [Dependency Safety] Ensure baseURL is defined for apiFetch
+            if (typeof window.baseURL === 'undefined') {
+                if (data && data.baseURL) {
+                    window.baseURL = data.baseURL;
+                } else {
+                    console.error("[BuyerPopups] baseURL is missing. apiFetch might fail.");
+                }
             }
 
             const result = await window.apiFetch('/api/users');

@@ -77,8 +77,6 @@ export async function saveConfirmationLock(orderKey, isLocked, ordersData, selle
 
     // Update local ordersData immediately to reflect the lock
     updateLocalOrderStatus(orderKey, lockKey, lockValue, ordersData);
-
-    console.log(`[DataFetchers] Confirmation lock ${lockValue} for order: ${orderKey}, seller: ${sellerId}`);
 }
 
 /**
@@ -126,8 +124,6 @@ function updateLocalOrderStatus(orderKey, productKey, status, ordersData) {
 
     // Update the order object in place
     order.order_status = newStatusStr;
-
-    console.log(`[DataFetchers] Updated local ordersData for ${orderKey}: ${productKey} = ${status}`);
 }
 
 /**
@@ -155,8 +151,6 @@ export function getConfirmationLockStatus(ordersData, orderKey, sellerId) {
         // Check specific seller lock
         const lockKey = `__confirmation_locked_${sellerId}__`;
         const isLocked = statuses[lockKey] === "locked";
-
-        console.log(`[DataFetchers] Lock status for order ${orderKey}, seller ${sellerId}: ${isLocked}`);
         return isLocked;
     } catch (e) {
         console.warn("[DataFetchers] Failed to parse order_status JSON:", e);
@@ -183,8 +177,6 @@ export async function saveShippingLock(orderKey, isLocked, ordersData, sellerId)
 
     await updateServerItemStatus(orderKey, lockKey, lockValue);
     updateLocalOrderStatus(orderKey, lockKey, lockValue, ordersData);
-
-    console.log(`[DataFetchers] Shipping lock ${lockValue} for order: ${orderKey}, seller: ${sellerId}`);
 }
 
 /**
@@ -210,8 +202,6 @@ export function getShippingLockStatus(ordersData, orderKey, sellerId) {
         const statuses = JSON.parse(jsonStr);
         const lockKey = `__shipping_locked_${sellerId}__`;
         const isLocked = statuses[lockKey] === "locked";
-
-        console.log(`[DataFetchers] Shipping lock status for order ${orderKey}, seller ${sellerId}: ${isLocked}`);
         return isLocked;
     } catch (e) {
         console.warn("[DataFetchers] Failed to parse order_status JSON:", e);
@@ -238,8 +228,6 @@ export async function saveDeliveryLock(orderKey, isLocked, ordersData, buyerId) 
 
     await updateServerItemStatus(orderKey, lockKey, lockValue);
     updateLocalOrderStatus(orderKey, lockKey, lockValue, ordersData);
-
-    console.log(`[DataFetchers] Delivery lock ${lockValue} for order: ${orderKey}, buyer: ${buyerId}`);
 }
 
 /**
@@ -265,8 +253,6 @@ export function getDeliveryLockStatus(ordersData, orderKey, buyerId) {
         const statuses = JSON.parse(jsonStr);
         const lockKey = `__delivery_locked_${buyerId}__`;
         const isLocked = statuses[lockKey] === "locked";
-
-        console.log(`[DataFetchers] Delivery lock status for order ${orderKey}, buyer ${buyerId}: ${isLocked}`);
         return isLocked;
     } catch (e) {
         console.warn("[DataFetchers] Failed to parse order_status JSON:", e);

@@ -34,8 +34,8 @@ async function runNotificationTests() {
             id: 'ORD-123',
             user_key: 'BUYER-1',
             order_items: [
-                { item_key: 'ITEM-A', seller_key: 'SELLER-A', supplier_delivery: { delivery_key: 'COURIER-A' } },
-                { item_key: 'ITEM-B', seller_key: 'SELLER-B', supplier_delivery: { delivery_key: 'COURIER-B' } }
+                { product_key: 'ITEM-A', seller_key: 'SELLER-A', supplier_delivery: { delivery_key: 'COURIER-A' } },
+                { product_key: 'ITEM-B', seller_key: 'SELLER-B', supplier_delivery: { delivery_key: 'COURIER-B' } }
             ]
         }
     ];

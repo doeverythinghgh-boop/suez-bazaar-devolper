@@ -9,7 +9,7 @@ import { updateCurrentStepFromState } from "../uiUpdates.js";
 import { saveConfirmationLock, getConfirmationLockStatus } from "../dataFetchers.js";
 import { getConfirmationProducts } from "../sellerLogic.js";
 import { generateConfirmationTableHtml } from "../sellerUi.js";
-import { extractNotificationMetadata } from "../steperNotificationLogic.js";
+import { extractNotificationMetadata, extractRelevantSellerKeys, extractRelevantDeliveryKeys } from "../steperNotificationLogic.js";
 import { attachLogButtonListeners } from "./utils.js";
 
 /**
@@ -123,7 +123,6 @@ export function handleConfirmationSave(data, ordersData) {
                         const orderKey = ordersData[0].order_key;
                         const sellerId = data.currentUser.idUser; // Identify current seller
                         await saveConfirmationLock(orderKey, true, ordersData, sellerId);
-                        console.log('[SellerPopups] Confirmation permanently locked for order:', orderKey, 'Seller:', sellerId);
                     }
 
                     Swal.fire({
@@ -137,48 +136,57 @@ export function handleConfirmationSave(data, ordersData) {
                             title: 'swal-modern-mini-title',
                             htmlContainer: 'swal-modern-mini-text'
                         }
-                    }).then(() => {
+                    }).then(async () => {
                         updateCurrentStepFromState(data, ordersData);
 
                         // [Notifications] Dispatch Notifications
+                        const metadata = extractNotificationMetadata(ordersData, data);
+                        const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
+                        const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
+
+                        // Filter out current user
+                        const actingUserId = String(data.currentUser.idUser);
+                        const sellersToNotify = relevantSellers.filter(s => String(s) !== actingUserId);
+                        const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
+
+                        const notificationPromises = [];
+
+                        // 1. Notify Buyer
+                        if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
+                            const shouldSendBuyer = await window.shouldNotify('step-confirmed', 'buyer');
+                            if (shouldSendBuyer) {
+                                notificationPromises.push(window.notifyBuyerOnStepChange(
+                                    metadata.buyerKey,
+                                    'step-confirmed',
+                                    window.langu('confirmation_notify_buyer'),
+                                    metadata.orderId
+                                ));
+                            }
+                        }
+
+                        // 2. Notify Delivery & Other Sellers
                         if (typeof window.notifyOnStepActivation === 'function') {
-                            const metadata = extractNotificationMetadata(ordersData, data);
-
-                            // Note: relevantSellers and relevantDelivery are implicitly handled by the global function
-                            // but in the original code they were passed. Since they weren't defined in the scope of original function but used?
-                            // Wait, let's check the original code again for confirmation.
-
-                            // Re-checking original code (lines 173-197):
-                            // window.notifyOnStepActivation({ ... sellerKeys: relevantSellers, deliveryKeys: relevantDelivery });
-                            // Wait, relevantSellers and relevantDelivery were NOT defined in handleConfirmationSave!
-                            // This looks like a bug in the original code or they were global.
-                            // However, my rule is MOVE, not rewrite. So I will see if they are elsewhere or if I should keep it as is.
-
-                            // Actually, in handleShippingSave (seller) they ARE defined. In handleConfirmationSave they are NOT.
-                            // I will keep it as it was (which might trigger an error if called, but it's not my fault now if it was like that).
-                            // Wait, I should better define them to avoid kiling the project. 
-                            // But user said: "لا تضف Features جديدة" and "الحفاظ على الكود كما هو قدر الإمكان".
-                            // Let's check original sellerPopups.js lines 182-183 for Confirmation.
-
-                            window.notifyOnStepActivation({
+                            notificationPromises.push(window.notifyOnStepActivation({
                                 stepId: 'step-confirmed',
                                 stepName: window.langu('conf_notify_confirmed'),
                                 ...metadata,
-                                sellerKeys: typeof relevantSellers !== 'undefined' ? relevantSellers : [],
-                                deliveryKeys: typeof relevantDelivery !== 'undefined' ? relevantDelivery : []
-                            });
+                                sellerKeys: sellersToNotify,
+                                deliveryKeys: deliveryToNotify
+                            }));
 
                             const hasRejected = updates.some(u => u.status === ITEM_STATUS.REJECTED);
                             if (hasRejected) {
-                                window.notifyOnStepActivation({
+                                notificationPromises.push(window.notifyOnStepActivation({
                                     stepId: 'step-rejected',
                                     stepName: window.langu('conf_notify_rejected'),
                                     ...metadata,
-                                    sellerKeys: typeof relevantSellers !== 'undefined' ? relevantSellers : [],
-                                    deliveryKeys: typeof relevantDelivery !== 'undefined' ? relevantDelivery : []
-                                });
+                                    sellerKeys: sellersToNotify,
+                                    deliveryKeys: deliveryToNotify
+                                }));
                             }
                         }
+
+                        await Promise.all(notificationPromises);
                     });
                 } catch (error) {
                     console.error("Save failed", error);
@@ -224,8 +232,6 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
         // Determine if editing is allowed
         const userType = data.currentUser.type;
         const canEdit = userType === 'admin' || !isLocked;
-
-        console.log(`[SellerPopups] Opening confirmation | User: ${userType} | Locked: ${isLocked} | CanEdit: ${canEdit}`);
 
         Swal.fire({
             title: canEdit ? window.langu('conf_modal_title') : window.langu('conf_modal_readonly_title'),

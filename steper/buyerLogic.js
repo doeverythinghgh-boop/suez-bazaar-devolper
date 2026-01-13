@@ -20,12 +20,11 @@ export function getProductsForReview(ordersData, userId, userType) {
     if (!ordersData) return [];
 
     if (userType === "buyer") {
-        const currentUserOrders = ordersData.filter((order) => order.user_key == userId); // Loose comparison for safety
-        console.log(`[BuyerLogic] getProductsForReview | Total Orders: ${ordersData.length} | User Orders: ${currentUserOrders.length} | ID: ${userId}`);
+        const currentUserOrders = ordersData.filter((order) => String(order.user_key) === String(userId));
         return currentUserOrders.flatMap((order) => order.order_items.map((item) => item.product_key));
     } else if (userType === "seller") {
         return ordersData.flatMap((order) =>
-            order.order_items.filter((item) => item.seller_key == userId).map((item) => item.product_key)
+            order.order_items.filter((item) => String(item.seller_key) === String(userId)).map((item) => item.product_key)
         );
     } else if (userType === "admin") {
         return ordersData.flatMap((order) => order.order_items.map((item) => item.product_key));
@@ -42,8 +41,8 @@ export function getCancelledProducts(ordersData, userId, userType) {
         associatedSellers = ordersData.flatMap(order =>
             order.order_items.filter(item => {
                 const dKey = item.supplier_delivery?.delivery_key;
-                if (Array.isArray(dKey)) return dKey.includes(userId);
-                return dKey === userId;
+                if (Array.isArray(dKey)) return dKey.includes(String(userId));
+                return String(dKey) === String(userId);
             }).map(item => item.seller_key)
         );
     }
@@ -53,8 +52,8 @@ export function getCancelledProducts(ordersData, userId, userType) {
             const status = loadItemStatus(item.product_key);
 
             // Visibility check
-            if (userType === "buyer" && order.user_key != userId) return false;
-            if (userType === "seller" && item.seller_key != userId) return false;
+            if (userType === "buyer" && String(order.user_key) !== String(userId)) return false;
+            if (userType === "seller" && String(item.seller_key) !== String(userId)) return false;
             if (userType === "courier") {
                 // Courier sees cancelled items if they belong to a seller they work with
                 // Note: Ideally we check if *this specific order* was assigned, but cancelled items might not have reached assignment.
@@ -81,13 +80,13 @@ export function getDeliveryProducts(ordersData, userId, userType) {
             const status = loadItemStatus(item.product_key);
             if (status !== ITEM_STATUS.SHIPPED && status !== ITEM_STATUS.DELIVERED) return false;
 
-            if (userType === "buyer") return order.user_key == userId;
+            if (userType === "buyer") return String(order.user_key) === String(userId);
             if (userType === "courier") {
                 const dKey = item.supplier_delivery?.delivery_key;
-                if (Array.isArray(dKey)) return dKey.includes(userId);
-                return dKey === userId;
+                if (Array.isArray(dKey)) return dKey.includes(String(userId));
+                return String(dKey) === String(userId);
             }
-            if (userType === "seller") return item.seller_key == userId;
+            if (userType === "seller") return String(item.seller_key) === String(userId);
             return true; // Admin
         })
     );
@@ -106,9 +105,9 @@ export function getReturnedProducts(ordersData, userId, userType) {
 
     return ordersData.flatMap(order =>
         order.order_items.filter(item => {
-            if (userType === "buyer" && order.user_key !== userId) return false;
+            if (userType === "buyer" && String(order.user_key) !== String(userId)) return false;
             // For seller, ensure they own the item
-            if (userType === "seller" && item.seller_key != userId) return false;
+            if (userType === "seller" && String(item.seller_key) !== String(userId)) return false;
 
             const status = loadItemStatus(item.product_key);
             return status === ITEM_STATUS.RETURNED;
@@ -129,7 +128,7 @@ export function getConfirmedProducts(ordersData, userId, userType) {
 
     return ordersData.flatMap(order =>
         order.order_items.filter(item => {
-            if (userType === "buyer" && order.user_key !== userId) return false;
+            if (userType === "buyer" && String(order.user_key) !== String(userId)) return false;
             const status = loadItemStatus(item.product_key);
             return [ITEM_STATUS.CONFIRMED, ITEM_STATUS.SHIPPED, ITEM_STATUS.DELIVERED].includes(status);
         }).map(i => i.product_key)
@@ -147,9 +146,13 @@ export function getUserDetailsForDelivery(products, ordersData) {
     const userDetails = [];
     const seenUsers = new Set();
     products.forEach(item => {
-        const parentOrder = ordersData.find(o => o.order_items.includes(item));
-        if (parentOrder && !seenUsers.has(parentOrder.user_key)) {
-            seenUsers.add(parentOrder.user_key);
+        // [ID Safety] Use ID-based matching to find the parent order
+        const parentOrder = ordersData.find(o =>
+            o.order_items.some(i => String(i.product_key) === String(item.product_key))
+        );
+
+        if (parentOrder && !seenUsers.has(String(parentOrder.user_key))) {
+            seenUsers.add(String(parentOrder.user_key));
             userDetails.push({
                 name: parentOrder.user_name || "N/A",
                 phone: parentOrder.user_phone || "N/A",
@@ -188,9 +191,9 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
         }
 
         if (foundItem && foundOrder) {
-            const sellerKey = foundItem.seller_key;
+            const sellerKey = String(foundItem.seller_key);
             if (!grouped[sellerKey]) {
-                const sellerUser = allUsers.find(u => u.user_key === sellerKey);
+                const sellerUser = allUsers.find(u => String(u.user_key) === sellerKey);
                 grouped[sellerKey] = {
                     seller: {
                         name: sellerUser?.username || "غير معروف",
@@ -208,8 +211,6 @@ export function groupConfirmedProductsBySeller(productKeys, ordersData, allUsers
             // إذا كانت القيمة null أو undefined أو نص فارغ، نستخدم سعر المنتج
             const realPrice = (rawRealPrice !== null && rawRealPrice !== undefined && rawRealPrice !== '') ? parseFloat(rawRealPrice) : product_price;
             const quantity = parseInt(foundItem.quantity) || 1;
-
-            console.log(`[BuyerLogic] Item: ${foundItem.product_name}, Price: ${product_price}, RealPrice: ${realPrice}`);
 
             grouped[sellerKey].products.push({
                 name: foundItem.product_name || "منتج",

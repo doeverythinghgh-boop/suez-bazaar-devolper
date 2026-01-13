@@ -25,8 +25,6 @@ export function generateReviewListHtml(productKeys, ordersData, isOverallLocked)
     return productKeys.map((productKey) => {
         const productName = getProductName(productKey, ordersData);
         const status = loadItemStatus(productKey);
-        // Developer Log: Tracing Rendering
-        console.log(`[BuyerPopups] 🖌️ Rendering ${productKey} with status: ${status}`);
 
         const isChecked = status !== ITEM_STATUS.CANCELLED;
         // Logic: item is locked if the WHOLE step is locked OR if the item itself is explicitly processed
@@ -175,7 +173,7 @@ export function generateConfirmedListHtml(confirmedKeys, ordersData) {
                 if (Array.isArray(dData) && dData.length > 0 && dData[0].delivery_name) {
                     name = dData[0].delivery_name;
                     phone = dData[0].delivery_phone;
-                } else if (dData.delivery_name) {
+                } else if (dData && dData.delivery_name) {
                     name = Array.isArray(dData.delivery_name) ? dData.delivery_name[0] : dData.delivery_name;
                     phone = Array.isArray(dData.delivery_phone) ? dData.delivery_phone[0] : dData.delivery_phone;
                 }
@@ -247,10 +245,10 @@ export function generateSellerGroupedHtml(groupedData) {
                         ${group.products.map(p => `
                             <tr style="border-bottom: 1px solid var(--border-light);">
                                 <td style="padding: 8px; white-space: nowrap;">${p.name}</td>
-                                <td style="padding: 8px; white-space: nowrap;">${p.price.toFixed(2)}</td>
-                                <td style="padding: 8px; color: #d97706; font-weight: bold; white-space: nowrap;">${p.realPrice.toFixed(2)}</td>
+                                <td style="padding: 8px; white-space: nowrap;">${(Number(p.price) || 0).toFixed(2)}</td>
+                                <td style="padding: 8px; color: #d97706; font-weight: bold; white-space: nowrap;">${(Number(p.realPrice) || 0).toFixed(2)}</td>
                                 <td style="padding: 8px; white-space: nowrap;">${p.quantity}</td>
-                                <td style="padding: 8px; white-space: nowrap;">${(p.price * p.quantity).toFixed(2)}</td>
+                                <td style="padding: 8px; white-space: nowrap;">${((Number(p.price) || 0) * (Number(p.quantity) || 1)).toFixed(2)}</td>
                             </tr>
                         `).join('')}
                     </tbody>
