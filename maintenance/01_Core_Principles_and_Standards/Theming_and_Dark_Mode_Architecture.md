@@ -30,3 +30,21 @@ Developers must strictly use `var(--variable-name)` for colors. Hardcoded hex, R
 - `style/variables.css`: The "Single Source of Truth" for all colors.
 - `style/modals-and-dialogs.css`: Dark mode fixes for popups.
 - `steper/css/variables.css`: Theme support for the Stepper module.
+
+## 5. Global Style Injection (Mandatory)
+To ensure full Dark Mode compatibility and consistent styling, **all** standalone HTML pages and iFrames isolated from the main `index.html` context **MUST** explicitly inject the following core stylesheets in their `<head>`:
+
+1.  `style/variables.css` (Defines colors and theme variables)
+2.  `style/utilities.css` (Global input fixes and generic helpers)
+3.  `style/modals-and-dialogs.css` (If the page uses popups/alerts)
+
+### List of Identified Standalone Contexts:
+-   `location/LOCATION.html` (Map iFrame)
+-   `steper/stepper-only.html` (Order Tracking iFrame)
+-   `privacy.html`
+-   `delete-account.html`
+-   `offline.html`
+
+> [!IMPORTANT]
+> **Compliance Check:** Any new HTML page added to the project that runs independently must include these links. Failure to do so will result in broken inputs (e.g., invisible text) and theme inconsistencies.
+

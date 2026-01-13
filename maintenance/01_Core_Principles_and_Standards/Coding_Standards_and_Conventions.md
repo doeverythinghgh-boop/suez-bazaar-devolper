@@ -23,3 +23,43 @@ Every file, function, and component must be fully documented using **JSDoc** sta
 - **Error Handling**: Every API call or sensitive logic must be wrapped in `try...catch` blocks.
 - **No Feature Loss**: Changes must be implemented without breaking existing features, states, or behaviors.
 - **Atomic Commits**: Ensure code changes are logically grouped and modular.
+
+## 6. Independent & Isolated Contexts Protocol
+> [!WARNING]
+> **Strict Isolation Rule**
+> Any HTML file that functions independently (Standalone Page) or acts as an embedded context (iFrame) **DOES NOT** inherit resources, styles, or scripts from the main `index.html`.
+
+### Mandatory Injection Policy
+Developers **MUST** manually inject the following core dependencies into the `<head>` of any standalone/iframe HTML file to ensure feature parity and theming consistency:
+
+1.  **Core Styles (Required for Dark Mode & Layout):**
+    -   `style/variables.css`: **CRITICAL** for color tokens.
+    -   `style/utilities.css`: **CRITICAL** for input visibility and global helpers.
+    -   `style/modals-and-dialogs.css`: If using alerts/popups.
+    -   `assets/fontawesome/css/all.css`: **Required** for Icons.
+
+
+2.  **Core Scripts (Required for Logic & Bridge):**
+    -   `js/config.js`: API Base URLs and keys.
+    -   `js/globalVariable.js`: Session handling variables.
+    -   `js/config.js`: API Base URLs and keys.
+    -   `js/globalVariable.js`: Session handling variables.
+    -   `js/network.js`: Connectivity checks.
+    -   `assets/libs/sweetalert2/sweetalert2.all.min.js`: **Required** for Modern Mini Modals.
+
+
+3.  **Localization Scripts (Required if using `data-lkey`):**
+    -   **For iFrames:** Implement a bridge to `window.parent.langu`.
+    -   **For Standalone:** Must implement `window.langu` logic (or load `js/index.js` if full app logic is needed).
+    -   *Note:* Static pages (like Privacy Policy) can be hardcoded in Arabic or include a simple fetch script.
+
+
+### Identified Isolated Contexts (Maintain this list):
+-   `location/LOCATION.html` (Map iFrame)
+-   `steper/stepper-only.html` (Progress Tracking iFrame)
+-   `privacy.html` (Standalone)
+-   `delete-account.html` (Standalone)
+-   `offline.html` (Standalone)
+
+**Violation Consequences:** Failing to inject these dependencies will result in transparent/invisible inputs in Dark Mode, broken API calls, and inconsistent UI rendering.
+

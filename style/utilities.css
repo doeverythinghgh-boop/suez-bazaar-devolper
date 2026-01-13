@@ -109,6 +109,10 @@
 /* =========================================
    Dark Mode Support (Global Utilities)
    ========================================= */
+/* Generic Input Support for Dark Mode (Global Fix) */
+body.dark-theme input,
+body.dark-theme textarea,
+body.dark-theme select,
 body.dark-theme .form-group input,
 body.dark-theme .form-group textarea,
 body.dark-theme .form-group select {
@@ -117,6 +121,9 @@ body.dark-theme .form-group select {
   color: #fff;
 }
 
+body.dark-theme input:focus,
+body.dark-theme textarea:focus,
+body.dark-theme select:focus,
 body.dark-theme .form-group input:focus,
 body.dark-theme .form-group textarea:focus,
 body.dark-theme .form-group select:focus {
@@ -124,6 +131,7 @@ body.dark-theme .form-group select:focus {
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
+body.dark-theme label,
 body.dark-theme .form-group label {
   color: #fff;
 }
