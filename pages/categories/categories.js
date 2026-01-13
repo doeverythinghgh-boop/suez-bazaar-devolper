@@ -437,12 +437,15 @@ async function categories_renderProductGallery(galleryWrapper, products, subcate
             console.log(`[Categories] Redirecting to search with Main:${mainCatId}, Sub:${subcategory.id}`);
 
             // Store search criteria
-            const searchData = {
+            var searchData = {
                 mainId: mainCatId,
                 subId: subcategory.id,
                 timestamp: Date.now()
             };
             localStorage.setItem('pendingCategorySearch', JSON.stringify(searchData));
+
+            // Notify Search Modal directly (if already open/loaded)
+            window.dispatchEvent(new Event('request-category-search'));
 
             // Trigger search button click in header
             const searchNavBtn = document.getElementById('index-search-btn');

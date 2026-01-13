@@ -111,11 +111,7 @@ const NotificationPage = {
                 totalCountEl: document.getElementById('total-count'),
                 unreadCountEl: document.getElementById('unread-count'),
                 sentCountEl: document.getElementById('sent-count'),
-                receivedCountEl: document.getElementById('received-count'),
-
-                masterToggle: document.getElementById('notification-master-toggle'),
-                toggleTitle: document.getElementById('toggle-title'),
-                toggleDesc: document.getElementById('toggle-desc')
+                receivedCountEl: document.getElementById('received-count')
             };
         } catch (error) {
             console.error('[Notifications Core] خطأ في تهيئة العناصر:', error);

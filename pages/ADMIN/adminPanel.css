@@ -422,3 +422,96 @@
         gap: 5px;
     }
 }
+
+/* =========================================
+   Dark Mode Support for Admin Panel
+   ========================================= */
+body.dark-theme .admin-panel-container {
+    background-color: var(--modal-bg);
+    /* #1e1e1e */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-theme .admin-panel-title {
+    color: #fff;
+    border-bottom-color: var(--primary-color);
+}
+
+body.dark-theme .admin-panel-search-bar {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .search-select,
+body.dark-theme .search-input {
+    background: #3a3a3a;
+    border-color: #555;
+    color: #fff;
+}
+
+body.dark-theme .search-stats {
+    background: #444;
+    color: #eee;
+}
+
+body.dark-theme .user-card {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .user-card.selected-card {
+    background: #1a3a5a;
+    /* Darker blue background for selected */
+    border-color: var(--primary-color);
+}
+
+body.dark-theme .card-header,
+body.dark-theme .card-actions-row {
+    border-color: #444;
+}
+
+body.dark-theme .user-key-badge {
+    background: #444;
+    color: #ccc;
+}
+
+body.dark-theme .detail-value {
+    color: #eee;
+}
+
+body.dark-theme .card-action-group {
+    background: #333;
+}
+
+body.dark-theme .group-title {
+    color: #ccc;
+}
+
+body.dark-theme .input-small {
+    background: #444;
+    border-color: #555;
+    color: #fff;
+}
+
+body.dark-theme .admin-panel-broadcast-container {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .admin-panel-sub-title {
+    color: #fff;
+}
+
+body.dark-theme .broadcast-textarea {
+    background: #333;
+    border-color: #555;
+    color: #fff;
+}
+
+body.dark-theme .detail-label {
+    color: #aaa;
+}
+
+body.dark-theme .radio-option {
+    color: #eee;
+}

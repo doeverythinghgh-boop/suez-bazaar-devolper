@@ -23,6 +23,9 @@ async function initSearchModal(containerId) {
   const searchResultsContainer = document.getElementById(
     "search-results-container"
   );
+  // Clear previous results immediately to avoid stale state
+  if (searchResultsContainer) searchResultsContainer.innerHTML = "";
+
   const performSearchBtn = document.getElementById(
     "search-perform-search-btn"
   );
@@ -326,41 +329,73 @@ async function initSearchModal(containerId) {
     setTimeout(() => performSearch(), 100); // Small delay to ensure everything is ready
   }
 
-  // ✅ NEW: Handle incoming search request for specific categories from "View All" button
-  const pendingCatSearch = localStorage.getItem('pendingCategorySearch');
-  if (pendingCatSearch) {
-    try {
-      const { mainId, subId } = JSON.parse(pendingCatSearch);
-      console.log(`[SearchModal] اكتشاف بحث معلق لفئة من صفحة الفئات: Main=${mainId}, Sub=${subId}`);
-      localStorage.removeItem('pendingCategorySearch');
+  /**
+   * @function checkAndExecutePendingSearch
+   * @description Checks localStorage for pending category search and executes it.
+   *   Manually populates filters to avoid race conditions.
+   */
+  function checkAndExecutePendingSearch() {
+    const pendingCatSearch = localStorage.getItem('pendingCategorySearch');
+    if (pendingCatSearch) {
+      try {
+        const { mainId, subId } = JSON.parse(pendingCatSearch);
+        console.log(`[SearchModal] اكتشاف بحث معلق: Main=${mainId}, Sub=${subId}`);
+        localStorage.removeItem('pendingCategorySearch');
 
-      // Helper to Wait for categories to load into filters
-      const filterCheckInterval = setInterval(() => {
-        // If main filter has more than the default option
-        if (mainCategoryFilter && mainCategoryFilter.options.length > 1) {
-          clearInterval(filterCheckInterval);
+        // Helper: Wait for filters
+        const filterCheckInterval = setInterval(() => {
+          if (mainCategoryFilter && mainCategoryFilter.options.length > 1) {
+            clearInterval(filterCheckInterval);
 
-          mainCategoryFilter.value = mainId;
-          // Trigger change to populate subCategoryFilter
-          mainCategoryFilter.dispatchEvent(new Event('change'));
+            // 1. Set Main
+            mainCategoryFilter.value = mainId;
 
-          // Small delay to allow subcategories to render in DOM
-          setTimeout(() => {
-            if (subCategoryFilter) {
-              subCategoryFilter.value = subId;
-              console.log("[SearchModal] تفعيل البحث التلقائي للفئة المحددة.");
-              performSearch();
+            // 2. Populate Sub (Manual)
+            const selectedOption = mainCategoryFilter.options[mainCategoryFilter.selectedIndex];
+            if (selectedOption && selectedOption.dataset.subcategories) {
+              const subcategories = JSON.parse(selectedOption.dataset.subcategories);
+              subCategoryFilter.innerHTML = `<option value="" data-lkey="search_modal_sub_category_default">${window.langu('search_modal_sub_category_default')}</option>`;
+
+              if (subcategories.length > 0) {
+                subcategories.forEach((sub) => {
+                  const subOption = document.createElement("option");
+                  subOption.value = sub.id;
+                  const subTitleObj = sub.title;
+                  const subDisplayTitle = typeof subTitleObj === 'object' ?
+                    (subTitleObj[window.app_language] || subTitleObj['ar']) : subTitleObj;
+                  subOption.textContent = subDisplayTitle;
+                  subCategoryFilter.appendChild(subOption);
+                });
+                subCategoryFilter.disabled = false;
+                if (subId) subCategoryFilter.value = subId;
+              } else {
+                subCategoryFilter.disabled = true;
+              }
             }
-          }, 150);
-        }
-      }, 50);
 
-      // Safety timeout after 3 seconds
-      setTimeout(() => clearInterval(filterCheckInterval), 3000);
-    } catch (e) {
-      console.error("[SearchModal] خطأ في معالجة البحث المعلق للفئات:", e);
+            // 3. Search
+            console.log("[SearchModal] تنفيذ البحث المعلق.");
+            // Clear results before new search to show we are updating
+            if (searchResultsContainer) searchResultsContainer.innerHTML = "";
+            performSearch();
+          }
+        }, 50);
+
+        setTimeout(() => clearInterval(filterCheckInterval), 3000);
+      } catch (e) {
+        console.error("[SearchModal] خطأ في البحث المعلق:", e);
+      }
     }
   }
+
+  // 1. Run on Init
+  checkAndExecutePendingSearch();
+
+  // 2. Run on Event (for Re-entry without reload)
+  window.addEventListener('request-category-search', () => {
+    console.log("[SearchModal] استلام حدث طلب بحث جديد.");
+    checkAndExecutePendingSearch();
+  });
 
   // Developer message: Init complete
   console.log(

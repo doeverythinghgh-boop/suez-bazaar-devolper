@@ -18,6 +18,10 @@
     max-width: 100%;
 }
 
+.secondary-wrapper {
+    justify-content: center !important;
+}
+
 
 
 /* عنصر الخطوة الفردي */
@@ -33,30 +37,60 @@
 }
 
 
-/* السهم الواصل بين الخطوات (يشير لليسار في RTL) */
-.step-item:not(:last-child)::after {
+/* السهم الواصل قبل كل مرحلة (ماعدا الأولى) - يشير لليسار
+   يأخذ لون خلفية المرحلة التي يشير إليها */
+.step-item:not(:first-child)::before {
     content: '';
     position: absolute;
-    top: 27px;
-    left: calc(100% + 5px);
+    /* التمركز العمودي: المركز (28px) - نصف ارتفاع السهم (5px) = 23px */
+    top: 23px;
+    /* الموضع: يمين العنصر بمسافة نصف الـ Gap + نصف عرض السهم */
+    right: calc((var(--stepper-gap, 2rem) * -0.5) - 4px);
     width: 0;
     height: 0;
     border-style: solid;
-    border-width: 5px 0 5px 8px;
-    border-color: transparent transparent transparent var(--border-light);
+    /* مثلث يشير لليسار */
+    border-width: 5px 8px 5px 0;
+    /* اللون الافتراضي (رمادي) */
+    border-color: transparent var(--border-light) transparent transparent;
     z-index: -1;
     transition: all var(--transition-normal);
 }
 
-/* تلوين السهم عند اكتمال الخطوة */
-.step-item.completed:not(:last-child)::after {
-    border-color: transparent transparent transparent var(--color-confirmed);
+/* تلوين السهم بناءً على نوع المرحلة التي يشير إليها */
+
+/* سهم يشير لـ "مؤكد" */
+.step-item.confirmed::before {
+    border-color: transparent var(--color-confirmed) transparent transparent;
 }
 
-/* تلوين السهم عند تفعيل الخطوة */
-.step-item.active:not(:last-child)::after {
-    border-color: transparent transparent transparent var(--color-primary);
+/* سهم يشير لـ "شُحن" */
+.step-item.shipped::before {
+    border-color: transparent var(--color-shipped) transparent transparent;
 }
+
+/* سهم يشير لـ "تم التسليم" */
+.step-item.delivered::before {
+    border-color: transparent var(--color-delivered) transparent transparent;
+}
+
+/* سهم يشير لـ "ملغي" */
+.step-item.cancelled::before {
+    border-color: transparent var(--color-cancelled) transparent transparent;
+}
+
+/* سهم يشير لـ "مرفوض" */
+.step-item.rejected::before {
+    border-color: transparent var(--color-rejected) transparent transparent;
+}
+
+/* سهم يشير لـ "مرتجع" */
+.step-item.returned::before {
+    border-color: transparent var(--color-returned) transparent transparent;
+}
+
+/* تلوين السهم عند اكتمال الخطوة */
+
 
 /* دائرة الخطوة */
 .step-circle {

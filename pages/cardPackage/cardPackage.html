@@ -18,7 +18,8 @@
 
             <!-- Cart Summary -->
             <div class="cartPage_cart-summary" id="cartPage_cartSummary">
-                <h2 id="cartPage_summaryTitle"><i class="fas fa-receipt"></i> <span data-lkey="cart_summary_title">ملخص الطلب</span></h2>
+                <h2 id="cartPage_summaryTitle"><i class="fas fa-receipt"></i> <span data-lkey="cart_summary_title">ملخص
+                        الطلب</span></h2>
                 <div class="cartPage_summary-row" id="cartPage_summaryRowCount">
                     <span data-lkey="cart_item_count">عدد المنتجات:</span>
                     <span class="cartPage_summary-value" id="cartPage_itemCount">0</span>
@@ -70,7 +71,8 @@
                 <i class="fas fa-shopping-cart"></i>
             </div>
             <h2 id="cartPage_emptyCartTitle" data-lkey="cart_empty_title">سلة المشتريات فارغة</h2>
-            <p id="cartPage_emptyCartMessage" data-lkey="cart_empty_message">لم تقم بإضافة أي منتجات إلى سلة المشتريات بعد. ابدأ التسوق الآن لإضافة
+            <p id="cartPage_emptyCartMessage" data-lkey="cart_empty_message">لم تقم بإضافة أي منتجات إلى سلة المشتريات
+                بعد. ابدأ التسوق الآن لإضافة
                 منتجات رائعة!</p>
             <a href="#" class="cartPage_continue-shopping" id="cartPage_continueShoppingBtn"
                 onclick="mainLoader('./pages/home.html', 'index-home-container', 0, undefined, 'hiddenHomeIcon',false); return false;">
@@ -89,9 +91,11 @@
                 <button class="cartPage_close-modal" id="cartPage_closeNoteModal">&times;</button>
             </div>
             <div class="cartPage_note-modal-body" id="cartPage_noteModalBody">
-                <textarea id="cartPage_noteTextarea" data-lkey="cart_note_placeholder" placeholder="أضف ملاحظة خاصة لهذا المنتج (اختياري)"></textarea>
+                <textarea id="cartPage_noteTextarea" data-lkey="cart_note_placeholder"
+                    placeholder="أضف ملاحظة خاصة لهذا المنتج (اختياري)"></textarea>
                 <div class="cartPage_note-modal-actions" id="cartPage_noteModalActions">
-                    <button class="cartPage_cancel-note-btn" id="cartPage_cancelNoteBtn" data-lkey="cart_cancel">إلغاء</button>
+                    <button class="cartPage_cancel-note-btn" id="cartPage_cancelNoteBtn"
+                        data-lkey="cart_cancel">إلغاء</button>
                     <button class="cartPage_save-note-btn" id="cartPage_saveNoteBtn" data-lkey="cart_save">حفظ</button>
                 </div>
             </div>
@@ -100,9 +104,11 @@
 
     <!-- ✅ New: Photo Order Success Message -->
     <div id="cartPage_photoOrderMessage"
-        style="display:none; background:#d4edda; color:#155724; padding:15px; border-radius:8px; margin:20px; border:1px solid #c3e6cb; position:relative; text-align:right;">
-        <strong><i class="fas fa-check-circle"></i> <span data-lkey="cart_photo_order_success">تم استلام طلبك الخاص بالصور!</span></strong>
-        <p style="margin:5px 0 0 0;" data-lkey="cart_photo_order_desc">لقد قمت بإرسال طلب يحتوي على صور وملاحظات. سيتم مراجعته قريباً.</p>
+        style="display:none; background:rgba(21, 87, 36, 0.2); color:var(--success-color); padding:15px; border-radius:8px; margin:20px; border:1px solid var(--success-color); position:relative; text-align:right;">
+        <strong><i class="fas fa-check-circle"></i> <span data-lkey="cart_photo_order_success">تم استلام طلبك الخاص
+                بالصور!</span></strong>
+        <p style="margin:5px 0 0 0;" data-lkey="cart_photo_order_desc">لقد قمت بإرسال طلب يحتوي على صور وملاحظات. سيتم
+            مراجعته قريباً.</p>
         <button onclick="this.parentElement.style.display='none'; localStorage.removeItem('showOrderPhotoMessage');"
             style="position:absolute; top:10px; left:10px; background:none; border:none; cursor:pointer; color:#155724; font-size:1.2rem;">&times;</button>
     </div>

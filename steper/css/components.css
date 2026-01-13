@@ -303,10 +303,7 @@ div:where(.swal2-container) .fullscreen-swal .swal2-title {
     margin-top: 2.5rem;
 }
 
-.stepper-wrapper.secondary-wrapper {
-    justify-content: center;
-    gap: 0rem;
-}
+/* Secondary Wrapper Conflict Removed */
 
 /* Secondary Step Description */
 .step-description.secondary-description {

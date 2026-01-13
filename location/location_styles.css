@@ -11,6 +11,39 @@
     --location_radius: 12px;
 }
 
+body.dark-theme {
+    --location_bg: #1e1e1e;
+    --location_primary: #60a5fa;
+    --location_shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    background: var(--location_bg);
+    color: #fff;
+}
+
+body.dark-theme .location_controls {
+    background: #2d2d2d;
+    border-color: #444;
+}
+
+body.dark-theme .location_btn,
+body.dark-theme .location_loading-text,
+body.dark-theme .leaflet-control-recenter a {
+    color: #fff;
+}
+
+body.dark-theme .leaflet-control-recenter a {
+    background-color: #2d2d2d;
+    color: #fff;
+}
+
+body.dark-theme .leaflet-control-recenter a:hover {
+    background-color: #3d3d3d;
+}
+
+body.dark-theme .location_btn-close {
+    background: #2d2d2d;
+    color: #fff;
+}
+
 /* ✅ GLOBAL: Hide all scrollbars while maintaining functionality */
 * {
     scrollbar-width: none;

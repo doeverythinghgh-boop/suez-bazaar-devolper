@@ -231,39 +231,76 @@ function updateViewForLoggedInUser() {
   if (settingsBtn) {
     settingsBtn.addEventListener("click", () => {
 
+      // 1. Inject CSS if not exists
+      if (!document.getElementById('custom-settings-style')) {
+        const style = document.createElement('style');
+        style.id = 'custom-settings-style';
+        style.textContent = `
+          .custom-settings-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.4); z-index: 1050;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity 0.3s;
+          }
+          .custom-settings-overlay.active { opacity: 1; }
+          .custom-settings-modal {
+            background: var(--modal-bg, #fff); color: var(--text-color-dark, #333);
+            width: 350px; padding: 20px; border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            transform: scale(0.9); transition: transform 0.3s;
+            position: relative;
+            max-width: 90%;
+            display: flex; flex-direction: column;
+          }
+          .custom-settings-overlay.active .custom-settings-modal { transform: scale(1); }
+          .custom-settings-close {
+            position: absolute; top: 10px; right: 10px; cursor: pointer;
+            font-size: 1.2em; color: var(--text-color-medium, #777);
+          }
+           /* RTL Support for close button */
+           html[dir="rtl"] .custom-settings-close { right: auto; left: 10px; }
+        `;
+        document.head.appendChild(style);
+      }
+
+      // 2. Define Close Function Global
+      window.closeSettingsModal = function () {
+        const overlay = document.getElementById('custom-settings-modal-overlay');
+        if (overlay) {
+          overlay.classList.remove('active');
+          setTimeout(() => overlay.remove(), 300);
+        }
+      };
+
       const isDark = document.body.classList.contains('dark-theme');
       const themeIcon = isDark ? 'fa-sun' : 'fa-moon';
       const themeText = isDark ? window.langu("dash_theme_day") : window.langu("dash_theme_night");
-      const themeColor = isDark ? '#f39c12' : '#555'; // Sun orange or Moon grey
+      const themeColor = isDark ? '#f39c12' : '#555';
 
-      Swal.fire({
-        title: `<span style="color: var(--dark-blue, #03478f); font-weight: bold;">${window.langu("dash_settings_title")}</span>`,
-        html: `
-          <div class="settings-modal-content" style="text-align: inherit; direction: inherit;">
-            
-            <!-- Quick Actions Grid -->
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
-              
-               <!-- Notification Settings -->
-              <div onclick="mainLoader('notification/page/notifications.html', 'index-notifications-container', 0, undefined, 'showHomeIcon', true); Swal.close();" 
-                   class="settings-action-item">
-                <i class="fas fa-bell" style="color: #ffc107;"></i>
-                <span>${window.langu("dash_notifications_tab")}</span>
-              </div>
+      // 3. Build HTML
+      const modalHTML = `
+        <div class="custom-settings-modal">
+           <i class="fas fa-times custom-settings-close" onclick="closeSettingsModal()"></i>
+           <div style="text-align: center; margin-bottom: 15px;">
+              <span style="color: var(--dark-blue, #03478f); font-weight: bold; font-size: 1.1em;">${window.langu("dash_settings_title")}</span>
+           </div>
 
-              <!-- Profile Settings -->
-              <div onclick="mainLoader('pages/profile-modal/profile-modal.html', 'index-user-container', 0, undefined, 'showHomeIcon', true); Swal.close();" 
-                   class="settings-action-item">
-                <i class="fas fa-user-cog" style="color: var(--primary-color);"></i>
-                <span>${window.langu("dash_profile_tab")}</span>
-              </div>
+           <div id="settings_modal_content" class="settings-modal-content" style="text-align: inherit; direction: inherit;">
+             
+             <!-- Options List -->
+            <div id="settings_list_options" style="display: flex; flex-direction: column; gap: 8px;">
 
-            </div>
+               <!-- Profile Settings (Moved to list) -->
+               <div id="settings_action_profile" onclick="mainLoader('pages/profile-modal/profile-modal.html', 'index-user-container', 0, undefined, 'showHomeIcon', true); closeSettingsModal();" 
+                    class="settings-list-item">
+                  <span>
+                     <i class="fas fa-user-cog" style="color: var(--primary-color);"></i> ${window.langu("dash_profile_tab")}
+                  </span>
+                  <i class="fas fa-chevron-left chevron"></i>
+               </div>
 
-             <!-- Additional Options List -->
-            <div style="display: flex; flex-direction: column; gap: 8px;">
                <!-- Theme Toggle -->
-               <div onclick="window.toggleAppTheme();"
+               <div id="settings_list_theme" onclick="window.toggleAppTheme();"
                     class="settings-list-item">
                   <span>
                      <i class="fas ${themeIcon}" style="color: ${themeColor}; width: 20px;"></i> ${themeText}
@@ -274,7 +311,7 @@ function updateViewForLoggedInUser() {
                </div>
 
                 <!-- Language Toggle -->
-               <div onclick="window.toggleAppLanguage();"
+               <div id="settings_list_language" onclick="window.toggleAppLanguage();"
                     class="settings-list-item">
                   <span>
                      <i class="fas fa-language" style="color: var(--primary-color); width: 20px;"></i> ${localStorage.getItem('app_language') === 'en' ? 'English' : 'اللغة العربية'}
@@ -283,38 +320,106 @@ function updateViewForLoggedInUser() {
                     <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${localStorage.getItem('app_language') === 'en' ? 'inset-inline-end' : 'inset-inline-start'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
                   </div>
                </div>
+
+
+               <!-- Notification Toggle -->
+               <div id="settings_list_notifications" onclick="handleNotificationToggleFromSettings();"
+                    class="settings-list-item">
+                  ${(() => {
+          const storedEnabled = localStorage.getItem('notifications_enabled');
+          const isAndroid = !!(window.Android);
+          const hasPermission = ('Notification' in window && Notification.permission === 'granted') || isAndroid;
+          const isNotifEnabled = (storedEnabled === 'true' && hasPermission);
+
+          return `
+                      <span>
+                         <i class="fas fa-bell" style="color: ${isNotifEnabled ? '#28a745' : '#6c757d'}; width: 20px;"></i> ${window.langu("dash_notifications_tab")}
+                      </span>
+                      <div style="width: 36px; height: 20px; background: ${isNotifEnabled ? '#4cd964' : '#e5e5ea'}; border-radius: 20px; position: relative;">
+                        <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${isNotifEnabled ? 'inset-inline-start' : 'inset-inline-end'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+                      </div>
+                      `;
+        })()}
+               </div>
                
-               <div onclick="mainLoader('pages/contact.html', 'index-contact-container', 0, undefined, 'showHomeIcon', true); Swal.close();"
+               <div id="settings_list_support" onclick="mainLoader('pages/contact.html', 'index-contact-container', 0, undefined, 'showHomeIcon', true); closeSettingsModal();"
                     class="settings-list-item">
                   <span>
                      <i class="fas fa-headset"></i> ${window.langu("dash_support")}
                   </span>
                   <i class="fas fa-chevron-left chevron"></i>
                </div>
-               
-
             </div>
+           </div>
+        </div>
+      `;
 
-          </div>
-        `,
-        showConfirmButton: false,
-        showCloseButton: true,
-        customClass: {
-          popup: 'animated fadeInDown faster',
-          container: 'settings-swal-container'
-        },
-        background: isDark ? 'var(--modal-bg)' : '#fff', // Use var for background too if possible, or just keep dynamic hex that matches var
-        // Actually, since we are in JS, we can just use the variable string if Swal supports it or rely on isDark logic to match the var value.
-        // Let's stick to isDark logic but make sure it matches the var values: #1e1e1e for dark.
-        // Better: Use `background: 'var(--modal-bg)'` - Swal applies this to style attribute, so var works!
-        background: 'var(--modal-bg)',
-        color: 'var(--text-color-dark)',
-        width: '350px',
-        padding: '20px'
+      // 4. Create and Append Overlay
+      const overlay = document.createElement('div');
+      overlay.id = 'custom-settings-modal-overlay';
+      overlay.className = 'custom-settings-overlay';
+      overlay.innerHTML = modalHTML;
+
+      // Close on background click
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) window.closeSettingsModal();
       });
+
+      document.body.appendChild(overlay);
+
+      // Trigger animation
+      requestAnimationFrame(() => {
+        overlay.classList.add('active');
+      });
+
     });
   }
 }
 
 // [Final Step] Initialize
 updateViewForLoggedInUser();
+
+/**
+ * @description Handles the notification toggle click from the settings modal.
+ *   Triggers the global notification toggle logic and updates the UI in-place.
+ * @function handleNotificationToggleFromSettings
+ */
+window.handleNotificationToggleFromSettings = async function () {
+  // Do NOT close settings modal. The confirmation Swal will appear on top (z-index 1060 vs 1050).
+
+  setTimeout(async () => {
+    // Ensure NotificationPage is available
+    if (typeof NotificationPage !== 'undefined' && NotificationPage.toggleNotificationsStatus) {
+      const isEnabled = localStorage.getItem('notifications_enabled') === 'true';
+      // This will convert boolean !isEnabled to either enable() or disable()
+      await NotificationPage.toggleNotificationsStatus(!isEnabled);
+
+      // Update UI after operation wraps up
+      // We need to re-read the state because the user might have cancelled the operation in the Swal.
+      const el = document.getElementById('settings_list_notifications');
+      if (el) {
+        const storedEnabled = localStorage.getItem('notifications_enabled');
+        const isAndroid = !!(window.Android);
+        const hasPermission = ('Notification' in window && Notification.permission === 'granted') || isAndroid;
+        const isNotifEnabled = (storedEnabled === 'true' && hasPermission);
+
+        el.innerHTML = `
+              <span>
+                 <i class="fas fa-bell" style="color: ${isNotifEnabled ? '#28a745' : '#6c757d'}; width: 20px;"></i> ${window.langu("dash_notifications_tab")}
+              </span>
+              <div style="width: 36px; height: 20px; background: ${isNotifEnabled ? '#4cd964' : '#e5e5ea'}; border-radius: 20px; position: relative;">
+                <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${isNotifEnabled ? 'inset-inline-start' : 'inset-inline-end'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
+              </div>
+          `;
+      }
+
+    } else {
+      console.error("NotificationPage logic is not loaded.");
+      Swal.fire({
+        icon: 'error',
+        title: window.langu('error'),
+        text: 'نظام الإشعارات غير جاهز بعد. الرجاء الانتظار قليلاً.'
+      });
+    }
+  }, 100);
+};
