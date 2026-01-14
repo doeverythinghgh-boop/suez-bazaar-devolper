@@ -1089,7 +1089,7 @@ async function notifyAdminOnNewItem(productData) {
         console.log(`[Dev-Notification] 📄 المرحلة 3: تحميل نصوص الرسائل وتجهيز المحتوى النهائي...`);
         await loadNotificationMessages();
 
-        const itemType = (productData.serviceType === 'service' || productData.isService) ? 'خدمة' : 'منتج';
+        const itemType = (productData.serviceType === 2 || productData.serviceType === '2' || productData.isService) ? 'خدمة' : 'منتج';
         const itemName = productData.productName || 'غير مسمى';
         const itemKey = productData.product_key || 'N/A';
         const userKey = productData.user_key || 'N/A';
