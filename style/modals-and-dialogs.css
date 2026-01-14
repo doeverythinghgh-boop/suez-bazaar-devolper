@@ -439,10 +439,9 @@ body.dark-theme .swal-modern-mini-text {
   margin: 0 !important;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
   /* ظل خفيف للزر الأساسي */
-  flex: 1 1 auto !important;
-  /* مرونة كاملة للنمو والانكماش */
-  min-width: 90px !important;
-  /* أقل عرض مسموح به */
+  flex: 0 0 auto !important;
+  /* تعميم: لا يتوسع، يأخذ مساحة المحتوى فقط */
+  width: auto !important;
 }
 
 .swal-modern-mini-confirm:active {
@@ -464,8 +463,9 @@ body.dark-theme .swal-modern-mini-text {
   cursor: pointer !important;
   transition: background-color 0.2s ease !important;
   margin: 0 !important;
-  flex: 1 1 auto !important;
-  min-width: 90px !important;
+  flex: 0 0 auto !important;
+  /* تعميم: لا يتوسع، يأخذ مساحة المحتوى فقط */
+  width: auto !important;
 }
 
 body.dark-theme .swal-modern-mini-cancel {

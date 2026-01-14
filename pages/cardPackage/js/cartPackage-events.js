@@ -150,41 +150,6 @@ function cartPage_setupEventListeners() {
             }
         }, true); // Use true to enable "event capturing"
 
-        // Clear Cart
-        document.getElementById('cartPage_clearCartBtn').addEventListener('click', function () {
-            Swal.fire({
-                title: window.langu('cart_clear_confirm_title'),
-                text: window.langu('cart_clear_confirm_text'),
-                showCancelButton: true,
-                buttonsStyling: false,
-                customClass: {
-                    popup: 'swal-modern-mini-popup',
-                    title: 'swal-modern-mini-title',
-                    htmlContainer: 'swal-modern-mini-text',
-                    confirmButton: 'swal-modern-mini-confirm',
-                    cancelButton: 'swal-modern-mini-cancel'
-                },
-                confirmButtonText: window.langu('alert_confirm_yes'),
-                cancelButtonText: window.langu('alert_cancel_btn')
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    clearCart();
-                    // Show success message after clearing
-                    Swal.fire({
-                        title: window.langu('cart_clear_success_title'),
-                        text: window.langu('cart_clear_success_text'),
-                        buttonsStyling: false,
-                        customClass: {
-                            popup: 'swal-modern-mini-popup',
-                            title: 'swal-modern-mini-title',
-                            htmlContainer: 'swal-modern-mini-text',
-                            confirmButton: 'swal-modern-mini-confirm'
-                        },
-                        confirmButtonText: window.langu('alert_confirm_btn')
-                    });
-                }
-            });
-        });
 
         // Checkout
         document.getElementById('cartPage_checkoutBtn').addEventListener('click', async function () {

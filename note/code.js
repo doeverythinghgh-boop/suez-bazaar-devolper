@@ -1,5 +1,5 @@
 
-/**
+/*
 
 npm run auto-version
 

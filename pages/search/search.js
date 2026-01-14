@@ -73,7 +73,29 @@ async function initSearchModal(containerId) {
       `[SearchModal] بدء البحث بـ: searchTerm='${searchTerm}', mainCategory='${mainCategory}', subCategory='${subCategory}'`
     );
 
-    // Do not search if empty
+    // Do not search if searchTerm is less than 3 characters AND no category is selected
+    // Do not search if searchTerm is less than 3 characters (Requirement: minimum 3 chars to start search process using it)
+    if (searchTerm && searchTerm.length < 3) {
+      console.warn("[SearchModal] 3 characters minimum required for text search.");
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: window.langu('search_modal_input_min_length_error'),
+          icon: 'warning',
+          confirmButtonText: window.langu('alert_confirm_btn') || 'موافق',
+          customClass: {
+            popup: 'swal-modern-mini-popup',
+            title: 'swal-modern-mini-title',
+            confirmButton: 'swal-modern-mini-confirm'
+          },
+          buttonsStyling: false
+        });
+      } else {
+        alert(window.langu('search_modal_input_min_length_error'));
+      }
+      return;
+    }
+
+    // Do not search if completely empty
     if (!searchTerm && !mainCategory) {
       searchResultsContainer.innerHTML = ""; // Clear results
       return;
@@ -307,18 +329,21 @@ async function initSearchModal(containerId) {
     console.error(
       "[SearchModal] زر البحث (perform-search-btn) غير موجود."
     );
-
-    // Add input animation event
-    searchModalInput.addEventListener("input", () => {
-      if (searchModalInput.value.trim() !== "") {
-        performSearchBtn.classList.add("is-pulsing");
-      } else {
-        performSearchBtn.classList.remove("is-pulsing");
-      }
-    });
-
-    setTimeout(() => searchModalInput.focus(), 50);
   }
+
+  // Add input animation event - now requires at least 3 characters
+  // Correctly placed outside the else block to work when the button IS found
+  searchModalInput.addEventListener("input", function () {
+    if (searchModalInput.value.trim().length >= 3) {
+      if (performSearchBtn) performSearchBtn.classList.add("is-pulsing");
+    } else {
+      if (performSearchBtn) performSearchBtn.classList.remove("is-pulsing");
+    }
+  });
+
+  setTimeout(function () {
+    searchModalInput.focus();
+  }, 50);
 
   // ✅ NEW: Handle incoming search request from advertisements
   const pendingQuery = localStorage.getItem('pendingSearchQuery');

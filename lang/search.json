@@ -54,5 +54,9 @@
   "currency_egp": {
     "ar": "جنيه",
     "en": "EGP"
+  },
+  "search_modal_input_min_length_error": {
+    "ar": "يرجى إدخال 3 أحرف على الأقل للبحث بالاسم.",
+    "en": "Please enter at least 3 characters to search by name."
   }
 }
