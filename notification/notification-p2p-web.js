@@ -2,6 +2,7 @@
  * @file notification/notification-p2p-web.js
  * @description وحدة إرسال الإشعارات مباشرة من المتصفح (P2P) باستخدام Admin SDK.
  *   تتعامل مع توليد JWT، جلب الـ Access Token من جوجل، والإرسال لـ FCM v1.
+ * // Test comment for auto-version watcher
  */
 
 var WebP2PNotification = (() => {
@@ -98,6 +99,10 @@ var WebP2PNotification = (() => {
                         headers: {
                             Urgency: "high"
                         }
+                    },
+                    notification: {
+                        title: title,
+                        body: body
                     },
                     data: {
                         title: title,
