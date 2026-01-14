@@ -1158,7 +1158,7 @@ async function notifyAdminOnItemUpdate(productData) {
         const itemType = (productData.serviceType === 2 || productData.serviceType === '2' || productData.isService) ? 'خدمة' : 'منتج';
         const itemName = productData.productName || 'غير مسمى';
         const itemKey = productData.product_key || 'N/A';
-        const userName = userSession?.user_name || 'مستخدم';
+        const userName = userSession?.username || 'مستخدم';
 
         const { title, body } = getMessageTemplate('item-updated.admin', {
             itemType,
