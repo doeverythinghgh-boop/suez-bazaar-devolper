@@ -230,76 +230,14 @@ function saveNotificationBatchFromAndroid(batchJson) {
  * @returns {Promise<Object>} - وعد (Promise) يحتوي على كائن يحتوي على نتيجة الإرسال من الخادم، أو كائن خطأ في حالة الفشل.
  * @see apiFetch
  */
-/**
- * @description يرسل إشعارًا فوريًا (Push Notification) مع توجيه ذكي بناءً على نظام التشغيل.
- * @function sendNotification
- * @param {string} token - توكن Firebase Cloud Messaging (FCM).
- * @param {string} title - عنوان الإشعار.
- * @param {string} body - نص الإشعار.
- * @returns {Promise<Object>}
- */
 async function sendNotification(token, title, body) {
-    // التحقق من صحة التوكن
+    // التحقق من صحة التوكن قبل الإرسال لتجنب طلبات غير ضرورية
     if (!token || token === 'undefined' || token === 'null' || typeof token !== 'string') {
         console.error('[Notifications] تجاهل محاولة إرسال إشعار بتوكن غير صالح:', token);
         return { error: 'Invalid or missing token', tokenStatus: 'broken' };
     }
 
-    // --- 1. اكتشاف نظام التشغيل ---
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    let osType = "Unknown";
-
-    if (/windows phone/i.test(userAgent)) {
-        osType = "Windows Phone";
-    } else if (/android/i.test(userAgent) || (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function')) {
-        osType = "Android";
-    } else if (/dL/i.test(userAgent) || /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-        osType = "iOS";
-    } else if (/Win/i.test(userAgent)) {
-        osType = "Windows"; // PC/Laptop
-    } else if (/Mac/i.test(userAgent)) {
-        osType = "MacOS";
-    } else {
-        osType = "Linux/Other";
-    }
-
-    // --- 2. سجلات المطور (Developer Logs) ---
-    console.groupCollapsed(`%c[Notification Routing] System Analysis`, "color: #e83e8c; font-weight: bold;");
-    console.log(`%c[OS Detected]: ${osType}`, "color: #17a2b8; font-weight: bold;");
-    console.log(`[User Agent]: ${userAgent}`);
-    console.groupEnd();
-
-    // --- 3. منطق التوجيه (Routing Logic) ---
-
-    // الحالة أ: نظام ويندوز (Windows) -> استخدام الخادم (Server API)
-    if (osType === "Windows") {
-        console.log(`%c[Routing] 💻 Windows detected. Routing via SERVER API...`, "color: #28a745; font-weight: bold;");
-        try {
-            const response = await apiFetch('/api/send-notification', {
-                method: 'POST',
-                body: JSON.stringify({
-                    token: token,
-                    title: title,
-                    body: body
-                })
-            });
-
-            if (response.success || response.messageId) {
-                console.log(`%c[Server] ✅ Notification sent successfully via Server.`, "color: green");
-                return { success: true, platform: 'server-windows' };
-            } else {
-                console.error(`[Server] ❌ Failed to send via Server:`, response);
-                return { error: response.error || 'Unknown Server Error' };
-            }
-        } catch (serverError) {
-            console.error(`[Server] ❌ Exception during server request:`, serverError);
-            return { error: serverError.message };
-        }
-    }
-
-    // الحالة ب: أندرويد (Android) أو iOS أو غيرهم -> استخدام P2P (Client-Side)
-    console.log(`%c[Routing] 📱 Mobile/Other (${osType}) detected. Routing via P2P...`, "color: #fd7e14; font-weight: bold;");
-
+    // [Enforcement] استخدام الجسر المباشر P2P
     if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
         console.log(`[FCM Bridge] 📱 إرسال إشعار مباشر (Android P2P) للتوكن: ${token.substring(0, 10)}...`);
         try {
@@ -315,8 +253,9 @@ async function sendNotification(token, title, body) {
         return await WebP2PNotification.send(token, title, body);
     }
 
-    console.warn('[FCM] No suitable sending method found (Not Windows, No Android Bridge, No WebP2P).');
-    return { error: 'No suitable sending method found.' };
+    // [Enforcement] P2P Only Strategy (No Server Fallback)
+    console.warn('[FCM] Server-side fallback is DISABLED. Ensure WebP2P or Android Bridge is active.');
+    return { error: 'P2P Notification failed or not available. Server fallback is disabled.' };
 }
 /**
  * @async
@@ -332,15 +271,6 @@ async function sendNotification(token, title, body) {
 * @param {string} body - نص الإشعار.
 * @returns {Promise<void>}
 * @dependency {function} sendNotification - دالة لإرسال إشعار FCM.
-*/
-/**
-* @description تتلقى الدالة مصفوفة نهائية من توكنات الإشعارات الصالحة (FCM Tokens)
-* وتقوم بإرسال الإشعار المحدد إلى جميعها بالتوازي، مع مراعاة بيئة التشغيل.
-* @function sendNotificationsToTokens
-* @param {Array<string>} allTokens - مصفوفة نهائية من توكنات الإشعارات الصالحة والفريدة.
-* @param {string} title - عنوان الإشعار.
-* @param {string} body - نص الإشعار.
-* @returns {Promise<void>}
 */
 async function sendNotificationsToTokens(allTokens, title, body) {
     console.log(`[Notifications] بدء عملية إرسال الإشعارات. التوكنات المستلمة: ${allTokens?.length || 0}`);
@@ -359,37 +289,11 @@ async function sendNotificationsToTokens(allTokens, title, body) {
             body: body,
             timestamp: new Date(),
             status: 'read',
-            relatedUser: { name: 'المستخدم' }
+            relatedUser: { name: 'المستخدم' } // يمكن تخصيص هذا لاحقاً
         }).catch(e => console.error('[Notifications] فشل حفظ الإشعار المرسل:', e));
     }
 
-    // --- اكتشاف نظام التشغيل ---
-    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-    let isWindows = /Win/i.test(userAgent);
-
-    // سجلات المطور
-    console.log(`%c[Batch Sending] OS Analysis: ${isWindows ? 'Windows (Server Mode)' : 'Mobile/Other (P2P Mode)'}`, "color:purple; font-weight:bold;");
-
-    // 2. معالجة الإرسال بناءً على البيئة
-
-    // الحالة أ: ويندوز -> استخدام الخادم (Looping over Server API)
-    if (isWindows) {
-        console.log(`[Batch] 💻 Windows detected. Processing ${allTokens.length} tokens via Server...`);
-        const promises = allTokens.map(token =>
-            apiFetch('/api/send-notification', {
-                method: 'POST',
-                body: JSON.stringify({ token, title, body })
-            }).then(res => {
-                if (!res.success) console.warn(`Failed to send to ${token}:`, res);
-                return res;
-            })
-        );
-        await Promise.all(promises);
-        console.log(`[Batch] ✅ Server processing complete.`);
-        return;
-    }
-
-    // الحالة ب: أندرويد/موبايل -> P2P
+    // 2. معالجة الإرسال بناءً على البيئة (Android P2P vs Web P2P vs Server)
     if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
         console.log(`[FCM Bridge] 📱 إرسال جماعي مباشر (Android P2P) لـ ${allTokens.length} توكن.`);
         try {
@@ -411,7 +315,7 @@ async function sendNotificationsToTokens(allTokens, title, body) {
         } catch (e) {
             console.error('[FCM Bridge] خطأ في إرسال Web P2P Batch:', e);
         }
-        return;
+        return; // ✅ إنهاء الدالة هنا دائماً في بيئة الويب لمنع الإرسال المزدوج عبر السيرفر
     }
 
     // [Enforcement] P2P Only Strategy (No Server Fallback)
