@@ -1,152 +1,72 @@
-/**
- * @file api/send-notification.js
- * @description نقطة النهاية (API Endpoint) لإرسال إشعارات Push عبر FCM.
- *
- * هذا الملف يعمل كـ Node.js Serverless Function على Vercel.
- * يستخدم Firebase Admin SDK لإرسال الإشعارات إلى توكن جهاز معين.
- * يعتمد على متغيرات البيئة (Environment Variables) لإعداد Firebase Admin.
- */
 
-import admin from "firebase-admin";
+import admin from 'firebase-admin';
 
-/**
- * @description ترويسات CORS (Cross-Origin Resource Sharing) للسماح بالطلبات من أي مصدر.
- * @type {object}
- * @const
- */
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
+export const config = {
+  runtime: 'nodejs', // Firebase Admin requires Node.js runtime
 };
 
-// ✅ إصلاح جذري: التحقق من وجود جميع متغيرات البيئة المطلوبة قبل أي شيء آخر.
-/**
- * @description مصفوفة بأسماء متغيرات البيئة المطلوبة لتهيئة Firebase Admin SDK.
- * @type {string[]}
- * @const
- */
-const requiredEnvVars = ['FIREBASE_PROJECT_ID', 'FIREBASE_PRIVATE_KEY', 'FIREBASE_CLIENT_EMAIL', 'FIREBASE_PRIVATE_KEY_ID', 'FIREBASE_CLIENT_ID'];
-/**
- * @description مصفوفة بأسماء متغيرات البيئة المفقودة اللازمة لتهيئة Firebase.
- * @type {string[]}
- * @const
- */
-const missingEnvVars = requiredEnvVars.filter(v => !process.env[v]);
-
-/**
- * @description علم لتتبع ما إذا كانت Firebase Admin SDK قد تم تهيئتها بنجاح.
- * @type {boolean}
- */
-let firebaseInitialized = false;
-/**
- * @description يخزن رسالة الخطأ في حالة فشل تهيئة Firebase Admin SDK.
- * @type {string|null}
- */
-let initializationError = null;
-
-// إعداد serviceAccount باستخدام متغيرات البيئة
-/**
- * @description كائن بيانات حساب الخدمة الخاص بـ Firebase، يُستخدم لتهيئة Firebase Admin SDK.
- *   يتم جلب قيم هذا الكائن من متغيرات البيئة.
- * @type {object}
- * @const
- */
+// Hardcoded credentials from notification-credentials.js (Server-side safe)
 const serviceAccount = {
-  type: "service_account",
-  project_id: process.env.FIREBASE_PROJECT_ID,
-  private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID,
-  private_key: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined,
-  client_email: process.env.FIREBASE_CLIENT_EMAIL,
-  client_id: process.env.FIREBASE_CLIENT_ID,
-  auth_uri: "https://accounts.google.com/o/oauth2/auth",
-  token_uri: "https://oauth2.googleapis.com/token",
-  auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
-  client_x509_cert_url: `https://www.googleapis.com/robot/v1/metadata/x509/${process.env.FIREBASE_CLIENT_EMAIL}`
+  "type": "service_account",
+  "project_id": "suze-bazaar-notifications",
+  "private_key_id": "d247ab66b9b5effc3b3258ca95c84ee236aad33a",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCxQVFEzRhC5ht0\nM+evWwzCXZ4NpXdEHQQsPd7oZLIDZVJtZKr4tvMm2C+dfnzda1zIZ1LTWztdIpR7\n0/27ulpbBaN9uNUl885R6mwCz1XcjDk3ykw+nUCAfvWAP1J6j8wYXyiYw9QUoMXv\nzxzM9A3PhlW6n92kQDH1ILTsuDzghbw7wgOQoiuE908d3ytTHaX2gQ26rtNoKOww\n2y2pmDxe92+iBoIrmc7qoIrOQz40EP20FxoqOXKPCiwI3VISECdoduGdBQlPieSe\nr9DG2yeSt0XyfF8zV7qAX2xivAeUnEfBgYJLKsOZL4P6dxilJyTomGVS/fBplBN/\n/wHVk7cnAgMBAAECggEAIv6Et2MQT6DTOblHm9CLb9IAsqwApFNgMAXU/Kdol5AI\n2mz97hVcYsZafCrtJt+b1TrE2NJRoX0CuIGtPcM4NHEkCl2TwybjjDuOMG3TgzOx\n1ihbrh7ojZXDDRszQtwhzIv43VQICjyFZ2dJxdLG6ToZsbr/DH7Z/g2DepqS9jZM\nyyGNdD+UsH2WKxYxMmqyUBz4fM4mJct6irtG6a9XrgPxtgzo7e9WR8FJXGxzv57S\n92iWpF4+yNopgx0CrBZe284ZDkibWvf5lc9Ghqyr07SBApksIU9Hke4Ty+xfNfrJ\nPknhg7/OWIpHoKzCr3s0oFWLQX3AL2aqiNqTs88RrQKBgQDVw+qgCYfSzoLatrGO\nauo6K+7b1y6Ce1WzvFLnDSxQ/0V2hQZJmvRogTrnuKkozgDouHFIm1ks60eiA3bY\npzYWhl6clF90o9tpG54dny9QSxPqUWInwuvWxDre7NnwX1QTBTn6ApMi6ko9iY3J\nNYNt7omgs6IpyxCBJlGyEHjSEwKBgQDURr7kYy5PzsGlcun6pAA9gYQQ1LLcMwDS\nBPaRzFkOZc59cQoD8ATQNwzqK8aUJVJnEfSLtG6URFfqYgcPnDySOF9Dpq78d00+\nWR2p5WoK+RTdjSykgmOK1StGen/1tCEsg1A2XgisLo1DnNGKUG3stGNcZkapKjSW\nbQFwr6HJHQKBgEmeIS1gWuBksnf0Nw3fEC9cdfRMFP5mz0sI7lwYE00JvLhmc5Xh\nwY5EAy9OTyN4XqPG8WyZ44outQq8uq8+VshHGko+ZulajPOTyU5WRgsW8BLgWDdt\nT581ETk4xI2dpuyt/ht1y4pYuZybxLKotUyku80WUCCoiFSSB8yVE6b1AoGABV0k\nRbEb4nhe/EdDEkpCl0tGgwZc3qOLScNGV7jKJ0r7RMAueJsABCLf+KrSgbvPsTsK\n6tzMToLLleiUNRjFjwxNm/ACS+7XzNODpF9fppdUp6SBlEaXLVLlnQpLYXIDxJQs\n2rLVlUQ33ZWA1fXiUTDdseADuRKP8Z0fhDFr7SECgYBPd5OhRMyg/+wnPdfpskpt\nc4OxIZxwy//5BIlNCFTQnP54qFm5aP2m+skUKF+nSqifkPgwm2MlV9peTY3+Lv8q\n9UEZ27rHPwKyJ+OK9y1LV+KLaghE7XxntXX/SiEEtRuUN6IEKMWpIZbjGEwCnQ19\ntXuaimWKIIt4hKZGKiIfaw==\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@suze-bazaar-notifications.iam.gserviceaccount.com"
 };
 
-// تهيئة التطبيق فقط إذا لم يتم تهيئته من قبل وإذا كانت جميع متغيرات البيئة موجودة
-if (!admin.apps.length && missingEnvVars.length === 0) {
-  try {
-    admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    firebaseInitialized = true;
-    console.log("[Firebase Init] Firebase Admin SDK initialized successfully.");
-  } catch (e) {
-    initializationError = e.message;
-    console.error("[Firebase Init] FATAL: Failed to initialize Firebase Admin SDK.", e);
-  }
-} else if (missingEnvVars.length > 0) {
-  initializationError = `Missing environment variables: ${missingEnvVars.join(', ')}`;
-  console.error(`[Firebase Init] FATAL: ${initializationError}`);
-} else if (admin.apps.length > 0) {
-  firebaseInitialized = true; // تم تهيئته بالفعل في استدعاء سابق
+/**
+ * Initialize Firebase Admin if not already initialized
+ */
+if (!admin.apps.length) {
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount)
+  });
 }
 
-/**
- * @description نقطة نهاية API (Vercel Serverless Function) لإرسال إشعارات Push عبر Firebase Cloud Messaging (FCM).
- *   تتعامل مع طلبات `OPTIONS` (preflight) لـ CORS وطلبات `POST` لإرسال إشعارات.
- *   تتطلب تهيئة Firebase Admin SDK الناجحة.
- * @function handler
- * @param {object} req - كائن طلب HTTP الوارد من Vercel.
- * @param {object} res - كائن استجابة HTTP من Vercel.
- * @returns {Promise<void>} - وعد (Promise) لا يُرجع قيمة، ولكنه يرسل استجابة HTTP.
- * @async
- * @throws {Response} - Returns an HTTP response with an error status (500) if Firebase is not initialized or if sending the notification fails.
- */
 export default async function handler(req, res) {
-  // التعامل مع طلبات OPTIONS (preflight) أولاً لمنع أخطاء CORS
-  if (req.method === 'OPTIONS') {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    return res.status(204).end();
+  // Only allow POST
+  if (req.method !== 'POST') {
+    res.status(405).json({ error: 'Method Not Allowed' });
+    return;
   }
-
-  res.setHeader('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
-  res.setHeader('Access-Control-Allow-Methods', corsHeaders['Access-Control-Allow-Methods']);
-  res.setHeader('Access-Control-Allow-Headers', corsHeaders['Access-Control-Allow-Headers']);
-
-  // التحقق مما إذا تم تهيئة Firebase بنجاح
-  if (!firebaseInitialized) {
-    console.error(`[API: /api/send-notification] Firebase Admin not initialized. Reason: ${initializationError}`);
-    return res.status(500).json({ error: `فشل تهيئة خدمة الإشعارات في الخادم: ${initializationError}` });
-  }
-
-  const { token, title, body } = req.body;
-  console.log(`[API: /api/send-notification] استلام طلب لإرسال إشعار.`);
-  console.log(`[API: /api/send-notification] المشروع المستخدم: ${serviceAccount.project_id}`);
-  console.log(`[API: /api/send-notification] التوكن المستهدف: ...${token ? String(token).slice(-10) : 'N/A'}`);
 
   try {
-    // التحقق من صحة التوكن قبل الإرسال
-    if (!token || token === "undefined" || token === "null") {
-      throw new Error("Invalid token: token is missing or 'undefined'/'null' string.");
+    const { token, title, body, data } = req.body;
+
+    if (!token || !title || !body) {
+      res.status(400).json({ error: 'Missing required fields: token, title, body' });
+      return;
     }
 
-    // ✅ إصلاح: إرسال حمولة `data` فقط لضمان استدعاء onBackgroundMessage دائمًا.
+    console.log(`[API] Sending notification via Server to: ${token.substring(0, 10)}...`);
+
     const message = {
       token: token,
-      data: { title, body }
+      // We use 'data' payload primarily as per Android project conventions
+      data: {
+        title: title,
+        body: body,
+        platform: 'server-windows-bridge',
+        timestamp: Date.now().toString(),
+        ...data // Merge any additional data
+      },
+      // Optional: Android specific config
+      android: {
+        priority: 'high',
+        data: {
+          title: title,
+          body: body
+        }
+      }
     };
-    await admin.messaging().send(message);
-    console.log(`[API: /api/send-notification] نجاح: تم إرسال الإشعار بنجاح.`);
-    res.status(200).json({ success: true });
+
+    const response = await admin.messaging().send(message);
+    console.log('[API] Notification sent successfully:', response);
+
+    res.status(200).json({ success: true, messageId: response });
+
   } catch (error) {
-    console.error(`[API: /api/send-notification] فشل: حدث خطأ أثناء إرسال الإشعار:`, error);
-
-    // إذا كان الخطأ هو أن التوكن غير مسجل (منتهي)
-    if (error.code === 'messaging/registration-token-not-registered') {
-      return res.status(410).json({
-        error: "التوكن غير مسجل أو منتهي الصلاحية",
-        code: error.code
-      });
-    }
-
-    // إرسال تفاصيل الخطأ للعميل للمساعدة في التشخيص
-    res.status(500).json({
-      error: error.message,
-      code: error.code,
-      projectId: serviceAccount.project_id
-    });
+    console.error('[API] Error sending notification:', error);
+    res.status(500).json({ error: error.message || 'Internal Server Error' });
   }
 }
