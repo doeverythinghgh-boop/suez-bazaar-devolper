@@ -4,7 +4,7 @@
 -->
 
 <head>
-    <link rel="stylesheet" href="/notification/page/settings.css">
+    <link rel="stylesheet" href="settings.css">
 </head>
 
 
@@ -13,9 +13,11 @@
     <div class="notifiSetting_container">
         <header>
             <h1 data-lkey="notif_settings_title"><i class="fas fa-cogs"></i> إعدادات نظام الإشعارات</h1>
-            <p class="notifiSetting_description" data-lkey="notif_settings_desc">تحكم في من يستقبل الإشعارات لكل حدث في النظام.</p>
+            <p class="notifiSetting_description" data-lkey="notif_settings_desc">تحكم في من يستقبل الإشعارات لكل حدث في
+                النظام.</p>
         </header>
 
+        <h2 class="notifiSetting_section-title"><i class="fas fa-shopping-cart"></i> إشعارات الطلبات</h2>
         <div class="table-responsive">
             <table>
                 <thead>
@@ -33,6 +35,22 @@
             </table>
         </div>
 
+        <h2 class="notifiSetting_section-title"><i class="fas fa-box"></i> إشعارات إدارة المتجر</h2>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th data-lkey="notif_event_col">الحدث (Event)</th>
+                        <th><span data-lkey="notif_admin_col">الإدارة</span> <i class="fas fa-user-shield"></i></th>
+                        <th><span data-lkey="notif_sellers_col">البائعين</span> <i class="fas fa-store"></i></th>
+                    </tr>
+                </thead>
+                <tbody id="notifiSetting_store-settings-body">
+                    <!-- Rows will be populated by JS -->
+                </tbody>
+            </table>
+        </div>
+
         <div class="notifiSetting_controls">
             <button id="notifiSetting_reset-btn" class="notifiSetting_btn notifiSetting_btn-reset">
                 <i class="fas fa-undo"></i> <span data-lkey="notif_reset_btn">استعادة الافتراضيات</span>
@@ -43,5 +61,5 @@
     <div id="notifiSetting_toast" class="notifiSetting_toast"></div>
 
 
-    <script src="/notification/page/settings.js"></script>
+    <script src="settings.js"></script>
 </body>

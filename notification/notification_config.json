@@ -54,5 +54,23 @@
     "admin": true,
     "seller": true,
     "delivery": false
+  },
+  "new-item-added": {
+    "label": "إضافة منتج (Add Product)",
+    "admin": true,
+    "seller": true,
+    "category": "store"
+  },
+  "item-accepted": {
+    "label": "قبول منتج (Accept Product)",
+    "admin": true,
+    "seller": true,
+    "category": "store"
+  },
+  "item-updated": {
+    "label": "تعديل منتج (Update Product)",
+    "admin": true,
+    "seller": true,
+    "category": "store"
   }
 }

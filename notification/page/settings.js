@@ -111,7 +111,7 @@ var notifiSetting_Controller = {
         } catch (error) {
             console.warn('فشل تحميل الإعدادات من السحابة، العودة للملف المحلي:', error);
             try {
-                const localResponse = await fetch('/notification/notification_config.json');
+                const localResponse = await fetch('../notification_config.json');
                 notifiSetting_DEFAULT_CONFIG = await localResponse.json();
                 this.notifiSetting_config = JSON.parse(JSON.stringify(notifiSetting_DEFAULT_CONFIG));
                 console.log('تم تحميل الإعدادات الافتراضية المحلية.');
@@ -270,7 +270,7 @@ var notifiSetting_Controller = {
      * @param {boolean} disabled 
      */
     notifiSetting_toggleInputs(disabled) {
-        const inputs = document.querySelectorAll('#notifiSetting_settings-body input[type="checkbox"]');
+        const inputs = document.querySelectorAll('.table-responsive input[type="checkbox"]');
         inputs.forEach(input => input.disabled = disabled);
 
         const resetBtn = document.getElementById('notifiSetting_reset-btn');
@@ -287,38 +287,68 @@ var notifiSetting_Controller = {
      */
     notifiSetting_renderTable() {
         try {
+            // [Safety] Ensure mandatory store events exist even if loading from old config
+            const mandatoryEvents = {
+                'new-item-added': { label: 'إضافة منتج (Add Product)', admin: true, seller: true, category: 'store' },
+                'item-accepted': { label: 'قبول منتج (Accept Product)', admin: true, seller: true, category: 'store' },
+                'item-updated': { label: 'تعديل منتج (Update Product)', admin: true, seller: true, category: 'store' }
+            };
+
+            Object.keys(mandatoryEvents).forEach(eventKey => {
+                if (this.notifiSetting_config && !this.notifiSetting_config[eventKey]) {
+                    this.notifiSetting_config[eventKey] = mandatoryEvents[eventKey];
+                }
+            });
+
             const notifiSetting_tbody = document.getElementById('notifiSetting_settings-body');
-            if (!notifiSetting_tbody) return;
+            const notifiSetting_storeTbody = document.getElementById('notifiSetting_store-settings-body');
+            if (!notifiSetting_tbody || !notifiSetting_storeTbody) return;
 
             notifiSetting_tbody.innerHTML = '';
+            notifiSetting_storeTbody.innerHTML = '';
 
             if (!this.notifiSetting_config || Object.keys(this.notifiSetting_config).length === 0) {
-                notifiSetting_tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;">${this._notifiSetting_safeLangu('notif_load_fail', 'No data available')}</td></tr>`;
+                const emptyMsg = `<tr><td colspan="5" style="text-align:center; padding:20px;">${this._notifiSetting_safeLangu('notif_load_fail', 'No data available')}</td></tr>`;
+                notifiSetting_tbody.innerHTML = emptyMsg;
+                notifiSetting_storeTbody.innerHTML = emptyMsg;
                 return;
             }
 
-            // ترتيب المفاتيح بناءً على تعريف Config الحالية أو الافتراضية
             const notifiSetting_keys = Object.keys(this.notifiSetting_config);
 
             notifiSetting_keys.forEach(notifiSetting_key => {
                 const notifiSetting_data = this.notifiSetting_config[notifiSetting_key];
                 if (!notifiSetting_data) return;
 
+                const isStoreEvent = notifiSetting_data.category === 'store';
                 const notifiSetting_row = document.createElement('tr');
 
-                // ترجمة التسمية (Label) بناءً على مفتاح الحدث
-                const transKey = `notif_label_${notifiSetting_key.replace('step-', '')}`;
-                const displayLabel = this._notifiSetting_safeLangu(transKey, notifiSetting_data.label || notifiSetting_key);
+                // Case: Order Event (4 roles)
+                if (!isStoreEvent) {
+                    const transKey = `notif_label_${notifiSetting_key.replace('step-', '')}`;
+                    const displayLabel = this._notifiSetting_safeLangu(transKey, notifiSetting_data.label || notifiSetting_key);
 
-                notifiSetting_row.innerHTML = `
-                    <td class="notifiSetting_event-name">${displayLabel}</td>
-                    <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'buyer', !!notifiSetting_data.buyer)}</td>
-                    <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'admin', !!notifiSetting_data.admin)}</td>
-                    <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'seller', !!notifiSetting_data.seller)}</td>
-                    <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'delivery', !!notifiSetting_data.delivery)}</td>
-                `;
+                    notifiSetting_row.innerHTML = `
+                        <td class="notifiSetting_event-name">${displayLabel}</td>
+                        <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'buyer', !!notifiSetting_data.buyer)}</td>
+                        <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'admin', !!notifiSetting_data.admin)}</td>
+                        <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'seller', !!notifiSetting_data.seller)}</td>
+                        <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'delivery', !!notifiSetting_data.delivery)}</td>
+                    `;
+                    notifiSetting_tbody.appendChild(notifiSetting_row);
+                }
+                // Case: Store Management Event (2 roles: Admin, Seller)
+                else {
+                    const transKey = `notif_label_${notifiSetting_key.replace(/-/g, '_')}`;
+                    const displayLabel = this._notifiSetting_safeLangu(transKey, notifiSetting_data.label || notifiSetting_key);
 
-                notifiSetting_tbody.appendChild(notifiSetting_row);
+                    notifiSetting_row.innerHTML = `
+                        <td class="notifiSetting_event-name">${displayLabel}</td>
+                        <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'admin', !!notifiSetting_data.admin)}</td>
+                        <td>${this.notifiSetting_createCheckbox(notifiSetting_key, 'seller', !!notifiSetting_data.seller)}</td>
+                    `;
+                    notifiSetting_storeTbody.appendChild(notifiSetting_row);
+                }
             });
         } catch (notifiSetting_error) {
             console.error('حدث خطأ أثناء عرض الجدول:', notifiSetting_error);
@@ -330,9 +360,11 @@ var notifiSetting_Controller = {
      */
     notifiSetting_renderLoading() {
         const notifiSetting_tbody = document.getElementById('notifiSetting_settings-body');
-        if (notifiSetting_tbody) {
-            notifiSetting_tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> ${this._notifiSetting_safeLangu('notifications_loading', 'Loading...')}</td></tr>`;
-        }
+        const notifiSetting_storeTbody = document.getElementById('notifiSetting_store-settings-body');
+        const loadingHtml = `<tr><td colspan="5" style="text-align:center; padding:20px;"><i class="fas fa-spinner fa-spin"></i> ${this._notifiSetting_safeLangu('notifications_loading', 'Loading...')}</td></tr>`;
+
+        if (notifiSetting_tbody) notifiSetting_tbody.innerHTML = loadingHtml;
+        if (notifiSetting_storeTbody) notifiSetting_storeTbody.innerHTML = loadingHtml;
     },
 
     /**
