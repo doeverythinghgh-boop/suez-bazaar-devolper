@@ -276,6 +276,23 @@ async function updateStatus(key, name, newStatus) {
 
         if (!res.ok) throw new Error('فشل التحديث');
 
+        // جلب بيانات المنتج كاملة لإرسال الإشعارات (للحصول على user_key)
+        if (newStatus === 1 && typeof notifyOnItemAccepted === 'function') {
+            try {
+                const pRes = await fetch(`${baseURL}/api/products?product_key=${key}`);
+                const pData = await pRes.json();
+                if (pData) {
+                    notifyOnItemAccepted({
+                        productName: name,
+                        user_key: pData.user_key,
+                        isService: pData.serviceType === 2 || pData.serviceType === '2' || pData.isService
+                    });
+                }
+            } catch (e) {
+                console.error("[Admin] فشل جلب بيانات الإشعار:", e);
+            }
+        }
+
         Swal.fire({
             title: 'تم بنجاح',
             text: `تمت عملية ${actionName} بنجاح`,

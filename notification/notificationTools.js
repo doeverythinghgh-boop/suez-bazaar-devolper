@@ -1105,9 +1105,19 @@ async function notifyAdminOnNewItem(productData) {
         });
 
         if (!body) {
-            console.error('[Dev-Notification] ❌ خطأ فادح: محتوى الرسالة (Body) فارغ! تأكد من وجود مفتاح new-item-added في notification_messages.json');
+            console.error('[Dev-Notification] ❌ خطأ فادح: محتوى الرسالة (Body) فارغ!');
         } else {
             console.log(`[Dev-Notification] ✅ تم تجهيز الرسالة بنجاح: "${body.substring(0, 30)}..."`);
+        }
+
+        // --- إشعار البائع ---
+        const sellerEnabled = await shouldNotify('new-item-added', 'seller');
+        if (sellerEnabled && userKey && userKey !== 'N/A') {
+            const sellerTokens = await getUsersTokens([userKey]);
+            if (sellerTokens.length > 0) {
+                const sellerMsg = getMessageTemplate('new-item-added.seller', { itemType, itemName });
+                await sendNotificationsToTokens(sellerTokens, sellerMsg.title, sellerMsg.body);
+            }
         }
 
         console.log(`[Dev-Notification] 📡 المرحلة 4: إرسال الطلبات المتوازية إلى Firebase لعدد ${adminTokens.length} توكن...`);
@@ -1162,7 +1172,56 @@ async function notifyAdminOnItemUpdate(productData) {
             console.log(`%c[Notifications] ✅ تم إرسال إشعار للإدارة بنجاح عن تعديل ${itemType}: ${itemName}`, 'color: #4CAF50; font-weight: bold;');
         }
 
+        // --- إشعار البائع ---
+        const sellerEnabled = await shouldNotify('item-updated', 'seller');
+        const userKey = productData.user_key;
+        if (sellerEnabled && userKey) {
+            const sellerTokens = await getUsersTokens([userKey]);
+            if (sellerTokens.length > 0) {
+                const sellerMsg = getMessageTemplate('item-updated.seller', { itemType, itemName });
+                await sendNotificationsToTokens(sellerTokens, sellerMsg.title, sellerMsg.body);
+            }
+        }
+
     } catch (error) {
         console.error('%c[Dev-Notification] ❌ فشل إشعار التعديل:', 'color: red;', error);
+    }
+}
+
+/**
+ * @description إرسال إشعارات عند قبول منتج ونشره في المتجر.
+ * تشمل الإدارة والبائع صاحب المنتج.
+ * @function notifyOnItemAccepted
+ * @param {Object} productData - بيانات المنتج الذي تمت الموافقة عليه.
+ * @returns {Promise<void>}
+ */
+async function notifyOnItemAccepted(productData) {
+    console.log(`%c[Notifications] 📢 بدء إشعارات قبول المنتج: ${productData.productName}`, 'color: #8BC34A; font-weight: bold;');
+    try {
+        const itemType = productData.isService ? 'خدمة' : 'منتج';
+        const itemName = productData.productName || 'غير مسمى';
+        const sellerKey = productData.user_key;
+
+        await loadNotificationMessages();
+
+        // 1. إشعار الإدارة
+        if (await shouldNotify('item-accepted', 'admin')) {
+            const adminTokens = await getAdminTokens();
+            if (adminTokens.length > 0) {
+                const { title, body } = getMessageTemplate('item-accepted.admin', { itemType, itemName });
+                await sendNotificationsToTokens(adminTokens, title, body);
+            }
+        }
+
+        // 2. إشعار البائع
+        if (sellerKey && await shouldNotify('item-accepted', 'seller')) {
+            const sellerTokens = await getUsersTokens([sellerKey]);
+            if (sellerTokens.length > 0) {
+                const { title, body } = getMessageTemplate('item-accepted.seller', { itemType, itemName });
+                await sendNotificationsToTokens(sellerTokens, title, body);
+            }
+        }
+    } catch (error) {
+        console.error('[Notifications] فشل إرسال إشعارات قبول المنتج:', error);
     }
 }

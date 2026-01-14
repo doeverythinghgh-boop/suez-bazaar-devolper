@@ -98,12 +98,30 @@
         "admin": {
             "title": "إضافة جديدة في المتجر",
             "body": "تم إضافة ${itemType} جديد: ${itemName} (مفتاح المنتج: ${itemKey}) بواسطة ${userName} (مفتاح المستخدم: ${userKey})."
+        },
+        "seller": {
+            "title": "تمت إضافة منتجك",
+            "body": "تمت إضافة ${itemType}: ${itemName} بنجاح وهي قيد المراجعة الآن."
         }
     },
     "item-updated": {
         "admin": {
             "title": "تعديل في المتجر",
             "body": "تم تعديل ${itemType}: ${itemName} (مفتاح المنتج: ${itemKey}) بواسطة ${userName}. يرجى مراجعة التعديلات."
+        },
+        "seller": {
+            "title": "تم تحديث منتجك",
+            "body": "تم تحديث بيانات ${itemType}: ${itemName} بنجاح."
+        }
+    },
+    "item-accepted": {
+        "admin": {
+            "title": "تمت الموافقة على منتج",
+            "body": "تمت الموافقة على نشر ${itemType}: ${itemName}."
+        },
+        "seller": {
+            "title": "مبروك! تمت الموافقة",
+            "body": "تمت الموافقة على نشر ${itemType}: ${itemName} وهي الآن متاحة لجميع المستخدمين."
         }
     }
 }
