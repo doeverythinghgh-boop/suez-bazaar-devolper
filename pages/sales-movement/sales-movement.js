@@ -426,52 +426,67 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
             ></iframe>
         `;
 
-        // عرض النافذة المنبثقة
-        salesMovement_modal.classList.add('salesMovement_show');
+        // [Step-by-Step Diagnostic Logs]
+        console.log("%c🚀 [Diagnostics] بدء عملية فتح المنوال وفحص الطبقات...", "color: #27ae60; font-weight: bold;");
 
-        // رفع مستوى الحاوية الأب لضمان ظهورها فوق الهيدر في iOS
         const salesMovement_parentContainer = document.getElementById('index-salesMovement-container');
-        if (salesMovement_parentContainer) {
-            salesMovement_parentContainer.style.zIndex = '100001';
-            salesMovement_parentContainer.style.position = 'relative';
-        }
-
-        // خفض مستوى الهيدر لضمان عدم ظهوره فوق المنوال
         const salesMovement_header = document.getElementById('index-app-header');
-        if (salesMovement_header) {
-            salesMovement_header.style.zIndex = '0';
-            salesMovement_header.style.position = 'relative'; // ضمان تفعيل z-index
+
+        const logElementState = (label, el) => {
+            if (!el) {
+                console.error(`%c❌ [Diagnostics] ${label}: العنصر غير موجود في DOM`, "color: red");
+                return;
+            }
+            const s = window.getComputedStyle(el);
+            console.log(`%c📊 [Diagnostics] ${label}:`, "color: #2980b9; font-weight: bold;", {
+                id: el.id,
+                class: el.className,
+                zIndex: s.zIndex,
+                position: s.position,
+                display: s.display,
+                top: s.top,
+                visibility: s.visibility,
+                opacity: s.opacity,
+                transform: s.transform,
+                filter: s.filter,
+                backdropFilter: s.backdropFilter || s.webkitBackdropFilter
+            });
+        };
+
+        console.log("%c🔍 الحالة قبل التعديل:", "font-weight: bold;");
+        logElementState("Header", salesMovement_header);
+        logElementState("Parent Container", salesMovement_parentContainer);
+
+        // تعديل مستويات z-index
+        if (salesMovement_parentContainer) {
+            console.log("🛠️ جاري رفع z-index لـ Parent Container...");
+            salesMovement_parentContainer.style.setProperty('z-index', '100001', 'important');
+            salesMovement_parentContainer.style.setProperty('position', 'relative', 'important');
         }
 
-        // [Diagnostic Logs for Developer]
-        console.group('%c🔍 تشخيص طبقات العرض (Stacking Context Diagnostics)', 'color: #e67e22; font-weight: bold;');
-        
-        // التحقق من نظام iOS
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        console.log(`%c[Environment] Is iOS: ${isIOS}`, 'color: #8e44ad; font-weight: bold;');
-        
-        const headerEl = document.getElementById('index-app-header');
-        if (headerEl) {
-            const headerStyle = window.getComputedStyle(headerEl);
-            console.log(`%c[Header] z-index: ${headerStyle.zIndex}, position: ${headerStyle.position}`, 'color: #34495e');
+        if (salesMovement_header) {
+            console.log("🛠️ جاري خفض z-index لـ Header...");
+            salesMovement_header.style.setProperty('z-index', '0', 'important');
+            salesMovement_header.style.setProperty('position', 'relative', 'important');
         }
-        if (salesMovement_parentContainer) {
-            const parentStyle = window.getComputedStyle(salesMovement_parentContainer);
-            console.log(`%c[Parent Container] z-index: ${parentStyle.zIndex}, position: ${parentStyle.position}`, 'color: #34495e');
-        }
-        const modalStyle = window.getComputedStyle(salesMovement_modal);
-        console.log(`%c[Modal] z-index: ${modalStyle.zIndex}, position: ${modalStyle.position}`, 'color: #34495e');
-        
-        // التحقق من وجود stacking context بسبب transform أو opacity
-        const checkStacking = (el) => {
-            const s = window.getComputedStyle(el);
-            if (s.transform !== 'none' || s.opacity < 1 || s.willChange !== 'auto') {
-                console.warn(`⚠️ تنبيه: العنصر ${el.id || el.className} ينشئ Stacking Context بسبب: transform=${s.transform}, opacity=${s.opacity}`);
-            }
-        };
-        if (headerEl) checkStacking(headerEl);
-        if (salesMovement_parentContainer) checkStacking(salesMovement_parentContainer);
-        console.groupEnd();
+
+        // عرض المنوال
+        salesMovement_modal.classList.add('salesMovement_show');
+        console.log("✅ تمت إضافة كلاس الإظهار (salesMovement_show)");
+
+        // الفحص النهائي بعد فترة بسيطة للتأكد من استقرار الـ DOM
+        setTimeout(() => {
+            console.group('%c🔍 الحالة النهائية (بعد 100ms)', 'color: #e67e22; font-weight: bold;');
+            logElementState("Header", salesMovement_header);
+            logElementState("Parent Container", salesMovement_parentContainer);
+            logElementState("Modal", salesMovement_modal);
+            logElementState("Body", document.body);
+            
+            // تحقق من نظام iOS للمرة الثانية
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            console.log(`%c[Device Check] OS is iOS: ${isIOS}`, 'color: #8e44ad');
+            console.groupEnd();
+        }, 100);
 
     } catch (salesMovement_error) {
         console.error('خطأ في عرض صفحة stepper:', salesMovement_error);
