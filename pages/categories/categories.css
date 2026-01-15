@@ -695,7 +695,7 @@ body.dark-theme .categories_cell_media {
         rgba(255, 255, 255, 0.2),
         transparent
     );
-    animation: skeleton-shimmer 6s infinite;
+    animation: skeleton-shimmer 20s infinite;
 }
 
 body.dark-theme .skeleton-media::after,
