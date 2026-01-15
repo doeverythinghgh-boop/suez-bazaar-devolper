@@ -253,8 +253,7 @@
   /* ✅ NEW: Add glow on focus */
 }
 
-cursor: not-allowed;
-}
+
 
 /* ✅ NEW: Dark Mode Support for Chevron */
 body.dark-theme .search-category-filter {
