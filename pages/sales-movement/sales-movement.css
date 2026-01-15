@@ -70,7 +70,7 @@
     gap: 4px;
     width: auto;
     padding: 0;
-    color: var(--border-color-active);
+    color: var(--primary-color);
     font-weight: 500;
     font-size: 11px;
     cursor: pointer;
@@ -105,9 +105,9 @@
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    background-color: var(--primary-color);
-    color: #ffffff;
-    border: none;
+    background-color: transparent;
+    color: var(--primary-color);
+    border: 1.5px solid var(--primary-color);
     padding: 8px 16px;
     border-radius: 15px;
     cursor: pointer;
@@ -115,7 +115,7 @@
     font-family: "Tajawal", sans-serif;
     font-size: 11px;
     font-weight: 600;
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+    box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
     flex-shrink: 0;
 }
 
@@ -126,7 +126,7 @@
 
 .salesMovement_refreshIcon {
     font-size: clamp(18px, 4vw, 22px);
-    color: #ffffff;
+    color: inherit;
 }
 
 /* Dark mode support for filter container */
