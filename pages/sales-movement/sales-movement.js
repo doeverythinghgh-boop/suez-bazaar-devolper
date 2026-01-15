@@ -436,6 +436,13 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
             salesMovement_parentContainer.style.position = 'relative';
         }
 
+        // خفض مستوى الهيدر لضمان عدم ظهوره فوق المنوال
+        const salesMovement_header = document.getElementById('index-app-header');
+        if (salesMovement_header) {
+            salesMovement_header.style.zIndex = '0';
+            salesMovement_header.style.position = 'relative'; // ضمان تفعيل z-index
+        }
+
         // [Diagnostic Logs for Developer]
         console.group('%c🔍 تشخيص طبقات العرض (Stacking Context Diagnostics)', 'color: #e67e22; font-weight: bold;');
         
@@ -512,6 +519,13 @@ if (salesMovement_closeModalBtn) {
             salesMovement_parentContainer.style.zIndex = '';
             salesMovement_parentContainer.style.position = '';
         }
+
+        // إعادة الهيدر لوضعه الطبيعي
+        const salesMovement_header = document.getElementById('index-app-header');
+        if (salesMovement_header) {
+            salesMovement_header.style.zIndex = '';
+            salesMovement_header.style.position = '';
+        }
     });
 }
 
@@ -526,6 +540,13 @@ if (salesMovement_modal) {
             if (salesMovement_parentContainer) {
                 salesMovement_parentContainer.style.zIndex = '';
                 salesMovement_parentContainer.style.position = '';
+            }
+
+            // إعادة الهيدر لوضعه الطبيعي
+            const salesMovement_header = document.getElementById('index-app-header');
+            if (salesMovement_header) {
+                salesMovement_header.style.zIndex = '';
+                salesMovement_header.style.position = '';
             }
         }
     });
