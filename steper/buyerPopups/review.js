@@ -73,7 +73,13 @@ export async function handleReviewSave(data, ordersData) {
                 if (typeof window.notifyOnStepActivation === 'function') {
                     const metadata = extractNotificationMetadata(ordersData, data);
 
-                    // 1. Notify Review/Pending (Generic Update) - Optional, maybe just for Cancelled
+                    // 1. Notify Review (Always trigger if enabled in config)
+                    window.notifyOnStepActivation({
+                        stepId: 'step-review',
+                        stepName: window.langu('review_notify_title') || 'مراجعة المنتجات',
+                        ...metadata
+                    });
+
                     // 2. Notify Cancelled
                     const hasCancelled = updates.some(u => u.status === ITEM_STATUS.CANCELLED);
                     if (hasCancelled) {

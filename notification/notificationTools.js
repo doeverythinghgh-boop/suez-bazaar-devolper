@@ -627,19 +627,30 @@ async function handlePurchaseNotifications(order) {
     console.log('[Notifications] معالجة إشعارات الشراء للطلب:', order.id);
 
     try {
+        const notificationPromises = [];
+
         // 1. إشعار الإدارة
         if (await shouldNotify('purchase', 'admin')) {
-            await notifyAdminOnPurchase(order);
-        } else {
-            console.log('[Notifications] تم تخطي إشعار الإدارة (شراء) بناءً على الإعدادات.');
+            notificationPromises.push(notifyAdminOnPurchase(order));
         }
 
         // 2. إشعار البائعين
         if (await shouldNotify('purchase', 'seller')) {
-            await notifySellersOnPurchase(order);
-        } else {
-            console.log('[Notifications] تم تخطي إشعار البائعين (شراء) بناءً على الإعدادات.');
+            notificationPromises.push(notifySellersOnPurchase(order));
         }
+
+        // 3. إشعار المشتري (Buyer) - إضافة دعم جديد بناءً على الإعدادات
+        if (await shouldNotify('purchase', 'buyer')) {
+            notificationPromises.push(notifyBuyerOnPurchase(order));
+        }
+
+        // 4. إشعار التوصيل (Delivery) - إضافة دعم جديد بناءً على الإعدادات
+        if (await shouldNotify('purchase', 'delivery')) {
+            notificationPromises.push(notifyDeliveryOnPurchase(order));
+        }
+
+        await Promise.all(notificationPromises);
+        console.log('[Notifications] ✅ تم الانتهاء من معالجة كافة إشعارات الشراء.');
 
     } catch (error) {
         console.error('[Notifications] خطأ في معالجة إشعارات الشراء:', error);
@@ -717,6 +728,39 @@ async function notifySellersOnPurchase(order) {
             console.error(`[Notifications] فشل إرسال إشعار للبائع ${sellerKey}:`, error);
         }
     }
+}
+
+/**
+ * @description إرسال إشعار للمشتري عند إتمام الطلب.
+ * @async
+ */
+async function notifyBuyerOnPurchase(order) {
+    try {
+        if (!order.user_key) return;
+        await loadNotificationMessages();
+        const tokens = await getUsersTokens([order.user_key]);
+        if (tokens.length > 0) {
+            const { title, body } = getMessageTemplate('purchase.buyer', { orderId: order.id || 'N/A' });
+            await sendNotificationsToTokens(tokens, title, body);
+        }
+    } catch (e) { console.error('[Notifications] فشل إشعار المشتري بالشراء:', e); }
+}
+
+/**
+ * @description إرسال إشعار للمناديب المتاحين عند إتمام الطلب.
+ * @async
+ */
+async function notifyDeliveryOnPurchase(order) {
+    try {
+        await loadNotificationMessages();
+        // جلب المناديب (قد يتطلب جلب كل المناديب أو مناديب منطقة معينة)
+        // سنعتمد حالياً على جلب مناديب النظام بشكل عام أو من خلال قناة الإدارة
+        const adminTokens = await getAdminTokens(); // المناديب والمسؤولين يتلقون إشعار الطلب الجديد عادة
+        if (adminTokens.length > 0) {
+            const { title, body } = getMessageTemplate('purchase.delivery', { orderId: order.id || 'N/A' });
+            await sendNotificationsToTokens(adminTokens, title, body);
+        }
+    } catch (e) { console.error('[Notifications] فشل إشعار التوصيل بالشراء:', e); }
 }
 
 /**
@@ -920,13 +964,11 @@ async function notifyOnStepActivation({
             );
         }
 
-        // 4. إشعار خدمات التوصيل
-        if (['step-confirmed', 'step-shipped', 'step-delivered'].includes(stepId)) {
-            if (filteredDeliveryKeys.length > 0 && await shouldNotify(stepId, 'delivery')) {
-                notificationPromises.push(
-                    notifyDeliveryOnStepChange(filteredDeliveryKeys, stepId, stepName, orderId)
-                );
-            }
+        // 4. إشعار خدمات التوصيل (المناديب)
+        if (filteredDeliveryKeys.length > 0 && await shouldNotify(stepId, 'delivery')) {
+            notificationPromises.push(
+                notifyDeliveryOnStepChange(filteredDeliveryKeys, stepId, stepName, orderId)
+            );
         }
 
         // انتظار إرسال جميع الإشعارات
@@ -1044,10 +1086,18 @@ async function notifyOnSubStepActivation({
                         notifyAdminOnStepChange(stepId, stepName, orderId, userName)
                     );
                 }
+                // إضافة دعم بناءً على الإعدادات للمنديب والمشترين
+                if (buyerKey && buyerKey !== actingUserId && await shouldNotify('step-cancelled', 'buyer')) {
+                    notificationPromises.push(notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId));
+                }
+                const deliveryKeysForCancel = await getTokensForActiveDelivery2Seller(filteredSellerKeys[0] || '');
+                if (deliveryKeysForCancel && deliveryKeysForCancel.length > 0 && await shouldNotify('step-cancelled', 'delivery')) {
+                    notificationPromises.push(notifyDeliveryOnStepChange(deliveryKeysForCancel, stepId, stepName, orderId));
+                }
                 break;
 
             case 'step-rejected':
-                // مرفوض: إشعار المشتري + الإدارة
+                // مرفوض: إشعار المشتري + الإدارة + البائع + التوصيل
                 if (buyerKey && buyerKey !== actingUserId && await shouldNotify('step-rejected', 'buyer')) {
                     const orderIdText = orderId ? ` رقم #${orderId}` : '';
                     const { title, body } = getMessageTemplate('steps.step-rejected.buyer', { orderIdText });
@@ -1064,10 +1114,20 @@ async function notifyOnSubStepActivation({
                         notifyAdminOnStepChange(stepId, stepName, orderId, userName)
                     );
                 }
+                if (filteredSellerKeys.length > 0 && await shouldNotify('step-rejected', 'seller')) {
+                    notificationPromises.push(notifySellerOnStepChange(filteredSellerKeys, stepId, stepName, orderId));
+                }
+                if (await shouldNotify('step-rejected', 'delivery')) {
+                    // جلب مناديب البائع الأول كعينة للتواصل
+                    const deliveryKeysForReject = await getTokensForActiveDelivery2Seller(filteredSellerKeys[0] || '');
+                    if (deliveryKeysForReject && deliveryKeysForReject.length > 0) {
+                        notificationPromises.push(notifyDeliveryOnStepChange(deliveryKeysForReject, stepId, stepName, orderId));
+                    }
+                }
                 break;
 
             case 'step-returned':
-                // مرتجع: إشعار البائعين + الإدارة
+                // مرتجع: إشعار البائعين + الإدارة + المشتري + التوصيل
                 if (filteredSellerKeys.length > 0 && await shouldNotify('step-returned', 'seller')) {
                     notificationPromises.push(
                         notifySellerOnStepChange(filteredSellerKeys, stepId, stepName, orderId)
@@ -1077,6 +1137,15 @@ async function notifyOnSubStepActivation({
                     notificationPromises.push(
                         notifyAdminOnStepChange(stepId, stepName, orderId, userName)
                     );
+                }
+                if (buyerKey && buyerKey !== actingUserId && await shouldNotify('step-returned', 'buyer')) {
+                    notificationPromises.push(notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId));
+                }
+                if (await shouldNotify('step-returned', 'delivery')) {
+                    const deliveryKeysForReturn = await getTokensForActiveDelivery2Seller(filteredSellerKeys[0] || '');
+                    if (deliveryKeysForReturn && deliveryKeysForReturn.length > 0) {
+                        notificationPromises.push(notifyDeliveryOnStepChange(deliveryKeysForReturn, stepId, stepName, orderId));
+                    }
                 }
                 break;
         }
@@ -1260,3 +1329,24 @@ async function notifyOnItemAccepted(productData) {
         console.error('[Notifications] فشل إرسال إشعارات قبول المنتج:', error);
     }
 }
+
+// تصدير الدوال عالمياً لضمان إمكانية الوصول إليها من موديولات Steper وغيرها
+window.shouldNotify = shouldNotify;
+window.sendNotification = sendNotification;
+window.sendNotificationsToTokens = sendNotificationsToTokens;
+window.notifyOnStepActivation = notifyOnStepActivation;
+window.notifyOnSubStepActivation = notifyOnSubStepActivation;
+window.handlePurchaseNotifications = handlePurchaseNotifications;
+window.notifyAdminOnPurchase = notifyAdminOnPurchase;
+window.notifySellersOnPurchase = notifySellersOnPurchase;
+window.notifyBuyerOnPurchase = notifyBuyerOnPurchase;
+window.notifyDeliveryOnPurchase = notifyDeliveryOnPurchase;
+window.notifyBuyerOnStepChange = notifyBuyerOnStepChange;
+window.notifyAdminOnStepChange = notifyAdminOnStepChange;
+window.notifySellerOnStepChange = notifySellerOnStepChange;
+window.notifyDeliveryOnStepChange = notifyDeliveryOnStepChange;
+window.notifyAdminOnNewItem = notifyAdminOnNewItem;
+window.notifyAdminOnItemUpdate = notifyAdminOnItemUpdate;
+window.notifyOnItemAccepted = notifyOnItemAccepted;
+
+console.log('%c[Notifications] ✅ تم تحميل وتصدير كافة أدوات الإشعارات (Deep Settings Enforcement Ready).', 'color: #4CAF50; font-weight: bold;');
