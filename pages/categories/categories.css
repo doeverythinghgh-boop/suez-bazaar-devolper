@@ -695,7 +695,7 @@ body.dark-theme .categories_cell_media {
         rgba(255, 255, 255, 0.2),
         transparent
     );
-    animation: skeleton-shimmer 20s infinite;
+    animation: skeleton-shimmer 15s linear infinite;
 }
 
 body.dark-theme .skeleton-media::after,
@@ -706,11 +706,30 @@ body.dark-theme .skeleton-text::after {
         rgba(255, 255, 255, 0.05),
         transparent
     );
-    animation: skeleton-shimmer 6s infinite;
+    animation: skeleton-shimmer 15s linear infinite;
 }
 
 @keyframes skeleton-shimmer {
-    100% {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
         transform: translateX(100%);
     }
 }
+
+/* RTL Adjustment for Shimmer flow direction */
+[dir="rtl"] .skeleton-media::after,
+[dir="rtl"] .skeleton-text::after {
+    animation: skeleton-shimmer-rtl 15s linear infinite;
+}
+
+@keyframes skeleton-shimmer-rtl {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
