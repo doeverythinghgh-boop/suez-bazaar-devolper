@@ -31,7 +31,8 @@ function calculateStepperGap() {
 
         // Get effective width (Real or Estimated)
         // Subtract 40px for internal padding (20px left + 20px right)
-        const wrapperWidth = getEstimatedWidth(wrapper) - 40;
+        const wrapperRect = wrapper.getBoundingClientRect();
+        const wrapperWidth = (wrapperRect.width > 0 ? wrapperRect.width : getEstimatedWidth(wrapper)) - 40;
 
         // Fixed step width from CSS
         const stepWidth = 70;
@@ -54,16 +55,15 @@ function calculateStepperGap() {
         }
 
         // Convert to rem (assuming 16px = 1rem)
-        let optimalGap = optimalGapPx / 16;
+        let optimalGap = Math.max(0.5, Math.min(4, optimalGapPx / 16));
+        const gapValue = `${optimalGap}rem`;
 
-        // Strict Clamping to ensure arrows don't overlap or go too far
-        // Min: 0.5rem (8px) - enough to separate
-        // Max: 4rem (64px) - don't stretch too much
-        optimalGap = Math.max(0.5, Math.min(4, optimalGap));
-
-        // Apply to CSS Variable
-        wrapper.style.setProperty('--stepper-gap', `${optimalGap}rem`);
-        wrapper.style.justifyContent = 'center';
+        // PERFORMANCE: Only update if value actually changed to prevent vibration/infinite loops
+        if (wrapper.getAttribute('data-last-gap') !== gapValue) {
+            wrapper.style.setProperty('--stepper-gap', gapValue);
+            wrapper.setAttribute('data-last-gap', gapValue);
+            wrapper.style.justifyContent = 'center';
+        }
     });
 }
 
@@ -89,20 +89,22 @@ function initStickyGap() {
         });
     }
 
-    const mutationObserver = new MutationObserver(() => {
-        calculateStepperGap();
+    // Optimization: Only observe the wrappers instead of the whole body
+    const mutationObserver = new MutationObserver((mutations) => {
+        // Prevent observing our own style changes
+        const hasRelevantChange = mutations.some(m =>
+            m.type === 'childList' ||
+            (m.type === 'attributes' && m.attributeName !== 'style' && m.attributeName !== 'data-last-gap')
+        );
+        if (hasRelevantChange) {
+            calculateStepperGap();
+        }
     });
 
-    if (document.body) {
-        mutationObserver.observe(document.body, {
-            attributes: true,
-            childList: true,
-            subtree: true,
-            attributeFilter: ['style', 'class', 'hidden', 'display']
-        });
-    }
-
-    // Safety Net removed as Observers are efficient
+    const w1 = document.getElementById('primary-stepper-wrapper');
+    const w2 = document.getElementById('secondary-stepper-wrapper');
+    if (w1) mutationObserver.observe(w1, { attributes: true, childList: true, subtree: true });
+    if (w2) mutationObserver.observe(w2, { attributes: true, childList: true, subtree: true });
 }
 
 if (document.readyState === 'loading') {
