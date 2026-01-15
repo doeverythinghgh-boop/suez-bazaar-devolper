@@ -212,11 +212,36 @@ function buildSlider(container, adImages) {
             }
         });
 
-        // ✅ NEW: Add events to pause auto-play on hold
+        // ✅ NEW: Add events to pause auto-play on hold and handle Swiping
+        let touchStartX = 0;
+        let touchEndX = 0;
+
         slide.addEventListener('mousedown', pauseAutoPlay);
         slide.addEventListener('mouseup', startAutoPlay);
-        slide.addEventListener('touchstart', pauseAutoPlay, { passive: true });
-        slide.addEventListener('touchend', startAutoPlay);
+
+        slide.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            pauseAutoPlay();
+        }, { passive: true });
+
+        slide.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            startAutoPlay();
+            handleGesture();
+        }, { passive: true });
+
+        function handleGesture() {
+            const deltaX = touchEndX - touchStartX;
+            const threshold = 50; // Minimum distance for swipe
+            if (deltaX > threshold) {
+                // Swipe Right -> Previous
+                goToSlide(currentIndex - 1);
+            } else if (deltaX < -threshold) {
+                // Swipe Left -> Next
+                goToSlide(currentIndex + 1);
+            }
+        }
+
         slides.push(slide);
 
         const dot = document.createElement('div');

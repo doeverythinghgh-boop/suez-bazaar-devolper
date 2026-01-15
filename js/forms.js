@@ -317,6 +317,11 @@ async function mainLoader(
         buffer.remove(); // Remove the now-empty buffer
         container.classList.remove('main-loader-active');
 
+        // ✅ NEW: Add Entrance Animation
+        container.classList.remove('animate-fade-up'); // Reset if exists
+        void container.offsetWidth; // Trigger reflow
+        container.classList.add('animate-fade-up');
+
         // [Smart Loading Update] Tag the container with the successfully loaded URL
         container.setAttribute('data-page-url', pageUrl);
 

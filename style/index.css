@@ -69,22 +69,31 @@
   }
 
 
-  /* ✅ Edit: Rename class and apply Flexbox */
+  /* ✅ Edit: Floating Glassmorphism Header */
   .index-app-header {
     display: flex;
     justify-content: flex-start;
-    /* Align items from start (Right in RTL) */
     align-items: center;
     flex-wrap: nowrap;
-    /* Prevent items from wrapping */
     overflow-x: auto;
-    /* Add horizontal scroll if needed */
-    background-color: var(--bg-color-light);
-    padding: 15px 20px;
-    box-shadow: var(--shadow-interactive);
-    /* تغيير الظل ليصبح سفليًا */
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 10px 15px;
+    margin: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: 10px;
     z-index: 1000;
-    /* لضمان ظهوره فوق المحتوى الآخر */
+    transition: all 0.3s ease;
+  }
+
+  body.dark-theme .index-app-header {
+    background-color: rgba(30, 30, 30, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   }
 
   .index-header-login-btn {
@@ -160,19 +169,14 @@
 
   /* ✅ New: Active button styling */
   .index-header-login-btn.active {
-    border-bottom: 2px solid var(--primary-color);
-    background-color: var(--primary-color-light);
-    color: var(--primary-color);
-    border-radius: 8px;
+    background-color: var(--primary-color);
+    border-radius: 15px;
+    transform: scale(1.05);
   }
 
-  .index-header-login-btn.active .index-user-icon {
-    color: var(--primary-color);
-  }
-
+  .index-header-login-btn.active .index-user-icon,
   .index-header-login-btn.active span {
-    color: var(--primary-color);
-    font-weight: bold;
+    color: #ffffff !important;
   }
 
   /* ✅ New: Cart Badge styling */
@@ -251,8 +255,43 @@
     }
 
     100% {
-      transform: rotate(360deg);
+      transform: rotate(3600deg);
     }
+  }
+
+  /* ✅ NEW: Entrance Animations */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-up {
+    animation: fadeInUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+
+  /* Application of animations to main containers */
+  #index-home-container,
+  #index-search-container,
+  #index-user-container,
+  #index-productView-container,
+  #index-notifications-container,
+  #index-salesMovement-container {
+    opacity: 0; /* Start hidden for animation */
+  }
+
+  #index-home-container.animate-fade-up,
+  #index-search-container.animate-fade-up,
+  #index-user-container.animate-fade-up,
+  #index-productView-container.animate-fade-up,
+  #index-notifications-container.animate-fade-up,
+  #index-salesMovement-container.animate-fade-up {
+    opacity: 1;
   }
 
   /* ✅ NEW: Hide container content while main-loader is active */
