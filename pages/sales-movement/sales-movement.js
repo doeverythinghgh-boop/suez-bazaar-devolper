@@ -436,6 +436,36 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
             salesMovement_parentContainer.style.position = 'relative';
         }
 
+        // [Diagnostic Logs for Developer]
+        console.group('%c🔍 تشخيص طبقات العرض (Stacking Context Diagnostics)', 'color: #e67e22; font-weight: bold;');
+        
+        // التحقق من نظام iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        console.log(`%c[Environment] Is iOS: ${isIOS}`, 'color: #8e44ad; font-weight: bold;');
+        
+        const headerEl = document.getElementById('index-app-header');
+        if (headerEl) {
+            const headerStyle = window.getComputedStyle(headerEl);
+            console.log(`%c[Header] z-index: ${headerStyle.zIndex}, position: ${headerStyle.position}`, 'color: #34495e');
+        }
+        if (salesMovement_parentContainer) {
+            const parentStyle = window.getComputedStyle(salesMovement_parentContainer);
+            console.log(`%c[Parent Container] z-index: ${parentStyle.zIndex}, position: ${parentStyle.position}`, 'color: #34495e');
+        }
+        const modalStyle = window.getComputedStyle(salesMovement_modal);
+        console.log(`%c[Modal] z-index: ${modalStyle.zIndex}, position: ${modalStyle.position}`, 'color: #34495e');
+        
+        // التحقق من وجود stacking context بسبب transform أو opacity
+        const checkStacking = (el) => {
+            const s = window.getComputedStyle(el);
+            if (s.transform !== 'none' || s.opacity < 1 || s.willChange !== 'auto') {
+                console.warn(`⚠️ تنبيه: العنصر ${el.id || el.className} ينشئ Stacking Context بسبب: transform=${s.transform}, opacity=${s.opacity}`);
+            }
+        };
+        if (headerEl) checkStacking(headerEl);
+        if (salesMovement_parentContainer) checkStacking(salesMovement_parentContainer);
+        console.groupEnd();
+
     } catch (salesMovement_error) {
         console.error('خطأ في عرض صفحة stepper:', salesMovement_error);
     }
