@@ -444,13 +444,31 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
                 zIndex: s.zIndex,
                 position: s.position,
                 display: s.display,
-                top: s.top,
-                visibility: s.visibility,
-                opacity: s.opacity,
+                offsetParent: el.offsetParent ? (el.offsetParent.id || el.offsetParent.className || "exists") : "null (Viewport)",
                 transform: s.transform,
+                webkitTransform: s.webkitTransform,
+                opacity: s.opacity,
                 filter: s.filter,
-                backdropFilter: s.backdropFilter || s.webkitBackdropFilter
+                isolation: s.isolation,
+                willChange: s.willChange
             });
+        };
+
+        // تتبع شجرة العناصر الأب للمنوال
+        const traceParents = (el) => {
+            console.log("%c🌳 [Parent Tree Trace]:", "color: #d35400; font-weight: bold;");
+            let p = el.parentElement;
+            while (p && p !== document.body) {
+                const ps = window.getComputedStyle(p);
+                console.log(`  > ${p.tagName}${p.id ? '#'+p.id : ''}${p.className ? '.'+p.className.split(' ').join('.') : ''}`, {
+                    zIndex: ps.zIndex,
+                    position: ps.position,
+                    transform: ps.transform,
+                    opacity: ps.opacity,
+                    overflow: ps.overflow
+                });
+                p = p.parentElement;
+            }
         };
 
         console.log("%c🔍 الحالة قبل التعديل:", "font-weight: bold;");
@@ -481,6 +499,8 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
             logElementState("Parent Container", salesMovement_parentContainer);
             logElementState("Modal", salesMovement_modal);
             logElementState("Body", document.body);
+            
+            traceParents(salesMovement_modal);
             
             // تحقق من نظام iOS للمرة الثانية
             const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
