@@ -251,6 +251,7 @@
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
     animation: salesMovement_fadeIn 0.3s ease;
+    transform: translateZ(0); /* Force GPU Layer for iOS */
 }
 
 .salesMovement_modal.salesMovement_show {

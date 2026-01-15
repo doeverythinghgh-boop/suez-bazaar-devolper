@@ -429,6 +429,13 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
         // عرض النافذة المنبثقة
         salesMovement_modal.classList.add('salesMovement_show');
 
+        // رفع مستوى الحاوية الأب لضمان ظهورها فوق الهيدر في iOS
+        const salesMovement_parentContainer = document.getElementById('index-salesMovement-container');
+        if (salesMovement_parentContainer) {
+            salesMovement_parentContainer.style.zIndex = '100001';
+            salesMovement_parentContainer.style.position = 'relative';
+        }
+
     } catch (salesMovement_error) {
         console.error('خطأ في عرض صفحة stepper:', salesMovement_error);
     }
@@ -468,6 +475,13 @@ var salesMovement_modal = document.getElementById('salesMovement_orderModal');
 if (salesMovement_closeModalBtn) {
     salesMovement_closeModalBtn.addEventListener('click', function () {
         salesMovement_modal.classList.remove('salesMovement_show');
+        
+        // إعادة الحاوية الأب لوضعها الطبيعي للسماح بظهور الهيدر
+        const salesMovement_parentContainer = document.getElementById('index-salesMovement-container');
+        if (salesMovement_parentContainer) {
+            salesMovement_parentContainer.style.zIndex = '';
+            salesMovement_parentContainer.style.position = '';
+        }
     });
 }
 
@@ -476,6 +490,13 @@ if (salesMovement_modal) {
     salesMovement_modal.addEventListener('click', function (salesMovement_event) {
         if (salesMovement_event.target === salesMovement_modal) {
             salesMovement_modal.classList.remove('salesMovement_show');
+            
+            // إعادة الحاوية الأب لوضعها الطبيعي
+            const salesMovement_parentContainer = document.getElementById('index-salesMovement-container');
+            if (salesMovement_parentContainer) {
+                salesMovement_parentContainer.style.zIndex = '';
+                salesMovement_parentContainer.style.position = '';
+            }
         }
     });
 }
