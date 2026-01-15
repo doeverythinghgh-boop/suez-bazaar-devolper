@@ -90,41 +90,60 @@ async function setupFCM() {
     isSettingUpFCM = true;
 
     console.log('[Dev] 📡 [FCM] جاري بدء تهيئة نظام الإشعارات setupFCM...');
-    try {
-        // التأكد من المستخدم
-        if (!userSession || !userSession.user_key) {
-            console.warn("[FCM] لا يوجد مستخدم مسجل — إلغاء العملية.");
-            return;
-        }
-        const currentUserId = userSession.user_key;
-        console.log(`[Dev] 📡 [FCM] المستخدم موجود (user_key: ${currentUserId}).`);
 
-        // ✅ NEW: Check if this is a fresh setup after version change
-        const lastVersionCheck = localStorage.getItem('last_version_check_time');
-        if (lastVersionCheck) {
-            const timeSinceCheck = Date.now() - parseInt(lastVersionCheck);
-            if (timeSinceCheck < 5000) { // Within 5 seconds of version check
-                console.log('%c[FCM] 🔄 Detected recent version update - performing fresh FCM setup',
-                    'color: #ff9800; font-weight: bold;');
+    const MAX_RETRIES = 3;
+    let attempt = 0;
+    let success = false;
+
+    while (attempt < MAX_RETRIES && !success) {
+        attempt++;
+        try {
+            // التأكد من المستخدم
+            if (!userSession || !userSession.user_key) {
+                console.warn("[FCM] لا يوجد مستخدم مسجل — إلغاء العملية.");
+                break; // No point in retrying if no user
+            }
+            const currentUserId = userSession.user_key;
+            console.log(`[Dev] 📡 [FCM] محاولة رقم ${attempt}: المستخدم موجود (user_key: ${currentUserId}).`);
+
+            // Check if this is a fresh setup after version change
+            const lastVersionCheck = localStorage.getItem('last_version_check_time');
+            if (lastVersionCheck) {
+                const timeSinceCheck = Date.now() - parseInt(lastVersionCheck);
+                if (timeSinceCheck < 10000) { // Within 10 seconds of version check/reload
+                    console.log('%c[FCM] 🔄 تم رصد تحديث إصدار أو إعادة تحميل حديثة - جاري تهيئة FCM من جديد',
+                        'color: #ff9800; font-weight: bold;');
+                }
+            }
+
+            // أولوية التهيئة على أندرويد
+            if (window.Android && typeof window.Android.onUserLoggedIn === "function") {
+                console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة أندرويد (WebView).');
+                await setupFirebaseAndroid(currentUserId);
+                success = true;
+            } else {
+                console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة ويب (Browser).');
+                await setupFirebaseWeb(currentUserId);
+                // setupFirebaseWeb should throw if it fails critically to trigger retry
+                success = true;
+            }
+
+            if (success) {
+                sessionStorage.setItem("fcm_token_setup_done", "1");
+                console.log(`[Dev] 📡 [FCM] ✅ تم الانتهاء من دالة setupFCM بنجاح في المحاولة رقم ${attempt}.`);
+            }
+        } catch (error) {
+            console.error(`[FCM] ❌ فشل في المحاولة ${attempt}:`, error);
+            if (attempt < MAX_RETRIES) {
+                const delay = attempt * 3000; // 3s, 6s...
+                console.log(`[FCM] ⏳ سيتم إعادة المحاولة خلال ${delay / 1000} ثانية...`);
+                await new Promise(resolve => setTimeout(resolve, delay));
+            } else {
+                console.error("[FCM] 💥 تم استنفاد كافة المحاولات. فشل تهيئة الإشعارات.");
             }
         }
-
-        // أولوية التهيئة على أندرويد
-        if (window.Android && typeof window.Android.onUserLoggedIn === "function") {
-            console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة أندرويد (WebView).');
-            await setupFirebaseAndroid(currentUserId);
-        } else {
-            console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة ويب (Browser).');
-            await setupFirebaseWeb(currentUserId);
-        }
-
-        sessionStorage.setItem("fcm_token_setup_done", "1");
-        console.log('[Dev] 📡 [FCM] تم الانتهاء من دالة setupFCM بنجاح.');
-    } catch (error) {
-        console.error("[FCM] خطأ فادح في setupFCM:", error);
-    } finally {
-        isSettingUpFCM = false;
     }
+    isSettingUpFCM = false;
 }
 
 
@@ -291,8 +310,9 @@ async function setupFirebaseWeb(userId) {
         console.log("[Dev] 🌏 [Web FCM] الخطوة 1: تسجيل الـ Service Worker (registerServiceWorker)...");
         const swReg = await registerServiceWorker();
         if (!swReg) {
-            console.error("[Dev] 🌏 [Web FCM] ❌ فشل تسجيل الـ Service Worker - لا يمكن المتابعة.");
-            return;
+            const errorMsg = "[Dev] 🌏 [Web FCM] ❌ فشل تسجيل الـ Service Worker - لا يمكن المتابعة.";
+            console.error(errorMsg);
+            throw new Error(errorMsg);
         }
         console.log("[Dev] 🌏 [Web FCM] ✅ الـ Service Worker جاهز.");
 
@@ -305,8 +325,9 @@ async function setupFirebaseWeb(userId) {
 
         const firebase = window.firebase;
         if (!firebase) {
-            console.error("[Dev] 🌏 [Web FCM] ❌ فشل تحميل مكتبة Firebase بعد المحاولة.");
-            return;
+            const errorMsg = "[Dev] 🌏 [Web FCM] ❌ فشل تحميل مكتبة Firebase بعد المحاولة.";
+            console.error(errorMsg);
+            throw new Error(errorMsg);
         }
 
         // تكوين Firebase
@@ -428,6 +449,7 @@ async function setupFirebaseWeb(userId) {
             console.warn("[FCM Web] ⚠️ تم تجاهل خطأ AbortError المتوقع لخدمة الدفع.");
         } else {
             console.error("[FCM Web] 💥 خطأ غير متوقع في setupFirebaseWeb:", err);
+            throw err; // تصعيد الخطأ للمحاولة المتكررة
         }
     }
 }
