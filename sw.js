@@ -51,10 +51,10 @@ const STATIC_ASSETS = [
 
 // 3. Install Event - Precache Static Assets
 self.addEventListener('install', (event) => {
-    console.log('[SW] Installing Service Worker...', event);
+    console.log('%c[Main SW] 🛠️ حدث install: جاري تثبيت ملف الخدمة الرئيسي وتخزين الأصول...', 'color: #9e9e9e;');
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('[SW] Caching app shell');
+            console.log('%c[Main SW] 📦 جاري تخزين Shell App في الكاش...', 'color: #607d8b;');
             return cache.addAll(STATIC_ASSETS);
         })
     );
@@ -63,20 +63,19 @@ self.addEventListener('install', (event) => {
 
 // 4. Activate Event - Clean up old caches
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activating Service Worker...', event);
+    console.log('%c[Main SW] ⚡ حدث activate: جاري تفعيل الخدمة وتنظيف الكاش القديم...', 'color: #9e9e9e;');
     event.waitUntil(
         caches.keys().then((keys) => {
             return Promise.all(
                 keys.map((key) => {
                     if (key !== CACHE_NAME) {
-                        console.log('[SW] Removing old cache', key);
+                        console.log(`%c[Main SW] 🗑️ حذف كاش قديم: ${key}`, 'color: #f44336;');
                         return caches.delete(key);
                     }
                 })
             );
         })
     );
-    // Note: clients.claim() is already called in firebase-messaging-sw.js
 });
 
 // 5. Fetch Event - Runtime Caching Strategies

@@ -60,8 +60,8 @@ importScripts("notification/notification-db-manager.js");
  * @see addNotificationLog
  */
 messaging.onBackgroundMessage((payload) => {
-  console.log('%c[FCM SW] 📩 تم استقبال رسالة في الخلفية (Background):', 'color: #ff00ff; font-weight: bold; font-size: 14px;', payload);
-  console.log('[FCM SW] تفاصيل الرسالة:', JSON.stringify(payload, null, 2));
+  console.log('%c[FCM SW] 📩 >>> تم استقبال رسالة دفع (Push) جديدة في الخلفية!', 'color: #00ff00; font-weight: bold; font-size: 15px; text-decoration: underline;', payload);
+  console.log('%c[FCM Message Data]', 'color: #2196F3; font-weight: bold;', JSON.stringify(payload, null, 2));
 
   // ✅ تحديث: استخدام منطق موحد لجلب البيانات من `notification` أو `data`.
   const notificationData = payload.notification || payload.data || {};
@@ -96,7 +96,7 @@ messaging.onBackgroundMessage((payload) => {
   // إذا كان الإشعار يحتوي على كائن 'notification'، فإن المتصفح يعرضه تلقائيًا في الخلفية.
   // نقوم بعرض الإشعار يدويًا فقط إذا كانت رسالة بيانات (Data Message) بحتة لا تحتوي على 'notification'.
   if (payload.notification) {
-    console.log('[FCM SW] تم عرض الإشعار تلقائيًا بواسطة المتصفح (Notification Payload). تخطي العرض اليدوي لمنع التكرار.');
+    console.log('%c[FCM SW] ℹ️ تم رصد كائن notification - المتصفح سيتولى العرض تلقائياً.', 'color: #ffc107;');
     return Promise.resolve();
   }
 
@@ -116,6 +116,7 @@ messaging.onBackgroundMessage((payload) => {
  * @returns {void}
  */
 self.addEventListener('install', (event) => {
+  console.log('%c[SW] 🛠️ حدث install: جاري تثبيت Service Worker وتخطي الانتظار...', 'color: #9e9e9e;');
   self.skipWaiting();
 });
 
@@ -128,5 +129,6 @@ self.addEventListener('install', (event) => {
  * @returns {void}
  */
 self.addEventListener('activate', (event) => {
+  console.log('%c[SW] ⚡ حدث activate: جاري تفعيل الخدمة والسيطرة على العملاء...', 'color: #9e9e9e;');
   event.waitUntil(self.clients.claim());
 });
