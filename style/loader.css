@@ -4,16 +4,17 @@
 */
 
 .loader {
-  border: 5px solid var(--primary-color-light);
-  border-top: 5px solid var(--primary-color);
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: spin 3s linear infinite;
-  margin: 50px auto; /* Center the loader */
+  border: 4px solid transparent;
+  border-top-color: var(--primary-color);
+  border-right-color: var(--primary-color);
+  animation: material-spin 3s linear infinite;
+  margin: 40px auto;
 }
 
-@keyframes spin {
+@keyframes material-spin {
   0% {
     transform: rotate(0deg);
   }
@@ -21,3 +22,4 @@
     transform: rotate(360deg);
   }
 }
+
