@@ -475,7 +475,6 @@ if (salesMovement_closeModalBtn) {
         salesMovement_modal.classList.remove('salesMovement_show');
     });
 }
-}
 
 // إغلاق النافذة عند النقر خارجها
 if (salesMovement_modal) {
