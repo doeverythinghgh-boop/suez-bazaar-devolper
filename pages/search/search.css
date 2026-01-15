@@ -8,7 +8,7 @@
   /* Animate top border color */
   border-right-color: var(--primary-color);
   /* Animate right border color */
-  animation: material-spin 0.7s linear infinite;
+  animation: material-spin 3s linear infinite;
   margin: 40px auto;
 }
 
