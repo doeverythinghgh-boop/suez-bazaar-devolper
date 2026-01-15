@@ -67,3 +67,7 @@ Any "Modern Mini" modal MUST adhere to the following visual traits (based on "Pi
 ## 5. Visual Hierarchy
 - **Fusion Formulas**: When overlapping elements (like category grids and detail containers), use the exact mathematical formulas: `padding-bottom + gap = margin-top overlap` to ensure perfect visual alignment.
 - **Z-Index**: Maintain a strict Z-index hierarchy to prevent element bleeding or hidden interactables.
+- **Advanced Stacking Context (Teleport Technique)**: 
+    - When a modal or an overlay MUST appear above all components (especially the app header and administrative watermarks) and is trapped inside a container's stacking context (common in iOS Safari), it must be **"Teleported"** to the `body`.
+    - **Implementation**: Use `document.body.appendChild(modalElement)` upon opening the modal. This ensures the element becomes a direct child of the root body, allowing its `z-index` to be evaluated globally.
+    - **Cleanup**: Ensure the element is managed correctly when navigating away to prevent duplicate IDs in the DOM.
