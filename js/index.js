@@ -530,16 +530,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // [Step 8] Check for Impersonation Mode (Admin viewing as user) and show watermark if active.
   checkImpersonationMode();
 
-  // [Step 9] Auto-initialize FCM if user is already logged in and notifications are enabled.
-  const currentUser = SessionManager.getUser();
-  if (currentUser && currentUser.user_key) {
-    const notificationsEnabled = localStorage.getItem('notifications_enabled') !== 'false';
-    if (notificationsEnabled) {
-      setupFCM();
-    } else {
-      console.log("[FCM] الإشعارات معطلة من قبل المستخدم – تخطي التهيئة التلقائية.");
-    }
-  }
+  // [Step 9] Auto-initialize FCM is now handled inside SessionManager.init() to avoid duplication.
+
 
   // [Step 10] Run Header Scroll Tutorial
   runHeaderScrollTutorial();

@@ -26,9 +26,12 @@ const SessionManager = {
             // Global side effects if user exists
             if (window.userSession && window.userSession.user_key) {
                 console.log(`[SessionManager] تم العثور على جلسة نشطة للمستخدم: ${window.userSession.user_key}`);
-                if (typeof setupFCM === 'function') {
+                const notificationsEnabled = localStorage.getItem('notifications_enabled') !== 'false';
+                if (typeof setupFCM === 'function' && notificationsEnabled) {
                     console.log("[SessionManager] جاري استدعاء setupFCM عند بدء التطبيق...");
                     setupFCM();
+                } else if (!notificationsEnabled) {
+                    console.log("[SessionManager] الإشعارات معطلة من قبل المستخدم – تخطي التهيئة.");
                 }
                 if (typeof checkImpersonationMode === 'function') checkImpersonationMode();
             }

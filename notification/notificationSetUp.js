@@ -361,6 +361,22 @@ async function setupFirebaseWeb(userId) {
 
         // طلب الإذن
         console.log("[Dev] 🌏 [Web FCM] الخطوة 4: فحص وطلب إذن المتصفح (Notification.requestPermission)...");
+
+        // التحقق من الحالة الحالية قبل الطلب
+        if (Notification.permission === "denied") {
+            console.warn("[Dev] 🌏 [Web FCM] ⚠️ الإذن مرفوض مسبقاً من المتصفح.");
+            // إظهار تنبيه للمستخدم لإرشاده
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'الإشعارات معطلة',
+                    html: `لقد قمت بتعطيل الإشعارات لهذا التطبيق.<br>لتلقي التنبيهات، يرجى تفعيلها من <b>إعدادات المتصفح</b> أو <b>إعدادات الجهاز</b> ثم إعادة التشغيل.`,
+                    icon: 'warning',
+                    confirmButtonText: 'حسناً'
+                });
+            }
+            return;
+        }
+
         const permission = await Notification.requestPermission();
         console.log("[Dev] 🌏 [Web FCM] 🔐 حالة الإذن الحالية: ", permission);
         if (permission !== "granted") {
