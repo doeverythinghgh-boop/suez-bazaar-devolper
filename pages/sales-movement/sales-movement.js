@@ -421,7 +421,7 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
         salesMovement_modalBody.innerHTML = `
             <iframe 
                 src="./steper/stepper-only.html" 
-                style="width: 100%; height: 70vh; border: none; border-radius: 10px;"
+                class="salesMovement_stepperIframe"
                 id="salesMovement_stepperIframe"
             ></iframe>
         `;
