@@ -1,11 +1,11 @@
 .salesMovement_container {
     background: var(--bg-color-white);
-    border-radius: 15px;
-    padding: 30px;
+    border-radius: 0;
+    padding: 15px;
     width: 100%;
-    max-width: 100%;
+    min-height: 100vh;
     box-sizing: border-box;
-    box-shadow: var(--shadow-soft);
+    box-shadow: none;
 }
 
 .salesMovement_filterContainer {
@@ -50,8 +50,8 @@
 }
 
 .salesMovement_radioOption:has(input[type="radio"]:checked) {
-    background: #667eea;
-    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
+    background: var(--primary-color);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
 }
 
 .salesMovement_radioOption input[type="radio"] {
@@ -60,19 +60,19 @@
 
 .salesMovement_radioLabel {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
     width: auto;
     padding: 0;
     color: var(--border-color-active);
     font-weight: 500;
-    font-size: 14px;
+    font-size: 11px;
     cursor: pointer;
 }
 
 .salesMovement_radioLabel i {
-    font-size: 16px;
+    font-size: 20px;
     color: inherit;
 }
 
@@ -144,10 +144,28 @@
     color: #667eea;
 }
 
+.salesMovement_cardTitleWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    overflow: hidden;
+}
+
 .salesMovement_cardTitle {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    color: #333;
+    color: var(--text-color-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.salesMovement_orderKey {
+    font-size: 12px;
+    color: var(--primary-color);
+    font-family: monospace;
+    font-weight: 500;
 }
 
 .salesMovement_cardBody {
@@ -607,10 +625,11 @@
 /* Refresh Button Style */
 .salesMovement_refreshBtn {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    background: #ffffff;
+    gap: 4px;
+    background: var(--modal-item-bg);
     color: #667eea;
     border: none;
     padding: 8px 16px;
@@ -618,7 +637,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
-    font-size: 14px;
+    font-size: 11px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
@@ -629,7 +648,7 @@
 }
 
 .salesMovement_refreshIcon {
-    font-size: 14px;
+    font-size: 18px;
 }
 
 .salesMovement_refreshIcon i {
@@ -647,7 +666,6 @@ body.dark-theme .salesMovement_radioLabel {
 }
 
 body.dark-theme .salesMovement_refreshBtn {
-    background: #374151;
     color: #667eea;
 }
 

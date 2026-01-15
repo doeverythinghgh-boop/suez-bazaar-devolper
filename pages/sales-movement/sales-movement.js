@@ -95,21 +95,30 @@ function salesMovement_displayOrders(salesMovement_data) {
         salesMovement_sortedOrders.forEach((salesMovement_order, salesMovement_index) => {
             const salesMovement_productCount = salesMovement_order.order_items ? salesMovement_order.order_items.length : 0;
             const salesMovement_formattedDate = salesMovement_formatDate(salesMovement_order.created_at);
+            const salesMovement_productNames = salesMovement_order.order_items 
+                ? salesMovement_order.order_items.map(item => item.product_name).filter(name => name).join(', ')
+                : '';
+            const salesMovement_displayTitle = salesMovement_productNames 
+                ? `${window.langu('sales_order_id').split('#')[0].trim()} - ${salesMovement_productNames}`
+                : window.langu('sales_order_id').split('#')[0].trim();
 
             salesMovement_cardsHTML += `
-                <div class="salesMovement_orderCard" data-order-index="${salesMovement_index}">
-                    <div class="salesMovement_cardHeader">
-                        <span class="salesMovement_cardIcon"><i class="fas fa-clipboard-list"></i></span>
-                        <span class="salesMovement_cardTitle">${window.langu('sales_order_id').replace('{id}', salesMovement_order.order_key)}</span>
-                    </div>
-                    <div class="salesMovement_cardBody">
-                        <div class="salesMovement_cardInfo">
-                            <span><i class="fas fa-calendar-alt"></i> ${window.langu('sales_date')}</span>
-                            <span>${salesMovement_formattedDate}</span>
+                <div id="salesMovement_orderCard_${salesMovement_index}" class="salesMovement_orderCard" data-order-index="${salesMovement_index}">
+                    <div id="salesMovement_cardHeader_${salesMovement_index}" class="salesMovement_cardHeader">
+                        <span id="salesMovement_cardIcon_${salesMovement_index}" class="salesMovement_cardIcon"><i id="salesMovement_cardIconI_${salesMovement_index}" class="fas fa-clipboard-list"></i></span>
+                        <div id="salesMovement_cardTitleWrapper_${salesMovement_index}" class="salesMovement_cardTitleWrapper">
+                            <span id="salesMovement_cardTitle_${salesMovement_index}" class="salesMovement_cardTitle" title="${salesMovement_displayTitle}">${salesMovement_displayTitle}</span>
+                            <span id="salesMovement_orderKey_${salesMovement_index}" class="salesMovement_orderKey">#${salesMovement_order.order_key}</span>
                         </div>
-                        <div class="salesMovement_cardInfo">
-                            <span><i class="fas fa-boxes"></i> ${window.langu('sales_items_count')}</span>
-                            <span>${salesMovement_productCount}</span>
+                    </div>
+                    <div id="salesMovement_cardBody_${salesMovement_index}" class="salesMovement_cardBody">
+                        <div id="salesMovement_cardInfo_date_${salesMovement_index}" class="salesMovement_cardInfo">
+                            <span id="salesMovement_dateLabel_${salesMovement_index}"><i id="salesMovement_dateIcon_${salesMovement_index}" class="fas fa-calendar-alt"></i> ${window.langu('sales_date')}</span>
+                            <span id="salesMovement_dateValue_${salesMovement_index}">${salesMovement_formattedDate}</span>
+                        </div>
+                        <div id="salesMovement_cardInfo_count_${salesMovement_index}" class="salesMovement_cardInfo">
+                            <span id="salesMovement_countLabel_${salesMovement_index}"><i id="salesMovement_countIcon_${salesMovement_index}" class="fas fa-boxes"></i> ${window.langu('sales_items_count')}</span>
+                            <span id="salesMovement_countValue_${salesMovement_index}">${salesMovement_productCount}</span>
                         </div>
                     </div>
                 </div>
