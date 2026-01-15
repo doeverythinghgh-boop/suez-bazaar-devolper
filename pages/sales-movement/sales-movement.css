@@ -9,110 +9,86 @@
 }
 
 .salesMovement_filterContainer {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     gap: 15px;
+    background: #f3f4f6;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .salesMovement_radioGroup {
     display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
+    flex-wrap: nowrap;
+    gap: 8px;
     justify-content: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 2px;
+}
+
+/* Hide scrollbar but keep functionality */
+.salesMovement_radioGroup::-webkit-scrollbar {
+    display: none;
 }
 
 .salesMovement_radioOption {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
     background: transparent;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 3px 8px;
+    border: none;
+    border-radius: 50px;
+    padding: 8px 16px;
     min-height: auto;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .salesMovement_radioOption:has(input[type="radio"]:checked) {
-    border-color: #667eea;
-    background: transparent;
+    background: #667eea;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
 }
 
 .salesMovement_radioOption input[type="radio"] {
-    opacity: 1;
-    position: static;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    margin: 0;
-    accent-color: #667eea;
+    display: none; /* Fully custom UI */
 }
 
 .salesMovement_radioLabel {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
     width: auto;
     padding: 0;
-    background: transparent;
-    border: none;
-    border-radius: 0;
-    color: var(--text-color-dark);
+    color: var(--border-color-active);
     font-weight: 500;
     font-size: 14px;
-    min-height: auto;
-    box-shadow: none;
     cursor: pointer;
-    transition: none;
 }
 
 .salesMovement_radioLabel i {
-    font-size: 18px;
-    color: var(--text-color-dark);
-}
-
-.salesMovement_radioLabel:has(input[type="radio"]:checked) i {
-    color: #667eea;
+    font-size: 16px;
+    color: inherit;
 }
 
 .salesMovement_radioTextWrapper {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 0;
 }
 
-.salesMovement_radioTextWrapper input[type="radio"] {
-    opacity: 1;
-    position: static;
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    margin: 0;
-    accent-color: #667eea;
-}
-
-/* Update checked styles to work with input inside label */
 .salesMovement_radioLabel:has(input[type="radio"]:checked) {
-    background: transparent;
-    border-color: transparent;
-    color: #667eea;
-    font-weight: 600;
-    box-shadow: none;
-    transform: none;
-}
-
-.salesMovement_radioLabel:has(input[type="radio"]:checked) span {
-    color: #667eea;
+    color: #ffffff;
     font-weight: 600;
 }
 
 .salesMovement_radioLabel:has(input[type="radio"]:active) {
-    transform: none;
+    transform: scale(0.96);
 }
 
 /* ========================================
@@ -630,34 +606,53 @@
 
 /* Refresh Button Style */
 .salesMovement_refreshBtn {
-    display: inline-flex;
-    flex-direction: column;
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    background: transparent;
+    gap: 6px;
+    background: #ffffff;
     color: #667eea;
-    border: 1px solid #667eea;
-    padding: 3px 8px;
-    border-radius: 8px;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .salesMovement_refreshBtn:active {
-    background: transparent;
-    transform: scale(0.98);
+    background: #f9fafb;
+    transform: scale(0.96);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 .salesMovement_refreshIcon {
-    font-size: 18px;
-    transition: transform 0.5s ease;
+    font-size: 14px;
 }
 
 .salesMovement_refreshIcon i {
     color: #667eea;
+}
+
+/* Dark mode overrides for new filter design */
+body.dark-theme .salesMovement_filterContainer {
+    background: #2d2d2d;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+body.dark-theme .salesMovement_radioLabel {
+    color: #9ca3af;
+}
+
+body.dark-theme .salesMovement_refreshBtn {
+    background: #374151;
+    color: #667eea;
+}
+
+body.dark-theme .salesMovement_refreshBtn:active {
+    background: #4b5563;
 }
 
 /* =========================================
