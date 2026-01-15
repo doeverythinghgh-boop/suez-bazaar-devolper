@@ -1,7 +1,21 @@
-/*
-  @file css/components/loader.css
-  @description Contains styles for the loading spinner.
-*/
+/**
+ * @file style/loader.css
+ * @description Official loading spinner styles for the entire project.
+ * 
+ * Design Standard:
+ * - Shape: Dashed circle (border: 4px dashed)
+ * - Size: 48px × 48px
+ * - Animation: Smooth rotation (3 seconds per cycle)
+ * - Color: Uses --primary-color CSS variable for theme consistency
+ * 
+ * Usage: Apply the `.loader` class to any element that needs to display a loading state.
+ * This design is used consistently across all pages (home, search, categories, etc.).
+ * 
+ * @author Hisham
+ * @project BidStory
+ * @version 2.0 - Updated to dashed circle design (2026-01-15)
+ */
+
 
 .loader {
   width: 48px;
