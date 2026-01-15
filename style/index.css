@@ -146,8 +146,8 @@
 
   /* ✅ New: Active button styling */
   .index-header-login-btn.active {
-    border: 1.5px solid var(--dark-blue);
-    border-radius: 15px;
+    border-bottom: 1.5px solid var(--dark-blue);
+    border-radius: 0;
     transform: scale(1.05);
     background-color: transparent;
   }
