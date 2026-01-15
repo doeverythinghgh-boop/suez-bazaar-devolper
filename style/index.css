@@ -126,8 +126,8 @@
 
   /* ✅ New: Icon Styling */
   .index-header-login-btn .index-user-icon {
-    font-size: clamp(18px, 4vw, 24px);
-    /* Responsive icon size: min 18px, max 24px */
+    font-size: clamp(20px, 5vw, 28px);
+    /* Responsive icon size: min 20px, max 28px */
     color: var(--primary-color);
     /* Icon color */
   }
@@ -152,10 +152,7 @@
     background-color: transparent;
   }
 
-  .index-header-login-btn.active .index-user-icon,
-  .index-header-login-btn.active span {
-    color: var(--dark-blue) !important;
-  }
+  /* ✅ Note: Icon and text colors remain unchanged when active */
 
   /* ✅ New: Cart Badge styling */
   .cart-badge {
