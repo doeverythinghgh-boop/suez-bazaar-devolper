@@ -205,48 +205,48 @@ add1_notesInput.addEventListener('input', () => {
     }
 });
 
-add1_quantityInput.addEventListener('input', () => {
+add1_quantityInput.addEventListener('input', function() {
     try {
-        let value = normalizeDigits(add1_quantityInput.value);
-        add1_quantityInput.value = value.replace(/[^0-9]/g, '');
-        if (add1_quantityInput.value) add1_clearError(add1_quantityInput);
+        let value = normalizeDigits(this.value);
+        this.value = value.replace(/[^0-9]/g, '');
+        if (this.value) add1_clearError(this);
     } catch (error) {
         console.error('[Add1] Error on quantity input:', error);
     }
 });
 
-add1_priceInput.addEventListener('input', () => {
+add1_priceInput.addEventListener('input', function() {
     try {
-        let value = normalizeDigits(add1_priceInput.value);
+        let value = normalizeDigits(this.value);
         value = value.replace(/[^0-9.]/g, '');
         const parts = value.split('.');
         if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-        add1_priceInput.value = value;
-        if (add1_priceInput.value) add1_clearError(add1_priceInput);
+        this.value = value;
+        if (this.value) add1_clearError(this);
     } catch (error) {
         console.error('[Add1] Error on price input:', error);
     }
 });
 
-add1_originalPriceInput.addEventListener('input', () => {
+add1_originalPriceInput.addEventListener('input', function() {
     try {
-        let value = normalizeDigits(add1_originalPriceInput.value);
+        let value = normalizeDigits(this.value);
         value = value.replace(/[^0-9.]/g, '');
         const parts = value.split('.');
         if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-        add1_originalPriceInput.value = value;
+        this.value = value;
     } catch (error) {
         console.error('[Add1] Error on original price input:', error);
     }
 });
 
-add1_realPriceInput.addEventListener('input', () => {
+add1_realPriceInput.addEventListener('input', function() {
     try {
-        let value = normalizeDigits(add1_realPriceInput.value);
+        let value = normalizeDigits(this.value);
         value = value.replace(/[^0-9.]/g, '');
         const parts = value.split('.');
         if (parts.length > 2) value = parts[0] + '.' + parts.slice(1).join('');
-        add1_realPriceInput.value = value;
+        this.value = value;
     } catch (error) {
         console.error('[Add1] Error on real price input:', error);
     }

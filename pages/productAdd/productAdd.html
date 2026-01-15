@@ -96,7 +96,7 @@
                 <label for="add1_product_quantity" class="add1_product_modal__label" id="add1_label_quantity">
                     <i class="fas fa-boxes-stacked" id="add1_icon_quantity"></i> <span data-lkey="add1_label_quantity">الكمية</span>
                 </label>
-                <input type="number" id="add1_product_quantity" name="product-quantity"
+                <input type="number" inputmode="numeric" pattern="[0-9]*" id="add1_product_quantity" name="product-quantity"
                     class="add1_product_modal__input" placeholder="0" required min="1">
             </div>
             <!-- Price Field -->
@@ -104,7 +104,7 @@
                 <label for="add1_product_price" class="add1_product_modal__label" id="add1_label_price">
                     <i class="fas fa-dollar-sign" id="add1_icon_price"></i> <span data-lkey="add1_label_price">السعر الحالي</span>
                 </label>
-                <input type="text" inputmode="decimal" id="add1_product_price" name="product-price"
+                <input type="number" inputmode="decimal" step="0.01" id="add1_product_price" name="product-price"
                     class="add1_product_modal__input" placeholder="0.00" required>
             </div>
             <!-- Original Price Field -->
@@ -112,7 +112,7 @@
                 <label for="add1_original_price" class="add1_product_modal__label" id="add1_label_original_price">
                     <i class="fas fa-tag" id="add1_icon_original_price"></i> <span data-lkey="add1_label_original_price">السعر قبل الخصم</span>
                 </label>
-                <input type="text" inputmode="decimal" id="add1_original_price" name="original-price"
+                <input type="number" inputmode="decimal" step="0.01" id="add1_original_price" name="original-price"
                     class="add1_product_modal__input" placeholder="ادخل رقم" data-lkey-placeholder="add1_placeholder_number">
             </div>
             <!-- Real Price Field (Application Price) -->
@@ -120,7 +120,7 @@
                 <label for="add1_real_price" class="add1_product_modal__label" id="add1_label_real_price">
                     <i class="fas fa-coins" id="add1_icon_real_price"></i> <span data-lkey="add1_label_real_price">سعر التطبيق</span>
                 </label>
-                <input type="text" inputmode="decimal" id="add1_real_price" name="real-price"
+                <input type="number" inputmode="decimal" step="0.01" id="add1_real_price" name="real-price"
                     class="add1_product_modal__input" placeholder="ادخل رقم" data-lkey-placeholder="add1_placeholder_number">
             </div>
         </div>
