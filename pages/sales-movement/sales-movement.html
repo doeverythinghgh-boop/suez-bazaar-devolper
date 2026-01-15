@@ -1,50 +1,50 @@
 <link rel="stylesheet" href="pages/sales-movement/sales-movement.css">
 
-<div class="salesMovement_container" style="background-color: var(--bg-color-light);">
+<div id="salesMovement_mainContainer" class="salesMovement_container" style="background-color: var(--bg-color-light);">
 
-    <div class="salesMovement_filterContainer">
-        <div class="salesMovement_radioGroup">
-            <div class="salesMovement_radioOption">
-                <label for="salesMovement_buyer" class="salesMovement_radioLabel">
-                    <i class="fas fa-shopping-cart"></i>
-                    <div class="salesMovement_radioTextWrapper">
+    <div id="salesMovement_filters" class="salesMovement_filterContainer">
+        <div id="salesMovement_radioGroup" class="salesMovement_radioGroup">
+            <div id="salesMovement_buyerOption" class="salesMovement_radioOption">
+                <label id="salesMovement_buyerLabel" for="salesMovement_buyer" class="salesMovement_radioLabel">
+                    <i id="salesMovement_buyerIcon" class="fas fa-shopping-cart"></i>
+                    <div id="salesMovement_buyerTextWrapper" class="salesMovement_radioTextWrapper">
                         <input type="radio" id="salesMovement_buyer" name="salesMovement_userType" value="buyer">
-                        <span data-lkey="sales_buyer">مشتري</span>
+                        <span id="salesMovement_buyerSpan" data-lkey="sales_buyer">مشتري</span>
                     </div>
                 </label>
             </div>
-            <div class="salesMovement_radioOption">
-                <label for="salesMovement_seller" class="salesMovement_radioLabel">
-                    <i class="fas fa-store"></i>
-                    <div class="salesMovement_radioTextWrapper">
+            <div id="salesMovement_sellerOption" class="salesMovement_radioOption">
+                <label id="salesMovement_sellerLabel" for="salesMovement_seller" class="salesMovement_radioLabel">
+                    <i id="salesMovement_sellerIcon" class="fas fa-store"></i>
+                    <div id="salesMovement_sellerTextWrapper" class="salesMovement_radioTextWrapper">
                         <input type="radio" id="salesMovement_seller" name="salesMovement_userType" value="seller">
-                        <span data-lkey="sales_seller">بائع</span>
+                        <span id="salesMovement_sellerSpan" data-lkey="sales_seller">بائع</span>
                     </div>
                 </label>
             </div>
-            <div class="salesMovement_radioOption">
-                <label for="salesMovement_delivery" class="salesMovement_radioLabel">
-                    <i class="fas fa-truck"></i>
-                    <div class="salesMovement_radioTextWrapper">
+            <div id="salesMovement_deliveryOption" class="salesMovement_radioOption">
+                <label id="salesMovement_deliveryLabel" for="salesMovement_delivery" class="salesMovement_radioLabel">
+                    <i id="salesMovement_deliveryIcon" class="fas fa-truck"></i>
+                    <div id="salesMovement_deliveryTextWrapper" class="salesMovement_radioTextWrapper">
                         <input type="radio" id="salesMovement_delivery" name="salesMovement_userType" value="delivery">
-                        <span data-lkey="sales_delivery">توصيل</span>
+                        <span id="salesMovement_deliverySpan" data-lkey="sales_delivery">توصيل</span>
                     </div>
                 </label>
             </div>
             <div class="salesMovement_radioOption" id="salesMovement_adminOption" style="display: none;">
-                <label for="salesMovement_admin" class="salesMovement_radioLabel">
-                    <i class="fas fa-user-shield"></i>
-                    <div class="salesMovement_radioTextWrapper">
+                <label id="salesMovement_adminLabel" for="salesMovement_admin" class="salesMovement_radioLabel">
+                    <i id="salesMovement_adminIcon" class="fas fa-user-shield"></i>
+                    <div id="salesMovement_adminTextWrapper" class="salesMovement_radioTextWrapper">
                         <input type="radio" id="salesMovement_admin" name="salesMovement_userType" value="admin">
-                        <span data-lkey="sales_admin">مسؤول</span>
+                        <span id="salesMovement_adminSpan" data-lkey="sales_admin">مسؤول</span>
                     </div>
                 </label>
             </div>
         </div>
 
         <button id="salesMovement_refreshButton" class="salesMovement_refreshBtn">
-            <i class="fas fa-sync-alt salesMovement_refreshIcon"></i>
-            <span data-lkey="sales_refresh">تحديث</span>
+            <i id="salesMovement_refreshIcon" class="fas fa-sync-alt salesMovement_refreshIcon"></i>
+            <span id="salesMovement_refreshSpan" data-lkey="sales_refresh">تحديث</span>
         </button>
     </div>
 
@@ -56,9 +56,9 @@
 
 <!-- Modal for displaying order details -->
 <div id="salesMovement_orderModal" class="salesMovement_modal">
-    <div class="salesMovement_modalContent">
+    <div id="salesMovement_modalContent" class="salesMovement_modalContent">
         <button class="salesMovement_closeBtn" id="salesMovement_closeModal">
-            <span><i class="fas fa-times"></i></span>
+            <span id="salesMovement_closeIconWrapper"><i id="salesMovement_closeIcon" class="fas fa-times"></i></span>
         </button>
         <div id="salesMovement_modalBody" class="salesMovement_modalBody">
             <!-- Order details will be added here dynamically -->
