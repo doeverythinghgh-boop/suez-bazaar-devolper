@@ -426,87 +426,13 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
             ></iframe>
         `;
 
-        // [Step-by-Step Diagnostic Logs]
-        console.log("%c🚀 [Diagnostics] بدء عملية فتح المنوال وفحص الطبقات...", "color: #27ae60; font-weight: bold;");
-
-        const salesMovement_parentContainer = document.getElementById('index-salesMovement-container');
-        const salesMovement_header = document.getElementById('index-app-header');
-
-        const logElementState = (label, el) => {
-            if (!el) {
-                console.error(`%c❌ [Diagnostics] ${label}: العنصر غير موجود في DOM`, "color: red");
-                return;
-            }
-            const s = window.getComputedStyle(el);
-            console.log(`%c📊 [Diagnostics] ${label}:`, "color: #2980b9; font-weight: bold;", {
-                id: el.id,
-                class: el.className,
-                zIndex: s.zIndex,
-                position: s.position,
-                display: s.display,
-                offsetParent: el.offsetParent ? (el.offsetParent.id || el.offsetParent.className || "exists") : "null (Viewport)",
-                transform: s.transform,
-                webkitTransform: s.webkitTransform,
-                opacity: s.opacity,
-                filter: s.filter,
-                isolation: s.isolation,
-                willChange: s.willChange
-            });
-        };
-
-        // تتبع شجرة العناصر الأب للمنوال
-        const traceParents = (el) => {
-            console.log("%c🌳 [Parent Tree Trace]:", "color: #d35400; font-weight: bold;");
-            let p = el.parentElement;
-            while (p && p !== document.body) {
-                const ps = window.getComputedStyle(p);
-                console.log(`  > ${p.tagName}${p.id ? '#'+p.id : ''}${p.className ? '.'+p.className.split(' ').join('.') : ''}`, {
-                    zIndex: ps.zIndex,
-                    position: ps.position,
-                    transform: ps.transform,
-                    opacity: ps.opacity,
-                    overflow: ps.overflow
-                });
-                p = p.parentElement;
-            }
-        };
-
-        console.log("%c🔍 الحالة قبل التعديل:", "font-weight: bold;");
-        logElementState("Header", salesMovement_header);
-        logElementState("Parent Container", salesMovement_parentContainer);
-
-        // تعديل مستويات z-index
-        if (salesMovement_parentContainer) {
-            console.log("🛠️ جاري رفع z-index لـ Parent Container...");
-            salesMovement_parentContainer.style.setProperty('z-index', '100001', 'important');
-            salesMovement_parentContainer.style.setProperty('position', 'relative', 'important');
-        }
-
-        if (salesMovement_header) {
-            console.log("🛠️ جاري خفض z-index لـ Header...");
-            salesMovement_header.style.setProperty('z-index', '0', 'important');
-            salesMovement_header.style.setProperty('position', 'relative', 'important');
+        // استراتيجية النقل (Teleport Strategy): نقل المنوال للـ body لضمان ظهوره فوق كافة العناصر في iOS
+        if (salesMovement_modal && salesMovement_modal.parentElement !== document.body) {
+            document.body.appendChild(salesMovement_modal);
         }
 
         // عرض المنوال
         salesMovement_modal.classList.add('salesMovement_show');
-        console.log("✅ تمت إضافة كلاس الإظهار (salesMovement_show)");
-
-        // الفحص النهائي بعد فترة بسيطة للتأكد من استقرار الـ DOM
-        setTimeout(() => {
-            console.group('%c🔍 الحالة النهائية (بعد 100ms)', 'color: #e67e22; font-weight: bold;');
-            logElementState("Header", salesMovement_header);
-            logElementState("Parent Container", salesMovement_parentContainer);
-            logElementState("Modal", salesMovement_modal);
-            logElementState("Body", document.body);
-            
-            traceParents(salesMovement_modal);
-            
-            // تحقق من نظام iOS للمرة الثانية
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-            console.log(`%c[Device Check] OS is iOS: ${isIOS}`, 'color: #8e44ad');
-            console.groupEnd();
-        }, 100);
 
     } catch (salesMovement_error) {
         console.error('خطأ في عرض صفحة stepper:', salesMovement_error);
@@ -547,21 +473,8 @@ var salesMovement_modal = document.getElementById('salesMovement_orderModal');
 if (salesMovement_closeModalBtn) {
     salesMovement_closeModalBtn.addEventListener('click', function () {
         salesMovement_modal.classList.remove('salesMovement_show');
-        
-        // إعادة الحاوية الأب لوضعها الطبيعي للسماح بظهور الهيدر
-        const salesMovement_parentContainer = document.getElementById('index-salesMovement-container');
-        if (salesMovement_parentContainer) {
-            salesMovement_parentContainer.style.zIndex = '';
-            salesMovement_parentContainer.style.position = '';
-        }
-
-        // إعادة الهيدر لوضعه الطبيعي
-        const salesMovement_header = document.getElementById('index-app-header');
-        if (salesMovement_header) {
-            salesMovement_header.style.zIndex = '';
-            salesMovement_header.style.position = '';
-        }
     });
+}
 }
 
 // إغلاق النافذة عند النقر خارجها
@@ -569,20 +482,6 @@ if (salesMovement_modal) {
     salesMovement_modal.addEventListener('click', function (salesMovement_event) {
         if (salesMovement_event.target === salesMovement_modal) {
             salesMovement_modal.classList.remove('salesMovement_show');
-            
-            // إعادة الحاوية الأب لوضعها الطبيعي
-            const salesMovement_parentContainer = document.getElementById('index-salesMovement-container');
-            if (salesMovement_parentContainer) {
-                salesMovement_parentContainer.style.zIndex = '';
-                salesMovement_parentContainer.style.position = '';
-            }
-
-            // إعادة الهيدر لوضعه الطبيعي
-            const salesMovement_header = document.getElementById('index-app-header');
-            if (salesMovement_header) {
-                salesMovement_header.style.zIndex = '';
-                salesMovement_header.style.position = '';
-            }
         }
     });
 }
