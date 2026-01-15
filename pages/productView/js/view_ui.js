@@ -137,6 +137,79 @@ function productView_setupQuantityControls(productData, dom) {
 }
 
 /**
+ * @function productView_setupPinchZoom
+ * @description Enables pinch-to-zoom and panning for the main product image.
+ * @param {HTMLElement} imgEl - The image element to apply zoom to.
+ */
+function productView_setupPinchZoom(imgEl) {
+    if (!imgEl) return;
+
+    let scale = 1;
+    let lastScale = 1;
+    let startDist = 0;
+    let startX = 0;
+    let startY = 0;
+    let posX = 0;
+    let posY = 0;
+    let lastPosX = 0;
+    let lastPosY = 0;
+
+    imgEl.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 2) {
+            startDist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+        } else if (e.touches.length === 1) {
+            startX = e.touches[0].pageX - posX;
+            startY = e.touches[0].pageY - posY;
+        }
+    });
+
+    imgEl.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 2) {
+            e.preventDefault();
+            const currentDist = Math.hypot(
+                e.touches[0].pageX - e.touches[1].pageX,
+                e.touches[0].pageY - e.touches[1].pageY
+            );
+            scale = Math.min(Math.max(1, lastScale * (currentDist / startDist)), 3);
+            imgEl.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        } else if (e.touches.length === 1 && scale > 1) {
+            e.preventDefault();
+            posX = e.touches[0].pageX - startX;
+            posY = e.touches[0].pageY - startY;
+            imgEl.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
+        }
+    });
+
+    imgEl.addEventListener('touchend', (e) => {
+        if (e.touches.length < 2) {
+            lastScale = scale;
+            if (scale === 1) {
+                posX = 0;
+                posY = 0;
+                imgEl.style.transform = `translate(0, 0) scale(1)`;
+            }
+        }
+    });
+
+    // Reset zoom when main image changes (from thumbnail click)
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.attributeName === "src") {
+                scale = 1;
+                lastScale = 1;
+                posX = 0;
+                posY = 0;
+                imgEl.style.transform = `translate(0, 0) scale(1)`;
+            }
+        });
+    });
+    observer.observe(imgEl, { attributes: true });
+}
+
+/**
  * @function productView_setupAddToCart
  */
 function productView_setupAddToCart(productData, dom) {

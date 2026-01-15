@@ -65,6 +65,11 @@ function productView_viewDetails(productData, options = {}) {
             thumbnailsContainer
         );
 
+        // Enable pinch-to-zoom on the main image
+        if (typeof productView_setupPinchZoom === 'function') {
+            productView_setupPinchZoom(mainImage);
+        }
+
         // Show original price if exists
         const originalPriceVal = productData.original_price ? parseFloat(productData.original_price) : 0;
         const currentPriceVal = productData.pricePerItem ? parseFloat(productData.pricePerItem) : 0;

@@ -38,6 +38,7 @@
     .productView_image_container {
         position: sticky;
         top: 20px;
+        overflow: hidden; /* لمنع خروج الصورة عند التكبير */
         /* Sticky image on scroll */
     }
 
@@ -83,13 +84,16 @@
     width: 100%;
     height: auto;
     max-height: 500px;
-    /* Limit height on large screens */
     object-fit: contain;
     background-color: var(--bg-color-white, #fff);
     border-radius: 12px;
     box-shadow: var(--shadow-soft, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
     margin-bottom: 15px;
     display: block;
+    touch-action: none; /* لمنع التمرير الافتراضي أثناء التكبير */
+    transition: transform 0.1s ease-out; /* حركة ناعمة */
+    user-select: none;
+    -webkit-user-drag: none;
 }
 
 /* ... (skip to thumbs) ... */
