@@ -4,29 +4,10 @@
  */
 
 /**
- * @function hiddenHomeIcon
- * @description Hides the "Home" icon in the navigation bar by adding a CSS class.
- * @returns {void}
+ * Note: Home icon visibility is now handled automatically via CSS flex-shrink.
+ * No manual hiding/showing is needed.
  */
 
-function hiddenHomeIcon() {
-  const homeButton = document.getElementById("index-home-btn");
-  if (homeButton) {
-    homeButton.classList.add("index-hidden");
-  }
-}
-
-/**
- * @function showHomeIcon
- * @description Shows the "Home" icon in the navigation bar by removing the CSS class.
- * @returns {void}
- */
-function showHomeIcon() {
-  const homeButton = document.getElementById("index-home-btn");
-  if (homeButton) {
-    homeButton.classList.remove("index-hidden");
-  }
-}
 
 // [Global translation variables and functions]
 

@@ -72,10 +72,11 @@
   /* ✅ Edit: Floating Glassmorphism Header */
   .index-app-header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: center;
     align-items: center;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
     background-color: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -88,6 +89,7 @@
     top: 10px;
     z-index: 1000;
     transition: all 0.3s ease;
+    gap: 8px;
   }
 
   body.dark-theme .index-app-header {
@@ -103,6 +105,10 @@
     align-items: center;
     gap: 4px;
     /* Space between icon and text */
+    flex-shrink: 1;
+    /* Allow shrinking */
+    min-width: 0;
+    /* Enable shrinking below content size */
 
     /* ✅ Edit: Remove background and border to make it look like just icon and text */
     background-color: transparent;
@@ -120,63 +126,35 @@
 
   /* ✅ New: Icon Styling */
   .index-header-login-btn .index-user-icon {
-    font-size: 20px;
-    /* Increase icon size */
+    font-size: clamp(18px, 4vw, 24px);
+    /* Responsive icon size: min 18px, max 24px */
     color: var(--primary-color);
     /* Icon color */
   }
 
   /* ✅ New: Text Styling */
   .index-header-login-btn span {
-    font-size: 8px;
-    /* Decrease font size */
+    font-size: clamp(7px, 2vw, 8px);
+    /* Responsive text size: min 7px, max 8px */
     color: var(--dark-blue);
     white-space: nowrap;
     /* ✅ New: Prevent text wrapping */
-  }
-
-  .index-header-login-btn {
-    /* ... Current button styles ... */
-
-    /* ✅ New: Add transition properties for animation control */
-    /* ✅ Improvement: Add more properties to animation to ensure full disappearance */
-    opacity: 1;
-    margin-left: 20px;
-    margin-right: 5px;
-    transform: translateY(0);
-    max-width: 100px;
-    /* Max width to allow animation */
-    transition: opacity 0.3s ease, transform 0.3s ease, max-width 0.5s ease,
-      padding 0.5s ease, margin 0.5s ease;
-  }
-
-  .index-header-login-btn.index-hidden {
-    /* ✅ New: Define button state when hidden */
-    /* ✅ Improvement: Make button shrink and disappear completely from layout */
-    opacity: 0;
-    transform: translateY(-10px
-        /* Move button up slightly when disappearing */
-      );
-    pointer-events: none;
-    /* Prevent interaction when hidden */
-    max-width: 0;
-    /* Set width to zero to remove from flow */
-    padding-left: 0;
-    padding-right: 0;
-    /* ✅ Fix Gap Issue: Remove margins completely when hidden */
-    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
   }
 
   /* ✅ New: Active button styling */
   .index-header-login-btn.active {
-    background-color: var(--primary-color);
+    border: 1.5px solid var(--dark-blue);
     border-radius: 15px;
     transform: scale(1.05);
+    background-color: transparent;
   }
 
   .index-header-login-btn.active .index-user-icon,
   .index-header-login-btn.active span {
-    color: #ffffff !important;
+    color: var(--dark-blue) !important;
   }
 
   /* ✅ New: Cart Badge styling */
