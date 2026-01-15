@@ -237,6 +237,17 @@ async function sendNotification(token, title, body) {
         return { error: 'Invalid or missing token', tokenStatus: 'broken' };
     }
 
+    // [Self-Notification Prevention] لا يمكن إرسال إشعار لنفسك
+    const localTokens = [
+        localStorage.getItem("fcm_token"),
+        localStorage.getItem("android_fcm_key")
+    ].filter(t => t && t !== 'undefined' && t !== 'null');
+
+    if (localTokens.includes(token)) {
+        console.warn(`%c[Notifications] 🚫 تم منع إرسال إشعار لنفس الجهاز (Self-Notification Prevention). التوكن: ${token.substring(0, 10)}...`, 'color: #ff9800; font-weight: bold;');
+        return { success: false, reason: 'self_notification_prevented' };
+    }
+
     // [Enforcement] استخدام الجسر المباشر P2P
     if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
         console.log(`[FCM Bridge] 📱 إرسال إشعار مباشر (Android P2P) للتوكن: ${token.substring(0, 10)}...`);
@@ -297,8 +308,21 @@ async function sendNotificationsToTokens(allTokens, title, body) {
     if (window.Android && typeof window.Android.sendNotificationsToTokensP2P === 'function') {
         console.log(`[FCM Bridge] 📱 إرسال جماعي مباشر (Android P2P) لـ ${allTokens.length} توكن.`);
         try {
-            const validTokens = allTokens.filter(t => t && typeof t === 'string');
-            if (validTokens.length === 0) return;
+            // [Self-Notification Prevention] استثناء التوكنات المحلية من الإرسال الجماعي
+            const localTokens = [
+                localStorage.getItem("fcm_token"),
+                localStorage.getItem("android_fcm_key")
+            ].filter(t => t && t !== 'undefined' && t !== 'null');
+
+            const validTokens = allTokens.filter(t =>
+                t && typeof t === 'string' && !localTokens.includes(t)
+            );
+
+            if (validTokens.length === 0) {
+                console.log('%c[Notifications] ℹ️ تم تصفية جميع التوكنات (إما غير صالحة أو تخص هذا الجهاز نفسه).', 'color: #ffc107;');
+                return;
+            }
+
             const tokensJsonString = JSON.stringify(validTokens);
             window.Android.sendNotificationsToTokensP2P(tokensJsonString, title, body);
             return;
@@ -308,9 +332,20 @@ async function sendNotificationsToTokens(allTokens, title, body) {
     } else if (typeof WebP2PNotification !== 'undefined') {
         console.log(`[FCM Bridge] 🌐 إرسال جماعي مباشر (Web P2P) لـ ${allTokens.length} توكن.`);
         try {
-            const validTokens = allTokens.filter(t => t && typeof t === 'string');
+            // [Self-Notification Prevention] استثناء التوكنات المحلية من الإرسال الجماعي (Web)
+            const localTokens = [
+                localStorage.getItem("fcm_token"),
+                localStorage.getItem("android_fcm_key")
+            ].filter(t => t && t !== 'undefined' && t !== 'null');
+
+            const validTokens = allTokens.filter(t =>
+                t && typeof t === 'string' && !localTokens.includes(t)
+            );
+
             if (validTokens.length > 0) {
                 await WebP2PNotification.sendBatch(validTokens, title, body);
+            } else {
+                console.log('%c[Notifications] ℹ️ تم تصفية جميع التوكنات في بيئة الويب.', 'color: #ffc107;');
             }
         } catch (e) {
             console.error('[FCM Bridge] خطأ في إرسال Web P2P Batch:', e);
