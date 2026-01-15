@@ -22,13 +22,16 @@ async function categories_loadCategoriesAsTable() {
         const gridContainer = document.getElementById("categories_grid");
         if (!gridContainer) return;
 
+        // ✅ NEW: Show Skeleton Screen during loading
+        categories_showSkeletons(gridContainer);
+
         // 1. Fetch data
         const categories = await categories_fetchCategories(
             "shared/list.json"
         );
 
         // 2. Build grid
-        gridContainer.innerHTML = ""; // Clear old content
+        gridContainer.innerHTML = ""; // Clear skeletons
         categories_buildCategoryGrid(gridContainer, categories);
     } catch (error) {
         console.error(
@@ -40,6 +43,23 @@ async function categories_loadCategoriesAsTable() {
         if (gridContainer) {
             gridContainer.innerHTML = `<div class="error-message">${window.langu('cat_empty_list_error')}</div>`;
         }
+    }
+}
+
+/**
+ * @description Shows skeleton items while loading.
+ * @function categories_showSkeletons
+ */
+function categories_showSkeletons(container) {
+    container.innerHTML = "";
+    for (let i = 0; i < 10; i++) {
+        const skeleton = document.createElement("div");
+        skeleton.className = "category-skeleton";
+        skeleton.innerHTML = `
+            <div class="skeleton-media"></div>
+            <div class="skeleton-text"></div>
+        `;
+        container.appendChild(skeleton);
     }
 }
 
@@ -76,11 +96,12 @@ async function categories_fetchCategories(url) {
  */
 function categories_buildCategoryGrid(gridContainer, categories) {
     try {
-        categories.forEach((category) => {
+        categories.forEach((category, index) => {
             const item = categories_createCategoryItemGrid(
                 category,
                 gridContainer,
-                categories
+                categories,
+                index // Pass index for delay
             );
             gridContainer.appendChild(item);
         });
@@ -101,11 +122,14 @@ function categories_buildCategoryGrid(gridContainer, categories) {
  * @param {Array<Object>} allCategories - All categories.
  * @returns {HTMLElement} The created grid item.
  */
-function categories_createCategoryItemGrid(category, gridContainer, allCategories) {
+function categories_createCategoryItemGrid(category, gridContainer, allCategories, index = 0) {
     try {
         const item = document.createElement("div");
         item.className = "categories_grid_item";
         item.dataset.categoryId = category.id;
+
+        // ✅ NEW: Staggered Delay
+        item.style.animationDelay = `${index * 0.05}s`;
 
         // Determine if image is available
         const isHomePage = document.getElementById("categories00") !== null;
@@ -131,12 +155,17 @@ function categories_createCategoryItemGrid(category, gridContainer, allCategorie
             </div>
         `;
 
-        if (category.subcategories && category.subcategories.length > 0) {
-            item.classList.add("categories_grid_item--has-subcategories");
-            item.addEventListener("click", () => {
+        // Click Logic
+        item.addEventListener("click", () => {
+            // ✅ NEW: Pulse Effect
+            item.classList.add("pulse-click");
+            setTimeout(() => item.classList.remove("pulse-click"), 400);
+
+            if (category.subcategories && category.subcategories.length > 0) {
                 categories_toggleSubcategoriesGrid(gridContainer, category, item);
-            });
-        }
+            }
+        });
+
         return item;
     } catch (error) {
         console.error(
@@ -212,6 +241,11 @@ function categories_toggleSubcategoriesGrid(gridContainer, mainCategory, clicked
             } else {
                 gridContainer.appendChild(detailsContainer);
             }
+
+            // ✅ NEW: Smart Scroll to Active Category
+            setTimeout(() => {
+                clickedItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
     } catch (error) {
         console.error("%c[categories_toggleSubcategoriesGrid] Error:", "color: red;", error);

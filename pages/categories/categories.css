@@ -28,16 +28,41 @@
     flex-direction: column;
     align-items: center;
     cursor: pointer;
-    transition: transform 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     padding-bottom: 15px;
-    /* Space for fusion */
     position: relative;
     z-index: 1;
+    /* ✅ NEW: Entrance Animation Base */
+    opacity: 0;
+    transform: translateY(20px);
+    animation: categories_entrance 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 .categories_grid_item:active {
-    transform: scale(0.95);
+    transform: scale(0.92);
+}
+
+/* ✅ NEW: Pulse effect on click */
+.categories_grid_item.pulse-click .categories_cell_media {
+    animation: category_pulse 0.4s ease-out;
+}
+
+@keyframes category_pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+@keyframes categories_entrance {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .categories_cell_media {
@@ -626,7 +651,65 @@ body.dark-theme .categories_cell_media {
     border-color: #444;
 }
 
-body.dark-theme .categories_grid_item--active .categories_cell_media {
+/* =========================================
+   Skeleton Screen (Loading State)
+   ========================================= */
+.category-skeleton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 15px;
+}
+
+.skeleton-media {
+    width: 100%;
+    aspect-ratio: 1 / 1;
     background-color: var(--bg-color-medium);
-    border-color: #444;
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-text {
+    width: 60%;
+    height: 10px;
+    background-color: var(--bg-color-medium);
+    margin-top: 10px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton-media::after,
+.skeleton-text::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    animation: skeleton-shimmer 1.5s infinite;
+}
+
+body.dark-theme .skeleton-media::after,
+body.dark-theme .skeleton-text::after {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+    );
+}
+
+@keyframes skeleton-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
 }
