@@ -137,26 +137,39 @@ export function handleConfirmationSave(data, ordersData) {
                             htmlContainer: 'swal-modern-mini-text'
                         }
                     }).then(async () => {
-                        updateCurrentStepFromState(data, ordersData);
+                        console.log('[Dev] 🟢 Executing Post-Save Success Block (Confirmation)');
+                        console.log('[Dev] Checks: notifyOnStepActivation is', typeof window.notifyOnStepActivation);
+
+                        try {
+                            updateCurrentStepFromState(data, ordersData);
+                        } catch (e) {
+                            console.error('[Dev] 🔴 Error in updateCurrentStepFromState:', e);
+                        }
 
                         // [Notifications] Dispatch Notifications
                         const metadata = extractNotificationMetadata(ordersData, data);
                         const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                         const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
 
-                        // Filter out current user
+                        // Filter out current user from notification targets
                         const actingUserId = String(data.currentUser.idUser);
+                        const actingUserRole = data.currentUser.type;
                         const sellersToNotify = relevantSellers.filter(s => String(s) !== actingUserId);
                         const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
+
+                        console.log(`%c[SteperNotification] 🚀 بدء خطوة إشعارات "التأكيد" (Confirmation)`, 'color: #adff2f; font-weight: bold; font-size: 1.1em;');
+                        console.log(`[SteperNotification] 👤 القائم بالحدث (Acting User): ${actingUserId} (Role: ${actingUserRole})`);
+                        console.log(`[SteperNotification] 📋 تفاصيل الأطراف المعنية (بدون تصفية):`, { relevantSellers, relevantDelivery });
 
                         const notificationPromises = [];
 
                         // 1. Notify Buyer
                         if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
+                            console.log(`[SteperNotification] 🔍 [1/3] فحص إمكانية إشعار المشتري (Buyer)...`);
                             const shouldSendBuyer = await window.shouldNotify('step-confirmed', 'buyer');
+
                             if (shouldSendBuyer) {
-                                console.log(`[SteperNotification] 📢 Triggering 'step-confirmed' notification for BUYER.`);
-                                console.log(`[SteperNotification] 🎯 Buyer Key:`, metadata.buyerKey);
+                                console.log(`[SteperNotification] ✅ الإشعار للمشتري "مفعل" في الإعدادات. جارٍ الإرسال إلى: ${metadata.buyerKey}`);
                                 notificationPromises.push(window.notifyBuyerOnStepChange(
                                     metadata.buyerKey,
                                     'step-confirmed',
@@ -164,39 +177,46 @@ export function handleConfirmationSave(data, ordersData) {
                                     metadata.orderId
                                 ));
                             } else {
-                                console.log(`[SteperNotification] ⚠️ 'step-confirmed' notification for BUYER is disabled in settings.`);
+                                console.log(`[SteperNotification] ⚠️ الإشعار للمشتري "معطل" في الإعدادات.`);
                             }
                         }
 
-                        // 2. Notify Delivery & Other Sellers
+                        // 2. Notify Delivery & Other Sellers (Peers)
                         if (typeof window.notifyOnStepActivation === 'function') {
-                            console.log(`[SteperNotification] 📢 Triggering 'step-confirmed' notification (General).`);
-                            console.log(`[SteperNotification] 🎯 Target Sellers (Peers):`, sellersToNotify);
-                            console.log(`[SteperNotification] 🎯 Target Delivery Agents:`, deliveryToNotify);
+                            console.log(`[SteperNotification] � [2/3] فحص إمكانية إشعار البائعين وخدمات التوصيل (Sellers/Delivery)...`);
+
+                            console.log(`[SteperNotification] 📨 توجيه طلب الإرسال الجماعي (General Dispatch)...`);
+                            console.log(`[SteperNotification] 🎯 المستهدفون النهائيون (البائعين): [${sellersToNotify.join(', ')}]`);
+                            console.log(`[SteperNotification] 🎯 المستهدفون النهائيون (التوصيل): [${deliveryToNotify.join(', ')}]`);
 
                             notificationPromises.push(window.notifyOnStepActivation({
                                 stepId: 'step-confirmed',
                                 stepName: window.langu('conf_notify_confirmed'),
                                 ...metadata,
                                 sellerKeys: sellersToNotify,
-                                deliveryKeys: deliveryToNotify
+                                deliveryKeys: deliveryToNotify,
+                                actingUserId: actingUserId
                             }));
 
+                            // 3. Rejected Items Check
                             const hasRejected = updates.some(u => u.status === ITEM_STATUS.REJECTED);
                             if (hasRejected) {
-                                console.log(`[SteperNotification] 📢 Triggering 'step-rejected' notification.`);
-                                console.log(`[SteperNotification] 🎯 Targets: Same as step-confirmed (Sellers/Delivery).`);
+                                console.log(`[SteperNotification] � [3/3] تم اكتشاف منتجات مرفوضة. بدء إشعارات الرفض (step-rejected)...`);
                                 notificationPromises.push(window.notifyOnStepActivation({
                                     stepId: 'step-rejected',
                                     stepName: window.langu('conf_notify_rejected'),
                                     ...metadata,
                                     sellerKeys: sellersToNotify,
-                                    deliveryKeys: deliveryToNotify
+                                    deliveryKeys: deliveryToNotify,
+                                    actingUserId: actingUserId
                                 }));
+                            } else {
+                                console.log(`[SteperNotification] ℹ️ لا توجد منتجات مرفوضة في هذا التحديث.`);
                             }
                         }
 
                         await Promise.all(notificationPromises);
+                        console.log(`%c[SteperNotification] 🏁 انتهت عملية إشعارات التأكيد بنجاح.`, 'color: #adff2f; font-weight: bold;');
                     });
                 } catch (error) {
                     console.error("Save failed", error);

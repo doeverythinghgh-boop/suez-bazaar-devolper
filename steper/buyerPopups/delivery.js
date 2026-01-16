@@ -166,35 +166,35 @@ export async function handleDeliverySave(data, ordersData) {
 
                         // [Notifications] Dispatch Notifications
                         if (typeof window.notifyOnStepActivation === 'function') {
-                            console.log('[Dev] 🔔 [Delivery Save] جاري إرسال الإشعارات...');
+                            console.log(`%c[SteperNotification] 🚀 بدء خطوة إشعارات "الاستلام" (Delivery)`, 'color: #20b2aa; font-weight: bold; font-size: 1.1em;');
+
+                            const actingUserId = String(data.currentUser.idUser);
+                            const actingUserRole = data.currentUser.type;
+                            console.log(`[SteperNotification] 👤 القائم بالحدث (Acting User): ${actingUserId} (Role: ${actingUserRole})`);
 
                             // استخراج metadata
                             const metadata = extractNotificationMetadata(ordersData, data);
-
                             const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                             const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
 
                             // [Reliability] Filter out current user from notifications
-                            const actingUserId = String(data.currentUser.idUser);
                             const sellersToNotify = relevantSellers.filter(s => String(s) !== actingUserId);
                             const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
 
-                            console.log('[Dev] 🔔 [Delivery Save] البائعين للإشعار:', sellersToNotify);
-                            console.log('[Dev] 🔔 [Delivery Save] المندوبين للإشعار:', deliveryToNotify);
-
-                            console.log(`[SteperNotification] 📢 Triggering 'step-delivered' notification.`);
-                            console.log(`[SteperNotification] 🎯 Target Sellers:`, sellersToNotify);
-                            console.log(`[SteperNotification] 🎯 Target Delivery Agents:`, deliveryToNotify);
+                            console.log(`[SteperNotification] 📨 توجيه طلب الإرسال الجماعي (step-delivered)...`);
+                            console.log(`[SteperNotification] 🎯 المستهدفون النهائيون (البائعين): [${sellersToNotify.join(', ')}]`);
+                            console.log(`[SteperNotification] 🎯 المستهدفون النهائيون (التوصيل): [${deliveryToNotify.join(', ')}]`);
 
                             window.notifyOnStepActivation({
                                 stepId: 'step-delivered',
                                 stepName: window.langu('deliv_notify_received'),
                                 ...metadata,
                                 sellerKeys: sellersToNotify,
-                                deliveryKeys: deliveryToNotify
+                                deliveryKeys: deliveryToNotify,
+                                actingUserId: actingUserId
                             });
 
-                            console.log('[Dev] ✅ [Delivery Save] تم إرسال الإشعارات بنجاح');
+                            console.log(`%c[SteperNotification] 🏁 انتهت عملية إشعارات الاستلام.`, 'color: #20b2aa; font-weight: bold;');
                         }
                     });
                 } catch (error) {

@@ -89,35 +89,44 @@ export async function handleReviewSave(data, ordersData) {
 
                 // [Notifications] Dispatch Notifications
                 if (typeof window.notifyOnStepActivation === 'function') {
-                    console.log('[Dev] 🔔 [Review Save] جاري إرسال الإشعارات...');
+                    console.log(`%c[SteperNotification] 🚀 بدء خطوة إشعارات "المراجعة" (Review)`, 'color: #ffd700; font-weight: bold; font-size: 1.1em;');
+
+                    const actingUserId = String(data.currentUser.idUser);
+                    const actingUserRole = data.currentUser.type;
+                    console.log(`[SteperNotification] 👤 القائم بالحدث (Acting User): ${actingUserId} (Role: ${actingUserRole})`);
+
                     const metadata = extractNotificationMetadata(ordersData, data);
 
-                    // 1. Notify Review (Always trigger if enabled in config)
-                    console.log(`[SteperNotification] 📢 Triggering 'step-review' notification.`);
-                    console.log(`[SteperNotification] 🎯 Destination: All configured recipients for 'step-review'.`);
+                    // 1. Notify Review (Always trigger checks)
+                    console.log(`[SteperNotification] 📨 [1/2] توجيه طلب الإشعار الرئيسي (step-review)...`);
+                    // Note: notifyOnStepActivation handles 'shouldNotify' internally
+
                     window.notifyOnStepActivation({
                         stepId: 'step-review',
                         stepName: window.langu('review_notify_title') || 'مراجعة المنتجات',
-                        ...metadata
+                        ...metadata,
+                        actingUserId: actingUserId
                     });
 
-                    // 2. Notify Cancelled
+                    // 2. Cancellation Check
                     const hasCancelled = updates.some(u => u.status === ITEM_STATUS.CANCELLED);
                     if (hasCancelled) {
-                        console.log('[Dev] 🔔 [Review Save] يوجد منتجات ملغاة - إرسال إشعار الإلغاء...');
+                        console.log('[SteperNotification] 🔍 [2/2] تم اكتشاف منتجات ملغاة. بدء إشعارات الإلغاء (step-cancelled)...');
                         const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
 
-                        console.log(`[SteperNotification] 📢 Triggering 'step-cancelled' notification.`);
-                        console.log(`[SteperNotification] 🎯 Target Sellers (Keys):`, relevantSellers);
+                        console.log(`[SteperNotification] 🎯 البائعين المستهدفين للإلغاء: [${relevantSellers.join(', ')}]`);
 
                         window.notifyOnStepActivation({
                             stepId: 'step-cancelled',
                             stepName: window.langu('review_notify_cancelled'),
                             ...metadata,
-                            sellerKeys: relevantSellers
+                            sellerKeys: relevantSellers,
+                            actingUserId: actingUserId
                         });
+                    } else {
+                        console.log('[SteperNotification] ℹ️ لا توجد منتجات ملغاة (تخطي step-cancelled).');
                     }
-                    console.log('[Dev] ✅ [Review Save] تم إرسال الإشعارات بنجاح');
+                    console.log(`%c[SteperNotification] 🏁 انتهت أوامر إشعارات المراجعة. (النتائج في الـ Async Logs)`, 'color: #ffd700; font-weight: bold;');
                 }
             });
         } catch (error) {

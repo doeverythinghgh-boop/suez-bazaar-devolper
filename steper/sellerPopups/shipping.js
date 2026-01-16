@@ -151,14 +151,27 @@ export async function handleShippingSave(data, ordersData) {
                         const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
 
                         // [Notifications] Dispatch Notifications (Buyer + Relevant Delivery)
+                        console.log(`%c[SteperNotification] 🚀 بدء خطوة إشعارات "الشحن" (Shipping)`, 'color: #00bfff; font-weight: bold; font-size: 1.1em;');
+
+                        const metadata = extractNotificationMetadata(ordersData, data);
+                        const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
+
+                        // Filter out current user from delivery
+                        const actingUserId = String(data.currentUser.idUser);
+                        const actingUserRole = data.currentUser.type;
+                        const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
+
+                        console.log(`[SteperNotification] 👤 القائم بالحدث (Acting User): ${actingUserId} (Role: ${actingUserRole})`);
+
                         const notificationPromises = [];
 
                         // 1. Notify Buyer
                         if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
+                            console.log(`[SteperNotification] 🔍 [1/2] فحص إمكانية إشعار المشتري (Buyer)...`);
                             const shouldSendBuyer = await window.shouldNotify('step-shipped', 'buyer');
+
                             if (shouldSendBuyer) {
-                                console.log(`[SteperNotification] 📢 Triggering 'step-shipped' notification for BUYER.`);
-                                console.log(`[SteperNotification] 🎯 Buyer Key:`, metadata.buyerKey);
+                                console.log(`[SteperNotification] ✅ الإشعار للمشتري "مفعل". جارٍ الإرسال إلى: ${metadata.buyerKey}`);
                                 notificationPromises.push(window.notifyBuyerOnStepChange(
                                     metadata.buyerKey,
                                     'step-shipped',
@@ -166,26 +179,30 @@ export async function handleShippingSave(data, ordersData) {
                                     metadata.orderId
                                 ));
                             } else {
-                                console.log(`[SteperNotification] ⚠️ 'step-shipped' notification for BUYER is disabled.`);
+                                console.log(`[SteperNotification] ⚠️ الإشعار للمشتري "معطل" في الإعدادات.`);
                             }
                         }
 
                         // 2. Notify Delivery (Targeted)
                         if (deliveryToNotify.length > 0 && typeof window.notifyOnStepActivation === 'function') {
-                            console.log(`[SteperNotification] 📢 Triggering 'step-shipped' notification for DELIVERY.`);
-                            console.log(`[SteperNotification] 🎯 Target Delivery Agents:`, deliveryToNotify);
+                            console.log(`[SteperNotification] 🔍 [2/2] فحص إمكانية إشعار خدمات التوصيل (Delivery)...`);
+                            console.log(`[SteperNotification] 📨 توجيه طلب الإشعار لتطبيقات التوصيل...`);
+                            console.log(`[SteperNotification] 🎯 المستهدفون النهائيون (التوصيل): [${deliveryToNotify.join(', ')}]`);
+
                             notificationPromises.push(window.notifyOnStepActivation({
                                 stepId: 'step-shipped',
                                 stepName: window.langu('shipping_notify_buyer'),
                                 ...metadata,
                                 sellerKeys: [], // No need to notify other sellers of shipping normally
-                                deliveryKeys: deliveryToNotify
+                                deliveryKeys: deliveryToNotify,
+                                actingUserId: actingUserId
                             }));
                         } else {
-                            console.log(`[SteperNotification] ℹ️ No delivery agents found to notify for 'step-shipped'.`);
+                            console.log(`[SteperNotification] ℹ️ لا توجد جهات توصيل مستهدفة لهذا الطلب (أو أن القائم بالحدث هو المندوب الوحيد).`);
                         }
 
                         await Promise.all(notificationPromises);
+                        console.log(`%c[SteperNotification] 🏁 انتهت عملية إشعارات الشحن بنجاح.`, 'color: #00bfff; font-weight: bold;');
                     });
                 } catch (error) {
                     console.error("Save failed", error);
