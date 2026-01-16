@@ -1355,5 +1355,7 @@ window.notifyDeliveryOnStepChange = notifyDeliveryOnStepChange;
 window.notifyAdminOnNewItem = notifyAdminOnNewItem;
 window.notifyAdminOnItemUpdate = notifyAdminOnItemUpdate;
 window.notifyOnItemAccepted = notifyOnItemAccepted;
+window.saveNotificationFromAndroid = saveNotificationFromAndroid;
+window.saveNotificationBatchFromAndroid = saveNotificationBatchFromAndroid;
 
 console.log('%c[Notifications] ✅ تم تحميل وتصدير كافة أدوات الإشعارات (Deep Settings Enforcement Ready).', 'color: #4CAF50; font-weight: bold;');
