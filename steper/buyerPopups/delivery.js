@@ -168,6 +168,9 @@ export async function handleDeliverySave(data, ordersData) {
                         if (typeof window.notifyOnStepActivation === 'function') {
                             console.log('[Dev] 🔔 [Delivery Save] جاري إرسال الإشعارات...');
 
+                            // استخراج metadata
+                            const metadata = extractNotificationMetadata(ordersData, data);
+
                             const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                             const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
 
