@@ -93,6 +93,8 @@ export async function handleReviewSave(data, ordersData) {
                     const metadata = extractNotificationMetadata(ordersData, data);
 
                     // 1. Notify Review (Always trigger if enabled in config)
+                    console.log(`[SteperNotification] 📢 Triggering 'step-review' notification.`);
+                    console.log(`[SteperNotification] 🎯 Destination: All configured recipients for 'step-review'.`);
                     window.notifyOnStepActivation({
                         stepId: 'step-review',
                         stepName: window.langu('review_notify_title') || 'مراجعة المنتجات',
@@ -104,6 +106,10 @@ export async function handleReviewSave(data, ordersData) {
                     if (hasCancelled) {
                         console.log('[Dev] 🔔 [Review Save] يوجد منتجات ملغاة - إرسال إشعار الإلغاء...');
                         const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
+
+                        console.log(`[SteperNotification] 📢 Triggering 'step-cancelled' notification.`);
+                        console.log(`[SteperNotification] 🎯 Target Sellers (Keys):`, relevantSellers);
+
                         window.notifyOnStepActivation({
                             stepId: 'step-cancelled',
                             stepName: window.langu('review_notify_cancelled'),

@@ -182,6 +182,10 @@ export async function handleDeliverySave(data, ordersData) {
                             console.log('[Dev] 🔔 [Delivery Save] البائعين للإشعار:', sellersToNotify);
                             console.log('[Dev] 🔔 [Delivery Save] المندوبين للإشعار:', deliveryToNotify);
 
+                            console.log(`[SteperNotification] 📢 Triggering 'step-delivered' notification.`);
+                            console.log(`[SteperNotification] 🎯 Target Sellers:`, sellersToNotify);
+                            console.log(`[SteperNotification] 🎯 Target Delivery Agents:`, deliveryToNotify);
+
                             window.notifyOnStepActivation({
                                 stepId: 'step-delivered',
                                 stepName: window.langu('deliv_notify_received'),

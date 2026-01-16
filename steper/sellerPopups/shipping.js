@@ -157,17 +157,23 @@ export async function handleShippingSave(data, ordersData) {
                         if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
                             const shouldSendBuyer = await window.shouldNotify('step-shipped', 'buyer');
                             if (shouldSendBuyer) {
+                                console.log(`[SteperNotification] 📢 Triggering 'step-shipped' notification for BUYER.`);
+                                console.log(`[SteperNotification] 🎯 Buyer Key:`, metadata.buyerKey);
                                 notificationPromises.push(window.notifyBuyerOnStepChange(
                                     metadata.buyerKey,
                                     'step-shipped',
                                     window.langu('shipping_notify_buyer'),
                                     metadata.orderId
                                 ));
+                            } else {
+                                console.log(`[SteperNotification] ⚠️ 'step-shipped' notification for BUYER is disabled.`);
                             }
                         }
 
                         // 2. Notify Delivery (Targeted)
                         if (deliveryToNotify.length > 0 && typeof window.notifyOnStepActivation === 'function') {
+                            console.log(`[SteperNotification] 📢 Triggering 'step-shipped' notification for DELIVERY.`);
+                            console.log(`[SteperNotification] 🎯 Target Delivery Agents:`, deliveryToNotify);
                             notificationPromises.push(window.notifyOnStepActivation({
                                 stepId: 'step-shipped',
                                 stepName: window.langu('shipping_notify_buyer'),
@@ -175,6 +181,8 @@ export async function handleShippingSave(data, ordersData) {
                                 sellerKeys: [], // No need to notify other sellers of shipping normally
                                 deliveryKeys: deliveryToNotify
                             }));
+                        } else {
+                            console.log(`[SteperNotification] ℹ️ No delivery agents found to notify for 'step-shipped'.`);
                         }
 
                         await Promise.all(notificationPromises);

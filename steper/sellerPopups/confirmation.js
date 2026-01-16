@@ -155,17 +155,25 @@ export function handleConfirmationSave(data, ordersData) {
                         if (typeof window.notifyBuyerOnStepChange === 'function' && typeof window.shouldNotify === 'function') {
                             const shouldSendBuyer = await window.shouldNotify('step-confirmed', 'buyer');
                             if (shouldSendBuyer) {
+                                console.log(`[SteperNotification] 📢 Triggering 'step-confirmed' notification for BUYER.`);
+                                console.log(`[SteperNotification] 🎯 Buyer Key:`, metadata.buyerKey);
                                 notificationPromises.push(window.notifyBuyerOnStepChange(
                                     metadata.buyerKey,
                                     'step-confirmed',
                                     window.langu('confirmation_notify_buyer'),
                                     metadata.orderId
                                 ));
+                            } else {
+                                console.log(`[SteperNotification] ⚠️ 'step-confirmed' notification for BUYER is disabled in settings.`);
                             }
                         }
 
                         // 2. Notify Delivery & Other Sellers
                         if (typeof window.notifyOnStepActivation === 'function') {
+                            console.log(`[SteperNotification] 📢 Triggering 'step-confirmed' notification (General).`);
+                            console.log(`[SteperNotification] 🎯 Target Sellers (Peers):`, sellersToNotify);
+                            console.log(`[SteperNotification] 🎯 Target Delivery Agents:`, deliveryToNotify);
+
                             notificationPromises.push(window.notifyOnStepActivation({
                                 stepId: 'step-confirmed',
                                 stepName: window.langu('conf_notify_confirmed'),
@@ -176,6 +184,8 @@ export function handleConfirmationSave(data, ordersData) {
 
                             const hasRejected = updates.some(u => u.status === ITEM_STATUS.REJECTED);
                             if (hasRejected) {
+                                console.log(`[SteperNotification] 📢 Triggering 'step-rejected' notification.`);
+                                console.log(`[SteperNotification] 🎯 Targets: Same as step-confirmed (Sellers/Delivery).`);
                                 notificationPromises.push(window.notifyOnStepActivation({
                                     stepId: 'step-rejected',
                                     stepName: window.langu('conf_notify_rejected'),
