@@ -30,6 +30,25 @@
     <script src="../js/auth/sessionManager.js"></script>
 
     <script>
+        // [Reliability] Console Bridge for Dev Console (Admin 682dri6b)
+        // Pipes logs from this Iframe to the parent window so they appear in dev-console-wrapper
+        (function () {
+            if (window.parent && window.parent !== window) {
+                const methods = ['log', 'warn', 'error', 'info', 'debug'];
+                methods.forEach(method => {
+                    const original = console[method];
+                    console[method] = function () {
+                        // 1. Log to this window's actual console
+                        if (original) original.apply(console, arguments);
+                        // 2. Pipe to parent window's console (which is intercepted by dev-console.js)
+                        if (window.parent.console && typeof window.parent.console[method] === 'function') {
+                            window.parent.console[method].apply(window.parent.console, arguments);
+                        }
+                    };
+                });
+            }
+        })();
+
         // Initialize userSession using SessionManager logic if available
         if (typeof SessionManager !== 'undefined') {
             SessionManager.init();
