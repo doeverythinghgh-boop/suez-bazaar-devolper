@@ -1,0 +1,6 @@
+{
+    "name": "suez-bazaar-extension",
+    "version": "1.0.0",
+    "description": "Gemini CLI extension for Suez Bazaar",
+    "entryPoint": "index.js"
+}
