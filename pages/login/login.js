@@ -270,13 +270,7 @@ async function login_handleSubmit(e) {
                                 const permission = await Notification.requestPermission();
                                 if (permission === 'granted') {
                                     if (typeof setupFCM === 'function') await setupFCM();
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: window.langu('notifications_enabled_success'), // Use existing key
-                                        timer: 1500,
-                                        showConfirmButton: false,
-                                        customClass: { popup: 'swal-modern-mini-popup' }
-                                    });
+                                    // Success message removed as per request
                                 }
                             }
                         } catch (e) {
