@@ -143,7 +143,9 @@ const SessionManager = {
         const containerIds = [
             "index-home-container", "index-search-container", "index-user-container",
             "index-productView-container", "index-productAdd-container", "index-productEdit-container",
-            "index-cardPackage-container", "index-myProducts-container"
+            "index-cardPackage-container", "index-myProducts-container",
+            "index-contact-container", "index-notifications-container",
+            "index-salesMovement-container", "index-orderPhoto-container"
         ];
         containerIds.forEach(id => {
             const el = document.getElementById(id);
