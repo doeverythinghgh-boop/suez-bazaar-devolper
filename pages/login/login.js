@@ -271,6 +271,7 @@ async function login_handleSubmit(e) {
                                 if (permission === 'granted') {
                                     if (typeof setupFCM === 'function') await setupFCM();
                                     // Success message removed as per request
+                                    console.log("[Login] ✅ Notification permission granted and FCM setup triggered.");
                                 }
                             }
                         } catch (e) {
