@@ -238,10 +238,66 @@ async function login_handleSubmit(e) {
 
                 if (verificationResult && !verificationResult.error) {
                     // 6. Success -> Use SessionManager
-                    SessionManager.login(verificationResult);
+                    // Pass `false` to skip auto-redirect, so we can handle notification prompt
+                    await SessionManager.login(verificationResult, false);
                     AuthUI.close();
+
+                    // 7. Check & Request Notification Permission (iOS Friendly)
+                    const isWeb = !window.Android;
+                    const isDefaultPerm = 'Notification' in window && Notification.permission === 'default';
+
+                    if (isWeb && isDefaultPerm) {
+                        try {
+                            const result = await Swal.fire({
+                                title: window.langu('notifications_enable_title') || 'تفعيل الإشعارات',
+                                text: window.langu('notifications_enable_on_login') || 'هل ترغب في استقبال إشعارات بالعروض وتحديثات الطلبات؟',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: window.langu('alert_confirm_yes') || 'نعم، تفعيل',
+                                cancelButtonText: window.langu('alert_cancel_btn') || 'لاحقاً',
+                                buttonsStyling: false,
+                                customClass: {
+                                    popup: 'swal-modern-mini-popup',
+                                    title: 'swal-modern-mini-title',
+                                    htmlContainer: 'swal-modern-mini-text',
+                                    confirmButton: 'swal-modern-mini-confirm',
+                                    cancelButton: 'swal-modern-mini-cancel'
+                                }
+                            });
+
+                            if (result.isConfirmed) {
+                                // User Gesture captured here!
+                                const permission = await Notification.requestPermission();
+                                if (permission === 'granted') {
+                                    if (typeof setupFCM === 'function') await setupFCM();
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: 'تم التفعيل بنجاح',
+                                        timer: 1500,
+                                        showConfirmButton: false,
+                                        customClass: { popup: 'swal-modern-mini-popup' }
+                                    });
+                                }
+                            }
+                        } catch (e) {
+                            console.error("[Login] Notification prompt error:", e);
+                        }
+                    }
+
+                    // 8. Manual Redirect after prompt
+                    if (typeof mainLoader === 'function') {
+                        await mainLoader(
+                            "pages/user-dashboard.html",
+                            "index-user-container",
+                            0,
+                            undefined,
+                            "showHomeIcon",
+                            true
+                        );
+                    }
+
                 } else {
-                    // 7. Error
+                    // 9. Error
                     AuthUI.close();
                     const errMsg = verificationResult?.error || langu("login_invalid_credentials");
                     AuthUI.showError(langu("alert_title_info"), errMsg);
