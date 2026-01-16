@@ -11,3 +11,4 @@ api/database-analysis.js
 .npm
 
 *.js.html
+notification/notification-credentials.js
