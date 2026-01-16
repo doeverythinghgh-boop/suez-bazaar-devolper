@@ -95,10 +95,10 @@ function salesMovement_displayOrders(salesMovement_data) {
         salesMovement_sortedOrders.forEach((salesMovement_order, salesMovement_index) => {
             const salesMovement_productCount = salesMovement_order.order_items ? salesMovement_order.order_items.length : 0;
             const salesMovement_formattedDate = salesMovement_formatDate(salesMovement_order.created_at);
-            const salesMovement_productNames = salesMovement_order.order_items 
+            const salesMovement_productNames = salesMovement_order.order_items
                 ? salesMovement_order.order_items.map(item => item.product_name).filter(name => name).join(', ')
                 : '';
-            const salesMovement_displayTitle = salesMovement_productNames 
+            const salesMovement_displayTitle = salesMovement_productNames
                 ? `${window.langu('sales_order_id').split('#')[0].trim()} - ${salesMovement_productNames}`
                 : window.langu('sales_order_id').split('#')[0].trim();
 
@@ -390,25 +390,18 @@ function salesMovement_showOrderDetails(salesMovement_orderData) {
                     supplier_delivery: null
                 };
 
-                // معالجة supplier_delivery
+                // معالجة supplier_delivery - الحفاظ على بنية المصفوفة دائماً
                 if (salesMovement_item.supplier_delivery) {
                     if (Array.isArray(salesMovement_item.supplier_delivery)) {
-                        if (salesMovement_item.supplier_delivery.length === 1) {
-                            // عنصر واحد: تحويل إلى Object
-                            salesMovement_convertedItem.supplier_delivery = salesMovement_item.supplier_delivery[0];
-                        } else if (salesMovement_item.supplier_delivery.length > 1) {
-                            // أكثر من عنصر: إبقاء كـ Array
-                            salesMovement_convertedItem.supplier_delivery = salesMovement_item.supplier_delivery;
-                        } else {
-                            // Array فارغ
-                            salesMovement_convertedItem.supplier_delivery = {};
-                        }
-                    } else {
-                        // إذا كان Object بالفعل
+                        // ✅ الحفاظ على المصفوفة كما هي (سواء كانت فارغة أو تحتوي على عناصر)
                         salesMovement_convertedItem.supplier_delivery = salesMovement_item.supplier_delivery;
+                    } else {
+                        // إذا كان Object بالفعل، تحويله إلى مصفوفة لضمان الاتساق
+                        salesMovement_convertedItem.supplier_delivery = [salesMovement_item.supplier_delivery];
                     }
                 } else {
-                    salesMovement_convertedItem.supplier_delivery = {};
+                    // إذا كان null أو undefined، تعيين مصفوفة فارغة
+                    salesMovement_convertedItem.supplier_delivery = [];
                 }
 
                 salesMovement_convertedOrder.order_items.push(salesMovement_convertedItem);

@@ -101,6 +101,10 @@ export async function handleDeliverySave(data, ordersData) {
             });
 
             if (updates.length > 0) {
+                console.log('[Dev] 📦 [Delivery Save] بدء عملية حفظ التسليم...');
+                console.log('[Dev] 📦 [Delivery Save] عدد التحديثات المطلوبة:', updates.length);
+                console.log('[Dev] 📦 [Delivery Save] تفاصيل التحديثات:', JSON.stringify(updates, null, 2));
+
                 // Show loading
                 Swal.fire({
                     title: window.langu('shipping_saving_title'),
@@ -116,14 +120,33 @@ export async function handleDeliverySave(data, ordersData) {
                 });
 
                 try {
+                    console.log('[Dev] 📦 [Delivery Save] الخطوة 1: حفظ حالات المنتجات...');
+
                     // Save items first
-                    await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+                    await Promise.all(updates.map(async (u, index) => {
+                        console.log(`[Dev] 📦 [Delivery Save] تحديث ${index + 1}/${updates.length}: key=${u.key}, status=${u.status}`);
+                        try {
+                            await saveItemStatus(u.key, u.status);
+                            console.log(`[Dev] ✅ [Delivery Save] نجح التحديث ${index + 1}/${updates.length}`);
+                        } catch (err) {
+                            console.error(`[Dev] ❌ [Delivery Save] فشل التحديث ${index + 1}/${updates.length}:`, err);
+                            throw err;
+                        }
+                    }));
+
+                    console.log('[Dev] ✅ [Delivery Save] تم حفظ جميع حالات المنتجات بنجاح');
 
                     // Then Lock using Buyer/Courier ID
                     if (ordersData && ordersData.length > 0) {
                         const orderKey = ordersData[0].order_key;
                         const userId = data.currentUser.idUser;
+
+                        console.log('[Dev] 📦 [Delivery Save] الخطوة 2: قفل التسليم...');
+                        console.log('[Dev] 📦 [Delivery Save] orderKey:', orderKey);
+                        console.log('[Dev] 📦 [Delivery Save] userId:', userId);
+
                         await saveShippingLock(orderKey, true, ordersData, userId);
+                        console.log('[Dev] ✅ [Delivery Save] تم قفل التسليم بنجاح');
                     }
 
                     Swal.fire({
@@ -138,10 +161,13 @@ export async function handleDeliverySave(data, ordersData) {
                             htmlContainer: 'swal-modern-mini-text'
                         }
                     }).then(() => {
+                        console.log('[Dev] 📦 [Delivery Save] جاري تحديث واجهة المستخدم...');
                         updateCurrentStepFromState(data, ordersData);
 
                         // [Notifications] Dispatch Notifications
                         if (typeof window.notifyOnStepActivation === 'function') {
+                            console.log('[Dev] 🔔 [Delivery Save] جاري إرسال الإشعارات...');
+
                             const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                             const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
 
@@ -150,6 +176,9 @@ export async function handleDeliverySave(data, ordersData) {
                             const sellersToNotify = relevantSellers.filter(s => String(s) !== actingUserId);
                             const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
 
+                            console.log('[Dev] 🔔 [Delivery Save] البائعين للإشعار:', sellersToNotify);
+                            console.log('[Dev] 🔔 [Delivery Save] المندوبين للإشعار:', deliveryToNotify);
+
                             window.notifyOnStepActivation({
                                 stepId: 'step-delivered',
                                 stepName: window.langu('deliv_notify_received'),
@@ -157,10 +186,26 @@ export async function handleDeliverySave(data, ordersData) {
                                 sellerKeys: sellersToNotify,
                                 deliveryKeys: deliveryToNotify
                             });
+
+                            console.log('[Dev] ✅ [Delivery Save] تم إرسال الإشعارات بنجاح');
                         }
                     });
                 } catch (error) {
-                    console.error("Save failed", error);
+                    console.error('[Dev] ❌ [Delivery Save] فشل حفظ التسليم - تفاصيل الخطأ:');
+                    console.error('[Dev] ❌ [Delivery Save] نوع الخطأ:', error.name);
+                    console.error('[Dev] ❌ [Delivery Save] رسالة الخطأ:', error.message);
+                    console.error('[Dev] ❌ [Delivery Save] Stack Trace:', error.stack);
+
+                    if (error.response) {
+                        console.error('[Dev] ❌ [Delivery Save] استجابة السيرفر:', error.response);
+                        console.error('[Dev] ❌ [Delivery Save] حالة HTTP:', error.response.status);
+                        console.error('[Dev] ❌ [Delivery Save] بيانات الاستجابة:', error.response.data);
+                    }
+
+                    if (error.request) {
+                        console.error('[Dev] ❌ [Delivery Save] الطلب المرسل:', error.request);
+                    }
+
                     Swal.fire({
                         title: window.langu('stepper_save_fail_title'),
                         text: window.langu('review_save_fail_text'),
@@ -175,6 +220,7 @@ export async function handleDeliverySave(data, ordersData) {
                     });
                 }
             } else {
+                console.log('[Dev] ℹ️ [Delivery Save] لا توجد تحديثات للحفظ - إغلاق النافذة');
                 Swal.close();
             }
         }

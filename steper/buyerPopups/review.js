@@ -35,6 +35,10 @@ export async function handleReviewSave(data, ordersData) {
     });
 
     if (updates.length > 0) {
+        console.log('[Dev] 📝 [Review Save] بدء عملية حفظ المراجعة...');
+        console.log('[Dev] 📝 [Review Save] عدد التحديثات المطلوبة:', updates.length);
+        console.log('[Dev] 📝 [Review Save] تفاصيل التحديثات:', JSON.stringify(updates, null, 2));
+
         // Show loading state
         Swal.fire({
             title: window.langu('shipping_saving_title'),
@@ -52,8 +56,21 @@ export async function handleReviewSave(data, ordersData) {
         });
 
         try {
+            console.log('[Dev] 📝 [Review Save] جاري تنفيذ التحديثات...');
+
             // Execute all updates (Blocking)
-            await Promise.all(updates.map(u => saveItemStatus(u.key, u.status)));
+            await Promise.all(updates.map(async (u, index) => {
+                console.log(`[Dev] 📝 [Review Save] تحديث ${index + 1}/${updates.length}: key=${u.key}, status=${u.status}`);
+                try {
+                    await saveItemStatus(u.key, u.status);
+                    console.log(`[Dev] ✅ [Review Save] نجح التحديث ${index + 1}/${updates.length}`);
+                } catch (err) {
+                    console.error(`[Dev] ❌ [Review Save] فشل التحديث ${index + 1}/${updates.length}:`, err);
+                    throw err; // Re-throw to trigger outer catch
+                }
+            }));
+
+            console.log('[Dev] ✅ [Review Save] تم حفظ جميع التحديثات بنجاح');
 
             Swal.fire({
                 title: window.langu('review_update_success_title'),
@@ -67,10 +84,12 @@ export async function handleReviewSave(data, ordersData) {
                     htmlContainer: 'swal-modern-mini-text'
                 }
             }).then(() => {
+                console.log('[Dev] 📝 [Review Save] جاري تحديث واجهة المستخدم...');
                 updateCurrentStepFromState(data, ordersData);
 
                 // [Notifications] Dispatch Notifications
                 if (typeof window.notifyOnStepActivation === 'function') {
+                    console.log('[Dev] 🔔 [Review Save] جاري إرسال الإشعارات...');
                     const metadata = extractNotificationMetadata(ordersData, data);
 
                     // 1. Notify Review (Always trigger if enabled in config)
@@ -83,6 +102,7 @@ export async function handleReviewSave(data, ordersData) {
                     // 2. Notify Cancelled
                     const hasCancelled = updates.some(u => u.status === ITEM_STATUS.CANCELLED);
                     if (hasCancelled) {
+                        console.log('[Dev] 🔔 [Review Save] يوجد منتجات ملغاة - إرسال إشعار الإلغاء...');
                         const relevantSellers = extractRelevantSellerKeys(updates, ordersData);
                         window.notifyOnStepActivation({
                             stepId: 'step-cancelled',
@@ -91,9 +111,25 @@ export async function handleReviewSave(data, ordersData) {
                             sellerKeys: relevantSellers
                         });
                     }
+                    console.log('[Dev] ✅ [Review Save] تم إرسال الإشعارات بنجاح');
                 }
             });
         } catch (error) {
+            console.error('[Dev] ❌ [Review Save] فشل حفظ المراجعة - تفاصيل الخطأ:');
+            console.error('[Dev] ❌ [Review Save] نوع الخطأ:', error.name);
+            console.error('[Dev] ❌ [Review Save] رسالة الخطأ:', error.message);
+            console.error('[Dev] ❌ [Review Save] Stack Trace:', error.stack);
+
+            if (error.response) {
+                console.error('[Dev] ❌ [Review Save] استجابة السيرفر:', error.response);
+                console.error('[Dev] ❌ [Review Save] حالة HTTP:', error.response.status);
+                console.error('[Dev] ❌ [Review Save] بيانات الاستجابة:', error.response.data);
+            }
+
+            if (error.request) {
+                console.error('[Dev] ❌ [Review Save] الطلب المرسل:', error.request);
+            }
+
             Swal.fire({
                 title: window.langu('stepper_save_fail_title'),
                 text: window.langu('review_save_fail_text'),
@@ -108,6 +144,7 @@ export async function handleReviewSave(data, ordersData) {
             });
         }
     } else {
+        console.log('[Dev] ℹ️ [Review Save] لا توجد تحديثات للحفظ - إغلاق النافذة');
         Swal.close();
     }
 }
