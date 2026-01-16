@@ -210,5 +210,13 @@
   "notifications_status_tooltip": {
     "ar": "حالة القراءة",
     "en": "Read Status"
+  },
+  "notifications_enable_title": {
+    "ar": "تفعيل الإشعارات",
+    "en": "Enable Notifications"
+  },
+  "notifications_enable_on_login": {
+    "ar": "هل ترغب في استقبال إشعارات بالعروض وتحديثات الطلبات؟",
+    "en": "Would you like to receive notifications regarding offers and order updates?"
   }
 }

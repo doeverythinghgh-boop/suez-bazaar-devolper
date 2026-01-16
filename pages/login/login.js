@@ -272,7 +272,7 @@ async function login_handleSubmit(e) {
                                     if (typeof setupFCM === 'function') await setupFCM();
                                     Swal.fire({
                                         icon: 'success',
-                                        title: 'تم التفعيل بنجاح',
+                                        title: window.langu('notifications_enabled_success'), // Use existing key
                                         timer: 1500,
                                         showConfirmButton: false,
                                         customClass: { popup: 'swal-modern-mini-popup' }
