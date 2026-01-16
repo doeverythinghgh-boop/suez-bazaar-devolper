@@ -145,7 +145,7 @@ export async function handleDeliverySave(data, ordersData) {
                         console.log('[Dev] 📦 [Delivery Save] orderKey:', orderKey);
                         console.log('[Dev] 📦 [Delivery Save] userId:', userId);
 
-                        await saveShippingLock(orderKey, true, ordersData, userId);
+                        await saveDeliveryLock(orderKey, true, ordersData, userId);
                         console.log('[Dev] ✅ [Delivery Save] تم قفل التسليم بنجاح');
                     }
 
