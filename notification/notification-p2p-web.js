@@ -6,8 +6,16 @@
  */
 
 var WebP2PNotification = (() => {
+    // [Optimization] If running inside Android, skip Web P2P setup entirely to save resources
+    if (window.Android) {
+        console.log('%c[Web P2P] 📱 Android Bridge detected. Disabling redundant Web P2P module.', 'color: #9e9e9e;');
+        return {
+            send: async () => ({ error: 'WebP2P disabled on Android context' }),
+            sendBatch: async () => []
+        };
+    }
+
     let cachedAccessToken = null;
-    let tokenExpiry = 0;
 
     /**
      * جلب توكن الوصول من جوجل باستخدام ملف الصلاحيات
