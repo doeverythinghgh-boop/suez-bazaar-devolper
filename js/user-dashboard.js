@@ -387,23 +387,25 @@ updateViewForLoggedInUser();
 window.handleNotificationToggleFromSettings = async function () {
   // Do NOT close settings modal. The confirmation Swal will appear on top (z-index 1060 vs 1050).
 
-  setTimeout(async () => {
-    // Ensure NotificationPage is available
-    if (typeof NotificationPage !== 'undefined' && NotificationPage.toggleNotificationsStatus) {
-      const isEnabled = localStorage.getItem('notifications_enabled') === 'true';
-      // This will convert boolean !isEnabled to either enable() or disable()
-      await NotificationPage.toggleNotificationsStatus(!isEnabled);
+  // [Fix for iOS] Removed setTimeout to preserve User Gesture (User Interaction) context.
+  // This is critical for Notification.requestPermission() to work on Safari/iOS.
 
-      // Update UI after operation wraps up
-      // We need to re-read the state because the user might have cancelled the operation in the Swal.
-      const el = document.getElementById('settings_list_notifications');
-      if (el) {
-        const storedEnabled = localStorage.getItem('notifications_enabled');
-        const isAndroid = !!(window.Android);
-        const hasPermission = ('Notification' in window && Notification.permission === 'granted') || isAndroid;
-        const isNotifEnabled = (storedEnabled === 'true' && hasPermission);
+  // Ensure NotificationPage is available
+  if (typeof NotificationPage !== 'undefined' && NotificationPage.toggleNotificationsStatus) {
+    const isEnabled = localStorage.getItem('notifications_enabled') === 'true';
+    // This will convert boolean !isEnabled to either enable() or disable()
+    await NotificationPage.toggleNotificationsStatus(!isEnabled);
 
-        el.innerHTML = `
+    // Update UI after operation wraps up
+    // We need to re-read the state because the user might have cancelled the operation in the Swal.
+    const el = document.getElementById('settings_list_notifications');
+    if (el) {
+      const storedEnabled = localStorage.getItem('notifications_enabled');
+      const isAndroid = !!(window.Android);
+      const hasPermission = ('Notification' in window && Notification.permission === 'granted') || isAndroid;
+      const isNotifEnabled = (storedEnabled === 'true' && hasPermission);
+
+      el.innerHTML = `
               <span>
                  <i class="fas fa-bell" style="color: ${isNotifEnabled ? '#28a745' : '#6c757d'}; width: 20px;"></i> ${window.langu("dash_notifications_tab")}
               </span>
@@ -411,15 +413,14 @@ window.handleNotificationToggleFromSettings = async function () {
                 <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${isNotifEnabled ? 'inset-inline-start' : 'inset-inline-end'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
               </div>
           `;
-      }
-
-    } else {
-      console.error("NotificationPage logic is not loaded.");
-      Swal.fire({
-        icon: 'error',
-        title: window.langu('error'),
-        text: 'نظام الإشعارات غير جاهز بعد. الرجاء الانتظار قليلاً.'
-      });
     }
-  }, 100);
+
+  } else {
+    console.error("NotificationPage logic is not loaded.");
+    Swal.fire({
+      icon: 'error',
+      title: window.langu('error'),
+      text: 'نظام الإشعارات غير جاهز بعد. الرجاء الانتظار قليلاً.'
+    });
+  }
 };

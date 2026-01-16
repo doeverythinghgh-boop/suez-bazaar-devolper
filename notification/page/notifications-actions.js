@@ -389,16 +389,23 @@ Object.assign(NotificationPage, {
                 }
             }
 
-            console.log('[Dev] ⚙️ الخطوة 2: إظهار رسالة جاري التفعيل للمستخدم...');
-            Swal.fire({ title: window.langu('notifications_enabling'), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            // [Fix for iOS] Request Permission FIRST to preserve User Gesture
+            console.log('[Dev] ⚙️ الخطوة 2: طلب إذن الإشعارات فوراً (قبل الـ Loading)...');
 
-            // طلب الصلاحيات (يدعم الويب وأندرويد)
-            console.log('[Dev] ⚙️ الخطوة 3: طلب إذن الإشعارات (askForNotificationPermission)...');
             if (typeof askForNotificationPermission === 'function') {
                 await askForNotificationPermission();
-            } else if ('Notification' in window) {
-                await Notification.requestPermission();
             }
+
+            if ('Notification' in window) {
+                const permission = await Notification.requestPermission();
+                console.log(`[Dev] ⚙️ نتيجة طلب الإذن: ${permission}`);
+                if (permission === 'denied') {
+                    throw new Error('تم رفض إذن الإشعارات من قبل المستخدم.');
+                }
+            }
+
+            console.log('[Dev] ⚙️ الخطوة 3: إظهار رسالة جاري التفعيل للمستخدم...');
+            Swal.fire({ title: window.langu('notifications_enabling'), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             console.log('[Dev] ⚙️ الخطوة 5: استدعاء setupFCM() لبدء تهيئة التوكن...');
             if (typeof setupFCM === 'function') {
