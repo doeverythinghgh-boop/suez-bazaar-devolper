@@ -1,9 +1,9 @@
 /**
  * @file notifications.css
- * @description أنماط صفحة الإشعارات
+ * @description Styles for the notifications page.
  */
 
-/* الحاوية الرئيسية */
+/* Main Container */
 .notifications-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -14,7 +14,7 @@
     min-height: 80vh;
 }
 
-/* الهيدر */
+/* Header */
 .notifications-header {
     background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-800) 100%);
     color: var(--bg-color-white);
@@ -59,7 +59,7 @@
     border-radius: 50%;
 }
 
-/* إحصائيات الهيدر */
+/* Header Stats */
 .header-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -92,7 +92,7 @@
     opacity: 0.9;
 }
 
-/* أدوات التحكم */
+/* Controls Bar */
 .controls-bar {
     background: var(--bg-color-white);
     padding: var(--spacing-md);
@@ -138,7 +138,7 @@
     color: var(--text-muted);
 }
 
-/* أزرار التحكم */
+/* Control Buttons */
 .control-buttons {
     display: flex;
     gap: var(--spacing-xs);
@@ -206,7 +206,7 @@
     }
 }
 
-/* تبديل التحديث التلقائي */
+/* Auto-Refresh Toggle */
 .toggle-switch {
     display: flex;
     align-items: center;
@@ -217,7 +217,7 @@
     position: relative;
     display: inline-block;
     width: 44px;
-    /* ✅ تعديل الحجم ليكون أكثر تناسقاً */
+    /* ✅ Adjusted size to be more consistent */
     height: 22px;
 }
 
@@ -235,11 +235,11 @@
     left: 0;
     bottom: 0;
     background-color: #ccc;
-    /* ✅ لون صلب كبديل */
+    /* ✅ Solid color as alternative */
     transition: .4s;
     border-radius: 34px;
     border: 1px solid #bbb;
-    /* ✅ إضافة برواز خفيف لضمان الظهور */
+    /* ✅ Added light border to ensure visibility */
 }
 
 .slider:before {
@@ -257,16 +257,16 @@
 
 input:checked+.slider {
     background-color: #28a745;
-    /* ✅ أخضر صلب للتفعيل */
+    /* ✅ Solid green for activation */
     border-color: #218838;
 }
 
 input:checked+.slider:before {
     transform: translateX(-22px);
-    /* ✅ تعديل المسافة بناءً على العرض الجديد */
+    /* ✅ Adjusted distance based on new width */
 }
 
-/* --- إعدادات الإشعارات --- */
+/* --- Notification Settings --- */
 .notifications-settings {
     background-color: var(--bg-color-white, #ffffff);
     margin: 15px;
@@ -294,16 +294,16 @@ input:checked+.slider:before {
     color: var(--text-color-medium, #65676b);
 }
 
-/* --- تصميم عصري للإشعارات (شات) --- */
+/* --- Modern Notification Design (Chat Style) --- */
 
-/* حاوية القائمة الرئيسية */
+/* Main List Container */
 .notifications-list {
     display: flex;
     flex-direction: column;
     gap: 22px;
-    /* ✅ تعديل: زيادة المسافة الرأسية بين الرسائل */
+    /* ✅ Adjusted: increased vertical distance between messages */
     align-items: center;
-    /* ✅ جديد: توسيط المحتوى أفقيًا للسماح للرسائل بالانكماش */
+    /* ✅ NEW: center content horizontally to allow messages to shrink */
     padding: 20px 15px;
     background-color: var(--bg-color-light, #f0f2f5);
     min-height: 100vh;
@@ -311,7 +311,7 @@ input:checked+.slider:before {
     overflow-x: hidden;
 }
 
-/* فاصل التاريخ */
+/* Date Divider */
 .date-divider {
     display: flex;
     justify-content: center;
@@ -331,7 +331,7 @@ input:checked+.slider:before {
     backdrop-filter: blur(5px);
 }
 
-/* فقاعة الإشعار الأساسية */
+/* Base Notification Bubble */
 .notification-item {
     max-width: 75%;
     padding: 12px 16px;
@@ -352,7 +352,7 @@ input:checked+.slider:before {
 .notification-item:hover {
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
-    /* ظل أعمق عند التحويم */
+    /* Deeper shadow on hover */
 }
 
 @keyframes notification-pop-in {
@@ -367,18 +367,17 @@ input:checked+.slider:before {
     }
 }
 
-/* === الرسائل المستلمة (وارد) - تظهر على اليمين في العربية === */
+/* === Received Messages (Inbound) - appears on the right in Arabic === */
 .notification-item.received {
-    align-self: flex-end;
-    /* ✅ تعديل: flex-end لليمين في RTL */
+    /* ✅ Adjusted: flex-end for right in RTL */
     background-color: var(--bg-color-white, #ffffff);
     border-top-right-radius: 4px;
-    /* زاوية حادة لإنشاء "ذيل" الرسالة */
+    /* Sharp angle to create message "tail" */
     margin-right: 8px;
-    /* مسافة لإظهار الذيل */
+    /* Space to show the tail */
 }
 
-/* ✅ جديد: إنشاء "ذيل" الرسالة المستلمة باستخدام عنصر زائف */
+/* ✅ NEW: create received message "tail" using pseudo-element */
 .notification-item.received::before {
     content: '';
     position: absolute;
@@ -386,23 +385,22 @@ input:checked+.slider:before {
     right: -8px;
     border: 8px solid transparent;
     border-top-color: var(--bg-color-white, #ffffff);
-    /* لون مطابق للخلفية */
+    /* Color matching the background */
     border-left: 0;
     border-bottom: 0;
 }
 
-/* === الرسائل المرسلة (صادر) - تظهر على اليسار في العربية === */
+/* === Sent Messages (Outbound) - appears on the left in Arabic === */
 .notification-item.sent {
-    align-self: flex-start;
-    /* ✅ تعديل: flex-start لليسار في RTL */
+    /* ✅ Adjusted: flex-start for left in RTL */
     background-color: #dcf8c6;
-    /* لون أخضر فاتح مميز للرسائل الصادرة */
+    /* Distincet light green for sent messages */
     border-top-left-radius: 4px;
-    /* زاوية حادة لإنشاء "ذيل" الرسالة */
+    /* Sharp angle to create message "tail" */
     margin-left: 8px;
 }
 
-/* ✅ جديد: إنشاء "ذيل" الرسالة المرسلة */
+/* ✅ NEW: create sent message "tail" */
 .notification-item.sent::before {
     content: "";
     position: absolute;
@@ -410,12 +408,12 @@ input:checked+.slider:before {
     left: -8px;
     border: 8px solid transparent;
     border-top-color: #dcf8c6;
-    /* لون مطابق للخلفية */
+    /* Color matching the background */
     border-right: 0;
     border-bottom: 0;
 }
 
-/* اسم المرسل */
+/* Sender Name */
 .notification-header {
     display: flex;
     justify-content: space-between;
@@ -427,17 +425,17 @@ input:checked+.slider:before {
     font-weight: 700;
     font-size: 0.85rem;
     color: var(--primary-color, #007bff);
-    /* لون مميز للاسم */
+    /* Distinct color for the name */
 }
 
-/* نص الرسالة */
+/* Message Text */
 .notification-body p {
     margin: 0;
     white-space: pre-wrap;
     word-wrap: break-word;
 }
 
-/* البيانات الوصفية (الوقت والحالة) */
+/* Metadata (Time and Status) */
 .notification-meta {
     display: flex;
     justify-content: flex-end;
@@ -452,7 +450,7 @@ input:checked+.slider:before {
     color: var(--text-color-medium, #65676b);
 }
 
-/* أيقونات حالة القراءة */
+/* Read Status Icons */
 .read-status {
     font-size: 0.9rem;
     line-height: 1;
@@ -462,15 +460,15 @@ input:checked+.slider:before {
 
 .read-status.read {
     color: var(--info-color, #3498db);
-    /* أزرق للقراءة */
+    /* Blue for read */
 }
 
 .read-status.unread {
     color: var(--text-color-light, #bcc0c4);
-    /* رمادي للغير مقروء */
+    /* Grey for unread */
 }
 
-/* زر الحذف */
+/* Delete Button */
 .delete-notification-btn {
     background: none;
     border: none;
@@ -483,7 +481,7 @@ input:checked+.slider:before {
     justify-content: center;
     transition: color 0.2s, transform 0.2s;
     margin-right: 4px;
-    /* مسافة بسيطة عن ايقونة القراءة */
+    /* Small space from read icon */
 }
 
 .delete-notification-btn:active {
@@ -495,7 +493,7 @@ input:checked+.slider:before {
     pointer-events: none;
 }
 
-/* الحالات المختلفة */
+/* Various States */
 .state-container {
     text-align: center;
     padding: var(--spacing-xl);
@@ -544,12 +542,12 @@ input:checked+.slider:before {
     margin: 0 auto;
 }
 
-/* رسائل Toast */
+/* Toast Messages */
 .toast {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    /* تغيير من left إلى right لدعم RTL بشكل أفضل */
+    /* Changed from left to right to support RTL better */
     left: auto;
     background: var(--bg-color-white);
     padding: 12px 16px;
@@ -561,11 +559,11 @@ input:checked+.slider:before {
     min-width: 300px;
     max-width: 90vw;
     z-index: 9999;
-    /* رفع الطبقة لتظهر فوق العناصر الأخرى */
+    /* Raised layer to appear above other elements */
     animation: slideIn 0.3s ease;
     border-right: 4px solid var(--info-color);
     direction: rtl;
-    /* تأكيد الاتجاه */
+    /* Confirm direction */
 }
 
 .toast-success {
@@ -612,7 +610,7 @@ input:checked+.slider:before {
 @keyframes slideIn {
     from {
         transform: translateX(100%);
-        /* الدخول من اليمين */
+        /* Entry from the right */
         opacity: 0;
     }
 
@@ -622,7 +620,7 @@ input:checked+.slider:before {
     }
 }
 
-/* التمرير */
+/* Scrolling */
 .notifications-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -636,13 +634,13 @@ input:checked+.slider:before {
     border-radius: 10px;
 }
 
-/* إخفاء العناصر غير المستخدمة تماماً */
+/* Hide unused elements completely */
 .controls-bar,
 .header-stats {
     display: none !important;
 }
 
-/* التجاوب */
+/* Responsiveness */
 @media (max-width: 768px) {
     body {
         padding: var(--spacing-xs);

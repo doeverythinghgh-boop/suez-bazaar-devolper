@@ -1,8 +1,8 @@
 /**
  * @file notification/notification-p2p-web.js
- * @description وحدة إرسال الإشعارات مباشرة من المتصفح (P2P) باستخدام Admin SDK.
- *   تتعامل مع توليد JWT، جلب الـ Access Token من جوجل، والإرسال لـ FCM v1.
- * // Test comment for auto-version watcher
+ * @description Peer-to-Peer (P2P) notification module that sends messages directly from the browser.
+ * It uses the Google Cloud Identity Platform to generate JWTs and retrieve OAuth2 tokens
+ * for secure communication with the FCM v1 API.
  */
 
 var WebP2PNotification = (() => {
@@ -18,16 +18,19 @@ var WebP2PNotification = (() => {
     let cachedAccessToken = null;
 
     /**
-     * جلب توكن الوصول من جوجل باستخدام ملف الصلاحيات
+     * Retrieves an OAuth2 Access Token from Google using the Service Account credentials.
+     * Implements caching with a 5-minute safety margin before expiry.
+     * @returns {Promise<string>} The valid OAuth2 Access Token.
+     * @throws {Error} If credentials are missing, jsrsasign is not loaded, or the fetch request fails.
      */
     async function getAccessToken() {
-        // إذا كان التوكن الحالي صالحاً (مع هامش أمان 5 دقائق)
+        // If current token is valid (with 5-minute safety margin)
         if (cachedAccessToken && Date.now() < tokenExpiry - 300000) {
             return cachedAccessToken;
         }
 
         try {
-            // التحقق من وجود المتغير المشفّر
+            // Check for existence of the encrypted key variable
             if (typeof FCM_ADMIN_SDK_KEY === 'undefined') {
                 throw new Error('FCM_ADMIN_SDK_KEY is not defined. Check if notification-credentials.js is loaded.');
             }
@@ -44,7 +47,7 @@ var WebP2PNotification = (() => {
                 iat: now
             };
 
-            // توقيع الـ JWT باستخدام مكتبة jsrsasign
+            // Sign the JWT using the jsrsasign library
             console.log('[Web P2P Debug] Signing JWT...');
             const sHeader = JSON.stringify(header);
             const sPayload = JSON.stringify(payload);
@@ -79,16 +82,21 @@ var WebP2PNotification = (() => {
                 tokenExpiry = Date.now() + (tokenData.expires_in * 1000);
                 return cachedAccessToken;
             } else {
-                throw new Error('فشل جلب Access Token: ' + JSON.stringify(tokenData));
+                throw new Error('Failed to fetch Access Token: ' + JSON.stringify(tokenData));
             }
         } catch (error) {
-            console.error('[Web P2P] خطأ في المصادقة مع جوجل:', error);
+            console.error('[Web P2P] Error authenticating with Google:', error);
             throw error;
         }
     }
 
     /**
-     * إرسال إشعار لتوكن معين
+     * Sends a direct FCM notification to a specific registration token.
+     * Constructs a "Data-Only" message to ensure Android devices trigger the app's internal handler.
+     * @param {string} token - The recipient's FCM registration token.
+     * @param {string} title - The notification title.
+     * @param {string} body - The notification body content.
+     * @returns {Promise<object>} Result object containing success status or error details.
      */
     async function sendDirect(token, title, body) {
         try {
@@ -100,13 +108,18 @@ var WebP2PNotification = (() => {
                 message: {
                     token: token,
                     android: {
-                        priority: 'HIGH'
+                        priority: 'HIGH' // Ensure immediate delivery on Android
                     },
                     webpush: {
                         headers: {
                             Urgency: "high"
                         }
                     },
+                    /* 
+                       [CRITICAL] Data-only message format.
+                       By omitting the 'notification' property, we force the Android app's 
+                       onMessageReceived() to trigger even when in background/closed state.
+                    */
                     data: {
                         title: title,
                         body: body,
@@ -130,7 +143,7 @@ var WebP2PNotification = (() => {
             if (response.ok) {
                 return { success: true, result };
             } else {
-                console.error('[Web P2P] فشل الإرسال لـ', token, result);
+                console.error('[Web P2P] Send failed for', token, result);
                 return { error: result };
             }
         } catch (error) {
@@ -142,16 +155,20 @@ var WebP2PNotification = (() => {
                     errorMsg = 'Unserializable Error';
                 }
             }
-            console.error(`[Web P2P] خطأ حرج في الإرسال: ${errorMsg}`);
+            console.error(`[Web P2P] Critical error in sending: ${errorMsg}`);
             return { error: errorMsg };
         }
     }
 
     /**
-     * إرسال جماعي
+     * Sends a batch of notifications to multiple tokens concurrently.
+     * @param {string[]} tokens - Array of FCM registration tokens.
+     * @param {string} title - The notification title.
+     * @param {string} body - The notification body content.
+     * @returns {Promise<Array<object>>} Array of results for each send operation.
      */
     async function sendDirectBatch(tokens, title, body) {
-        console.log(`[Web P2P] 🌐 بدء إرسال جماعي مباشر لـ ${tokens.length} جهاز.`);
+        console.log(`[Web P2P] 🌐 Starting direct batch sending for ${tokens.length} devices.`);
         const promises = tokens.map(t => sendDirect(t, title, body));
         return Promise.all(promises);
     }

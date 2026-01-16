@@ -1,75 +1,75 @@
 /**
  * @file notification-global.js
- * @description متغير عالمي لتتبع الإشعارات غير المقروءة
+ * @description Global variable for tracking unread notifications.
  */
 
 /**
- * @description كائن إدارة الإشعارات العالمي
+ * @description Global notification management object.
  * @type {object}
  */
 window.GLOBAL_NOTIFICATIONS = {
     /**
-     * @description عدد الإشعارات غير المقروءة
+     * @description Number of unread notifications.
      * @type {number}
      */
     unreadCount: 0,
 
     /**
-     * @description آخر مرة فتح فيها المستخدم صفحة الإشعارات
+     * @description Last time the user opened the notifications page.
      * @type {Date|null}
      */
     lastOpenedTime: null,
 
     /**
-     * @description مؤقت لعملية تقليل مرات التحديث (Debounce)
+     * @description Timer for debounce process.
      * @type {number|null}
      */
     updateTimeout: null,
 
     /**
-     * @description Callback يتم استدعاؤه عند تحديث العداد
+     * @description Callback called when the counter is updated.
      * @type {Function|null}
      */
     onCountUpdate: null,
 
     /**
-     * @description تحديث العداد من IndexedDB (مع Debounce لضمان دقة العمليات الكبيرة)
+     * @description Update counter from IndexedDB (with Debounce for accuracy).
      * @async
      * @returns {Promise<void>}
      */
     updateCounter: async function (forceImmediate = false) {
-        // إذا كان هناك تحديث منتظر، نقوم بمسحه لجدولة تحديث جديد
+        // If there is a pending update, clear it to schedule a new one
         if (this.updateTimeout) {
             clearTimeout(this.updateTimeout);
         }
 
         const runUpdate = async () => {
             try {
-                // حساب الإشعارات غير المقروءة بدقة باستخدام الفهرس (أسرع وأدق)
+                // Calculate unread notifications accurately using index (faster and more accurate)
                 let count = 0;
                 if (typeof countUnreadNotifications === 'function') {
                     count = await countUnreadNotifications();
                 } else {
-                    // Fallback في حالة عدم توفر الدالة الجديدة
+                    // Fallback if new function is not available
                     const allNotifications = await getNotificationLogs('all', 1000);
                     count = allNotifications.filter(n => n.status === 'unread').length;
                 }
 
-                // تحديث القيم فقط إذا تغيرت أو إذا كان التحديث فورياً
+                // Update values only if changed or if update is immediate
                 const hasChanged = this.unreadCount !== count;
                 this.unreadCount = count;
 
-                // سجل تفصيلي لتتبع المشكلة
-                console.log(`%c[Global] 🔔 تحديث العداد: ${this.unreadCount} إشعار غير مقروء`, 'color: #ff6b6b; font-weight: bold;');
+                // Detailed log for problem tracking
+                console.log(`%c[Global] 🔔 Counter update: ${this.unreadCount} unread notifications`, 'color: #ff6b6b; font-weight: bold;');
 
                 this.notifyCountUpdate();
                 this.updateBrowserTitle();
 
                 if (hasChanged || forceImmediate) {
-                    console.log(`[Global] ✅ تم مزامنة العداد: ${this.unreadCount} إشعار (Signal-based)`);
+                    console.log(`[Global] ✅ Counter synchronized: ${this.unreadCount} notifications (Signal-based)`);
                 }
             } catch (error) {
-                console.error('[Global] خطأ في تحديث العداد:', error);
+                console.error('[Global] Error updating counter:', error);
             } finally {
                 this.updateTimeout = null;
             }
@@ -78,7 +78,7 @@ window.GLOBAL_NOTIFICATIONS = {
         if (forceImmediate) {
             await runUpdate();
         } else {
-            // Debounce خفيف جداً لتجميع العمليات المتتابعة (بدون انتظار أعمى)
+            // Very light debounce to group sequential operations (without blind waiting)
             this.updateTimeout = setTimeout(runUpdate, 50);
         }
     },
@@ -91,15 +91,15 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description إعادة العداد إلى الصفر عند فتح صفحة الإشعارات
+     * @description Reset counter to zero when opening the notifications page.
      */
     resetCounter: function () {
         try {
             this.setLastOpenedTime(new Date());
-            // ملاحظة: تم إزالة تصفير unreadCount يدوياً لضمان عدم الاختفاء إلا بعد تحميل الرسائل فعلياً وتعديلها في DB
+            // Note: Manually zeroing unreadCount was removed to ensure it only disappears after messages are actually loaded and modified in DB
             this.updateCounter(true);
         } catch (error) {
-            console.error('[Global] خطأ في تحديث وقت الفتح:', error);
+            console.error('[Global] Error updating last opened time:', error);
         }
     },
     /**
@@ -110,7 +110,7 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description تحديث عنوان المتصفح ليعرض العدد
+     * @description Update browser title to display the count.
      */
     updateBrowserTitle: function () {
         try {
@@ -121,7 +121,7 @@ window.GLOBAL_NOTIFICATIONS = {
                 document.title = baseTitle;
             }
         } catch (error) {
-            console.error('[Global] خطأ في تحديث عنوان المتصفح:', error);
+            console.error('[Global] Error updating browser title:', error);
         }
     },
     /**
@@ -130,7 +130,7 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description الحصول على آخر وقت فتح من localStorage
+     * @description Get last opened time from localStorage.
      * @returns {Date|null}
      */
     getLastOpenedTime: function () {
@@ -138,7 +138,7 @@ window.GLOBAL_NOTIFICATIONS = {
             const stored = localStorage.getItem('notifications_last_opened');
             return stored ? new Date(stored) : null;
         } catch (error) {
-            console.error('[Global] خطأ في قراءة lastOpened:', error);
+            console.error('[Global] Error reading lastOpened:', error);
             return null;
         }
     },
@@ -147,16 +147,16 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description حفظ وقت الفتح الحالي في localStorage
+     * @description Save current opened time in localStorage.
      * @param {Date} date
      */
     setLastOpenedTime: function (date) {
         try {
             this.lastOpenedTime = date;
             localStorage.setItem('notifications_last_opened', date.toISOString());
-            console.log('[Global] تم حفظ وقت الفتح:', date.toISOString());
+            console.log('[Global] Opened time saved:', date.toISOString());
         } catch (error) {
-            console.error('[Global] خطأ في حفظ lastOpened:', error);
+            console.error('[Global] Error saving lastOpened:', error);
         }
     },
     /**
@@ -164,18 +164,18 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description إعلام Callback بتحديث العداد وتحديث شارة الإشعارات في الواجهة
+     * @description Notify Callback of counter update and update notification badge in UI.
      */
     notifyCountUpdate: function () {
-        // تحديث الشارة بناءً على العدد الحقيقي دائماً (تختفي فقط عندما يصبح unreadCount = 0)
+        // Always update badge based on real count (only disappears when unreadCount = 0)
         this.updateNotificationBadge();
 
-        // استدعاء الـ Callback إذا وجد
+        // Call the callback if it exists
         if (typeof this.onCountUpdate === 'function') {
             try {
                 this.onCountUpdate(this.unreadCount);
             } catch (error) {
-                console.error('[Global] خطأ في callback:', error);
+                console.error('[Global] Callback error:', error);
             }
         }
     },
@@ -186,34 +186,34 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description تحديث شارة الإشعارات في الزر الرئيسي
+     * @description Update notification badge on the main button.
      * @returns {void}
      */
     updateNotificationBadge: function () {
         try {
-            // استخدام الشارة الموجودة فعلياً في index.html
+            // Use the badge actually present in index.html
             const badge = document.getElementById('notifications-badge');
 
             if (!badge) {
-                console.warn('[Global] لم يتم العثور على عنصر الشارة notifications-badge');
+                console.warn('[Global] notification-badge element not found');
                 return;
             }
 
-            // تحديث المحتوى والعرض
+            // Update content and display
             if (this.unreadCount > 0) {
                 badge.textContent = this.unreadCount > 99 ? '99+' : this.unreadCount;
-                // إظهار الشارة (flex لأن التصميم يعتمد عليها للتوسيط)
+                // Show badge (flex because design relies on it for centering)
                 badge.style.display = 'flex';
-                // تأكيد اللون (احترازي)
+                // Confirm color (precautionary)
                 badge.style.backgroundColor = '#dc3545';
-                console.log(`%c[Global] ✅ إظهار الشارة: ${badge.textContent}`, 'color: #28a745; font-weight: bold;');
+                console.log(`%c[Global] ✅ Showing badge: ${badge.textContent}`, 'color: #28a745; font-weight: bold;');
             } else {
-                // إخفاء الشارة
+                // Hide badge
                 badge.style.display = 'none';
-                console.log('%c[Global] ⭕ إخفاء الشارة (العدد = 0)', 'color: #6c757d;');
+                console.log('%c[Global] ⭕ Hiding badge (count = 0)', 'color: #6c757d;');
             }
         } catch (error) {
-            console.error('[Global] خطأ في تحديث الشارة:', error);
+            console.error('[Global] Error updating badge:', error);
         }
     },
     /**
@@ -221,27 +221,27 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description تهيئة النظام العالمي
+     * @description Initialize the global system.
      * @async
      */
     init: async function () {
         try {
-            // تحميل آخر وقت فتح
+            // Load last opened time
             this.lastOpenedTime = this.getLastOpenedTime();
 
-            // تحديث العداد الأولي فوراً (بناءً على البيانات المحلية الحالية)
+            // Initial counter update immediately (based on current local data)
             await this.updateCounter(true);
 
-            console.log('[Global] نظام الإشعارات جاهز - إرسال إشارة الاستقرار للأندرويد');
+            console.log('[Global] Notification system ready - sending stability signal to Android');
 
-            // ✅ جديد: إخطار الأندرويد أن الواجهة جاهزة تماماً.
-            // الأندرويد الآن مسؤول عن دفع الإشعارات المعلقة فور استلام هذه الإشارة.
+            // ✅ NEW: Notify Android that the web app is fully ready.
+            // Android is now responsible for pushing pending notifications upon receiving this signal.
             // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.onWebAppReady.
             if (window.Android && typeof window.Android.onWebAppReady === 'function') {
                 window.Android.onWebAppReady();
             }
         } catch (error) {
-            console.error('[Global] خطأ في التهيئة:', error);
+            console.error('[Global] Initialization error:', error);
         }
     },
     /**
@@ -253,56 +253,55 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description هل تم إعداد المستمعين؟
+     * @description Are listeners setup?
      */
     isListenersSetup: false,
 
     /**
-     * @description إعداد مستمعي الأحداث
+     * @description Setup event listeners.
      */
     setupEventListeners: function () {
         if (this.isListenersSetup) return;
         try {
-            // الاستماع لحدث إضافة إشعار جديد
-            // الاستماع لحدث إضافة إشعار جديد
+            // Listen for new notification event
             window.addEventListener('notificationLogAdded', async (event) => {
                 try {
-                    console.log('[Global] حدث إشعار جديد:', event.detail);
+                    console.log('[Global] New notification event:', event.detail);
 
-                    // تشغيل صوت التنبيه للإشعارات المستلمة فقط
-                    //يجب ايقافها عند وجود تطبيق اندرويد لانها تعمل بشكل مختلف هناك
+                    // Play notification sound only for received notifications
+                    // Should be stopped when Android app is present because it works differently there
                     if (event.detail && event.detail.type === 'received' && !window.Android) {
                         if (typeof playNotificationSound === 'function') {
                             playNotificationSound();
                         }
                     }
 
-                    // إعادة حساب العدد الكلي من قاعدة البيانات لضمان الدقة وتجنب الأخطاء التراكمية
+                    // Recalculate total count from database to ensure accuracy and avoid cumulative errors
                     await this.updateCounter();
 
-                    // إظهار إشعار نظام إذا كان مسموحاً وكان الإشعار غير مقروء
+                    // Show system notification if allowed and notification is unread
                     if (event.detail.status === 'unread') {
                         this.showSystemNotification(event.detail);
                     }
                 } catch (innerError) {
-                    console.error('[Global] خطأ داخل مستمع notificationLogAdded:', innerError);
+                    console.error('[Global] Error inside notificationLogAdded listener:', innerError);
                 }
             });
 
-            // الاستماع لحدث تحديث حالة الإشعار (مقروء/غير مقروء)
+            // Listen for notification status update (read/unread)
             window.addEventListener('notificationStatusUpdated', async (event) => {
                 try {
-                    console.log('[Global] تم تحديث حالة إشعار:', event.detail);
-                    // إعادة حساب العدد الكلي
+                    console.log('[Global] Notification status updated:', event.detail);
+                    // Recalculate total count
                     await this.updateCounter();
                 } catch (innerError) {
-                    console.error('[Global] خطأ داخل مستمع notificationStatusUpdated:', innerError);
+                    console.error('[Global] Error inside notificationStatusUpdated listener:', innerError);
                 }
             });
             this.isListenersSetup = true;
-            console.log('[Global] ✅ تم إعداد مستمعي أحداث الإشعارات');
+            console.log('[Global] ✅ Notification event listeners setup');
         } catch (error) {
-            console.error('[Global] خطأ في إعداد المستمعين:', error);
+            console.error('[Global] Error setting up listeners:', error);
         }
     },
     /**
@@ -313,21 +312,21 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description إظهار إشعار نظام
-     * @param {object} notification - بيانات الإشعار
+     * @description Show system notification.
+     * @param {object} notification - Notification data.
      */
     showSystemNotification: function (notification) {
         try {
-            // التحقق من دعم الإشعارات ووجود الإذن
+            // Check for notification support and permission
             if (!("Notification" in window)) {
-                console.log('[Global] المتصفح لا يدعم إشعارات النظام');
+                console.log('[Global] Browser does not support system notifications');
                 return;
             }
 
             if (Notification.permission === "granted") {
                 this.createNotification(notification);
             } else if (Notification.permission !== "denied") {
-                // طلب الإذن إذا لم يتم رفضه مسبقاً
+                // Request permission if not previously denied
                 Notification.requestPermission().then(permission => {
                     if (permission === "granted") {
                         this.createNotification(notification);
@@ -335,7 +334,7 @@ window.GLOBAL_NOTIFICATIONS = {
                 });
             }
         } catch (error) {
-            console.error('[Global] خطأ في إشعار النظام:', error);
+            console.error('[Global] System notification error:', error);
         }
     },
     /**
@@ -345,13 +344,13 @@ window.GLOBAL_NOTIFICATIONS = {
      */
 
     /**
-     * @description إنشاء إشعار نظام
+     * @description Create system notification.
      * @param {object} notification
      */
     createNotification: function (notification) {
         try {
-            const title = notification.title || 'إشعار جديد';
-            const body = notification.body || notification.message || 'لديك إشعار جديد';
+            const title = notification.title || 'New Notification';
+            const body = notification.body || notification.message || 'You have a new notification';
 
             const notif = new Notification(title, {
                 body: body,
@@ -360,11 +359,11 @@ window.GLOBAL_NOTIFICATIONS = {
                 requireInteraction: false
             });
 
-            // عند النقر على الإشعار، افتح صفحة الإشعارات
+            // When clicking the notification, open notifications page
             notif.onclick = function () {
                 window.focus();
                 this.close();
-                // يمكن توجيه المستخدم لصفحة الإشعارات
+                // Can redirect user to notifications page
                 if (window.location.pathname.includes('notifications')) {
                     window.location.reload();
                 } else {
@@ -372,10 +371,10 @@ window.GLOBAL_NOTIFICATIONS = {
                 }
             }.bind(notif);
 
-            // إغلاق الإشعار تلقائياً بعد 5 ثوان
+            // Close notification automatically after 5 seconds
             setTimeout(() => notif.close(), 5000);
         } catch (error) {
-            console.error('[Global] خطأ في إنشاء إشعار النظام:', error);
+            console.error('[Global] Error creating system notification:', error);
         }
     },
     /**
@@ -385,13 +384,13 @@ window.GLOBAL_NOTIFICATIONS = {
 
 };
 
-// تهيئة النظام تلقائياً عند تحميل الصفحة
+// Automatically initialize the system on page load
 /**
  * @description Automatically initializes the `GLOBAL_NOTIFICATIONS` object when the DOM is fully loaded.
  * This ensures the global notification system is set up as soon as possible.
  * @throws {Error} - If `GLOBAL_NOTIFICATIONS.init()` fails during execution.
  */
-// إعداد المستمعين فوراً (قبل DOMContentLoaded) لضمان التقاط أحداث الأندرويد المبكرة
+// Setup listeners immediately (before DOMContentLoaded) to ensure early Android events are captured
 GLOBAL_NOTIFICATIONS.setupEventListeners();
 
 if (document.readyState === 'loading') {

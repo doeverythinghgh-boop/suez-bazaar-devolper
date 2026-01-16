@@ -1,16 +1,16 @@
 /**
  * @file notifications.js
- * @description الملف الأساسي (Core) لمنطق صفحة الإشعارات
- *   يعمل هذا الملف كمنسق للوحدات البرمجية الأخرى (UI, Logic, Actions)
+ * @description Core file for notifications page logic.
+ *   Acts as a coordinator for UI, Logic, and Action modules.
  */
 
 /**
  * @namespace NotificationPage
- * @description الكائن الرئيسي المسؤول عن إدارة صفحة الإشعارات
+ * @description Main object responsible for managing the notifications page.
  */
 var NotificationPage = {
     /**
-     * @description البيانات الحالية للصفحة
+     * @description Current state of the page.
      */
     state: {
         notifications: [],
@@ -28,17 +28,17 @@ var NotificationPage = {
     },
 
     /**
-     * @description إعدادات التصفية
+     * @description Filter settings.
      */
     filters: {
         type: 'all',        // all, sent, received
         status: 'all',      // all, read, unread
-        search: '',         // نص البحث
+        search: '',         // Search text
         sortBy: 'newest'    // newest, oldest
     },
 
     /**
-     * @description إعدادات التحديث
+     * @description Refresh settings.
      */
     refreshSettings: {
         autoRefresh: true,
@@ -47,15 +47,15 @@ var NotificationPage = {
     },
 
     /**
-     * @description عناصر DOM
+     * @description DOM elements.
      */
     elements: {},
 
     /**
-     * @description تهيئة الصفحة
+     * @description Page initialization.
      */
     async init() {
-        console.log('[Notifications Core] بدء تهيئة صفحة الإشعارات...');
+        console.log('[Notifications Core] Starting notification page initialization...');
         try {
             this.initElements();
             this.loadSettings();
@@ -68,8 +68,8 @@ var NotificationPage = {
 
             await this.loadNotifications();
 
-            // تحديد جميع الإشعارات كمقروءة بعد تحميلها وعرضها للمستخدم
-            // التأخير البسيط يضمن أن المستخدم يرى الإشعارات قبل تحديثها
+            // Mark all notifications as read after loading and displaying to the user
+            // A small delay ensures the user sees notifications before they are updated
             setTimeout(async () => {
                 await this.markAllAsRead(true);
             }, 500);
@@ -77,17 +77,17 @@ var NotificationPage = {
             this.startAutoRefresh();
             this.initMasterToggle();
 
-            console.log('[Notifications Core] تم تهيئة الصفحة بنجاح');
+            console.log('[Notifications Core] Page initialized successfully.');
         } catch (error) {
-            console.error('[Notifications Core] خطأ في التهيئة:', error);
+            console.error('[Notifications Core] Initialization error:', error);
             if (typeof this.showError === 'function') {
-                this.showError('خطأ في تهيئة صفحة الإشعارات');
+                this.showError('Error initializing notifications page');
             }
         }
     },
 
     /**
-     * @description تهيئة عناصر DOM
+     * @description Initialize DOM elements.
      */
     initElements() {
         try {
@@ -114,10 +114,10 @@ var NotificationPage = {
                 receivedCountEl: document.getElementById('received-count')
             };
         } catch (error) {
-            console.error('[Notifications Core] خطأ في تهيئة العناصر:', error);
+            console.error('[Notifications Core] Error initializing elements:', error);
         }
     }
 };
 
-// ملاحظة: تم نقل منطق التهيئة (NotificationPage.init) إلى نهاية ملف notifications-actions.js
-// لضمان تحميل كافة الوحدات الفرعية (UI, Logic, Actions) قبل البدء.
+// Note: Initialization logic (NotificationPage.init) has been moved to the end of notifications-actions.js
+// to ensure all sub-modules (UI, Logic, Actions) are loaded before starting.

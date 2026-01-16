@@ -1,9 +1,8 @@
-
 /**
  * @file notification/notificationSetUp.js
- * @description نقطة الدخول الرئيسية لتهيئة نظام إشعارات Firebase (FCM).
- *   تتولى هذه الوحدة تحديد البيئة (ويب أو أندرويد) وتشغيل إجراءات التهيئة المناسبة،
- *   بما في ذلك تسجيل Service Worker وطلب الأذونات ومزامنة التوكنات مع الخادم.
+ * @description Main entry point for Firebase Cloud Messaging (FCM) initialization.
+ * Handles environment detection (Web vs. Android) and executes appropriate setup flows,
+ * including Service Worker registration, permission requests, and server-side token synchronization.
  */
 
 // ===============================
@@ -13,7 +12,7 @@ var isSettingUpFCM = false;
 var isServiceWorkerUsed = false;
 
 /**
- * @description تفقد الاتصال بخدمات جوجل الأساسية
+ * @description Checks connectivity to core Google services.
  */
 async function checkGoogleConnectivity() {
     try {
@@ -26,44 +25,44 @@ async function checkGoogleConnectivity() {
         clearTimeout(timeoutId);
         return true;
     } catch (e) {
-        console.error("[Dev] 🌏 [Web FCM] ❌ فشل الاتصال بخدمة gstatic.com - قد يكون هناك حجب للشبكة.");
+        console.error("[Dev] 🌏 [Web FCM] ❌ Failed to connect to gstatic.com - access might be blocked.");
         return false;
     }
 }
 
 /**
- * @description أداة تنظيف شاملة لتهيئة FCM من الصفر (Hard Reset)
+ * @description Comprehensive cleanup utility for FCM (Hard Reset).
  */
 window.resetFCM = async function () {
-    console.log("%c[FCM Tool] 🧹 بدء عملية التنظيف الشاملة (Hard Reset)...", "color: #ff9800; font-weight: bold;");
+    console.log("%c[FCM Tool] 🧹 Starting comprehensive cleanup (Hard Reset)...", "color: #ff9800; font-weight: bold;");
     try {
-        // 1. مسح التوكنات
+        // 1. Clear tokens
         localStorage.removeItem("fcm_token");
         localStorage.removeItem("notifications_enabled");
         sessionStorage.removeItem("fcm_token_setup_done");
 
-        // 2. إلغاء تسجيل Service Workers
+        // 2. Unregister Service Workers
         if ('serviceWorker' in navigator) {
             const registrations = await navigator.serviceWorker.getRegistrations();
             for (let registration of registrations) {
                 await registration.unregister();
-                console.log("[FCM Tool] تم إلغاء تسجيل: ", registration.scope);
+                console.log("[FCM Tool] Unregistered: ", registration.scope);
             }
         }
 
-        // 3. مسح الكاش
+        // 3. Clear cache
         if ('caches' in window) {
             const keys = await caches.keys();
             for (let key of keys) {
                 await caches.delete(key);
-                console.log("[FCM Tool] تم مسح الكاش: ", key);
+                console.log("[FCM Tool] Deleted cache: ", key);
             }
         }
 
-        alert("تم التنظيف بنجاح. سيتم إعادة تحميل الصفحة الآن.");
+        alert("Cleanup successful. The page will reload now.");
         window.location.reload();
     } catch (e) {
-        console.error("[FCM Tool] خطأ أثناء التنظيف:", e);
+        console.error("[FCM Tool] Error during cleanup:", e);
     }
 };
 
@@ -72,8 +71,8 @@ window.resetFCM = async function () {
 // ===============================
 
 /**
- * @description الدالة الرئيسية لتهيئة FCM.
- *   تقوم بالتحقق من وجود مستخدم مسجل، وتحديد المنصة (أندرويد أو ويب)، وتوجيه التهيئة للدالة المناسبة.
+ * @description Main FCM initialization function.
+ * Validates user session, detects platform (Android vs Web), and delegates setup to appropriate handlers.
  * @function setupFCM
  * @async
  * @returns {Promise<void>}
@@ -89,7 +88,7 @@ async function setupFCM() {
     }
     isSettingUpFCM = true;
 
-    console.log('[Dev] 📡 [FCM] جاري بدء تهيئة نظام الإشعارات setupFCM...');
+    console.log('[Dev] 📡 [FCM] Starting notification system setup (setupFCM)...');
 
     const MAX_RETRIES = 3;
     let attempt = 0;
@@ -98,31 +97,31 @@ async function setupFCM() {
     while (attempt < MAX_RETRIES && !success) {
         attempt++;
         try {
-            // التأكد من المستخدم
+            // Validate user session
             if (!userSession || !userSession.user_key) {
-                console.warn("[FCM] لا يوجد مستخدم مسجل — إلغاء العملية.");
+                console.warn("[FCM] No logged-in user found — aborting operation.");
                 break; // No point in retrying if no user
             }
             const currentUserId = userSession.user_key;
-            console.log(`[Dev] 📡 [FCM] محاولة رقم ${attempt}: المستخدم موجود (user_key: ${currentUserId}).`);
+            console.log(`[Dev] 📡 [FCM] Attempt #${attempt}: User identified (user_key: ${currentUserId}).`);
 
             // Check if this is a fresh setup after version change
             const lastVersionCheck = localStorage.getItem('last_version_check_time');
             if (lastVersionCheck) {
                 const timeSinceCheck = Date.now() - parseInt(lastVersionCheck);
                 if (timeSinceCheck < 10000) { // Within 10 seconds of version check/reload
-                    console.log('%c[FCM] 🔄 تم رصد تحديث إصدار أو إعادة تحميل حديثة - جاري تهيئة FCM من جديد',
+                    console.log('%c[FCM] 🔄 Version update or recent reload detected - re-initializing FCM',
                         'color: #ff9800; font-weight: bold;');
                 }
             }
 
-            // أولوية التهيئة على أندرويد
+            // Priority: Android setup
             if (window.Android && typeof window.Android.onUserLoggedIn === "function") {
-                console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة أندرويد (WebView).');
+                console.log('[Dev] 📡 [FCM] Android environment (WebView) detected.');
                 await setupFirebaseAndroid(currentUserId);
                 success = true;
             } else {
-                console.log('[Dev] 📡 [FCM] تم الكشف عن بيئة ويب (Browser).');
+                console.log('[Dev] 📡 [FCM] Web environment (Browser) detected.');
                 await setupFirebaseWeb(currentUserId);
                 // setupFirebaseWeb should throw if it fails critically to trigger retry
                 success = true;
@@ -130,16 +129,16 @@ async function setupFCM() {
 
             if (success) {
                 sessionStorage.setItem("fcm_token_setup_done", "1");
-                console.log(`[Dev] 📡 [FCM] ✅ تم الانتهاء من دالة setupFCM بنجاح في المحاولة رقم ${attempt}.`);
+                console.log(`[Dev] 📡 [FCM] ✅ setupFCM completed successfully on attempt #${attempt}.`);
             }
         } catch (error) {
-            console.error(`[FCM] ❌ فشل في المحاولة ${attempt}:`, error);
+            console.error(`[FCM] ❌ Failure on attempt #${attempt}:`, error);
             if (attempt < MAX_RETRIES) {
                 const delay = attempt * 3000; // 3s, 6s...
-                console.log(`[FCM] ⏳ سيتم إعادة المحاولة خلال ${delay / 1000} ثانية...`);
+                console.log(`[FCM] ⏳ Retrying in ${delay / 1000} seconds...`);
                 await new Promise(resolve => setTimeout(resolve, delay));
             } else {
-                console.error("[FCM] 💥 تم استنفاد كافة المحاولات. فشل تهيئة الإشعارات.");
+                console.error("[FCM] 💥 Exhausted all attempts. Notification initialization failed.");
             }
         }
     }
@@ -153,16 +152,14 @@ async function setupFCM() {
 // ===============================
 
 /**
- * @description تقوم بتسجيل Service Worker الخاص بـ Firebase Messaging.
- *   تتحقق أولاً من دعم المتصفح وتتعامل مع تحذيرات HTTP/HTTPS.
+ * @description Registers the Firebase Messaging Service Worker.
+ * Checks for browser support and handles HTTP/HTTPS warnings.
  * @function registerServiceWorker
  * @async
- * @returns {Promise<ServiceWorkerRegistration|boolean>} - كائن التسجيل عند النجاح، أو `false` عند الفشل.
+ * @returns {Promise<ServiceWorkerRegistration|boolean>} - Registration object on success, or `false` on failure.
  */
 async function registerServiceWorker() {
     if (!("serviceWorker" in navigator)) {
-        console.warn("[FCM] المتصفح لا يدعم Service Workers.");
-        return false;
     }
 
     // تحذير عند العمل بدون HTTPS
@@ -173,17 +170,17 @@ async function registerServiceWorker() {
     }
 
     try {
-        console.log("%c[SW] 🚀 الخطوة 1: بدء تسجيل Service Worker...", "color: #2196F3; font-weight: bold;");
+        console.log("%c[SW] 🚀 Step 1: Starting Service Worker registration...", "color: #2196F3; font-weight: bold;");
         const reg = await navigator.serviceWorker.register("/sw.js", { scope: "/" });
-        console.log("%c[SW] ✅ الخطوة 2: تم إرسال طلب تسجيل sw.js بنجاح.", "color: #4CAF50;");
+        console.log("%c[SW] ✅ Step 2: sw.js registration request sent successfully.", "color: #4CAF50;");
 
-        // الانتظار حتى يصبح Service Worker نشطاً تماماً
-        console.log("%c[SW] ⏳ الخطوة 3: في انتظار جاهزية الـ Service Worker...", "color: #FF9800;");
+        // Wait for Service Worker to be fully ready
+        console.log("%c[SW] ⏳ Step 3: Waiting for Service Worker readiness...", "color: #FF9800;");
         const registration = await navigator.serviceWorker.ready;
 
-        // التأكد من وجود عامل خدمة نشط
+        // Ensure an active service worker exists
         if (!registration.active) {
-            console.log("%c[SW] ⏳ الخطوة 4: ملف الخدمة غير نشط حالياً، جاري الانتظار البرمجي...", "color: #FF9800;");
+            console.log("%c[SW] ⏳ Step 4: Service worker not currently active, waiting programmatically...", "color: #FF9800;");
             await new Promise((resolve) => {
                 const onStateChange = () => {
                     if (registration.active) {
@@ -200,10 +197,10 @@ async function registerServiceWorker() {
             });
         }
 
-        console.log(`%c[SW] 🎉 الخطوة 5: الـ Service Worker جاهز تماماً ونشط (Status: ${registration.active ? "Active" : "Unknown"}).`, "color: #4CAF50; font-weight: bold;");
+        console.log(`%c[SW] 🎉 Step 5: Service Worker is fully ready and active (Status: ${registration.active ? "Active" : "Unknown"}).`, "color: #4CAF50; font-weight: bold;");
         return registration;
     } catch (err) {
-        console.error("%c[SW] ❌ فشل في تسجيل أو تجهيز ملف الخدمة:", "color: #f44336; font-weight: bold;", err);
+        console.error("%c[SW] ❌ Failed to register or prepare service worker:", "color: #f44336; font-weight: bold;", err);
         return false;
     }
 }
@@ -215,8 +212,8 @@ async function registerServiceWorker() {
 // ===============================
 
 /**
- * @description تقوم بتهيئة FCM خصيصاً لبيئة الأندرويد (WebView).
- *   تتواصل مع الواجهة الأصلية (Android Interface) لطلب التوكن، وتنتظر الاستجابة، ثم ترسله للخادم.
+ * @description Initializes FCM specifically for Android (WebView).
+ * Communicates with the Native Android Interface to request a token, waits for it, then syncs it to the server.
  * @function setupFirebaseAndroid
  * @async
  * @returns {Promise<void>}
@@ -227,39 +224,39 @@ async function registerServiceWorker() {
  * @see userSession
  */
 async function setupFirebaseAndroid(userId) {
-    console.log("[Dev] 📱 [Android FCM] بدء تهيئة FCM للأندرويد...");
+    console.log("[Dev] 📱 [Android FCM] Starting Android FCM initialization...");
 
     const existingToken = localStorage.getItem("android_fcm_key");
 
     if (!existingToken) {
-        console.log("[Dev] 📱 [Android FCM] الخطوة 1: لا يوجد توكن محفوظ محلياً.");
-        console.log("[Dev] 📱 [Android FCM] الخطوة 2: طلب التوكن من النظام عبر window.Android.onUserLoggedIn...");
+        console.log("[Dev] 📱 [Android FCM] Step 1: No locally saved token found.");
+        console.log("[Dev] 📱 [Android FCM] Step 2: Requesting token from system via window.Android.onUserLoggedIn...");
 
-        // طلب التوكن من WebView
+        // Request token from WebView
         try {
             // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.onUserLoggedIn.
-            console.log(`[Dev] 📱 [Android FCM] جاري استدعاء window.Android.onUserLoggedIn للمستخدم: ${userId}`);
+            console.log(`[Dev] 📱 [Android FCM] Calling window.Android.onUserLoggedIn for user: ${userId}`);
             window.Android.onUserLoggedIn(userId);
         } catch (e) {
-            console.error("[Android FCM] خطأ أثناء استدعاء onUserLoggedIn:", e);
+            console.error("[Android FCM] Error calling onUserLoggedIn:", e);
         }
 
-        // انتظار تخزين التوكن من النظام
-        console.log("[Dev] 📱 [Android FCM] الخطوة 3: في انتظار وصول التوكن من تطبيق الأندرويد (waitForFcmKey)...");
+        // Wait for token storage from the system
+        console.log("[Dev] 📱 [Android FCM] Step 3: Waiting for FCM token from Android app (waitForFcmKey)...");
         await waitForFcmKey(async (newToken) => {
-            console.log("[Dev] 📱 [Android FCM] الخطوة 4: تم استلام التوكن من النظام بنجاح.");
-            console.log("[Dev] 📱 [Android FCM] الخطوة 5: جاري مزامنة التوكن الجديد مع الخادم...");
+            console.log("[Dev] 📱 [Android FCM] Step 4: Token received from system successfully.");
+            console.log("[Dev] 📱 [Android FCM] Step 5: Syncing new token with server...");
             await sendTokenToServer(userId, newToken, "android");
-            // تفعيل الإشعارات تلقائياً في الواجهة عند نجاح العملية لأول مرة
-            console.log("[Dev] 📱 [Android FCM] الخطوة 6: تم تأكيد استلام التوكن ومزامنته. تفعيل الإشعارات في الواجهة.");
+            // Auto-enable notifications in UI upon first success
+            console.log("[Dev] 📱 [Android FCM] Step 6: Token received and synced. Enabling notifications in UI.");
             localStorage.setItem('notifications_enabled', 'true');
         }, 10000); // timeout
 
     } else {
-        console.log("[Current State] 📱 [Android FCM] التوكن موجود محليًا مسبقاً (Session Active).");
-        console.log("[FCM Bridge] 📱 [Android FCM] التوكن: ", existingToken.substring(0, 10) + "...");
-        // ✅ إضافة: ضمان تفعيل الإشعارات في الواجهة عند وجود توكن مسبقاً (مفيد عند إعادة تسجيل الدخول)
-        console.log("[FCM Bridge] 📱 [Android FCM] مزامنة الحالة: الإشعارات مفعلة.");
+        console.log("[Current State] 📱 [Android FCM] Token already exists locally (Session Active).");
+        console.log("[FCM Bridge] 📱 [Android FCM] Token: ", existingToken.substring(0, 10) + "...");
+        // ✅ Addition: Ensure notifications are enabled in UI if token exists (useful on re-login)
+        console.log("[FCM Bridge] 📱 [Android FCM] Syncing state: Notifications enabled.");
         localStorage.setItem('notifications_enabled', 'true');
     }
 }
@@ -271,9 +268,9 @@ async function setupFirebaseAndroid(userId) {
 // ===============================
 
 /**
- * @description تقوم بتهيئة FCM لبيئة الويب (المتصفحات).
- *   تشمل الخطوات: تسجيل Service Worker، استيراد مكتبات Firebase، تهيئة التطبيق، طلب الأذونات،
- *   الحصول على التوكن، ومزامنته مع الخادم.
+ * @description Initializes FCM for Web environment (Browsers).
+ * Steps: Service Worker registration, Firebase library import, App initialization,
+ * Permission request, Token retrieval, and server synchronization.
  * @function setupFirebaseWeb
  * @async
  * @returns {Promise<void>}
@@ -285,11 +282,11 @@ async function setupFirebaseAndroid(userId) {
  * @see userSession
  */
 async function setupFirebaseWeb(userId) {
-    console.log("[Dev] 🌏 [Web FCM] بدء تهيئة FCM للويب...");
+    console.log("[Dev] 🌏 [Web FCM] Starting Web FCM initialization...");
 
     try {
         const isSecureContext = window.isSecureContext;
-        console.log("[Dev] 🌏 [Web FCM] 🔍 بدء تشخيص الحالة: ", {
+        console.log("[Dev] 🌏 [Web FCM] 🔍 Starting diagnostic check: ", {
             online: navigator.onLine,
             protocol: location.protocol,
             ua: navigator.userAgent,
@@ -298,44 +295,44 @@ async function setupFirebaseWeb(userId) {
         });
 
         if (!isSecureContext && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
-            console.error("[Dev] 🌏 [Web FCM] ❌ تنبيه أمني: المتصفح لا يعتبر هذه البيئة آمنة (Insecure Context). FCM لن يعمل إلا على HTTPS أو localhost.");
+            console.error("[Dev] 🌏 [Web FCM] ❌ Security Alert: Browser does not consider this environment secure (Insecure Context). FCM will only work on HTTPS or localhost.");
         }
 
-        // فحص الاتصال بجوجل
+        // Check Google access
         const googleAccess = await checkGoogleConnectivity();
         if (!googleAccess) {
-            console.warn("[Dev] 🌏 [Web FCM] ⚠️ تنبيه: لا يمكن الوصول لخدمات Google. قد يفشل getToken.");
+            console.warn("[Dev] 🌏 [Web FCM] ⚠️ Alert: Cannot reach Google services. getToken might fail.");
         }
 
-        // تسجيل SW
-        console.log("%c[Web FCM] 🏗️ الخطوة 1: جاري تسجيل الـ Service Worker...", "color: #9c27b0; font-weight: bold;");
+        // SW Registration
+        console.log("%c[Web FCM] 🏗️ Step 1: Registering Service Worker...", "color: #9c27b0; font-weight: bold;");
         const swReg = await registerServiceWorker();
         if (!swReg) {
-            const errorMsg = "[Web FCM] ❌ فشل تسجيل الـ Service Worker - لا يمكن المتابعة.";
+            const errorMsg = "[Web FCM] ❌ Service Worker registration failed - cannot proceed.";
             console.error(`%c${errorMsg}`, "color: #f44336; font-weight: bold;");
             throw new Error(errorMsg);
         }
-        console.log("%c[Web FCM] ✅ تمت عملية التسجيل بنجاح.", "color: #4CAF50;");
+        console.log("%c[Web FCM] ✅ Registration successful.", "color: #4CAF50;");
 
-        // استيراد Firebase ديناميكيًا
+        // Dynamic Firebase Import
         if (!window.firebase) {
-            console.log("%c[Web FCM] 🏗️ الخطوة 2: تحميل مكتبات Firebase الخارجية (Core & Messaging)...", "color: #9c27b0; font-weight: bold;");
+            console.log("%c[Web FCM] 🏗️ Step 2: Loading external Firebase libraries (Core & Messaging)...", "color: #9c27b0; font-weight: bold;");
             await import("../assets/libs/firebase/firebase-app-8.10.1.js");
-            console.log("%c[Web FCM] - تم تحميل firebase-app.", "color: #795548;");
+            console.log("%c[Web FCM] - firebase-app loaded.", "color: #795548;");
             await import("../assets/libs/firebase/firebase-messaging-8.10.1.js");
-            console.log("%c[Web FCM] - تم تحميل firebase-messaging.", "color: #795548;");
+            console.log("%c[Web FCM] - firebase-messaging loaded.", "color: #795548;");
         }
 
         const firebase = window.firebase;
         if (!firebase) {
-            const errorMsg = "[Web FCM] ❌ فشل تحميل مكتبة Firebase بعد المحاولة.";
+            const errorMsg = "[Web FCM] ❌ Failed to load Firebase library after attempt.";
             console.error(`%c${errorMsg}`, "color: #f44336; font-weight: bold;");
             throw new Error(errorMsg);
         }
-        console.log("%c[Web FCM] ✅ تم تجهيز كائن Firebase في النافذة.", "color: #4CAF50;");
+        console.log("%c[Web FCM] ✅ Firebase object ready in window.", "color: #4CAF50;");
 
-        // تكوين Firebase
-        console.log("%c[Web FCM] 🏗️ الخطوة 3: تهيئة Firebase App مع الإعدادات المخصصة...", "color: #9c27b0; font-weight: bold;");
+        // Firebase Configuration
+        console.log("%c[Web FCM] 🏗️ Step 3: Initializing Firebase App with custom settings...", "color: #9c27b0; font-weight: bold;");
         const firebaseConfig = {
             apiKey: "AIzaSyClapclT8_4UlPvM026gmZbYCiXaiBDUYk",
             authDomain: "suze-bazaar-notifications.firebaseapp.com",
@@ -348,91 +345,91 @@ async function setupFirebaseWeb(userId) {
 
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
-            console.log("%c[Web FCM] ✅ تم إنشاء تطبيق Firebase (Initializing Done).", "color: #4CAF50;");
+            console.log("%c[Web FCM] ✅ Firebase App created (Initializing Done).", "color: #4CAF50;");
         } else {
-            console.log("[Web FCM] تطبيق Firebase مفعل مسبقاً، استخدام نسخة المشروع الحالية.");
+            console.log("[Web FCM] Firebase app already active, using existing instance.");
         }
         const messaging = firebase.messaging();
 
-        // ربط الخدمة بـ Messaging (ضروري في v8)
-        console.log("%c[Web FCM] 🏗️ الخطوة 4: ربط الـ Service Worker بكائن Messaging...", "color: #2196F3; font-weight: bold;");
+        // Link Service Worker to Messaging (Required in v8)
+        console.log("%c[Web FCM] 🏗️ Step 4: Linking Service Worker to Messaging object...", "color: #2196F3; font-weight: bold;");
         try {
             messaging.useServiceWorker(swReg);
             isServiceWorkerUsed = true;
-            console.log("%c[Web FCM] ✅ تم الربط بنجاح (Connection Established).", "color: #4CAF50;");
+            console.log("%c[Web FCM] ✅ Connection Established.", "color: #4CAF50;");
         } catch (linkErr) {
-            console.warn("[Web FCM] ⚠️ تنبيه عند الربط (قد يكون مرتبطاً مسبقاً):", linkErr.message);
+            console.warn("[Web FCM] ⚠️ Link warning (might already be linked):", linkErr.message);
         }
 
-        // 5. فحص حالة الإذن
+        // 5. Check Permission Status
         let currentPermission = Notification.permission;
-        console.log(`%c[Web FCM] 🔍 الخطوة 6: فحص حالة الإذن الحالية (Notification.permission): ${currentPermission}`, "color: #ffc107; font-weight: bold;");
+        console.log(`%c[Web FCM] 🔍 Step 6: Checking current permission state (Notification.permission): ${currentPermission}`, "color: #ffc107; font-weight: bold;");
 
         if (currentPermission === "denied") {
-            const errorMsg = "[Web FCM] 🛑 الإذن مرفوض مسبقاً من إعدادات المتصفح/الجهاز.";
+            const errorMsg = "[Web FCM] 🛑 Permission previously denied from browser/system settings.";
             console.error(`%c${errorMsg}`, "color: #f44336; font-weight: bold;");
 
-            // إظهار تنبيه للمستخدم لإرشاده (فقط في بيئة الويب المتصفحية)
+            // Show guide alert to user (only in web browser context)
             if (typeof Swal !== 'undefined' && !window.Android) {
                 Swal.fire({
-                    title: 'الإشعارات معطلة بنظامك',
-                    html: `لقد قمت بتعطيل الإشعارات لهذا التطبيق في إعدادات جهازك.<br>لتلقي التنبيهات، يرجى تفعيلها من <b>إعدادات المتصفح</b> أو <b>إعدادات الجهاز</b> ثم إعادة التشغيل.`,
+                    title: 'Notifications Disabled',
+                    html: `You have disabled notifications for this app in your system settings.<br>To receive alerts, please enable them from <b>Browser Settings</b> or <b>Device Settings</b> and restart.`,
                     icon: 'warning',
-                    confirmButtonText: 'حسناً'
+                    confirmButtonText: 'OK'
                 });
             }
             return;
         }
 
         if (currentPermission === "default") {
-            console.warn("%c[Web FCM] ⚠️ الأذونات في حالة 'default'. تخطي الطلب التلقائي لمنع الحظر في iOS/Safari.", "color: #ff9800;");
-            console.log("%c[Web FCM] 💡 يجب على المستخدم تفعيل الإشعارات يدوياً من صفحة الإعدادات (User Gesture Required).", "color: #03a9f4;");
+            console.warn("%c[Web FCM] ⚠️ Permissions are in 'default' state. Skipping automatic request to prevent block on iOS/Safari.", "color: #ff9800;");
+            console.log("%c[Web FCM] 💡 User must manually enable notifications from Settings page (User Gesture Required).", "color: #03a9f4;");
             return;
         }
 
-        // إذا وصلنا هنا، يعني الإذن 'granted' (أو تم طلبه بنجاح في ظروف أخرى)
-        console.log("%c[Web FCM] ✅ الخطوة 6: الإذن ممنوح (Status: granted). المتابعة لجلب التوكن.", "color: #4CAF50;");
+        // If we reached here, permission is 'granted'
+        console.log("%c[Web FCM] ✅ Step 6: Permission granted. Proceeding to fetch token.", "color: #4CAF50;");
 
 
-        // طلب التوكن من FCM فوراً (بدون انتظار أعمى)
-        console.log("%c[Web FCM] 🏗️ الخطوة 7: جاري جلب التوكن الفريد من سيرفرات Google FCM...", "color: #9c27b0; font-weight: bold;");
+        // Fetch FCM token (without blind waiting)
+        console.log("%c[Web FCM] 🏗️ Step 7: Fetching unique token from Google FCM servers...", "color: #9c27b0; font-weight: bold;");
 
         const VAPID_KEY = "BK1_lxS32198GdKm0Gf89yk1eEGcKvKLu9bn1sg9DhO8_eUUhRCAW5tjynKGRq4igNhvdSaR0-eL74V3ACl3AIY";
 
         try {
-            console.log("%c[Web FCM] - جاري استدعاء messaging.getToken...", "color: #795548;");
+            console.log("%c[Web FCM] - Calling messaging.getToken...", "color: #795548;");
             const currentToken = await messaging.getToken({
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: swReg
             });
 
             if (currentToken) {
-                console.log(`%c[Web FCM] ✅ الخطوة 8: تم استلام التوكن بنجاح: ${currentToken.substring(0, 15)}...`, "color: #4CAF50; font-weight: bold;");
+                console.log(`%c[Web FCM] ✅ Step 8: Token received successfully: ${currentToken.substring(0, 15)}...`, "color: #4CAF50; font-weight: bold;");
                 const savedToken = localStorage.getItem("fcm_token");
 
                 if (savedToken !== currentToken) {
-                    console.log("%c[Web FCM] 🔄 الخطوة 9: التوكن جديد ومختلف، جاري التحديث محلياً...", "color: #2196F3; font-weight: bold;");
+                    console.log("%c[Web FCM] 🔄 Step 9: Token is new/different, updating locally...", "color: #2196F3; font-weight: bold;");
                     localStorage.setItem("fcm_token", currentToken);
                 } else {
-                    console.log("[Web FCM] التوكن مطابق تماماً للمحفوظ مسبقاً - لا حاجة للتحديث المحلي.");
+                    console.log("[Web FCM] Token matches existing value - no local update needed.");
                 }
 
-                // إرسال التوكن للخادم
-                console.log("%c[Web FCM] 🏗️ الخطوة 10: جاري مزامنة التوكن مع قاعدة البيانات عبر الخادم...", "color: #9c27b0; font-weight: bold;");
+                // Sync token with server
+                console.log("%c[Web FCM] 🏗️ Step 10: Syncing token with database via server...", "color: #9c27b0; font-weight: bold;");
                 if (userId) {
                     await sendTokenToServer(userId, currentToken, "web");
                     localStorage.setItem('notifications_enabled', 'true');
-                    console.log("%c[Web FCM] ✅ تم تأكيد المزامنة مع الخادم بنجاح.", "color: #4CAF50;");
+                    console.log("%c[Web FCM] ✅ Server sync confirmed.", "color: #4CAF50;");
                 } else {
-                    console.warn("[Web FCM] ⚠️ توقف المزامنة: userId غير متاح حالياً.");
+                    console.warn("[Web FCM] ⚠️ Sync halted: userId unavailable.");
                 }
 
-                // [جديد] الخطوة 8: الاستماع للإشعارات في المقدمة (Foreground)
-                // هذا المنطق يضمن استلام الإشعار وحفظه في DB حتى لو كان التطبيق مفتوحاً
+                // [NEW] Step 8: Listen for foreground messages
+                // Ensures message is received and saved to DB even if app is open
                 messaging.onMessage((payload) => {
-                    console.log('%c[FCM Web] 📩 إشعار مستلم في المقدمة:', 'color: #00bcd4; font-weight: bold;', payload);
+                    console.log('%c[FCM Web] 📩 Foreground message received:', 'color: #00bcd4; font-weight: bold;', payload);
 
-                    // استخراج البيانات (FCM v1 يضعها غالباً في payload.notification أو payload.data)
+                    // Extract data (FCM v1 usually places it in payload.notification or payload.data)
                     const { title, body } = payload.notification || payload.data || {};
 
                     if (title || body) {
@@ -444,27 +441,27 @@ async function setupFirebaseWeb(userId) {
                                 body: body,
                                 timestamp: new Date(),
                                 status: 'unread',
-                                relatedUser: { key: 'system', name: 'النظام' },
+                                relatedUser: { key: 'system', name: 'System' },
                                 payload: payload.data
                             }).then(() => {
-                                console.log('[FCM Web] تم حفظ إشعار المقدمة في قاعدة البيانات.');
+                                console.log('[FCM Web] Foreground notification saved to DB.');
                             }).catch(err => {
-                                console.error('[FCM Web] فشل حفظ إشعار المقدمة:', err);
+                                console.error('[FCM Web] Failed to save foreground notification:', err);
                             });
                         }
                     }
                 });
 
-                console.log("[Dev] 🌏 [Web FCM] 🎉 اكتملت عملية التهيئة بنجاح.");
+                console.log("[Dev] 🌏 [Web FCM] 🎉 Initialization completed successfully.");
             } else {
-                console.warn("[Dev] 🌏 [Web FCM] ❓ تم الاتصال بنجاح ولكن Google أعاد توكن فارغ.");
+                console.warn("[Dev] 🌏 [Web FCM] ❓ Connected successfully but Google returned empty token.");
             }
         } catch (tokenErr) {
             // Ignore push service error as requested
             if (tokenErr.message && tokenErr.message.includes("push service error")) {
-                console.warn("[Dev] 🌏 [Web FCM] ⚠️ تم تجاهل خطأ متكرر في خدمة الدفع (Push Service Error).");
+                console.warn("[Dev] 🌏 [Web FCM] ⚠️ Ignoring recurring push service error.");
             } else {
-                console.error("[Dev] 🌏 [Web FCM] ❌ فشل الحصول على التوكن:", tokenErr.message);
+                console.error("[Dev] 🌏 [Web FCM] ❌ Failed to get token:", tokenErr.message);
                 throw tokenErr;
             }
         }
@@ -472,10 +469,10 @@ async function setupFirebaseWeb(userId) {
     } catch (err) {
         // Ignore AbortError: Registration failed - push service error
         if (err.message && err.message.includes("push service error")) {
-            console.warn("[FCM Web] ⚠️ تم تجاهل خطأ AbortError المتوقع لخدمة الدفع.");
+            console.warn("[FCM Web] ⚠️ Ignoring expected push service AbortError.");
         } else {
-            console.error("[FCM Web] 💥 خطأ غير متوقع في setupFirebaseWeb:", err);
-            throw err; // تصعيد الخطأ للمحاولة المتكررة
+            console.error("[FCM Web] 💥 Unexpected error in setupFirebaseWeb:", err);
+            throw err; // Escalate error for retry
         }
     }
 }
@@ -487,19 +484,19 @@ async function setupFirebaseWeb(userId) {
 // ===============================
 
 /**
- * @description كائن لتخزين الوعود المعلقة بانتظار توكن الأندرويد
+ * @description Object to store pending promises waiting for Android token
  */
 window._fcmTokenResolvers = [];
 
 /**
- * @description دالة يستدعيها تطبيق الأندرويد فور حصوله على التوكن
+ * @description Callback invoked by Android app upon receiving token
  * @param {string} token 
  */
 window.onAndroidFcmReceived = function (token) {
     if (token) {
-        console.log("[Bridge] 📱 تم استلام التوكن من الأندرويد عبر الإشارة المباشرة");
+        console.log("[Bridge] 📱 Token received from Android via direct signal");
         localStorage.setItem("android_fcm_key", token);
-        // حل جميع الوعود المنتظرة
+        // Resolve all pending promises
         const resolvers = window._fcmTokenResolvers;
         window._fcmTokenResolvers = [];
         resolvers.forEach(resolve => resolve(token));
@@ -521,10 +518,10 @@ function waitForFcmKey(callback, timeout = 15000) {
             resolve(t);
         });
 
-        // تايم أوت للأمان فقط في حال فشل الأندرويد تماماً
+        // timeout for safety in case Android fails completely
         setTimeout(() => {
             if (!localStorage.getItem("android_fcm_key")) {
-                console.warn("[Android FCM] فشل استلام التوكن عبر الإشارة (Timeout)");
+                console.warn("[Android FCM] Token retrieval failed via signal (Timeout)");
                 reject("timeout");
             }
         }, timeout);

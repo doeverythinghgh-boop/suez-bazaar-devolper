@@ -51,10 +51,10 @@ const STATIC_ASSETS = [
 
 // 3. Install Event - Precache Static Assets
 self.addEventListener('install', (event) => {
-    console.log('%c[Main SW] 🛠️ حدث install: جاري تثبيت ملف الخدمة الرئيسي وتخزين الأصول...', 'color: #9e9e9e;');
+    console.log('%c[Main SW] 🛠️ Install event: Installing main service worker and caching assets...', 'color: #9e9e9e;');
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('%c[Main SW] 📦 جاري تخزين Shell App في الكاش...', 'color: #607d8b;');
+            console.log('%c[Main SW] 📦 Caching App Shell...', 'color: #607d8b;');
             return cache.addAll(STATIC_ASSETS);
         })
     );
@@ -63,13 +63,13 @@ self.addEventListener('install', (event) => {
 
 // 4. Activate Event - Clean up old caches
 self.addEventListener('activate', (event) => {
-    console.log('%c[Main SW] ⚡ حدث activate: جاري تفعيل الخدمة وتنظيف الكاش القديم...', 'color: #9e9e9e;');
+    console.log('%c[Main SW] ⚡ Activate event: Activating service and cleaning up old caches...', 'color: #9e9e9e;');
     event.waitUntil(
         caches.keys().then((keys) => {
             return Promise.all(
                 keys.map((key) => {
                     if (key !== CACHE_NAME) {
-                        console.log(`%c[Main SW] 🗑️ حذف كاش قديم: ${key}`, 'color: #f44336;');
+                        console.log(`%c[Main SW] 🗑️ Deleting old cache: ${key}`, 'color: #f44336;');
                         return caches.delete(key);
                     }
                 })

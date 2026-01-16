@@ -1,11 +1,11 @@
 /**
  * @file notifications-logic.js
- * @description منطق الفلترة، الإحصائيات، وإدارة الحالة لصفحة الإشعارات
+ * @description Logic for filtering, statistics, and state management for the notifications page.
  */
 
 Object.assign(NotificationPage, {
     /**
-     * @description تحميل الإعدادات من localStorage
+     * @description Load settings from localStorage.
      */
     loadSettings() {
         try {
@@ -22,12 +22,12 @@ Object.assign(NotificationPage, {
                 }
             }
         } catch (error) {
-            console.warn('[Notifications Logic] خطأ في تحميل الإعدادات:', error);
+            console.warn('[Notifications Logic] Error loading settings:', error);
         }
     },
 
     /**
-     * @description حفظ الإعدادات في localStorage
+     * @description Save settings to localStorage.
      */
     saveSettings() {
         try {
@@ -39,12 +39,12 @@ Object.assign(NotificationPage, {
             };
             localStorage.setItem('notification_settings', JSON.stringify(settings));
         } catch (error) {
-            console.warn('[Notifications Logic] خطأ في حفظ الإعدادات:', error);
+            console.warn('[Notifications Logic] Error saving settings:', error);
         }
     },
 
     /**
-     * @description تطبيق قيم الفلاتر على عناصر DOM
+     * @description Apply filter values to DOM elements.
      */
     applyFilterValues() {
         try {
@@ -53,12 +53,12 @@ Object.assign(NotificationPage, {
             if (this.elements.searchInput) this.elements.searchInput.value = this.filters.search;
             if (this.elements.sortSelect) this.elements.sortSelect.value = this.filters.sortBy;
         } catch (error) {
-            console.error('[Notifications Logic] خطأ في تطبيق قيم الفلاتر:', error);
+            console.error('[Notifications Logic] Error applying filter values:', error);
         }
     },
 
     /**
-     * @description تحديث زر التحديث التلقائي
+     * @description Update the auto-refresh toggle.
      */
     updateAutoRefreshToggle() {
         try {
@@ -68,12 +68,12 @@ Object.assign(NotificationPage, {
                     this.refreshSettings.autoRefresh ? window.langu('notif_status_enabled') : window.langu('notif_status_disabled');
             }
         } catch (error) {
-            console.error('[Notifications Logic] خطأ في تحديث زر التحديث التلقائي:', error);
+            console.error('[Notifications Logic] Error updating auto-refresh toggle:', error);
         }
     },
 
     /**
-     * @description تحديث إحصائيات الصفحة
+     * @description Update page statistics.
      * @param {Array} notifications
      */
     updateStats(notifications) {
@@ -100,12 +100,12 @@ Object.assign(NotificationPage, {
                 }
             }
         } catch (error) {
-            console.error('[Notifications Logic] خطأ في تحديث الإحصائيات:', error);
+            console.error('[Notifications Logic] Error updating statistics:', error);
         }
     },
 
     /**
-     * @description تطبيق الفلاتر
+     * @description Apply filters.
      */
     applyFilters() {
         try {
@@ -137,12 +137,12 @@ Object.assign(NotificationPage, {
             this.state.filteredNotifications = filtered;
             this.renderNotifications();
         } catch (error) {
-            console.error('[Notifications Logic] خطأ في تطبيق الفلاتر:', error);
+            console.error('[Notifications Logic] Error applying filters:', error);
         }
     },
 
     /**
-     * @description مسح جميع الفلاتر
+     * @description Clear all filters.
      */
     clearFilters() {
         try {
@@ -156,12 +156,12 @@ Object.assign(NotificationPage, {
             this.applyFilters();
             this.saveSettings();
         } catch (error) {
-            console.error('[Notifications Logic] خطأ في مسح الفلاتر:', error);
+            console.error('[Notifications Logic] Error clearing filters:', error);
         }
     },
 
     /**
-     * @description تحديث حالة الصفحة
+     * @description Update page state.
      * @param {object} newState
      */
     setState(newState) {

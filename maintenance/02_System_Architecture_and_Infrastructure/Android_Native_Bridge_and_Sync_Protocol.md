@@ -26,6 +26,11 @@ Used for maintaining high-quality native UI translations and system slogas.
 - `saveNotificationBatchFromAndroid(jsonArray)`: (Batch Sync) Delivers multiple queued notifications at once, usually triggered after `onWebAppReady`. This prevents ID collisions and ensures counter accuracy during cold starts.
 - `onNativeLog(tag, msg)`: Pipes native Android Logcat messages into the web developer console (`[ANDROID]` prefix).
 
+## 3. Global Scope Exposure (Critical)
+To ensure the Android bridge can successfully "find" and call JavaScript functions, all core bridge handlers MUST be explicitly attached to the `window` object in `notificationTools.js`.
+- **Reasoning**: The Android `evaluateJavascript` environment often requires functions to be in the global scope, especially when called from background threads or different contexts.
+- **Affected Functions**: `saveNotificationFromAndroid`, `saveNotificationBatchFromAndroid`, `shouldNotify`, etc.
+
 ## 2. Silent Update Mechanism
 - **Asset Loader**: Uses `WebViewAssetLoader` for high-speed local asset delivery.
 - **Version Control**: Relies on `version.json` for granular hash comparison.

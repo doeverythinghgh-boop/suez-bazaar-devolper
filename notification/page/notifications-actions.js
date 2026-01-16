@@ -1,11 +1,11 @@
 /**
  * @file notifications-actions.js
- * @description العمليات الأساسية (DB, Events, Permissions) لصفحة الإشعارات
+ * @description Core operations (DB, Events, Permissions) for the notifications page.
  */
 
 Object.assign(NotificationPage, {
     /**
-     * @description إعداد مستمعي الأحداث
+     * @description Setup event listeners.
      */
     setupEventListeners() {
         try {
@@ -84,14 +84,14 @@ Object.assign(NotificationPage, {
 
             window.addEventListener('notificationLogAdded', async (event) => {
                 try {
-                    console.log('[Notifications Action] حدث إشعار جديد:', event.detail);
+                    console.log('[Notifications Action] New notification event:', event.detail);
                     if (!this.state || !this.elements || !this.elements.list) return;
                     await this.refreshNotifications();
                     if (!document.hidden && event.detail && event.detail.type === 'received') {
                         this.showToast(window.langu('notifications_new_received'), 'info');
                     }
                 } catch (innerError) {
-                    console.error('[Notifications Action] خطأ عند استقبال إشعار جديد:', innerError);
+                    console.error('[Notifications Action] Error receiving new notification:', innerError);
                 }
             });
 
@@ -99,21 +99,21 @@ Object.assign(NotificationPage, {
                 try {
                     if (!document.hidden) this.refreshNotifications();
                 } catch (innerError) {
-                    console.error('[Notifications Action] خطأ عند تغيير حالة الظهور:', innerError);
+                    console.error('[Notifications Action] Error change visibility state:', innerError);
                 }
             });
 
             window.addEventListener('notificationDeleted', (event) => {
-                console.log('[Notifications Action] تم حذف إشعار:', event.detail.id);
+                console.log('[Notifications Action] Notification deleted:', event.detail.id);
                 this.refreshNotifications();
             });
         } catch (error) {
-            console.error('[Notifications Action] خطأ في إعداد مستمعي الأحداث:', error);
+            console.error('[Notifications Action] Error setting up event listeners:', error);
         }
     },
 
     /**
-     * @description إعداد العداد العالمي
+     * @description Setup global counter.
      */
     setupGlobalCounter() {
         try {
@@ -123,12 +123,12 @@ Object.assign(NotificationPage, {
                 };
             }
         } catch (error) {
-            console.error('[Notifications Action] خطأ في إعداد العداد العالمي:', error);
+            console.error('[Notifications Action] Error setting up global counter:', error);
         }
     },
 
     /**
-     * @description تحميل الإشعارات من IndexedDB
+     * @description Load notifications from IndexedDB.
      */
     async loadNotifications() {
         this.setState({ isLoading: true, hasError: false });
@@ -139,7 +139,7 @@ Object.assign(NotificationPage, {
             this.updateStats(notifications);
             this.applyFilters();
         } catch (error) {
-            console.error('[Notifications Action] خطأ في جلب الإشعارات:', error);
+            console.error('[Notifications Action] Error fetching notifications:', error);
             this.setState({
                 isLoading: false,
                 hasError: true,
@@ -149,7 +149,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description تحديث الإشعارات
+     * @description Refresh notifications.
      */
     async refreshNotifications() {
         try {
@@ -160,42 +160,42 @@ Object.assign(NotificationPage, {
             }
             await this.loadNotifications();
         } catch (error) {
-            console.error('[Notifications Action] خطأ في تحديث الإشعارات:', error);
+            console.error('[Notifications Action] Error refreshing notifications:', error);
         }
     },
 
     /**
-     * @description بدء التحديث التلقائي
+     * @description Start auto-refresh.
      */
     startAutoRefresh() {
         try {
             this.stopAutoRefresh();
             if (this.refreshSettings.autoRefresh) {
                 this.refreshSettings.refreshTimer = setInterval(() => this.refreshNotifications(), this.refreshSettings.refreshInterval);
-                console.log('[Notifications Action] تم تفعيل التحديث التلقائي');
+                console.log('[Notifications Action] Auto-refresh enabled');
             }
         } catch (error) {
-            console.error('[Notifications Action] خطأ في تشغيل التحديث التلقائي:', error);
+            console.error('[Notifications Action] Error starting auto-refresh:', error);
         }
     },
 
     /**
-     * @description إيقاف التحديث التلقائي
+     * @description Stop auto-refresh.
      */
     stopAutoRefresh() {
         try {
             if (this.refreshSettings.refreshTimer) {
                 clearInterval(this.refreshSettings.refreshTimer);
                 this.refreshSettings.refreshTimer = null;
-                console.log('[Notifications Action] تم إيقاف التحديث التلقائي');
+                console.log('[Notifications Action] Auto-refresh stopped');
             }
         } catch (error) {
-            console.error('[Notifications Action] خطأ في إيقاف التحديث التلقائي:', error);
+            console.error('[Notifications Action] Error stopping auto-refresh:', error);
         }
     },
 
     /**
-     * @description حذف إشعار محدد
+     * @description Delete a specific notification.
      */
     async deleteNotification(id, element) {
         try {
@@ -229,13 +229,13 @@ Object.assign(NotificationPage, {
                 this.showToast(window.langu('notifications_delete_success'), 'success');
             }
         } catch (error) {
-            console.error('[Notifications Action] خطأ في حذف الإشعار:', error);
+            console.error('[Notifications Action] Error deleting notification:', error);
             this.showToast(window.langu('notifications_delete_fail'), 'error');
         }
     },
 
     /**
-     * @description تحديد جميع الإشعارات كمقروءة
+     * @description Mark all notifications as read.
      */
     async markAllAsRead(silent = false) {
         if (!silent) {
@@ -271,89 +271,89 @@ Object.assign(NotificationPage, {
             this.updateStats(this.state.notifications);
             if (!silent) this.showToast(window.langu('notifications_mark_all_read_success'), 'success');
         } catch (error) {
-            console.error('[Notifications Action] خطأ في تحديد الكل كمقروء:', error);
+            console.error('[Notifications Action] Error marking all as read:', error);
             if (!silent) this.showToast(window.langu('unexpected_error'), 'error');
         }
     },
 
     /**
-     * @description تهيئة حالة مفتاح التحكم الرئيسي
+     * @description Initialize Master Toggle state.
      */
     initMasterToggle() {
-        console.log('[Dev] 🔍 الخطوة 1: بدء تهيئة مفتاح التحكم الرئيسي للإشعارات...');
+        console.log('[Dev] 🔍 Step 1: Starting Master Toggle initialization...');
         try {
             if (this.elements.masterToggle) {
                 const storedEnabled = localStorage.getItem('notifications_enabled');
-                console.log(`[Dev] 🔍 [MasterToggle] القيمة المخزنة في localStorage هي: ${storedEnabled}`);
+                console.log(`[Dev] 🔍 [MasterToggle] Stored value in localStorage: ${storedEnabled}`);
                 let isEnabled = false;
 
-                // فحص إذن النظام (OS Permission)
-                // في الأندرويد، نعتمد أكثر على localStorage لأن التطبيق الأصلي يدير الأذونات
+                // Check OS Permission
+                // On Android, we rely more on localStorage because the native app handles permissions
                 const isAndroid = !!(window.Android);
                 const hasPermission = ('Notification' in window && Notification.permission === 'granted') || isAndroid;
 
-                console.log(`[Dev] 🔍 [MasterToggle] هل إذن المتصفح/النظام (OS Permission) ممنوح حالياً؟ ${hasPermission} (المنصة: ${isAndroid ? 'Android' : 'Web'})`);
+                console.log(`[Dev] 🔍 [MasterToggle] Is system/browser permission (OS Permission) currently granted? ${hasPermission} (Platform: ${isAndroid ? 'Android' : 'Web'})`);
 
                 if (storedEnabled === 'true' && hasPermission) {
-                    console.log('[Dev] ✅ [MasterToggle] الحالة: مفعل (مطابق للتخزين وإذن النظام)');
+                    console.log('[Dev] ✅ [MasterToggle] State: Enabled (matches storage and system permission)');
                     isEnabled = true;
                 } else if (storedEnabled === 'true' && !hasPermission) {
-                    console.warn('[Dev] ⚠️ [MasterToggle] الإذن مفقود بالرغم من ضبط التفعيل في التخزين.');
-                    console.log('[Dev] ⚠️ [MasterToggle] الحالة: معطل (تجاهل التخزين بسبب نقص إذن النظام/المتصفح)');
+                    console.warn('[Dev] ⚠️ [MasterToggle] Permission missing despite being enabled in storage.');
+                    console.log('[Dev] ⚠️ [MasterToggle] State: Disabled (ignoring storage due to lack of system/browser permission)');
                     isEnabled = false;
                 } else if (storedEnabled === 'false') {
-                    console.log('[Dev] 🚫 [MasterToggle] الحالة: معطل يدوياً من التخزين');
+                    console.log('[Dev] 🚫 [MasterToggle] State: Manually disabled in storage');
                     isEnabled = false;
                 } else {
-                    console.log(`[Dev] ℹ️ [MasterToggle] الحالة: أول مرة أو غير محددة، الاعتماد على الإذن الحالي (${hasPermission})`);
+                    console.log(`[Dev] ℹ️ [MasterToggle] State: First time or undefined, relying on current permission (${hasPermission})`);
                     isEnabled = hasPermission;
                 }
 
-                console.log(`[Dev] 🔍 [MasterToggle] النتيجة النهائية: المفتاح سيكون ${isEnabled ? 'ON' : 'OFF'}`);
+                console.log(`[Dev] 🔍 [MasterToggle] Final Result: Toggle will be ${isEnabled ? 'ON' : 'OFF'}`);
                 this.elements.masterToggle.checked = isEnabled;
                 this.updateToggleUI(isEnabled);
             }
         } catch (error) {
-            console.error('[Notifications Action] خطأ في تهيئة مفتاح التحكم:', error);
+            console.error('[Notifications Action] Error initializing Master Toggle:', error);
         }
     },
 
     /**
-     * @description تبديل حالة الإشعارات (تفعيل/تعطيل)
+     * @description Toggle notification status (Enable/Disable).
      */
     async toggleNotificationsStatus(isEnabled) {
-        console.log(`[Dev] 🚀 الخطوة 1: طلب تغيير حالة الإشعارات إلى: ${isEnabled ? 'تفعيل' : 'تعطيل'}`);
+        console.log(`[Dev] 🚀 Step 1: Requesting notification status change to: ${isEnabled ? 'Enable' : 'Disable'}`);
         try {
             if (isEnabled) {
-                console.log('[Dev] 🚀 الخطوة 2: استدعاء دالة enableNotifications...');
+                console.log('[Dev] 🚀 Step 2: Calling enableNotifications function...');
                 await this.enableNotifications();
             } else {
-                console.log('[Dev] 🚀 الخطوة 2: استدعاء دالة disableNotifications...');
+                console.log('[Dev] 🚀 Step 2: Calling disableNotifications function...');
                 await this.disableNotifications();
             }
         } catch (error) {
-            console.error('[Notifications Action] خطأ في تبديل حالة الإشعارات:', error);
+            console.error('[Notifications Action] Error toggling notification status:', error);
             if (this.elements.masterToggle) {
-                console.log('[Dev] ❌ فشل التغيير، إعادة حالة المفتاح...');
+                console.log('[Dev] ❌ Change failed, reverting toggle state...');
                 this.elements.masterToggle.checked = !isEnabled;
             }
         }
     },
 
     /**
-     * @description تفعيل الإشعارات
+     * @description Enable notifications.
      */
     async enableNotifications() {
-        console.log('[Dev] ⚙️ بدء عملية التفعيل (Enable Notifications)...');
+        console.log('[Dev] ⚙️ Starting Enable Notifications flow...');
         try {
             if ('Notification' in window) {
                 const currentPermission = Notification.permission;
-                console.log(`[Dev] ⚙️ الخطوة 1: فحص إذن المتصفح/النظام (System Permission). الحالة الحالية: ${currentPermission}`);
+                console.log(`[Dev] ⚙️ Step 1: Checking system/browser permission. Current state: ${currentPermission}`);
                 if (currentPermission === 'denied') {
-                    console.warn('[Dev] 🚫 إذن النظام مرفوض مسبقاً (Blocked at System Level)');
+                    console.warn('[Dev] 🚫 System permission previously denied (Blocked at System Level)');
                     // [!IMPORTANT] BRIDGE CALL: Coordinate with Android's WebAppInterface.requestNotificationPermission.
                     if (window.Android && typeof window.Android.requestNotificationPermission === 'function') {
-                        console.log('[Dev] ⚙️ الخطوة 1-A: بيئة أندرويد - جاري استدعاء طلب إذن النظام (OS Permission Request)...');
+                        console.log('[Dev] ⚙️ Step 1-A: Android environment - Calling OS Permission Request...');
                         window.Android.requestNotificationPermission();
                         Swal.fire({
                             title: window.langu('notifications_sys_permission_required'),
@@ -370,7 +370,7 @@ Object.assign(NotificationPage, {
                         if (this.elements.masterToggle) this.elements.masterToggle.checked = false;
                         return;
                     } else {
-                        console.log('[Dev] ⚙️ الخطوة 1-B: بيئة ويب - لا يمكن طلب الإذن برمجياً بعد الرفض.');
+                        console.log('[Dev] ⚙️ Step 1-B: Web environment - Permission cannot be requested programmatically after denial.');
                         Swal.fire({
                             title: window.langu('notifications_blocked_title'),
                             html: window.langu('notifications_blocked_text'),
@@ -390,7 +390,7 @@ Object.assign(NotificationPage, {
             }
 
             // [Fix for iOS] Request Permission FIRST to preserve User Gesture
-            console.log('[Dev] ⚙️ الخطوة 2: طلب إذن الإشعارات فوراً (قبل الـ Loading)...');
+            console.log('[Dev] ⚙️ Step 2: Requesting notification permission immediately (before loading)...');
 
             if (typeof askForNotificationPermission === 'function') {
                 await askForNotificationPermission();
@@ -398,27 +398,27 @@ Object.assign(NotificationPage, {
 
             if ('Notification' in window) {
                 const permission = await Notification.requestPermission();
-                console.log(`[Dev] ⚙️ نتيجة طلب الإذن: ${permission}`);
+                console.log(`[Dev] ⚙️ Permission request result: ${permission}`);
                 if (permission === 'denied') {
-                    throw new Error('تم رفض إذن الإشعارات من قبل المستخدم.');
+                    throw new Error('Notification permission denied by user.');
                 }
             }
 
-            console.log('[Dev] ⚙️ الخطوة 3: إظهار رسالة جاري التفعيل للمستخدم...');
+            console.log('[Dev] ⚙️ Step 3: Showing "Enabling" message to user...');
             Swal.fire({ title: window.langu('notifications_enabling'), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            console.log('[Dev] ⚙️ الخطوة 5: استدعاء setupFCM() لبدء تهيئة التوكن...');
+            console.log('[Dev] ⚙️ Step 5: Calling setupFCM() to initialize token...');
             if (typeof setupFCM === 'function') {
                 await setupFCM();
-                console.log('[Dev] ⚙️ الخطوة 6: تم اكتمال setupFCM بنجاح.');
+                console.log('[Dev] ⚙️ Step 6: setupFCM completed successfully.');
 
-                // إبلاغ تطبيق أندرويد بالتفعيل عبر الجسر البرمجي
+                // Inform Android app about enablement via bridge
                 if (window.Android && typeof window.Android.onNotificationsEnabled === 'function') {
                     try {
                         window.Android.onNotificationsEnabled();
-                        console.log('[Dev] 📱 تم إبلاغ تطبيق أندرويد بتفعيل الإشعارات.');
+                        console.log('[Dev] 📱 Notified Android app that notifications are enabled.');
                     } catch (e) {
-                        console.error('[Dev] ❌ خطأ في استدعاء onNotificationsEnabled:', e);
+                        console.error('[Dev] ❌ Error calling onNotificationsEnabled:', e);
                     }
                 }
 
@@ -437,11 +437,11 @@ Object.assign(NotificationPage, {
                     }
                 });
             } else {
-                throw new Error('نظام الإشعارات غير متوفر حالياً');
+                throw new Error('Notification system is currently unavailable');
             }
         } catch (error) {
-            console.error('[Notifications Action] فشل التفعيل:', error);
-            console.log('[Dev] ❌ فشل التفعيل في مكان ما.');
+            console.error('[Notifications Action] Enable failed:', error);
+            console.log('[Dev] ❌ Enablement failed somewhere.');
             Swal.fire({
                 title: window.langu('failed_operation_title'),
                 text: error.message || window.langu('unexpected_error'),
@@ -459,12 +459,12 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description تعطيل الإشعارات
+     * @description Disable notifications.
      */
     async disableNotifications() {
-        console.log('[Dev] 🛑 بدء عملية التعطيل (Disable Notifications)...');
+        console.log('[Dev] 🛑 Starting Disable Notifications flow...');
         try {
-            console.log('[Dev] 🛑 الخطوة 1: طلب تأكيد التعطيل من المستخدم...');
+            console.log('[Dev] 🛑 Step 1: Requesting disable confirmation from user...');
             const result = await Swal.fire({
                 title: window.langu('notifications_disable_confirm_title'),
                 text: window.langu('notifications_disable_confirm_text'),
@@ -482,24 +482,24 @@ Object.assign(NotificationPage, {
             });
 
             if (result.isConfirmed) {
-                console.log('[Dev] 🛑 الخطوة 2: تم التأكيد. جاري تحديث التخزين والواجهة...');
+                console.log('[Dev] 🛑 Step 2: Confirmed. Updating storage and UI...');
                 localStorage.setItem('notifications_enabled', 'false');
                 this.updateToggleUI(false);
-                console.log('[Dev] 🛑 الخطوة 3: مسح توكنات FCM المحفوظة محلياً وعلى السيرفر...');
+                console.log('[Dev] 🛑 Step 3: Clearing FCM tokens locally and on server...');
 
-                // حذف التوكن من السيرفر لضمان التوقف الفعلي
+                // Delete token from server to ensure actual stop
                 const userKey = window.userSession?.user_key;
                 if (userKey && typeof deleteTokenFromServer === 'function') {
                     await deleteTokenFromServer(userKey);
                 }
 
-                // إبلاغ تطبيق أندرويد بالتعطيل عبر الجسر البرمجي
+                // Inform Android app about disablement via bridge
                 if (window.Android && typeof window.Android.onNotificationsDisabled === 'function') {
                     try {
                         window.Android.onNotificationsDisabled();
-                        console.log('[Dev] 📱 تم إبلاغ تطبيق أندرويد بتعطيل الإشعارات.');
+                        console.log('[Dev] 📱 Notified Android app that notifications are disabled.');
                     } catch (e) {
-                        console.error('[Dev] ❌ خطأ في استدعاء onNotificationsDisabled:', e);
+                        console.error('[Dev] ❌ Error calling onNotificationsDisabled:', e);
                     }
                 }
 
@@ -517,18 +517,18 @@ Object.assign(NotificationPage, {
                         htmlContainer: 'swal-modern-mini-text'
                     }
                 });
-                console.log('[Dev] 🛑 تم الانتهاء من التعطيل بنجاح.');
+                console.log('[Dev] 🛑 Disablement completed successfully.');
             } else {
-                console.log('[Dev] 🛑 تم إلغاء التعطيل، استعادة حالة المفتاح.');
+                console.log('[Dev] 🛑 Disablement cancelled, reverting toggle state.');
                 if (this.elements.masterToggle) this.elements.masterToggle.checked = true;
             }
         } catch (error) {
-            console.error('[Notifications Action] خطأ في تعطيل الإشعارات:', error);
+            console.error('[Notifications Action] Error disabling notifications:', error);
         }
     }
 });
 
-// ملاحظة هامة: تم إزالة التهيئة التلقائية (NotificationPage.init) من هنا
-// لضمان عدم اعتبار الإشعارات "مقروءة" بمجرد تحميل ملفات الجافاسكريبت.
-// يتم استدعاء NotificationPage.init() الآن فقط عند تحميل ملف notifications.html
-// داخل الحاوية المخصصة له، مما يضمن دقة العداد.
+// IMPORTANT NOTE: Automatic initialization (NotificationPage.init) has been removed from here
+// to ensure notifications are not considered "read" just by loading the script files.
+// NotificationPage.init() is now called only when notifications.html is loaded
+// inside its dedicated container, ensuring counter accuracy.

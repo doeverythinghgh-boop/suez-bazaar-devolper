@@ -1,11 +1,11 @@
 /**
  * @file notifications-ui.js
- * @description وظائف واجهة المستخدم لصفحة الإشعارات (رسم، تنسيق، رسائل)
+ * @description UI functions for the notifications page (rendering, formatting, messages).
  */
 
 Object.assign(NotificationPage, {
     /**
-     * @description تحديث واجهة مفتاح التحكم (النصوص) بناءً على الحالة
+     * @description Update the toggle switch UI (texts) based on state.
      * @param {boolean} isEnabled 
      */
     updateToggleUI(isEnabled) {
@@ -23,13 +23,13 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description عرض الإشعارات في واجهة المستخدم (تخطيط واتساب)
+     * @description Render notifications in the UI (WhatsApp-style layout).
      */
     renderNotifications() {
         try {
             if (!this.elements.list) return;
 
-            // إظهار/إخفاء الحالات المختلفة
+            // Show/hide different states
             if (this.state.isLoading) {
                 this.showLoading();
                 return;
@@ -45,10 +45,10 @@ Object.assign(NotificationPage, {
                 return;
             }
 
-            // إخفاء الحالات
+            // Hide states
             this.hideAllStates();
 
-            // تنظيف القائمة
+            // Clear the list
             this.elements.list.innerHTML = '';
 
             let lastDateString = '';
@@ -60,7 +60,7 @@ Object.assign(NotificationPage, {
                     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                 });
 
-                // إضافة فاصل التاريخ إذا اختلف عن السابق
+                // Add date divider if different from previous
                 if (dateString !== lastDateString) {
                     const divider = document.createElement('div');
                     divider.className = 'date-divider';
@@ -73,13 +73,13 @@ Object.assign(NotificationPage, {
                 this.elements.list.appendChild(notificationElement);
             });
         } catch (error) {
-            console.error('[Notifications UI] خطأ في رسم الإشعارات:', error);
+            console.error('[Notifications UI] Error rendering notifications:', error);
             this.showError(window.langu('notifications_init_error'));
         }
     },
 
     /**
-     * @description إنشاء عنصر إشعار (تصميم فقاعة المحادثة)
+     * @description Create a notification element (Chat bubble design).
      * @param {object} notification
      * @returns {HTMLElement}
      */
@@ -120,7 +120,7 @@ Object.assign(NotificationPage, {
                 </div>
             `;
 
-            // إضافة مستمع حدث للحذف
+            // Add delete event listener
             const deleteBtn = element.querySelector('.delete-notification-btn');
             if (deleteBtn) {
                 deleteBtn.addEventListener('click', (e) => {
@@ -131,7 +131,7 @@ Object.assign(NotificationPage, {
 
             return element;
         } catch (error) {
-            console.error('[Notifications UI] خطأ في إنشاء عنصر الإشعار:', error);
+            console.error('[Notifications UI] Error creating notification element:', error);
             const errDiv = document.createElement('div');
             errDiv.textContent = window.langu('notifications_init_error');
             return errDiv;
@@ -139,7 +139,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description إظهار حالة التحميل
+     * @description Show loading state.
      */
     showLoading() {
         this.hideAllStates();
@@ -152,7 +152,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description إظهار حالة الخطأ
+     * @description Show error state.
      * @param {string} [message]
      */
     showError(message) {
@@ -169,7 +169,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description إظهار حالة فارغة
+     * @description Show empty state.
      */
     showEmptyState() {
         this.hideAllStates();
@@ -182,7 +182,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description إخفاء جميع الحالات
+     * @description Hide all states.
      */
     hideAllStates() {
         if (this.elements.loadingState) this.elements.loadingState.style.display = 'none';
@@ -192,7 +192,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description إظهار رسالة toast
+     * @description Show toast message.
      * @param {string} message
      * @param {string} type
      */
@@ -224,7 +224,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description تنسيق الوقت منذ الحدث
+     * @description Format time ago since event.
      * @param {Date} date
      * @returns {string}
      */
@@ -243,7 +243,7 @@ Object.assign(NotificationPage, {
     },
 
     /**
-     * @description حماية النص من HTML Injection
+     * @description Escape HTML to prevent injection.
      * @param {string} text
      * @returns {string}
      */
