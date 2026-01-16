@@ -364,24 +364,28 @@ async function sendNotificationsToTokens(allTokens, title, body) {
 
 /**
  * @description يجلب توكنات الإشعارات (FCM tokens) لجميع المسؤولين.
- *   يستخدم قائمة ثابتة من مفاتيح المسؤولين لإجراء طلب للـ API.
  * @async
  * @function getAdminTokens
+ * @param {string} excludeKey - المفتاح الذي سيتم استثناؤه من جلب التوكنات (القائم بالفعل).
  * @returns {Promise<string[]>} - وعد (Promise) يحتوي على مصفوفة من توكنات المسؤولين.
- * @see apiFetch
  */
-async function getAdminTokens() {
+async function getAdminTokens(excludeKey = '') {
     try {
-        // المفاتيح الخاصة بالمسؤولين. في المستقبل، يمكن جلبها ديناميكيًا.
         const ADMIN_KEYS = ["dl14v1k7", "682dri6b", "pngukw"];
-        const adminKeysQuery = ADMIN_KEYS.join(",");
+
+        // تصفية القائم بالفعل إذا تم تمريره
+        const filteredKeys = excludeKey ? ADMIN_KEYS.filter(k => k !== excludeKey) : ADMIN_KEYS;
+
+        if (filteredKeys.length === 0) return [];
+
+        const adminKeysQuery = filteredKeys.join(",");
         const response = await apiFetch(
             `/api/tokens?userKeys=${encodeURIComponent(adminKeysQuery)}`
         );
         return response?.tokens || [];
     } catch (error) {
         console.error("[Notifications] فشل في جلب توكنات المسؤولين:", error);
-        return []; // إرجاع مصفوفة فارغة في حالة حدوث خطأ
+        return [];
     }
 }
 /**
@@ -825,10 +829,10 @@ async function notifyBuyerOnStepChange(buyerKey, stepId, stepName, orderId = '')
  * @see getAdminTokens
  * @see sendNotificationsToTokens
  */
-async function notifyAdminOnStepChange(stepId, stepName, orderId = '', userName = '') {
+async function notifyAdminOnStepChange(stepId, stepName, orderId = '', userName = '', actingUserId = '') {
     try {
         await loadNotificationMessages();
-        const adminTokens = await getAdminTokens();
+        const adminTokens = await getAdminTokens(actingUserId);
 
         if (adminTokens.length > 0) {
             const orderIdText = orderId ? ` للطلب #${orderId}` : '';
@@ -949,7 +953,7 @@ async function notifyOnStepActivation({
         // 2. إشعار الإدارة
         if (await shouldNotify(stepId, 'admin')) {
             notificationPromises.push(
-                notifyAdminOnStepChange(stepId, stepName, orderId, userName)
+                notifyAdminOnStepChange(stepId, stepName, orderId, userName, actingUserId)
             );
         }
 
@@ -1181,7 +1185,8 @@ async function notifyAdminOnNewItem(productData) {
         console.log(`[Dev-Notification] ✅ الحدث مفعل في الإعدادات.`);
 
         console.log(`[Dev-Notification] 🔑 المرحلة 2: جلب توكنات FCM الخاصة بمدراء النظام...`);
-        const adminTokens = await getAdminTokens();
+        const actingUserId = userSession?.idUser || '';
+        const adminTokens = await getAdminTokens(actingUserId);
         if (!adminTokens || adminTokens.length === 0) {
             console.error('[Dev-Notification] ❌ خطأ: لم يتم العثور على أي توكنات (Admins) مسجلة في قاعدة البيانات.');
             return;
@@ -1251,7 +1256,8 @@ async function notifyAdminOnItemUpdate(productData) {
             return;
         }
 
-        const adminTokens = await getAdminTokens();
+        const actingUserId = userSession?.idUser || '';
+        const adminTokens = await getAdminTokens(actingUserId);
         if (!adminTokens || adminTokens.length === 0) {
             console.error('[Dev-Notification] ❌ خطأ: لم يتم العثور على أي توكنات (Admins).');
             return;
@@ -1310,7 +1316,8 @@ async function notifyOnItemAccepted(productData) {
 
         // 1. إشعار الإدارة
         if (await shouldNotify('item-accepted', 'admin')) {
-            const adminTokens = await getAdminTokens();
+            const actingUserId = userSession?.idUser || '';
+            const adminTokens = await getAdminTokens(actingUserId);
             if (adminTokens.length > 0) {
                 const { title, body } = getMessageTemplate('item-accepted.admin', { itemType, itemName });
                 await sendNotificationsToTokens(adminTokens, title, body);

@@ -176,11 +176,16 @@ export async function handleShippingSave(data, ordersData) {
                             }
                         }
 
-                        // 2. Notify Delivery (Targeted)
-                        if (deliveryToNotify.length > 0 && typeof window.notifyOnStepActivation === 'function') {
-                            console.log(`[SteperNotification] 🔍 [2/2] فحص إمكانية إشعار خدمات التوصيل (Delivery)...`);
-                            console.log(`[SteperNotification] 📨 توجيه طلب الإشعار لتطبيقات التوصيل...`);
-                            console.log(`[SteperNotification] 🎯 المستهدفون النهائيون (التوصيل): [${deliveryToNotify.join(', ')}]`);
+                        // 2. Notify Delivery (Targeted) & Admins (Internally checked)
+                        if (typeof window.notifyOnStepActivation === 'function') {
+                            console.log(`[SteperNotification] 🔍 [2/2] بدء معالجة الإرسال الجماعي (Admins/Delivery)...`);
+
+                            if (deliveryToNotify.length > 0) {
+                                console.log(`[SteperNotification] 📨 توجيه طلب الإشعار لتطبيقات التوصيل...`);
+                                console.log(`[SteperNotification] 🎯 المستهدفون النهائيون (التوصيل): [${deliveryToNotify.join(', ')}]`);
+                            } else {
+                                console.log(`[SteperNotification] ℹ️ لا توجد جهات توصيل مستهدفة لهذا الطلب (فحص إشعارات الإدارة مستمر).`);
+                            }
 
                             notificationPromises.push(window.notifyOnStepActivation({
                                 stepId: 'step-shipped',
@@ -191,7 +196,7 @@ export async function handleShippingSave(data, ordersData) {
                                 actingUserId: actingUserId
                             }));
                         } else {
-                            console.log(`[SteperNotification] ℹ️ لا توجد جهات توصيل مستهدفة لهذا الطلب (أو أن القائم بالحدث هو المندوب الوحيد).`);
+                            console.warn(`[SteperNotification] ❌ دالة notifyOnStepActivation غير متوفرة!`);
                         }
 
                         await Promise.all(notificationPromises);
