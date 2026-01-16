@@ -415,12 +415,12 @@ The Bazaar Progressive Web App (PWA) architecture ensures high availability, spe
 - **`firebase-messaging-sw.js`**: Exclusively handles background Push notifications using Firebase v8.
 
 ## 3. Caching Strategies
-| File Type | Strategy | Behavior |
-| :--- | :--- | :--- |
-| **HTML Navigation** | **Network First** | Tries network; falls back to `offline.html`. |
-| **Static Assets (JS/CSS)** | **Cache First** | Immediate loading from cache; periodic refresh. |
-| **Images** | **Cache First** | Local storage to save mobile data. |
-| **API Data** | **Network Only** | Ensures live data for prices/orders. |
+| File Type                  | Strategy          | Behavior                                        |
+| :------------------------- | :---------------- | :---------------------------------------------- |
+| **HTML Navigation**        | **Network First** | Tries network; falls back to `offline.html`.    |
+| **Static Assets (JS/CSS)** | **Cache First**   | Immediate loading from cache; periodic refresh. |
+| **Images**                 | **Cache First**   | Local storage to save mobile data.              |
+| **API Data**               | **Network Only**  | Ensures live data for prices/orders.            |
 
 ## 4. Offline Functionality
 - **`offline.html`**: A standalone fallback page with self-contained translation logic.
@@ -565,15 +565,15 @@ The advertisement system provides high-impact visual marketing while maintaining
 The Stepper module is the primary interface for tracking the progress of an order through 7 distinct technical statuses across 4 visual stages.
 
 ## 1. The Status Matrix
-| Status Key | Description |
-| :--- | :--- |
-| **PENDING** | Default state upon order creation. |
-| **CONFIRMED** | Accepted and verified by the seller. |
-| **SHIPPED** | Handed over to delivery or physically sent. |
-| **DELIVERED** | Receipt confirmed by the purchaser. |
-| **CANCELLED** | Voided by the purchaser during review. |
-| **REJECTED** | Declined by the seller (e.g., out of stock). |
-| **RETURNED** | Attempted delivery failed; item returned to seller. |
+| Status Key    | Description                                         |
+| :------------ | :-------------------------------------------------- |
+| **PENDING**   | Default state upon order creation.                  |
+| **CONFIRMED** | Accepted and verified by the seller.                |
+| **SHIPPED**   | Handed over to delivery or physically sent.         |
+| **DELIVERED** | Receipt confirmed by the purchaser.                 |
+| **CANCELLED** | Voided by the purchaser during review.              |
+| **REJECTED**  | Declined by the seller (e.g., out of stock).        |
+| **RETURNED**  | Attempted delivery failed; item returned to seller. |
 
 ## 2. Roles and Permissions Matrix
 - **Admin**: Full override capability. Can modify any stage.
@@ -618,12 +618,12 @@ Bazaar distinguishes between physical products (Add1) and non-physical services 
 ## 2. Dynamic Component Swapping
 The application uses two separate view and edit modules based on the category of the item.
 
-| Feature | Physical Product (ProductView) | Service (ProductView2) |
-| :--- | :--- | :--- |
-| **Media** | Standard Grid/Gallery. | Interactive 3D CSS Slider. |
-| **Transaction** | "Add to Cart" (Quantity based). | "Send Order" (Request/Photo based). |
-| **Editing** | Fields for Price, Quantity, Discount. | Fields for Description and Seller Message only. |
-| **Interaction** | Straightforward purchase. | Supports "Photography Request" with buyer attachments. |
+| Feature         | Physical Product (ProductView)        | Service (ProductView2)                                 |
+| :-------------- | :------------------------------------ | :----------------------------------------------------- |
+| **Media**       | Standard Grid/Gallery.                | Interactive 3D CSS Slider.                             |
+| **Transaction** | "Add to Cart" (Quantity based).       | "Send Order" (Request/Photo based).                    |
+| **Editing**     | Fields for Price, Quantity, Discount. | Fields for Description and Seller Message only.        |
+| **Interaction** | Straightforward purchase.             | Supports "Photography Request" with buyer attachments. |
 
 ## 3. The `ProductStateManager` Bridge
 This central manager handles the state transitions:
@@ -838,7 +838,7 @@ The project uses the modern FCM v1 API for all outgoing messages. To maintain pe
 ### Critical Components:
 - **VAPID Keys**: Ensure secure browser registration.
 - **Token Management**: Handled distinctly for PWA (`fcm_token`) and Android (`android_fcm_key`) to prevent delivery conflicts.
-- **`shouldNotify(stepId, role)`**: A localized logic engine in `notificationTools.js` that checks user preferences and global settings before attempting a broadcast.
+- **`shouldNotify(stepId, role)`**: A logic engine in `notification/fcm-config.js` that checks user preferences and global settings before attempting a broadcast.
 
 ## 2. Client-Side P2P Notifications [NEW]
 To ensure instant notifications even during high server latency, the PWA can send messages directly:
