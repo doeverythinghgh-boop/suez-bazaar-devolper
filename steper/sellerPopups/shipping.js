@@ -143,13 +143,6 @@ export async function handleShippingSave(data, ordersData) {
                     }).then(async () => {
                         updateCurrentStepFromState(data, ordersData);
 
-                        const metadata = extractNotificationMetadata(ordersData, data);
-                        const relevantDelivery = extractRelevantDeliveryKeys(updates, ordersData);
-
-                        // Filter out current user
-                        const actingUserId = String(data.currentUser.idUser);
-                        const deliveryToNotify = relevantDelivery.filter(d => String(d) !== actingUserId);
-
                         // [Notifications] Dispatch Notifications (Buyer + Relevant Delivery)
                         console.log(`%c[SteperNotification] 🚀 بدء خطوة إشعارات "الشحن" (Shipping)`, 'color: #00bfff; font-weight: bold; font-size: 1.1em;');
 
