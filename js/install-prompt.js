@@ -30,8 +30,12 @@ window.addEventListener('load', () => {
 // 2. Check conditions and show modal
 function checkAndShowInstallPrompt() {
   // A. Check if already installed (standalone)
-  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
-    console.log('[InstallPrompt] App is already running in standalone mode.');
+  // Support for standard PWA (display-mode) and iOS (navigator.standalone)
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+    (window.navigator.standalone === true);
+
+  if (isStandalone) {
+    console.log('[InstallPrompt] App is already running in standalone mode (iOS or Android).');
     return;
   }
 
