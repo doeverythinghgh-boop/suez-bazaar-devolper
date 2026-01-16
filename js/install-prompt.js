@@ -9,6 +9,7 @@ var deferredPrompt;
 
 // 1. Capture the PWA install prompt event
 window.addEventListener('beforeinstallprompt', (e) => {
+  if (window.Android) return;
   // Prevent the mini-infobar from appearing on mobile
   e.preventDefault();
   // Stash the event so it can be triggered later.
@@ -22,6 +23,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 // Run check on load to support iOS and cases where prompt event doesn't fire
 window.addEventListener('load', () => {
+  if (window.Android) return;
   setTimeout(() => {
     checkAndShowInstallPrompt();
   }, 3000);

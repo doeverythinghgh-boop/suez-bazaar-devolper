@@ -253,6 +253,11 @@ async function clearAllBrowserData() {
  * @returns {Promise<void>}
  */
 async function checkAppVersionAndClearData() {
+  // [Optimization] Skip version checking inside Android context
+  if (window.Android) {
+    console.log('[VersionCheck] Android environment detected. Skipping PWA version management.');
+    return;
+  }
   const VERSION_STORAGE_KEY = 'app_version';
   try {
     // 1) Fetch latest version.json with cache busting

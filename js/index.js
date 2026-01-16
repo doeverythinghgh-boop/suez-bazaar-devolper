@@ -182,20 +182,22 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   };
 
-  // [Step -1] Check for new version and clear data if needed
-  await checkAppVersionAndClearData();
+  // [Step -1] Check for new version and clear data if needed (PWA Only)
+  if (!window.Android) {
+    await checkAppVersionAndClearData();
 
-  // [Step -1.5] Periodic Version Check (Every minute checks if 1 hour passed)
-  setInterval(async () => {
-    const lastCheck = localStorage.getItem('last_version_check_time');
-    const now = Date.now();
-    const ONE_HOUR = 60 * 60 * 1000;
+    // [Step -1.5] Periodic Version Check (Every minute checks if 1 hour passed)
+    setInterval(async () => {
+      const lastCheck = localStorage.getItem('last_version_check_time');
+      const now = Date.now();
+      const ONE_HOUR = 60 * 60 * 1000;
 
-    if (!lastCheck || (now - parseInt(lastCheck)) > ONE_HOUR) {
-      console.log("[VersionCheck] Hourly check triggered.");
-      await checkAppVersionAndClearData();
-    }
-  }, 60 * 1000); // Check every minute
+      if (!lastCheck || (now - parseInt(lastCheck)) > ONE_HOUR) {
+        console.log("[VersionCheck] Hourly check triggered.");
+        await checkAppVersionAndClearData();
+      }
+    }, 60 * 1000); // Check every minute
+  }
 
   // [Step 0] Load notification configurations from server (Single Source of Truth)
   try {

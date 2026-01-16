@@ -101,23 +101,17 @@ var WebP2PNotification = (() => {
                     token: token,
                     android: {
                         priority: 'HIGH'
-                        // إزالة notification للتأكد من أن onMessageReceived تعمل وتشغل الصوت
                     },
                     webpush: {
                         headers: {
                             Urgency: "high"
                         }
                     },
-                    notification: {
-                        title: title,
-                        body: body
-                    },
                     data: {
                         title: title,
                         body: body,
                         messageId: `web_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
                         platform: 'web-p2p',
-                        // إضافة channelId في البيانات لكي يستخدمها الأندرويد إذا لزم الأمر
                         channelId: 'bazaar_channel_v5'
                     }
                 }
