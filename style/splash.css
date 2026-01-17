@@ -1,0 +1,138 @@
+/* splash.css - PWA Splash Screen Styles */
+
+#pwa-splash-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #dfe8f1;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease-out, visibility 0.5s;
+    user-select: none;
+}
+
+#pwa-splash-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.splash-content-top {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 32px;
+    text-align: center;
+}
+
+.splash-slogan {
+    color: #007bff;
+    font-size: 32px;
+    font-weight: bold;
+    margin: 0;
+    letter-spacing: 0.05em;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.splash-tagline {
+    color: #5b6e8a;
+    font-size: 16px;
+    margin-top: 16px;
+    max-width: 80%;
+    line-height: 1.5;
+}
+
+/* Category Carousel */
+.splash-carousel-container {
+    width: 100%;
+    overflow: hidden;
+    margin-top: 28px;
+    margin-bottom: 120px;
+    white-space: nowrap;
+    position: relative;
+}
+
+.splash-carousel-track {
+    display: inline-flex;
+    animation: splash-scroll 30s linear infinite;
+    gap: 16px;
+    /* 8dp margin * 2 */
+    padding: 0 8px;
+}
+
+.splash-carousel-item {
+    width: 80px;
+    /* 80dp */
+    height: 80px;
+    /* 80dp */
+    background-color: #fff;
+    border-radius: 50%;
+    /* Circular as in Android app:Radius 40dp */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Elevation 4dp */
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.splash-carousel-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* scaleType="centerCrop" */
+}
+
+@keyframes splash-scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+
+    /* Perfect loop with 2 identical sets */
+}
+
+/* Loader Section */
+.splash-content-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 64px;
+}
+
+.splash-loader {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #007bff33;
+    border-top: 3px solid #007bff;
+    border-radius: 50%;
+    animation: splash-spin 1s linear infinite;
+    margin-bottom: 16px;
+}
+
+.splash-loading-text {
+    color: #007bff;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+@keyframes splash-spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

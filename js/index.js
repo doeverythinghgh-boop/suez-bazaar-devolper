@@ -518,6 +518,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // [Step 10] Run Header Scroll Tutorial
   runHeaderScrollTutorial();
+
+  // [Step 11] Hide Splash Screen (Enforces 4s min duration)
+  if (typeof window.hideSplashScreen === 'function') {
+    window.hideSplashScreen();
+  }
 });
 
 /**

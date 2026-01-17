@@ -31,7 +31,10 @@
   <link rel="stylesheet" href="/style/variables.css" />
   <link rel="stylesheet" href="/style/index.css">
   <link rel="stylesheet" href="/style/utilities.css">
+  <link rel="stylesheet" href="/style/splash.css">
   <link rel="stylesheet" href="/notification/page/notifications.css">
+
+  <script src="/js/splash.js"></script>
 
   <!-- 3. Modal & Dialog Styles -->
   <link rel="stylesheet" href="/style/modals-and-dialogs.css">
@@ -105,6 +108,26 @@
 </head>
 
 <body id="index-app-body">
+
+  <!-- PWA Splash Screen (Mirrors Android UI) -->
+  <div id="pwa-splash-screen">
+    <div class="splash-content-top">
+      <h1 class="splash-slogan">السويس بين إيديك</h1>
+      <p class="splash-tagline">...</p>
+    </div>
+
+    <!-- Category Carousel -->
+    <div class="splash-carousel-container">
+      <div class="splash-carousel-track">
+        <!-- Dynamically populated by splash.js -->
+      </div>
+    </div>
+
+    <div class="splash-content-bottom">
+      <div class="splash-loader"></div>
+      <p class="splash-loading-text">جاري التحميل...</p>
+    </div>
+  </div>
 
   <header class="index-app-header" id="index-app-header">
     <!-- زر تسجيل الدخول -->
