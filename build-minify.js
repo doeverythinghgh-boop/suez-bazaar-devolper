@@ -83,17 +83,31 @@ var EXCLUDED_DIRS = ['api', 'note', 'node_modules', 'dist', '.git', '.gemini', '
 var EXCLUDED_FILES = ['build.js', 'build-minify.js', 'package.json', 'package-lock.json', 'version-watcher.js'];
 var ASSETS_TO_COPY = ['assets', 'notification', 'shared', 'style', 'location', 'images', 'favicon.ico', 'manifest.json', 'js', 'pages', 'steper', 'lang', 'androidLang.json'];
 
+/**
+ * Terser Minification Options
+ * إعدادات ضغط الكود باستخدام Terser
+ * 
+ * CRITICAL: mangle must be FALSE to preserve function names for Android bridge compatibility
+ * مهم جداً: يجب أن يكون mangle = false للحفاظ على أسماء الدوال للتوافق مع جسر الأندرويد
+ */
 var terserOptions = {
-    mangle: true,
+    // mangle: تغيير أسماء المتغيرات والدوال لأسماء قصيرة (a, b, c...)
+    // يجب أن يكون false لأن الأندرويد يستدعي دوال بأسمائها الأصلية مثل:
+    // saveNotificationFromAndroid, onWebAppReady, etc.
+    mangle: false,
+
+    // compress: خيارات ضغط الكود وإزالة الأجزاء غير المستخدمة
     compress: {
-        passes: 2,
-        dead_code: true,
-        drop_debugger: true,
-        ecma: 5
+        passes: 2,              // عدد مرات المرور على الكود للضغط (2 = ضغط أفضل)
+        dead_code:false,        // إزالة الكود الذي لا يتم تنفيذه أبداً
+        drop_debugger:false,    // إزالة جمل debugger من الكود
+        ecma: 5                 // التوافق مع ECMAScript 5 (دعم المتصفحات القديمة)
     },
+
+    // format: خيارات تنسيق الكود الناتج
     format: {
-        comments: false,
-        ecma: 5
+        comments: false,        // إزالة جميع التعليقات (JSDoc, //, /* */)
+        ecma: 5                 // تنسيق الكود بما يتوافق مع ES5
     }
 };
 
