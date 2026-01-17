@@ -4,19 +4,37 @@
  */
 
 function saveNotificationFromAndroid(notificationJson) {
+    console.log('%c[Dev] 📥 Single notification received from Android', 'color: #6c757d; font-weight: bold;');
+    console.log('[Dev] Raw JSON string:', notificationJson);
+
     try {
         const notificationData = JSON.parse(notificationJson);
+        console.log('%c[Dev] ✅ JSON parsed successfully', 'color: #28a745;', notificationData);
         saveNotificationBatchFromAndroid(JSON.stringify([notificationData]));
     } catch (error) {
-        console.error("[Auth] Error parsing single notification:", error);
+        console.error('%c[Dev] ❌ JSON Parse Error - Single Notification', 'color: #dc3545; font-weight: bold;');
+        console.error('[Dev] Error details:', error.message);
+        console.error('[Dev] Problematic JSON string:', notificationJson);
+        console.error('[Dev] Common causes:');
+        console.error('  1. Unescaped double quotes (") in notification body');
+        console.error('  2. Unescaped backslashes (\\) in text');
+        console.error('  3. Newline characters (\\n) not properly escaped');
+        console.error('[Dev] Solution: Check NotificationHandler.kt escape logic (lines 141-146)');
     }
 }
 
 function saveNotificationBatchFromAndroid(batchJson) {
     console.log('%c[FCM Android] 📦 Batch received:', 'color: #007bff; font-weight: bold;', batchJson);
+    console.log('[Dev] Batch size (chars):', batchJson.length);
+
     try {
         const notifications = JSON.parse(batchJson);
-        if (!Array.isArray(notifications)) return;
+        console.log('%c[Dev] ✅ Batch JSON parsed successfully', 'color: #28a745;', `${notifications.length} notifications`);
+
+        if (!Array.isArray(notifications)) {
+            console.error('%c[Dev] ❌ Invalid batch format: Expected array', 'color: #dc3545; font-weight: bold;');
+            return;
+        }
 
         if (typeof addNotificationLog !== 'function') {
             console.error("[Auth] addNotificationLog not found.");
@@ -48,7 +66,16 @@ function saveNotificationBatchFromAndroid(batchJson) {
             console.error("[FCM] Error saving batch:", err);
         });
     } catch (error) {
-        console.error("[FCM] Error parsing batch:", error);
+        console.error('%c[Dev] ❌ JSON Parse Error - Batch', 'color: #dc3545; font-weight: bold;');
+        console.error('[Dev] Error details:', error.message);
+        console.error('[Dev] Problematic JSON string:', batchJson);
+        console.error('[Dev] First 200 chars:', batchJson.substring(0, 200));
+        console.error('[Dev] Common causes:');
+        console.error('  1. Unescaped double quotes (") in notification body');
+        console.error('  2. Unescaped backslashes (\\) in text');
+        console.error('  3. Newline characters (\\n) not properly escaped');
+        console.error('  4. Invalid JSON array structure');
+        console.error('[Dev] Solution: Check NotificationHandler.kt escape logic (lines 180-185)');
     }
 }
 

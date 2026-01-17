@@ -478,14 +478,14 @@ if (salesMovement_closeModalBtn) {
     });
 }
 
-// إغلاق النافذة عند النقر خارجها
-if (salesMovement_modal) {
-    salesMovement_modal.addEventListener('click', function (salesMovement_event) {
-        if (salesMovement_event.target === salesMovement_modal) {
-            salesMovement_modal.classList.remove('salesMovement_show');
-        }
-    });
-}
+// إغلاق النافذة عند النقر خارجها - تم تعطيله بناءً على طلب المستخدم
+// if (salesMovement_modal) {
+//     salesMovement_modal.addEventListener('click', function (salesMovement_event) {
+//         if (salesMovement_event.target === salesMovement_modal) {
+//             salesMovement_modal.classList.remove('salesMovement_show');
+//         }
+//     });
+// }
 
 // ========================================
 // مراقبة تغييرات localStorage للمفتاح productKeyFromStepReview

@@ -1,5 +1,5 @@
 <!-- Login Page Structure -->
-<link rel="stylesheet" href="pages/login/login.css">
+<link id="login_stylesheet" rel="stylesheet" href="pages/login/login.css">
 
 <div id="header-container1X" style="height: 70px"></div>
 
@@ -8,26 +8,30 @@
         <h2 id="login_title" data-lkey="login_text">تسجيل الدخول</h2>
         <form id="login_form">
             <div id="login_phone-form-group" class="login_form-group">
-                <label for="login_phone"><i class="fas fa-phone"></i> <span data-lkey="label_phone">رقم الهاتف</span></label>
+                <label id="login_phone-label" for="login_phone"><i id="login_phone-icon" class="fas fa-phone"></i> <span
+                        id="login_phone-label-text" data-lkey="label_phone">رقم الهاتف</span></label>
                 <input type="tel" id="login_phone" name="login_phone" required />
                 <div id="login_phone-error" class="login_error-message"></div>
             </div>
             <div id="login_password-form-group" class="login_form-group">
-                <label for="login_password"><i class="fas fa-lock"></i> <span data-lkey="label_password">كلمة المرور</span></label>
+                <label id="login_password-label" for="login_password"><i id="login_password-icon"
+                        class="fas fa-lock"></i> <span id="login_password-label-text" data-lkey="label_password">كلمة
+                        المرور</span></label>
                 <input type="password" id="login_password" name="login_password" required />
                 <i class="fas fa-eye login_toggle-password" id="login_togglePassword"></i>
                 <div id="login_password-error" class="login_error-message"></div>
             </div>
-            <button type="submit" class="button login_btn"><span data-lkey="login_text">تسجيل الدخول</span></button>
+            <button id="login_submit-btn" type="submit" class="button login_btn"><span id="login_submit-btn-text"
+                    data-lkey="login_text">تسجيل الدخول</span></button>
             <div id="login_form-footer" class="login_form-footer">
                 <a href="#" id="login_go-to-register-link" class="login_form-footer-link">
-                    <span data-lkey="no_account">ليس لديك حساب؟</span>
-                    <strong data-lkey="register_now">سجل الآن</strong>
+                    <span id="login_no-account-text" data-lkey="no_account">ليس لديك حساب؟</span>
+                    <strong id="login_register-now-text" data-lkey="register_now">سجل الآن</strong>
                 </a>
                 <a id="login_guest-btn" class="login_guest-link">
-                    <span data-lkey="or_you_can">أو يمكنك</span>
-                    <strong data-lkey="login_as_guest">الدخول كضيف</strong>
-                    <span data-lkey="to_browse_products">لتصفح المنتجات</span>
+                    <span id="login_or-you-can-text" data-lkey="or_you_can">أو يمكنك</span>
+                    <strong id="login_as-guest-text" data-lkey="login_as_guest">الدخول كضيف</strong>
+                    <span id="login_browse-products-text" data-lkey="to_browse_products">لتصفح المنتجات</span>
                 </a>
             </div>
         </form>
@@ -36,7 +40,7 @@
 
 <!-- Settings button -->
 <button id="index-settings-btn" data-lkey-title="dash_settings_title" title="الإعدادات">
-    <i class="fas fa-cog"></i>
+    <i id="index-settings-btn-icon" class="fas fa-cog"></i>
 </button>
 
-<script src="pages/login/login.js"></script>
+<script id="login_script" src="pages/login/login.js"></script>
