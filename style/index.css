@@ -89,6 +89,8 @@
     z-index: 1000;
     transition: all 0.3s ease;
     gap: 12px;
+    padding-top: 3px;
+
   }
 
   body.dark-theme .index-app-header {
