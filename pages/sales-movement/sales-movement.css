@@ -237,6 +237,19 @@ body.dark-theme .salesMovement_filterContainer {
     color: #333;
 }
 
+.salesMovement_infoRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.salesMovement_infoSeparator {
+    color: #ccc;
+    margin: 0 4px;
+    font-weight: 300;
+}
+
 /* Loading state */
 .salesMovement_loading {
     text-align: center;

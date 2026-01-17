@@ -35,6 +35,10 @@
     "ar": "عدد المنتجات:",
     "en": "Item count:"
   },
+  "sales_sellers_count": {
+    "ar": "عدد البائعين:",
+    "en": "Sellers count:"
+  },
   "sales_loading": {
     "ar": "جاري تحميل الطلبات...",
     "en": "Loading orders..."

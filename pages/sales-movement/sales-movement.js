@@ -94,6 +94,12 @@ function salesMovement_displayOrders(salesMovement_data) {
 
         salesMovement_sortedOrders.forEach((salesMovement_order, salesMovement_index) => {
             const salesMovement_productCount = salesMovement_order.order_items ? salesMovement_order.order_items.length : 0;
+
+            // حساب عدد البائعين الفريدين
+            const salesMovement_uniqueSellers = salesMovement_order.order_items
+                ? new Set(salesMovement_order.order_items.map(item => item.seller_key)).size
+                : 0;
+
             const salesMovement_formattedDate = salesMovement_formatDate(salesMovement_order.created_at);
             const salesMovement_productNames = salesMovement_order.order_items
                 ? salesMovement_order.order_items.map(item => item.product_name).filter(name => name).join(', ')
@@ -117,8 +123,13 @@ function salesMovement_displayOrders(salesMovement_data) {
                             <span id="salesMovement_dateValue_${salesMovement_index}">${salesMovement_formattedDate}</span>
                         </div>
                         <div id="salesMovement_cardInfo_count_${salesMovement_index}" class="salesMovement_cardInfo">
-                            <span id="salesMovement_countLabel_${salesMovement_index}"><i id="salesMovement_countIcon_${salesMovement_index}" class="fas fa-boxes"></i> ${window.langu('sales_items_count')}</span>
-                            <span id="salesMovement_countValue_${salesMovement_index}">${salesMovement_productCount}</span>
+                            <div class="salesMovement_infoRow">
+                                <span id="salesMovement_countLabel_${salesMovement_index}"><i id="salesMovement_countIcon_${salesMovement_index}" class="fas fa-boxes"></i> ${window.langu('sales_items_count')}</span>
+                                <span id="salesMovement_countValue_${salesMovement_index}">${salesMovement_productCount}</span>
+                                <span class="salesMovement_infoSeparator">|</span>
+                                <span id="salesMovement_sellersLabel_${salesMovement_index}"><i id="salesMovement_sellersIcon_${salesMovement_index}" class="fas fa-store"></i> ${window.langu('sales_sellers_count')}</span>
+                                <span id="salesMovement_sellersValue_${salesMovement_index}">${salesMovement_uniqueSellers}</span>
+                            </div>
                         </div>
                     </div>
                 </div>

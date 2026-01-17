@@ -70,6 +70,7 @@ export function generateConfirmationTableHtml(products, ordersData) {
                 <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">
                      ${generateCheckboxCell(product.product_key, productName, isChecked, isDisabled, 'sellerProductKeys')}
                 </td>
+                <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap; text-align: center; font-weight: bold;">${product.quantity}</td>
                 <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${product.note || '-'}</td>
                 <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${agentNames || '-'}</td>
                 <td style="padding: 8px; border: 1px solid var(--border-light); white-space: nowrap;">${agentPhones || '-'}</td>
@@ -78,11 +79,12 @@ export function generateConfirmationTableHtml(products, ordersData) {
     }).join("");
 
     return `
-        <div style="width: 100%; overflow-x: auto;">
+        <div id="seller-confirmation-container" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
             <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em;">
                 <thead>
                     <tr style="background-color: var(--bg-secondary);">
                         <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_product_confirm')}</th>
+                        <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_quantity')}</th>
                         <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_notes')}</th>
                         <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_delivery_agent')}</th>
                         <th style="padding: 8px; border: 1px solid var(--border-light); color: var(--color-primary);">${window.langu('ui_col_phone_number')}</th>
@@ -158,7 +160,7 @@ export function generateShippingTableHtml(products) {
     }).join("");
 
     return `
-        <div style="width: 100%; overflow-x: auto;">
+        <div id="seller-shipping-container" style="width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch;">
             <p>${window.langu('ui_shipping_instruction')}</p>
             <table style="width: 100%; min-width: 600px; border-collapse: collapse; text-align: right; font-size: 0.9em; margin-top: 10px;">
                 <thead>

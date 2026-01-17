@@ -61,6 +61,7 @@ export function getConfirmationProducts(ordersData, sellerId, userType) {
                 return {
                     product_key: item.product_key,
                     product_name: item.product_name,
+                    quantity: item.quantity || 1,
                     delivery_info: parseDeliveryInfo(item.supplier_delivery),
                     note: item.note || ''
                 };

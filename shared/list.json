@@ -27,7 +27,7 @@
           "icon": "fas fa-user-tie",
           "image": "Men's Clothing.webp"
         },
-      {
+        {
           "id": 3,
           "title": {
             "ar": "ملابس أطفال وحديثي الولادة",
@@ -1304,11 +1304,11 @@
         {
           "id": 8,
           "title": {
-            "ar": "تاجر 1",
-            "en": "Merchant 1"
+            "ar": "شاسكو للجملة",
+            "en": "Shasco Wholesale"
           },
           "icon": "fas fa-warehouse",
-          "image": "Merchant 1.webp"
+          "image": "Shasco Wholesale.webp"
         }
       ]
     },

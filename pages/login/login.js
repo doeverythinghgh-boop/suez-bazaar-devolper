@@ -294,9 +294,18 @@ async function login_handleSubmit(e) {
                 } else {
                     // 9. Error
                     AuthUI.close();
-                    const errMsg = verificationResult?.error || langu("login_invalid_credentials");
-                    AuthUI.showError(langu("alert_title_info"), errMsg);
-                    AuthUI.showFieldValidationMsg(loginPasswordInput, errMsg);
+                    let errMsg = verificationResult?.error || window.langu("login_invalid_credentials");
+
+                    // Normalize error if it matches the old backend string or partial match
+                    if (errMsg === 'كلمة المرور غير صحيحة.' || errMsg.includes('كلمة المرور')) {
+                        errMsg = window.langu("login_invalid_credentials");
+                        // User Request: No popup for this error, only red text.
+                        AuthUI.showFieldValidationMsg(loginPasswordInput, errMsg);
+                    } else {
+                        // For other errors, show popup
+                        AuthUI.showError(window.langu("alert_title_info"), errMsg);
+                        AuthUI.showFieldValidationMsg(loginPasswordInput, errMsg);
+                    }
                 }
             } catch (error) {
                 console.error(error);

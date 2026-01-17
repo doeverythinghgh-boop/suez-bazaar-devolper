@@ -376,6 +376,20 @@ body.dark-theme .install-modal-container .install-btn {
   /* زيادة العرض لاستيعاب 3 أزرار مع النص العربي */
 }
 
+/* فئة خاصة للنوافذ التي تحتوي على جداول عريضة لضمان التمرير الأفقي المريح */
+.swal-table-popup {
+  max-width: 95% !important;
+  width: 600px !important;
+  border-radius: 20px !important;
+}
+
+@media (max-width: 480px) {
+  .swal-table-popup {
+    width: 98% !important;
+    padding: 0.5rem !important;
+  }
+}
+
 body.dark-theme .swal-modern-mini-popup {
   background-color: var(--modal-item-bg, #1e1e1e) !important;
   box-shadow: 0 15px 50px rgba(0, 0, 0, 0.6) !important;

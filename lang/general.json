@@ -104,8 +104,8 @@
     "en": "Alert"
   },
   "alert_login_required": {
-    "ar": "يرجى تسجيل الدخول أولاً للتمكن من استخدام هذه الميزة.",
-    "en": "Please login first to use this feature."
+    "ar": "يمكنك الدخول كضيف او استكمال التسجيل. ",
+    "en": "You can login as guest or complete registration."
   },
   "unknown_status": {
     "ar": "غير معروف",
@@ -208,7 +208,7 @@
     "en": "Logging in..."
   },
   "login_invalid_credentials": {
-    "ar": "كلمة المرور أو رقم الهاتف غير صحيح.",
+    "ar": "كلمة المرور او رقم الهاتف غير صحيحه",
     "en": "Incorrect phone number or password."
   },
   "unexpected_error": {

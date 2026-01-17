@@ -174,7 +174,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       showConfirmButton: true,
       confirmButtonText: confirmButtonText,
       allowOutsideClick: false,
-      allowEscapeKey: false
+      allowEscapeKey: false,
+      customClass: {
+        popup: 'swal-modern-mini-popup',
+        title: 'swal-modern-mini-title',
+        htmlContainer: 'swal-modern-mini-text',
+        confirmButton: 'swal-modern-mini-confirm'
+      }
     }).then((result) => {
       if (result.isConfirmed) {
         window.location.reload(); // Reload to apply language changes safely

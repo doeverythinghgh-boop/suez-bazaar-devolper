@@ -348,26 +348,22 @@ function updateViewForLoggedInUser() {
                    `;
           } else {
             // Normal User View: Selector
-            // We use onClick for the row to toggle a mini-dropdown or just inline radios. 
-            // Let's use an inline select-like styling for simplicity and clarity in modal.
             return `
-                     <div class="settings-list-item" style="flex-direction: column; align-items: flex-start; gap: 8px; padding-bottom: 12px;">
-                        <span style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
-                           <span><i class="fas fa-boxes" style="color: var(--primary-color); width: 20px;"></i> ${window.langu("dash_fetch_orders_title")}</span>
+                     <div class="settings-list-item" style="flex-direction: row; align-items: center; justify-content: space-between; gap: 10px;">
+                        <span style="display: flex; align-items: center; gap: 8px;">
+                           <i class="fas fa-boxes" style="color: var(--primary-color); width: 20px;"></i> 
+                           ${window.langu("dash_fetch_orders_title")}
                         </span>
                         
-                        <div style="width: 100%; display: flex; gap: 5px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 8px;">
-                            ${['buyer', 'seller', 'delivery'].map(type => `
-                                <label style="flex: 1; text-align: center; cursor: pointer; font-size: 0.85em;">
-                                    <input type="radio" name="settings_fetch_type" value="${type}" ${isChecked(type)} 
-                                           style="display: none;" 
-                                           onchange="handleFetchSettingsChange(this.value)">
-                                    <div class="fetch-type-option ${savedType === type ? 'active' : ''}" 
-                                         style="padding: 6px 2px; border-radius: 5px; transition: all 0.2s; ${savedType === type ? 'background: var(--primary-color); color: #fff; font-weight: bold;' : 'color: var(--text-color-medium);'}">
+                        <div>
+                            <select id="settings_fetch_type_select" onchange="handleFetchSettingsChange(this.value)"
+                                    style="padding: 6px; border: 1px solid #ccc; border-radius: 6px; background: var(--bg-color-white); color: var(--text-color-dark); font-size: 0.9em;">
+                                ${['buyer', 'seller', 'delivery'].map(type => `
+                                    <option value="${type}" ${savedType === type ? 'selected' : ''}>
                                         ${window.langu('dash_opt_' + type)}
-                                    </div>
-                                </label>
-                            `).join('')}
+                                    </option>
+                                `).join('')}
+                            </select>
                         </div>
                      </div>
                     `;
@@ -483,20 +479,7 @@ window.handleNotificationToggleFromSettings = async function () {
  * @param {string} newValue - 'buyer', 'seller', or 'delivery'
  */
 window.handleFetchSettingsChange = function (newValue) {
-  // 1. Update UI immediately for detailed feedback
-  const options = document.querySelectorAll('input[name="settings_fetch_type"]');
-  options.forEach(input => {
-    const div = input.nextElementSibling;
-    if (input.value === newValue) {
-      div.style.background = 'var(--primary-color)';
-      div.style.color = '#fff';
-      div.style.fontWeight = 'bold';
-    } else {
-      div.style.background = 'transparent';
-      div.style.color = 'var(--text-color-medium)';
-      div.style.fontWeight = 'normal';
-    }
-  });
+  // 1. UI update is handled by Select Element natively.
 
   // 2. Prepare Alert Data based on translation structure
   // Note: We access the key directly from window.appTranslations or similar if available, 

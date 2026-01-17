@@ -77,7 +77,7 @@ export function handleConfirmationSave(data, ordersData) {
         cancelButtonText: window.langu('alert_cancel_btn'),
         buttonsStyling: false,
         customClass: {
-            popup: 'swal-modern-mini-popup',
+            popup: 'swal-modern-mini-popup swal-table-popup',
             title: 'swal-modern-mini-title',
             htmlContainer: 'swal-modern-mini-text',
             confirmButton: 'swal-modern-mini-confirm',
@@ -265,9 +265,7 @@ export function showSellerConfirmationProductsAlert(data, ordersData) {
 
         Swal.fire({
             title: canEdit ? window.langu('conf_modal_title') : window.langu('conf_modal_readonly_title'),
-            html: `<div id="seller-confirmation-container" style="display: flex; flex-direction: column; align-items: start; width: 100%; max-height: 300px; overflow: auto;">
-                    ${htmlContent}
-                   </div>`,
+            html: htmlContent,
             footer: canEdit
                 ? `<button id="btn-save-confirmation" class="swal2-confirm swal2-styled" style="background-color: #28a745;">${window.langu('conf_save_btn')}</button>`
                 : `<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">${window.langu('conf_locked_info')}</p>`,

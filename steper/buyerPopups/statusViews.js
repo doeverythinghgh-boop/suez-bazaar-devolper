@@ -163,11 +163,11 @@ export function showBuyerShippingInfoAlert(data, ordersData) {
 
         Swal.fire({
             title: window.langu('buyer_shipping_products'),
-            html: `<div id="buyer-shipping-container">${htmlContent}</div>`,
+            html: htmlContent,
             confirmButtonText: window.langu('alert_close_btn'),
             buttonsStyling: false,
             customClass: {
-                popup: 'swal-modern-mini-popup',
+                popup: 'swal-modern-mini-popup swal-table-popup',
                 title: 'swal-modern-mini-title',
                 htmlContainer: 'swal-modern-mini-text',
                 confirmButton: 'swal-modern-mini-confirm'

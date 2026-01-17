@@ -269,7 +269,7 @@ export function showShippingInfoAlert(data, ordersData) {
 
         Swal.fire({
             title: canEdit ? window.langu('shipping_modal_title') : window.langu('shipping_modal_readonly_title'),
-            html: `<div id="seller-shipping-container">${htmlContent}</div>`,
+            html: htmlContent,
             footer: canEdit
                 ? `<button id="btn-save-shipping" class="swal2-confirm swal2-styled" style="background-color: #007bff;">${window.langu('shipping_update_btn')}</button>`
                 : `<p style="color: #dc3545; font-weight: bold; margin: 10px 0;">${window.langu('shipping_locked_info')}</p>`,
@@ -279,7 +279,7 @@ export function showShippingInfoAlert(data, ordersData) {
             cancelButtonText: window.langu('alert_close_btn'),
             buttonsStyling: false,
             customClass: {
-                popup: 'swal-modern-mini-popup',
+                popup: 'swal-modern-mini-popup swal-table-popup',
                 title: 'swal-modern-mini-title',
                 htmlContainer: 'swal-modern-mini-text',
                 confirmButton: 'swal-modern-mini-confirm',
