@@ -97,7 +97,7 @@
      * Enforces a minimum 4-second duration.
      */
     window.hideSplashScreen = function () {
-        const minDuration = 6000;
+        const minDuration = 4000;
         const elapsed = performance.now() - window.splashStartTime;
         const remaining = Math.max(0, minDuration - elapsed);
 
