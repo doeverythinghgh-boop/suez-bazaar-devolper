@@ -34,12 +34,20 @@
     ];
 
     function initSplash() {
-        // CRITICAL: If running inside Android bridge, remove PWA splash immediately 
-        // to let the native Android splash handle the transition.
+        // 1. If running inside Android bridge, remove PWA splash immediately 
         if (window.Android) {
             const splash = document.getElementById('pwa-splash-screen');
             if (splash) splash.remove();
             console.log("📱 [Splash] Android bridge detected. PWA splash removed.");
+            return;
+        }
+
+        // 2. ONLY show splash if in Standalone mode (Installed PWA)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (!isStandalone) {
+            const splash = document.getElementById('pwa-splash-screen');
+            if (splash) splash.remove();
+            console.log("🌐 [Splash] Regular browser detected. PWA splash removed.");
             return;
         }
 
@@ -89,7 +97,7 @@
      * Enforces a minimum 4-second duration.
      */
     window.hideSplashScreen = function () {
-        const minDuration = 4000;
+        const minDuration = 6000;
         const elapsed = performance.now() - window.splashStartTime;
         const remaining = Math.max(0, minDuration - elapsed);
 
