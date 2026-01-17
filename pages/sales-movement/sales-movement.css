@@ -60,7 +60,8 @@
 }
 
 .salesMovement_radioOption input[type="radio"] {
-    display: none; /* Fully custom UI */
+    display: none;
+    /* Fully custom UI */
 }
 
 .salesMovement_radioLabel {
@@ -290,7 +291,8 @@ body.dark-theme .salesMovement_filterContainer {
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(5px);
     animation: salesMovement_fadeIn 0.3s ease;
-    transform: translateZ(0); /* Force GPU Layer for iOS */
+    transform: translateZ(0);
+    /* Force GPU Layer for iOS */
 }
 
 .salesMovement_modal.salesMovement_show {
@@ -341,18 +343,21 @@ body.dark-theme .salesMovement_filterContainer {
     right: auto;
     margin: 0 auto 10px auto;
     display: flex;
-    background: #667eea;
+    flex-direction: column;
+    background: transparent;
     border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    font-size: 28px;
-    color: white;
+    border-radius: 12px;
+    width: auto;
+    height: auto;
+    padding: 10px 20px;
+    font-size: 24px;
+    color: #ff4757;
     cursor: pointer;
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
-    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+    box-shadow: none;
+    gap: 5px;
 }
 
 .salesMovement_closeBtn:active {
@@ -683,13 +688,13 @@ body.dark-theme .salesMovement_filterContainer {
     cursor: pointer;
     transition: all 0.2s ease;
     font-size: 11px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
 .salesMovement_refreshBtn:active {
     background: #f9fafb;
     transform: scale(0.96);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .salesMovement_refreshIcon {
@@ -703,7 +708,7 @@ body.dark-theme .salesMovement_filterContainer {
 /* Dark mode overrides for new filter design */
 body.dark-theme .salesMovement_filterContainer {
     background: #2d2d2d;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 body.dark-theme .salesMovement_radioLabel {
