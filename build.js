@@ -321,10 +321,6 @@ async function build() {
                 var obfuscatedResult = obfuscate(content, fileOptions);
                 var obfuscatedCode = obfuscatedResult.getObfuscatedCode();
 
-                // Post-process to replace const/let with var to allow safe re-declaration in SPA environments
-                // This prevents "Identifier already declared" errors when navigating between pages.
-                obfuscatedCode = obfuscatedCode.replace(/\bconst\b/g, 'var').replace(/\blet\b/g, 'var');
-
                 var targetPath = path.join(OUTPUT_DIR, file);
                 var targetDir = path.dirname(targetPath);
 
@@ -358,9 +354,6 @@ async function build() {
 
                     var obfuscatedResult = obfuscate(content, fileOptions);
                     var obfuscatedCode = obfuscatedResult.getObfuscatedCode();
-
-                    // Post-process to replace const/let with var
-                    obfuscatedCode = obfuscatedCode.replace(/\bconst\b/g, 'var').replace(/\blet\b/g, 'var');
 
                     fs.writeFileSync(path.join(OUTPUT_DIR, file), obfuscatedCode);
                 } else {
