@@ -21,17 +21,21 @@
                 <i class="fas fa-eye login_toggle-password" id="login_togglePassword"></i>
                 <div id="login_password-error" class="login_error-message"></div>
             </div>
-            <button id="login_submit-btn" type="submit" class="button login_btn"><span id="login_submit-btn-text"
-                    data-lkey="login_text">تسجيل الدخول</span></button>
-            <div id="login_form-footer" class="login_form-footer">
-                <a href="#" id="login_go-to-register-link" class="login_form-footer-link">
-                    <span id="login_no-account-text" data-lkey="no_account">ليس لديك حساب؟</span>
+            <div class="login_actions-row">
+                <button id="login_submit-btn" type="submit" class="button login_btn">
+                    <span id="login_submit-btn-text" data-lkey="login_text">تسجيل الدخول</span>
+                </button>
+
+                <a href="#" id="login_go-to-register-link" class="login_action-btn login_register-btn">
+                    <span id="login_no-account-text" data-lkey="no_account" style="display:none">ليس لديك حساب؟</span>
                     <strong id="login_register-now-text" data-lkey="register_now">سجل الآن</strong>
                 </a>
-                <a id="login_guest-btn" class="login_guest-link">
-                    <span id="login_or-you-can-text" data-lkey="or_you_can">أو يمكنك</span>
+
+                <a id="login_guest-btn" class="login_action-btn login_guest-btn">
+                    <span id="login_or-you-can-text" data-lkey="or_you_can" style="display:none">أو يمكنك</span>
                     <strong id="login_as-guest-text" data-lkey="login_as_guest">الدخول كضيف</strong>
-                    <span id="login_browse-products-text" data-lkey="to_browse_products">لتصفح المنتجات</span>
+                    <span id="login_browse-products-text" data-lkey="to_browse_products" style="display:none">لتصفح
+                        المنتجات</span>
                 </a>
             </div>
         </form>

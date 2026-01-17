@@ -152,6 +152,19 @@ const SessionManager = {
             if (el) el.innerHTML = "";
         });
 
+        // 3.1 Explicitly remove teleported modals (like salesMovement_orderModal)
+        const salesModal = document.getElementById('salesMovement_orderModal');
+        if (salesModal) {
+            salesModal.remove(); // Completely remove it from DOM
+        }
+
+        // Also ensure iframe is cleared if somehow independent
+        const stepperIframe = document.getElementById('salesMovement_stepperIframe');
+        if (stepperIframe) {
+            stepperIframe.src = '';
+            stepperIframe.remove();
+        }
+
         // 4. Update State
         window.userSession = null;
         if (typeof setUserNameInIndexBar === 'function') setUserNameInIndexBar();

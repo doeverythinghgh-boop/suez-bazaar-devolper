@@ -166,61 +166,71 @@
 }
 
 /* 7. Login Button */
-.login_btn {
-    width: 100%;
-    padding: 15px;
-    font-size: clamp(16px, 4vw, 18px);
-    /* Responsive font size */
-    margin-top: 10px;
-    border: none;
-    color: white;
-    background-color: var(--primary-color);
-    box-shadow: 0 4px 15px var(--primary-color-light),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    border-radius: 10px;
-    /* Preferably add rounded corners to match fields */
-}
-
-.login_btn:active {
-    transform: translateY(2px);
-    box-shadow: 0 2px 8px var(--primary-color-light);
-}
-
-/* 8. Form Footer (Additional Links) */
-.login_form-footer {
-    margin-top: 25px;
-    font-size: 14px;
+/* 7. Login Buttons Row */
+.login_actions-row {
     display: flex;
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-}
-
-/* "Register Now" link: Appears as a primary secondary action */
-.login_form-footer-link {
-    color: var(--primary-color);
-    /* Clear blue color */
-    font-size: 14px;
-    /* Fix: Unify font size */
-    text-decoration: none;
-}
-
-/* "Login as Guest" link: Appears as an alternative and less important option */
-.login_guest-link {
-    color: var(--text-color-light);
-    /* Gray color to make it less prominent */
-    font-size: 14px;
-    border-top: 1px solid var(--border-color);
-    /* Slightly darker separator line */
-    padding-top: 15px;
-    /* Space above the link */
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 20px;
     width: 100%;
-    /* Extend to full width of container */
+    align-items: stretch;
+}
+
+/* Base button style for all actions */
+.login_btn,
+.login_action-btn {
+    flex: 1;
+    border: none;
+    padding: 12px 5px;
+    /* Compact padding */
+    font-size: 13px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
     text-align: center;
-    /* Center text */
     text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    min-height: 45px;
+    margin-top: 0;
+    /* Override old margin */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Submit (Login) Button - Primary */
+.login_btn {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 700;
+}
+
+/* Register Button - Secondary */
+.login_register-btn {
+    background-color: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+/* Guest Button - Tertiary */
+.login_guest-btn {
+    background-color: #f8f9fa;
+    color: var(--text-color-light);
+    border: 1px solid var(--border-color);
+}
+
+/* Active states */
+.login_btn:active,
+.login_action-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.login_form-footer-link,
+.login_guest-link {
+    /* Legacy fallback removal or safeguard */
+    display: none;
 }
 
 /* Password toggle icon */
