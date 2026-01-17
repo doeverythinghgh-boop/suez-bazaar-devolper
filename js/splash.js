@@ -34,22 +34,43 @@
     ];
 
     function initSplash() {
+        // CRITICAL: If running inside Android bridge, remove PWA splash immediately 
+        // to let the native Android splash handle the transition.
+        if (window.Android) {
+            const splash = document.getElementById('pwa-splash-screen');
+            if (splash) splash.remove();
+            console.log("📱 [Splash] Android bridge detected. PWA splash removed.");
+            return;
+        }
+
         const lang = localStorage.getItem('app_language') || 'ar';
         const taglineEl = document.querySelector('.splash-tagline');
         const carouselTrack = document.querySelector('.splash-carousel-track');
 
-        // 1. Set Random Tagline
-        if (taglineEl) {
-            const list = taglines[lang] || taglines.ar;
-            taglineEl.textContent = list[Math.floor(Math.random() * list.length)];
-        }
+        // --- Sequential Logic Implementation ---
 
-        // 2. Setup Carousel Items
+        // 1. Tagline Sequence
+        let taglineIndex = parseInt(localStorage.getItem('pwa_splash_tagline_idx') || '0');
+        const list = taglines[lang] || taglines.ar;
+        if (taglineEl) {
+            taglineEl.textContent = list[taglineIndex % list.length];
+        }
+        localStorage.setItem('pwa_splash_tagline_idx', (taglineIndex + 1) % list.length);
+
+        // 2. Image Sequence (Rotation)
+        let imageOffset = parseInt(localStorage.getItem('pwa_splash_image_offset') || '0');
         if (carouselTrack) {
-            // Shuffle and duplicate for infinite effect
-            // Use exactly 2 sets (Double) to match CSS translateX(-50%)
-            const shuffled = [...categories].sort(() => 0.5 - Math.random());
-            const displayList = [...shuffled, ...shuffled];
+            // Rotate the base list based on saved offset
+            const baseList = [...categories];
+            const rotation = imageOffset % baseList.length;
+            const rotatedList = baseList.slice(rotation).concat(baseList.slice(0, rotation));
+
+            // Increment offset for next time (move by 3 to show significantly different start)
+            localStorage.setItem('pwa_splash_image_offset', (imageOffset + 3) % baseList.length);
+
+            // Create [A][B][A][B] pattern for 4 sets (Quadruple)
+            // This ensures a seamless loop at -50% translateX in CSS
+            const displayList = [...rotatedList, ...rotatedList, ...rotatedList, ...rotatedList];
 
             displayList.forEach(imgName => {
                 const item = document.createElement('div');

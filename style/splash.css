@@ -56,14 +56,18 @@
     margin-bottom: 120px;
     white-space: nowrap;
     position: relative;
+    direction: ltr !important;
+    /* Force LTR for predictable scroll logic */
 }
 
 .splash-carousel-track {
     display: inline-flex;
-    animation: splash-scroll 30s linear infinite;
+    animation: splash-scroll 60s linear infinite;
+    /* Slower for more items */
     gap: 16px;
     /* 8dp margin * 2 */
-    padding: 0 8px;
+    padding: 0 16px;
+    justify-content: flex-start;
 }
 
 .splash-carousel-item {
@@ -99,7 +103,7 @@
         transform: translateX(-50%);
     }
 
-    /* Perfect loop with 2 identical sets */
+    /* Works perfectly when track has [A][B][A][B] structure */
 }
 
 /* Loader Section */
