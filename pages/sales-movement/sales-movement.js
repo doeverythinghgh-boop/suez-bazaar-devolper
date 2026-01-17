@@ -215,102 +215,64 @@ function salesMovement_saveUserTypeSelection(salesMovement_userType) {
     }
 }
 
-// دالة لاستعادة الاختيار من localStorage
+// دالة لاستعادة الاختيار من localStorage وبدء الجلب
 function salesMovement_loadUserTypeSelection() {
     try {
-        const salesMovement_savedType = localStorage.getItem(salesMovement_STORAGE_KEY);
-        if (salesMovement_savedType) {
-            console.log(`تم استعادة الاختيار المحفوظ: ${salesMovement_savedType} `);
-            // تحديد الراديو بوتن المناسب
-            const salesMovement_radioToCheck = document.getElementById(`salesMovement_${salesMovement_savedType}`);
-            if (salesMovement_radioToCheck) {
-                salesMovement_radioToCheck.checked = true;
-            }
-            // جلب البيانات
-            salesMovement_fetchOrders(salesMovement_savedType);
+        const user = userSession;
+        const isAdmin = (user && typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
+        const isImpersonating = localStorage.getItem("originalAdminSession");
+
+        let salesMovement_typeToFetch = 'buyer'; // الافتراضي
+
+        if (isAdmin || isImpersonating) {
+            console.log('🔒 الوضع الإداري مفعل: فرض جلب جميع الطلبات.');
+            salesMovement_typeToFetch = 'admin';
         } else {
-            console.log('لا يوجد اختيار محفوظ');
+            const savedType = localStorage.getItem(salesMovement_STORAGE_KEY);
+            if (savedType) {
+                console.log(`تم استعادة الاختيار المحفوظ من الإعدادات: ${savedType}`);
+                salesMovement_typeToFetch = savedType;
+            } else {
+                console.log('لا يوجد اختيار محفوظ، استخدام الافتراضي (مشتري).');
+            }
         }
 
-        // تحقق من صلاحيات المسؤول لإظهار الخيار
-        salesMovement_checkAdminStatus();
+        // جلب البيانات مباشرة
+        salesMovement_fetchOrders(salesMovement_typeToFetch);
 
     } catch (salesMovement_error) {
         console.error('حدث خطأ في دالة loadUserTypeSelection:', salesMovement_error);
+        // Fallback safety
+        salesMovement_fetchOrders('buyer');
     }
 }
 
-/**
- * @description يتحقق مما إذا كان المستخدم الحالي مسؤولاً ويظهر خيار المسؤول في الفلتر.
- * @function salesMovement_checkAdminStatus
- */
-function salesMovement_checkAdminStatus() {
-    try {
-        const user = userSession;
-        if (!user) return;
+// (تم إزالة مستمعي الراديو القديمة لأن العناصر تم حذفها)
+// لا حاجة لـ salesMovement_radioButtons.forEach...
 
-        const isAdmin = (typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
-        const isImpersonating = localStorage.getItem("originalAdminSession");
-
-        if (isAdmin || isImpersonating) {
-            const adminOption = document.getElementById('salesMovement_adminOption');
-            if (adminOption) {
-                adminOption.style.display = 'block';
-                console.log('✅ تم تفعيل خيار المسؤول في لوحة حركة المبيعات');
-            }
-        }
-    } catch (error) {
-        console.error('خطأ في التحقق من حالة المسؤول:', error);
-    }
-}
-
-// الاستماع لتغيير الراديو بوتن
-try {
-    salesMovement_radioButtons.forEach(salesMovement_radio => {
-        salesMovement_radio.addEventListener('change', function () {
-            try {
-                if (this.checked) {
-                    const salesMovement_selectedValue = this.value;
-                    console.log('تم اختيار:', salesMovement_selectedValue);
-
-                    // حفظ الاختيار
-                    salesMovement_saveUserTypeSelection(salesMovement_selectedValue);
-
-                    // جلب الطلبات بناءً على الاختيار
-                    salesMovement_fetchOrders(salesMovement_selectedValue);
-                }
-            } catch (salesMovement_error) {
-                console.error('حدث خطأ في معالج تغيير الراديو:', salesMovement_error);
-            }
-        });
-    });
-} catch (salesMovement_error) {
-    console.error('حدث خطأ في إعداد مستمعي الأحداث:', salesMovement_error);
-}
-
-// زر التحديث
+// زر التحديث (إذا كنت ترغب في إبقائه مخفياً أو قمت بنقله، تأكد من وجوده في HTML الجديد أو حذفه)
+// في الخطة الحالية، قمنا بحذف الكونتينر بالكامل بما فيه زر التحديث.
+// إذا أردت إعادة زر التحديث، يجب إضافته في مكان آخر في HTML.
+// سأقوم بتعطيل الكود الخاص به لتجنب الأخطاء إذا لم يوجد العنصر.
 var salesMovement_refreshBtn = document.getElementById('salesMovement_refreshButton');
 if (salesMovement_refreshBtn) {
     salesMovement_refreshBtn.addEventListener('click', function () {
         try {
-            const selectedRadio = document.querySelector('input[name="salesMovement_userType"]:checked');
-            if (selectedRadio) {
-                console.log('🔄 تحديث البيانات يدويًا...');
+            // المنطق هنا يحتاج تعديل لقراءة النوع من التخزين لأن الراديو لم يعد موجوداً
+            const user = userSession;
+            const isAdmin = (user && typeof ADMIN_IDS !== "undefined" && ADMIN_IDS.includes(user.user_key));
+            let type = isAdmin ? 'admin' : (localStorage.getItem(salesMovement_STORAGE_KEY) || 'buyer');
 
-                // إضافة تأثير بصري (لف الأيقونة)
-                const icon = this.querySelector('.salesMovement_refreshIcon');
-                if (icon) icon.style.transform = 'rotate(360deg)';
+            console.log('🔄 تحديث البيانات يدويًا...');
+            const icon = this.querySelector('.salesMovement_refreshIcon');
+            if (icon) icon.style.transform = 'rotate(360deg)';
 
-                salesMovement_fetchOrders(selectedRadio.value);
+            salesMovement_fetchOrders(type);
 
-                // إعادة ضبط الأيقونة بعد وقت قصير
-                setTimeout(() => {
-                    if (icon) icon.style.transform = '';
-                }, 500);
-            } else {
-                // Default fallback if nothing selected
-                salesMovement_fetchOrders('buyer');
-            }
+            setTimeout(() => {
+                if (icon) icon.style.transform = '';
+            }, 500);
+
         } catch (error) {
             console.error('خطأ في زر التحديث:', error);
         }

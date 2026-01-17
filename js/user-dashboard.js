@@ -301,6 +301,7 @@ function updateViewForLoggedInUser() {
                   <i class="fas fa-chevron-left chevron"></i>
                </div>
 
+
                <!-- Theme Toggle -->
                <div id="settings_list_theme" onclick="window.toggleAppTheme();"
                     class="settings-list-item">
@@ -322,6 +323,56 @@ function updateViewForLoggedInUser() {
                     <div style="width: 16px; height: 16px; background: var(--bg-color-white); border-radius: 50%; position: absolute; top: 2px; ${localStorage.getItem('app_language') === 'en' ? 'inset-inline-end' : 'inset-inline-start'}: 2px; box-shadow: 0 1px 3px rgba(0,0,0,0.3);"></div>
                   </div>
                </div>
+
+               <!-- Fetch Orders Section (Dynamic) -->
+               ${(() => {
+          const user = SessionManager.getUser();
+          const isAdmin = (user && typeof ADMIN_IDS !== 'undefined' && ADMIN_IDS.includes(user.user_key));
+          const isImpersonating = localStorage.getItem("originalAdminSession");
+
+          // Use saved type or default to 'buyer'
+          const savedType = localStorage.getItem('sales_movement_user_type') || 'buyer';
+
+          // Helper to check radio state
+          const isChecked = (val) => (savedType === val ? 'checked' : '');
+
+          if (isAdmin || isImpersonating) {
+            // Admin View: Locked to Admin
+            return `
+                     <div class="settings-list-item" style="cursor: default; opacity: 0.8;">
+                        <span style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+                           <span><i class="fas fa-boxes" style="color: var(--primary-color); width: 20px;"></i> ${window.langu("dash_fetch_orders_title")}</span>
+                           <span style="font-size: 0.9em; font-weight: bold; color: var(--danger-color);">${window.langu('dash_opt_admin')} <i class="fas fa-lock" style="font-size: 0.8em;"></i></span>
+                        </span>
+                     </div>
+                   `;
+          } else {
+            // Normal User View: Selector
+            // We use onClick for the row to toggle a mini-dropdown or just inline radios. 
+            // Let's use an inline select-like styling for simplicity and clarity in modal.
+            return `
+                     <div class="settings-list-item" style="flex-direction: column; align-items: flex-start; gap: 8px; padding-bottom: 12px;">
+                        <span style="width: 100%; display: flex; align-items: center; justify-content: space-between;">
+                           <span><i class="fas fa-boxes" style="color: var(--primary-color); width: 20px;"></i> ${window.langu("dash_fetch_orders_title")}</span>
+                        </span>
+                        
+                        <div style="width: 100%; display: flex; gap: 5px; background: rgba(0,0,0,0.05); padding: 5px; border-radius: 8px;">
+                            ${['buyer', 'seller', 'delivery'].map(type => `
+                                <label style="flex: 1; text-align: center; cursor: pointer; font-size: 0.85em;">
+                                    <input type="radio" name="settings_fetch_type" value="${type}" ${isChecked(type)} 
+                                           style="display: none;" 
+                                           onchange="handleFetchSettingsChange(this.value)">
+                                    <div class="fetch-type-option ${savedType === type ? 'active' : ''}" 
+                                         style="padding: 6px 2px; border-radius: 5px; transition: all 0.2s; ${savedType === type ? 'background: var(--primary-color); color: #fff; font-weight: bold;' : 'color: var(--text-color-medium);'}">
+                                        ${window.langu('dash_opt_' + type)}
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+                     </div>
+                    `;
+          }
+        })()}
 
 
                <!-- Notification Toggle -->
@@ -425,4 +476,71 @@ window.handleNotificationToggleFromSettings = async function () {
       text: 'نظام الإشعارات غير جاهز بعد. الرجاء الانتظار قليلاً.'
     });
   }
+};
+
+/**
+ * @description Handles changes to the "Fetch Orders" setting in the modal.
+ * @param {string} newValue - 'buyer', 'seller', or 'delivery'
+ */
+window.handleFetchSettingsChange = function (newValue) {
+  // 1. Update UI immediately for detailed feedback
+  const options = document.querySelectorAll('input[name="settings_fetch_type"]');
+  options.forEach(input => {
+    const div = input.nextElementSibling;
+    if (input.value === newValue) {
+      div.style.background = 'var(--primary-color)';
+      div.style.color = '#fff';
+      div.style.fontWeight = 'bold';
+    } else {
+      div.style.background = 'transparent';
+      div.style.color = 'var(--text-color-medium)';
+      div.style.fontWeight = 'normal';
+    }
+  });
+
+  // 2. Prepare Alert Data based on translation structure
+  // Note: We access the key directly from window.appTranslations or similar if available, 
+  // but window.langu usually returns a string. We need the object structure for title/text if window.langu doesn't support nested keys well.
+  // However, our window.langu usually flattens or we access raw data. 
+  // Let's assume we can fetch the object directly or hardcode fallback logic if structure differs.
+  // Actually, let's use a helper that knows the structure.
+
+  let alertKey = '';
+  if (newValue === 'seller') alertKey = 'dash_alert_seller_switch';
+  else if (newValue === 'delivery') alertKey = 'dash_alert_delivery_switch';
+  else alertKey = 'dash_alert_buyer_switch';
+
+  // Helper to get nested translation safely
+  const getTrans = (key, sub) => {
+    try {
+      // Try to find the raw object in window.appTranslations first
+      if (window.appTranslations && window.appTranslations[key]) {
+        const lang = localStorage.getItem('app_language') || 'ar';
+        return window.appTranslations[key][sub][lang];
+      }
+      return "";
+    } catch (e) { return ""; }
+  };
+
+  const title = getTrans(alertKey, 'title') || (newValue === 'seller' ? 'وضع البائع' : 'تغيير الوضع');
+  const text = getTrans(alertKey, 'text') || 'تم تغيير وضع جلب الطلبات.';
+
+  // 3. Show Alert (Small Toast or Mini Modal)
+  // The user asked for "Window explaining the choice".
+  Swal.fire({
+    title: title,
+    text: text,
+    icon: 'info',
+    confirmButtonText: window.langu('alert_confirm_btn') || 'حسناً',
+    customClass: {
+      popup: 'swal-modern-mini-popup',
+      title: 'swal-modern-mini-title',
+      htmlContainer: 'swal-modern-mini-text',
+      confirmButton: 'swal-modern-mini-confirm'
+    }
+  }).then(() => {
+    // 4. Save to Storage
+    localStorage.setItem('sales_movement_user_type', newValue);
+    console.log(`[Settings] Sales Movement User Type set to: ${newValue}`);
+  });
 };

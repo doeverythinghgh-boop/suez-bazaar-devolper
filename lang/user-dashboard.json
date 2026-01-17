@@ -70,5 +70,55 @@
   "dash_support": {
     "ar": "الدعم والمساعدة",
     "en": "Support & Help"
+  },
+  "dash_fetch_orders_title": {
+    "ar": "جلب الطلبات",
+    "en": "Fetch Orders"
+  },
+  "dash_opt_buyer": {
+    "ar": "مشتري",
+    "en": "Buyer"
+  },
+  "dash_opt_seller": {
+    "ar": "بائع",
+    "en": "Seller"
+  },
+  "dash_opt_delivery": {
+    "ar": "توصيل",
+    "en": "Delivery"
+  },
+  "dash_opt_admin": {
+    "ar": "مسؤول",
+    "en": "Admin"
+  },
+  "dash_alert_seller_switch": {
+    "title": {
+      "ar": "وضع البائع",
+      "en": "Seller Mode"
+    },
+    "text": {
+      "ar": "سوف تتم متابعة الطلبات التي تكون أنت فيها البائع للمنتجات.",
+      "en": "You will track orders where you are the seller."
+    }
+  },
+  "dash_alert_delivery_switch": {
+    "title": {
+      "ar": "وضع التوصيل",
+      "en": "Delivery Mode"
+    },
+    "text": {
+      "ar": "سوف تتم متابعة مهام التوصيل المسندة إليك.",
+      "en": "You will track delivery tasks assigned to you."
+    }
+  },
+  "dash_alert_buyer_switch": {
+    "title": {
+      "ar": "وضع المشتري",
+      "en": "Buyer Mode"
+    },
+    "text": {
+      "ar": "سوف تتم متابعة مشترياتك الشخصية.",
+      "en": "You will track your personal purchases."
+    }
   }
 }
