@@ -42,6 +42,12 @@ window.resetFCM = async function () {
 };
 
 async function setupFCM() {
+    // 🛑 BLOCK GUEST: Do not run FCM setup for guests (neither Web nor Android)
+    if (userSession && userSession.user_key === 'guest_user') {
+        console.log("[FCM] Guest user detected. Skipping FCM setup.");
+        return;
+    }
+
     if (isSettingUpFCM) return;
     isSettingUpFCM = true;
 

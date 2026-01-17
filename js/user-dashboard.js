@@ -152,6 +152,8 @@ function updateViewForLoggedInUser() {
       "dash-view-sales-movement-btn",
       "dash-add-product-btn",
       "dash-view-my-products-btn",
+      "index-gifts-btn",        // Hide Gifts for Guest
+      "dash-seller-section"     // Hide Seller Section (using new ID) for Guest
     ].forEach((id) => {
       const btn = document.getElementById(id);
       if (btn) btn.style.display = "none";

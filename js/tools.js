@@ -628,7 +628,8 @@ async function loader(pageUrl, containerId, waitMs = 300) {
  * @returns {boolean} - Returns false if the user is a guest (and shows alert), true otherwise.
  */
 function showLoginAlert() {
-  if (!userSession || userSession.user_key == "guest_user") {
+  if (!userSession) {
+    // Alert only if NO session at all. Guests (user_key="guest_user") are allowed to proceed.
     Swal.fire({
       title: langu("alert_title_info"),
       text: langu("alert_login_required"),

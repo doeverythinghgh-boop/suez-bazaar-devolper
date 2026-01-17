@@ -145,36 +145,40 @@
 <!-- ✅ NEW: Featured action button centered below welcome message -->
 <div class="dash-featured-container">
     <button id="index-gifts-btn" class="dash-button">
-        <i class="fas fa-gift"></i> <span data-lkey="dash_gifts">هدايا</span>
+        <i id="index-gifts-icon" class="fas fa-gift"></i> <span id="index-gifts-text"
+            data-lkey="dash_gifts">هدايا</span>
     </button>
 </div>
 
 <!-- ✅ NEW: Centered frame for Seller actions -->
-<div class="dash-seller-frame">
+<div id="dash-seller-section" class="dash-seller-frame">
     <button id="dash-add-product-btn" class="dash-button">
-        <i class="fas fa-plus"></i> <span data-lkey="dash_add_product">إضافة منتج</span>
+        <i id="dash-add-product-icon" class="fas fa-plus"></i> <span id="dash-add-product-text"
+            data-lkey="dash_add_product">إضافة منتج</span>
     </button>
 
     <button id="dash-view-my-products-btn" class="dash-button">
-        <i class="fas fa-archive"></i> <span data-lkey="dash_my_products">منتجاتي</span>
+        <i id="dash-view-my-products-icon" class="fas fa-archive"></i> <span id="dash-view-my-products-text"
+            data-lkey="dash_my_products">منتجاتي</span>
     </button>
 </div>
 
 <!-- Main container for remaining dashboard buttons -->
 <div id="dash-action-buttons" class="dash-action-buttons">
     <button id="dash-admin-panel-btn" class="dash-button">
-        <i class="fas fa-user-shield"></i> <span data-lkey="dash_admin_panel">لوحة المسؤول</span>
+        <i id="dash-admin-panel-icon" class="fas fa-user-shield"></i> <span id="dash-admin-panel-text"
+            data-lkey="dash_admin_panel">لوحة المسؤول</span>
     </button>
 </div>
 
 <!-- Settings button -->
 <button id="index-settings-btn" data-lkey-title="dash_settings_title" title="الإعدادات">
-    <i class="fas fa-cog"></i>
+    <i id="index-settings-icon" class="fas fa-cog"></i>
 </button>
 
 <!-- Logout button moved to floating next to settings -->
 <button id="dash-logout-btn-alt" data-lkey-title="dash_logout" title="تسجيل الخروج">
-    <i class="fas fa-sign-out-alt"></i>
+    <i id="dash-logout-icon" class="fas fa-sign-out-alt"></i>
 </button>
 
 <!-- Support button moved to absolute bottom right -->

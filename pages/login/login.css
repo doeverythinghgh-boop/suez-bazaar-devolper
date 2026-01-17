@@ -174,6 +174,8 @@
     margin-top: 20px;
     width: 100%;
     align-items: stretch;
+    flex-wrap: nowrap;
+    /* Prevent wrapping */
 }
 
 /* Base button style for all actions */
@@ -181,10 +183,11 @@
 .login_action-btn {
     flex: 1;
     border: none;
-    padding: 12px 5px;
-    /* Compact padding */
+    padding: 10px 5px;
+    /* Decrease padding slightly */
     font-size: 13px;
-    border-radius: 10px;
+    border-radius: 12px;
+    /* Smoother radius */
     cursor: pointer;
     transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
     text-align: center;
@@ -193,10 +196,18 @@
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    min-height: 45px;
+    min-height: 55px;
+    /* Slight increase for icon + text */
     margin-top: 0;
-    /* Override old margin */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Icons inside buttons */
+.login_btn-icon {
+    font-size: 28px;
+    /* Increased size */
+    margin-bottom: 6px;
+    display: block;
 }
 
 /* Submit (Login) Button - Primary */
@@ -216,7 +227,8 @@
 /* Guest Button - Tertiary */
 .login_guest-btn {
     background-color: #f8f9fa;
-    color: var(--text-color-light);
+    color: var(--dark-blue);
+    /* Changed text color */
     border: 1px solid var(--border-color);
 }
 
@@ -231,6 +243,44 @@
 .login_guest-link {
     /* Legacy fallback removal or safeguard */
     display: none;
+}
+
+/* Responsive Font Sizing for Buttons */
+@media (max-width: 380px) {
+
+    .login_btn,
+    .login_action-btn {
+        font-size: 11px;
+        padding: 8px 2px;
+    }
+
+    margin-bottom: 4px;
+}
+}
+
+/* Dark Theme Support for Login Buttons */
+body.dark-theme .login_register-btn {
+    background-color: transparent;
+    color: var(--primary-color-light, #64b5f6);
+    border-color: var(--primary-color-light, #64b5f6);
+}
+
+body.dark-theme .login_guest-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    /* Slight white overlay for contrast */
+    color: var(--text-color-dark, #e0e0e0);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+body.dark-theme .login_btn {
+    /* Keep primary but maybe adjust shadow if needed, usually fine */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Hover effects for dark mode */
+body.dark-theme .login_register-btn:hover,
+body.dark-theme .login_guest-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* Password toggle icon */
